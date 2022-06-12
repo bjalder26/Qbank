@@ -1,9 +1,9 @@
 # Qbank
- This is a program for creating question banks that can quickly be converted to quizzes, tests, or worksheets with randomizable results.
+ This is a program for creating question banks that can quickly be converted to quizzes, tests, or worksheets with randomizable results.<p>
  
- Example site: qbank.tk
- Email ID: test@test.com
- Password: test
+ Example site: qbank.tk<br>
+ Email ID: test@test.com<br>
+ Password: test<p>
 
 # Install
 Download files<br> 
