@@ -49,7 +49,7 @@ Note: this is not a secure program (yet).  Logging in is essentially to keep dif
  Short answer, essay questions, and fill-in-the-blank are possible.  For short answer and essay questions make sure all the answer choices are completely blank, then leave enough carriage returns in the question stem for an appropriate writing area.  For fill-in-the-blank, enter everything in the question stem, and make sure all the answer choices are completely blank.
  
  # Custom Style
-   The custom.css if for overriding the css of your product.  You can download the HTML of the randomly created quiz, test, or worksheet.  Then in the same folder as the HTML file, put a folder named 'css' with a file named 'custom.css' with your desired css, and it will override any other css.
+   The custom.css is for overriding the css of your final product (e.g. worksheet).  You can download the HTML of the randomly created quiz, test, or worksheet.  Then in the same folder as the HTML file, put a folder named 'css' with a file named 'custom.css' with your desired css, and it will override any other css.
  
  # Misc
 Alterations I made to node_modules:<br>
