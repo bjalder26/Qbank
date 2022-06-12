@@ -18,6 +18,7 @@ app.use(express.urlencoded({ // increases the limit on what is sent via url - no
 // access to files and folders
 app.use('/js', express.static(__dirname + '/js/'));
 app.use('/html', express.static(__dirname + '/html/'));
+app.use('/products', express.static(__dirname + '/products/'));
 app.use('/css', express.static(__dirname + '/css/'));
 app.use('/images', express.static(__dirname + '/images/'));
 app.use('/node_modules', express.static(__dirname + '/node_modules/'));
@@ -838,7 +839,7 @@ app.get("/product/:passed", (req, res) => {
 
     const html = qbankToHtml(qbanks[subject][passed.course][passed.qbank], passed.title.replaceAll('_', ' '));
     try {
-      fs.writeFileSync(__dirname + '/html/' + passed.userName + '_' + passed.subject + '_' + passed.course + '_' + passed.qbank + '_' + passed.title + '_' + '.html', html, {
+      fs.writeFileSync(__dirname + '/products/' + passed.userName + '_' + passed.subject + '_' + passed.course + '_' + passed.qbank + '_' + passed.title + '_' + '.html', html, {
         flag: 'w+'
       });
       console.log("File written successfully");
@@ -846,7 +847,7 @@ app.get("/product/:passed", (req, res) => {
       console.error(err);
     }
 
-    let productFile = fs.readFileSync(__dirname + '/html/' + passed.userName + '_' + passed.subject + '_' + passed.course + '_' + passed.qbank + '_' + passed.title + '_' + '.html', "utf8");
+    let productFile = fs.readFileSync(__dirname + '/products/' + passed.userName + '_' + passed.subject + '_' + passed.course + '_' + passed.qbank + '_' + passed.title + '_' + '.html', "utf8");
     var sendMe = productFile.toString();
     res.send(sendMe);
   }
