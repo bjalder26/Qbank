@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
   <head>
     <meta charset="utf-8">
     <title>Chem Qbank</title>
@@ -22,27 +21,29 @@
     </script>
     <div id="content">
       <form id="mainform" action="/submit" method="post" target="_self">
-		<div style="display:inline-flex">Welcome&nbsp;</div><div id="username" style="display:inline-flex"></div><div id="logout" style="display:inline-flex">,&nbsp;<a href='javascript:void(0)' onclick='logout()'>logout</a></div>
+        <div style="display:inline-flex">Welcome&nbsp;</div>
+        <div id="username" style="display:inline-flex"></div>
+        <div id="logout" style="display:inline-flex">,&nbsp;<a href='javascript:void(0)' onclick='logout()'>logout</a></div>
         <div id="navigationmenu">
           <label for="subjectlabel">Subject: </label>
           <select name="subject" id="subject" onchange="populateDD(qbanks[this.value], 'course')"></select>
-		  <button type="button" title="New Subject" id="new subject" class="small material-icons" onclick="newSubject()">add</button>
-		  <button type="button" title="Rename Subject" id="rename subject" class="small material-icons" onclick="renameSubject()">mode</button>
-		  <button type="button" title="Delete Subject" id="delete subject" class="small material-icons" onclick="deleteSubject()">delete</button>
+          <button type="button" title="New Subject" id="new subject" class="small material-icons" onclick="newSubject()">add</button>
+          <button type="button" title="Rename Subject" id="rename subject" class="small material-icons" onclick="renameSubject()">mode</button>
+          <button type="button" title="Delete Subject" id="delete subject" class="small material-icons" onclick="deleteSubject()">delete</button>
           <br>
 
           <label for="courselabel">Course: </label>
           <select name="course" id="course" onchange="populateDD(qbanks[$('subject').value][this.value], 'question bank')"></select>
-		  <button type="button" title="New Course" id="new course" class="small material-icons" onclick="newCourse()">add</button>
-		  <button type="button" title="Rename Course" id="rename course" class="small material-icons" onclick="renameCourse()">mode</button>
-		  <button type="button" title="Delete Course" id="delete course" class="small material-icons" onclick="deleteCourse()">delete</button>
+          <button type="button" title="New Course" id="new course" class="small material-icons" onclick="newCourse()">add</button>
+          <button type="button" title="Rename Course" id="rename course" class="small material-icons" onclick="renameCourse()">mode</button>
+          <button type="button" title="Delete Course" id="delete course" class="small material-icons" onclick="deleteCourse()">delete</button>
           <br>
 
           <label for="questionbanklabel">Question Bank: </label>
           <select name="question_bank" id="question bank" onchange="loadQuestion(qbanks[$('subject').value][$('course').value][this.value], 0)"></select>
           <button type="button" title="New Question Bank" id="new question bank" class="small material-icons" onclick="newQbank()">add</button>
-		  <button type="button" title="Rename Question Bank" id="rename question bank" class="small material-icons" onclick="renameQbank()">mode</button>
-		  <button type="button" title="Delete Question Bank" id="delete question bank" class="small material-icons" onclick="deleteQbank()">delete</button>
+          <button type="button" title="Rename Question Bank" id="rename question bank" class="small material-icons" onclick="renameQbank()">mode</button>
+          <button type="button" title="Delete Question Bank" id="delete question bank" class="small material-icons" onclick="deleteQbank()">delete</button>
           <br>
         </div>
         <div id="question">
@@ -85,7 +86,7 @@
             </div>
           </div>
         </div>
-		<input type="input" id="userName" name="userName" style="display:none">
+        <input type="input" id="userName" name="userName" style="display:none">
         <input type="checkbox" id="addBlank" name="addBlank" style="display:none">
         <input type="checkbox" id="duplicateQuestion" name="duplicateQuestion" style="display:none">
         <input type="checkbox" id="deleteQuestion" name="deleteQuestion" style="display:none">
@@ -102,4 +103,5 @@
       </form>
     </div>
   </body>
+
 </html>
