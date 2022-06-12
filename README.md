@@ -3,7 +3,13 @@
 
 # Install
 Download files
+Install [Git](https://git-scm.com/download/win) and [Node.js](https://nodejs.org/en/download/current/)
 npm install
+
+Might need:
+  npm install tinymce@^5
+  npm install pegjs
+  npm install mathjax
 
 # Using variables
 Range type: replaces a variable with a number randomly selected from a given range.
