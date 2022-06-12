@@ -73,7 +73,7 @@ Alterations I made to node_modules:<br>
 			   }
 		  }
   };
-
+```
   Also hopefully to change default to SVG in MathJax:<br>
   `\node_modules\mathjax\es5\ui\menu.js`<br>
   `renderer:"CHTML"` to `renderer:"SVG"`<p>
