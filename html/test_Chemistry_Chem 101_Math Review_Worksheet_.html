@@ -1,0 +1,132 @@
+<html>
+  <head>
+    <style>
+      h1 {
+        display: flex;
+        justify-content: center;
+      }
+
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+	  
+	  img {
+	  vertical-align: text-top;
+	  }
+	  
+	  div {
+	  display: inline-flex;
+	  text-indent: 0px;
+	  }
+	  
+	  div.question {
+        break-inside: avoid-page;
+		display: block;
+      }
+	  div.option {
+	    text-indent: 14px;
+		display: block;
+	  }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+    </style>
+	<link rel="stylesheet" href="/css/custom.css">
+  </head>
+  <body><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+  <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+		toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Worksheet</h1><br>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p><div class='question'>1) Solve for x: <br>x + 19&nbsp; = 47
+<br><div class='option'>A) </div><div class='option'>B) <div aria-live="assertive">
+<div>2.5</div>
+</div>
+</div><div class='option'>C) <div aria-live="assertive">
+<div>66</div>
+</div>
+</div><div class='option'>D) <div aria-live="assertive">
+<div>28</div>
+</div>
+<span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'>2) Solve for x:<br>log(x) = 2.3
+<br><div class='option'>A) <span class='asterisk'>*</span></div><div class='option'>B) </div><div class='option'>C) 1.517
+</div><div class='option'>D) 0.833<br>
+</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'>3) Solve for x:<br>6.6x = 18
+<br><div class='option'>A) 11
+</div><div class='option'>B) 0.37
+</div><div class='option'>C) 2.7
+<span class='asterisk'>*</span></div><div class='option'>D) </div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'>4) Solve for x:<br>4.7x - <span class="math-tex">\( \frac{3}{5} \)</span> = 19
+<br><div class='option'>A) <span class='asterisk'>*</span></div><div class='option'>B) 2.168
+</div><div class='option'>C) </div><div class='option'>D) 1.55<br>
+</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'>5) <span class="math-tex" data-mce-fragment="1">\( \frac{xxxxxx}{xxxxxx} \)</span>
+<br><div class='option'>A) <span class='asterisk'>*</span></div><div class='option'>B) </div><div class='option'>C) 2.000
+</div><div class='option'>D) 1.39<br>
+</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'>6) Solve for x:<br><span class="math-tex">\( \frac{4.0}{x} \)</span> = <span class="math-tex">\( \frac{4.0}{3.0} \)</span>
+<br><div class='option'>A) 0.602
+<span class='asterisk'>*</span></div><div class='option'>B) 2.000
+</div><div class='option'>C) </div><div class='option'>D) 1.39<br>
+</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'>7) Solve for x:<br>x = log(1500 (2 sf))
+<br><div class='option'>A) </div><div class='option'>B) 7.31<br>
+</div><div class='option'>C) 38.73
+</div><div class='option'>D) <span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'>8) <br><div class='option'>A) </div><div class='option'>B) 0.956<br>
+</div><div class='option'>C) 1.612
+</div><div class='option'>D) <span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'>9) Solve for x:<br><span class="math-tex">\( \frac{x}{2.6} \)</span> = 9.0
+<br><div class='option'>A) 0.29
+</div><div class='option'>B) </div><div class='option'>C) 3.5
+<span class='asterisk'>*</span></div><div class='option'>D) 6.4
+</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'>10) Solve for x:<br>x = 10<sup>3.62</sup>
+<br><div class='option'>A) <span class='asterisk'>*</span></div><div class='option'>B) 1.903
+</div><div class='option'>C) </div><div class='option'>D) 1.29<br>
+</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'>11) Solve for x:<br>x = -log(0.0523)<br>-1.5 -1.50 <span class="math-tex" data-mce-fragment="1">\( \frac{2}{3} \)</span><br>
+<br><div class='option'>A) 0.2287
+</div><div class='option'>B) <span class='asterisk'>*</span></div><div class='option'>C) -2.95<br>
+</div><div class='option'>D) </div><div class='option'>E)  None of the above.</div><p></p></div></body></html>

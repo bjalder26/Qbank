@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Chem Qbank</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="/css/index.css">
+  </head>
+
+  <body onload="loading(qbanks); resized()" onresize="resized()">
+
+    <script src="../node_modules/tinymce/tinymce.min.js"></script>
+    <script src="../js/index.js"></script>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+
+
+    <script type="text/javascript">
+      //PARAMS**GO**HERE 
+
+    </script>
+    <div id="content">
+      <form id="mainform" action="/submit" method="post" target="_self">
+		<div style="display:inline-flex">Welcome&nbsp;</div><div id="username" style="display:inline-flex"></div><div id="logout" style="display:inline-flex">,&nbsp;<a href='javascript:void(0)' onclick='logout()'>logout</a></div>
+        <div id="navigationmenu">
+          <label for="subjectlabel">Subject: </label>
+          <select name="subject" id="subject" onchange="populateDD(qbanks[this.value], 'course')"></select>
+		  <button type="button" title="New Subject" id="new subject" class="small material-icons" onclick="newSubject()">add</button>
+		  <button type="button" title="Rename Subject" id="rename subject" class="small material-icons" onclick="renameSubject()">mode</button>
+		  <button type="button" title="Delete Subject" id="delete subject" class="small material-icons" onclick="deleteSubject()">delete</button>
+          <br>
+
+          <label for="courselabel">Course: </label>
+          <select name="course" id="course" onchange="populateDD(qbanks[$('subject').value][this.value], 'question bank')"></select>
+		  <button type="button" title="New Course" id="new course" class="small material-icons" onclick="newCourse()">add</button>
+		  <button type="button" title="Rename Course" id="rename course" class="small material-icons" onclick="renameCourse()">mode</button>
+		  <button type="button" title="Delete Course" id="delete course" class="small material-icons" onclick="deleteCourse()">delete</button>
+          <br>
+
+          <label for="questionbanklabel">Question Bank: </label>
+          <select name="question_bank" id="question bank" onchange="loadQuestion(qbanks[$('subject').value][$('course').value][this.value], 0)"></select>
+          <button type="button" title="New Question Bank" id="new question bank" class="small material-icons" onclick="newQbank()">add</button>
+		  <button type="button" title="Rename Question Bank" id="rename question bank" class="small material-icons" onclick="renameQbank()">mode</button>
+		  <button type="button" title="Delete Question Bank" id="delete question bank" class="small material-icons" onclick="deleteQbank()">delete</button>
+          <br>
+        </div>
+        <div id="question">
+          <label for="question number">Question Number: </label><textarea id="question number" name="question_number" rows="1" cols="5" readonly></textarea>
+          <div id="arrowcontainer" class="flex"><button type="button" id="left arrow" onclick="loadQuestion(qbanks[$('subject').value][$('course').value][$('question bank').value], parseInt($('question number').innerHTML)-2)">🡄</button>
+            <button type="button" id="right arrow" onclick="loadQuestion(qbanks[$('subject').value][$('course').value][$('question bank').value], parseInt($('question number').innerHTML))">🡆</button>
+          </div>
+          <p></p>
+
+          <label for="group" style="float:left;">Group: </label><textarea name="group" id="group" rows="1" cols="30"></textarea>
+          <p></p>
+          <div class="inline-flex">
+            <label for="question stem">Question: </label><textarea id="question stem" name="question_stem" class="tinymce"></textarea>
+          </div>
+
+          <div class="inline-flex">
+            <input type="checkbox" id="checkbox A" name="checkbox_A" value="0" class="answercheckbox"><label for="checkbox A">A: &nbsp;</label>
+            <textarea id="choice A" name="choice_A" class="tinymce"></textarea>
+          </div>
+
+          <div class="inline-flex">
+            <input type="checkbox" id="checkbox B" name="checkbox_B" value="1" class="answercheckbox"><label for="checkbox B">B: &nbsp;</label>
+            <textarea id="choice B" name="choice_B" class="tinymce"></textarea>
+          </div>
+
+          <div class="inline-flex">
+            <input type="checkbox" id="checkbox C" name="checkbox_C" value="2" class="answercheckbox"><label for="checkbox C">C: &nbsp;</label>
+            <textarea id="choice C" name="choice_C" class="tinymce"></textarea>
+          </div>
+
+          <div class="inline-flex">
+            <input type="checkbox" id="checkbox D" name="checkbox_D" value="3" class="answercheckbox"><label for="checkbox D">D: &nbsp;</label>
+            <textarea id="choice D" name="choice_D" class="tinymce"></textarea>
+            <div>
+              <input type="checkbox" id="all of the above cb" name="all_of_the_above_cb" class="">
+              <label for="all of the above">All of the above &nbsp;</label><input type="checkbox" id="all of the above" name="all_of_the_above" class=""><br>
+              <input type="checkbox" id="none of the above cb" name="none_of_the_above_cb" class="">
+              <label for="none of the above">None of the above &nbsp;</label><input type="checkbox" id="none of the above" name="none_of_the_above" class=""><br>
+              <label for="retain question order">Retain question order &nbsp;</label><input type="checkbox" id="retain question order" name="retain_question_order" class="">
+            </div>
+          </div>
+        </div>
+		<input type="input" id="userName" name="userName" style="display:none">
+        <input type="checkbox" id="addBlank" name="addBlank" style="display:none">
+        <input type="checkbox" id="duplicateQuestion" name="duplicateQuestion" style="display:none">
+        <input type="checkbox" id="deleteQuestion" name="deleteQuestion" style="display:none">
+        <div id="button_bar">
+          <button type="submit" title="Update Question" class="large material-icons" id="submit" onclick="saveQuestion()">save</button>
+          <button type="button" title="Insert Blank Question" class="large material-icons" onclick="incrementQuestionNumber(); addBlankQuestion()">add</button>
+          <button type="button" title="Duplicate Question" class="large material-icons" onclick="incrementQuestionNumber(); duplicateThisQuestion();">content_copy</button>
+          <button type="button" title="Delete Question" class="large material-icons" onclick="if(confirm('Delete this question?')){deleteThisQuestion();}">delete</button>
+
+          <button type="button" onclick="copyQuestion()" style="display: none;">Copy Question From Another Question Bank</button>
+          <button type="button" onclick="moveQuestion()" style="display: none;">Move Question To Another Question Bank</button>
+          <button type="button" title="Create a Quiz, Test, or Worksheet" class="large material-icons" onclick="createProduct()">article</button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
