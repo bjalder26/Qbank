@@ -12,6 +12,11 @@ Might need:<br>
   npm install pegjs<br>
   npm install mathjax<p>
 
+# Starting Server
+   You can start the server by double clicking on the node server.bat file.<br>
+   Open http://localhost:3000 to use.
+   Port 3000 is set in the server.js file.
+   
 # Using variables
 Range type: replaces a variable with a number randomly selected from a given range.<br>
   Format: `${letter min max sigfigs}`<br>
