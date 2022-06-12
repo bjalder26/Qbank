@@ -54,4 +54,14 @@ Note: this is not a secure program (yet).  Logging in is essentially to keep dif
  Short answer, essay questions, and fill-in-the-blank are possible.  For short answer and essay questions make sure all the answer choices are completely blank, then leave enough carriage returns in the question stem for an appropriate writing area.  For fill-in-the-blank, enter everything in the question stem, and make sure all the answer choices are completely blank.
  
  # Custom Style
-   The custom.css if for overriding the css of your product.  You can download the HTML of the randomly created quiz, test, or worksheet.  Then in the same folder as the HTML file, put a folder named 'css' with a file named 'custom.css' with your desired css, and it will override any other css. 
+   The custom.css if for overriding the css of your product.  You can download the HTML of the randomly created quiz, test, or worksheet.  Then in the same folder as the HTML file, put a folder named 'css' with a file named 'custom.css' with your desired css, and it will override any other css.
+ 
+ # Misc
+Alterations I made to node_modules:<br>
+  To add exapmles into the MathJax editor:<br>
+ \node_modules\@dimakorotkov\tinymce-mathjax\plugin.js line 159<br>
+ html: 'Examples: \\alpha \\sqrt{2} \\frac{num}{denom} He_2^{4} <div style="text-align:right"><a href="https://wikibooks.org/wiki/LaTeX/Mathematics" target="_blank" style="font-size:small">LaTex</a></div>'<p>
+
+  Hopefully to change default to SVG in MathJax:<br>
+  \node_modules\mathjax\es5\ui\menu.js<br>
+  renderer:"CHTML" to renderer:"SVG"<p>
