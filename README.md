@@ -59,7 +59,7 @@ Note: this is not a secure program (yet).  Logging in is essentially to keep dif
  # Misc
 Alterations I made to node_modules:<br>
   To add exapmles into the MathJax editor:<br>
- `\node_modules\@dimakorotkov\tinymce-mathjax\plugin.js line 159<br>`
+ `\node_modules\@dimakorotkov\tinymce-mathjax\plugin.js` line 159<br>
  `html: 'Examples: \\alpha \\sqrt{2} \\frac{num}{denom} He_2^{4} <div style="text-align:right"><a href="https://wikibooks.org/wiki/LaTeX/Mathematics" target="_blank" style="font-size:small">LaTex</a></div>'`<p>
 
   Hopefully to change default to SVG in MathJax:<br>
