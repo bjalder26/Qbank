@@ -2,9 +2,10 @@
  This is a program for creating question banks that can quickly be converted to quizzes, tests, or worksheets with randomizable results.
 
 # Install
-Download files<br>
+Download files<br> 
 Install [Git](https://git-scm.com/download/win) and [Node.js](https://nodejs.org/en/download/current/)<br>
-npm install<p>
+Open command prompt and navigate to top Qbank folder (where server.js is).
+Type npm install into the command prompt<p>
 
 Might need:<br>
   npm install tinymce@^5<br>
