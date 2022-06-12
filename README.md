@@ -57,6 +57,24 @@ Alterations I made to node_modules:<br>
  `\node_modules\@dimakorotkov\tinymce-mathjax\plugin.js` line 159<br>
  `html: 'Examples: \\alpha \\sqrt{2} \\frac{num}{denom} He_2^{4} <div style="text-align:right"><a href="https://wikibooks.org/wiki/LaTeX/Mathematics" target="_blank" style="font-size:small">LaTex</a></div>'`<p>
 
+```
   Hopefully to change default to SVG in MathJax:<br>
+ `\node_modules\@dimakorotkov\tinymce-mathjax\config.js` line 16<br>
+  ```js
+  MathJax = {
+    options: {
+			   processHtmlClass: className,
+			   ignoreHtmlClass: '.*',
+			   typesetError: function (doc, math, err) {doc.typesetError(math, err)},
+			   menuOptions: {
+				    settings: {
+					     renderer: 'SVG'
+				    }
+			   }
+		  }
+  };
+
+  Also hopefully to change default to SVG in MathJax:<br>
   `\node_modules\mathjax\es5\ui\menu.js`<br>
   `renderer:"CHTML"` to `renderer:"SVG"`<p>
+  
