@@ -44,3 +44,6 @@ It is possible to make basic calculations.  This will likely be most helpful in 
 The answer choices are currently set at up to 4 answers plus the options of adding 'none of the above' and/or 'all of the above'.  'None of the above' and 'all of the above' will always stay at the bottom of a list of answers.  Blank answer choices should not show up in your final product, and if they do, then either the tiny-mce editor is not completely empty, or there is a bug.  The order of the questions are randomized and all answer choices other than 'none of the above' and 'all of the above' are randomized unless you click the 'retain order' checkbox.  The retain order checkbox is for if you want to have answers such as 'both a and b', which would require choices that retain their order.<p>
 
 Note: this is not a secure program (yet).  Logging in is essentially to keep different people's question banks seperate.  
+ 
+# Short answer, essay questions, and fill-in-the-blank.
+ Short answer, essay questions, and fill-in-the-blank are possible.  For short answer and essay questions make sure all the answer choices are completely blank, then leave enough carriage returns in the question stem for an appropriate writing area.  For fill-in-the-blank, enter everything in the question stem, and make sure all the answer choices are completely blank.
