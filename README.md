@@ -9,7 +9,7 @@
 Download files<br> 
 Install [Git](https://git-scm.com/download/win) and [Node.js](https://nodejs.org/en/download/current/)<br>
 Open command prompt and navigate to top Qbank folder (where server.js is).
-Type npm install into the command prompt to install dependencies.<p>
+Enter `npm install` into the command prompt to install dependencies.<p>
 
 # Starting Server
    You can start the server by double clicking on the node server.bat file.<br>
