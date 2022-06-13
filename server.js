@@ -15,6 +15,11 @@ app.use(express.urlencoded({ // increases the limit on what is sent via url - no
   extended: true // not sure about
 }));
 
+// create product, images, and user directories if they don't exist
+if (!fs.existsSync(__dirname + '/products')){fs.mkdirSync(__dirname + '/products');}
+if (!fs.existsSync(__dirname + '/images')){fs.mkdirSync(__dirname + '/images');}
+if (!fs.existsSync(__dirname + '/qbanks')){fs.mkdirSync(__dirname + '/qbanks');}
+				 
 // access to files and folders
 app.use('/js', express.static(__dirname + '/js/'));
 app.use('/html', express.static(__dirname + '/html/'));
@@ -23,6 +28,7 @@ app.use('/css', express.static(__dirname + '/css/'));
 app.use('/images', express.static(__dirname + '/images/'));
 app.use('/node_modules', express.static(__dirname + '/node_modules/'));
 app.use('/users', express.static(__dirname + '/users/'));
+app.use('/qbanks', express.static(__dirname + '/qbanks/'));
 
 // reads files
 var indexFile = fs.readFileSync(__dirname + "/html/index.html", "utf8");
@@ -39,7 +45,7 @@ files.forEach(function(file) {
 });
 imageNumberArray.sort((a, b) => a - b);
 imageNumberArray.reverse();
-var maxImageNumber = parseInt(imageNumberArray[0]); // incremented later
+var maxImageNumber = imageNumberArray[0] ? parseInt(imageNumberArray[0]) : 0; // incremented later
 var nextImageNumber = 0;
 
 // const listener = app.listen(process.env.PORT, () => { //random port
