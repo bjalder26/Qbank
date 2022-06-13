@@ -28,6 +28,7 @@ app.use('/css', express.static(__dirname + '/css/'));
 app.use('/images', express.static(__dirname + '/images/'));
 app.use('/node_modules', express.static(__dirname + '/node_modules/'));
 app.use('/users', express.static(__dirname + '/users/'));
+app.use('/qbanks', express.static(__dirname + '/qbanks/'));
 
 // reads files
 var indexFile = fs.readFileSync(__dirname + "/html/index.html", "utf8");
@@ -45,7 +46,6 @@ files.forEach(function(file) {
 imageNumberArray.sort((a, b) => a - b);
 imageNumberArray.reverse();
 var maxImageNumber = imageNumberArray[0] ? parseInt(imageNumberArray[0]) : 0; // incremented later
-console.log(maxImageNumber);
 var nextImageNumber = 0;
 
 // const listener = app.listen(process.env.PORT, () => { //random port
