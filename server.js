@@ -378,6 +378,10 @@ function qbankToHtml(shallowQbank, title) {
     }
 
     html = html + `<p></p></div>`;
+    
+    // fix adjustments made for MathJax
+    html = html.replaceAll('\\%', '%').replaceAll('\\{', '{').replaceAll('\\}', '}').replaceAll('\\ ',' ');
+	  	  
     // replace variables with numbers
     try {
       html = replaceVariables(html);
