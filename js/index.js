@@ -154,6 +154,7 @@ function loadQuestion(qbank, numb) {
       $('rename question bank').disabled = false;
       $('delete question bank').disabled = false;
       if ($('question bank').value != 'select question bank') {
+	setCookie('qbankName', $('question bank').value, 2);
         $('question number').innerHTML = numb + 1;
         setCookie('questionnumber', numb + 1, 2);
         const question = qbank[numb];
