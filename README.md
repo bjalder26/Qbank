@@ -52,10 +52,57 @@ Note: this is not a secure program (yet).  Logging in is essentially to keep dif
    The custom.css is for overriding the css of your final product (e.g. worksheet).  You can download the HTML of the randomly created quiz, test, or worksheet.  Then in the same folder as the HTML file, put a folder named 'css' with a file named 'custom.css' with your desired css, and it will override any other css.
  
  # Misc
-Alterations I made to node_modules:<br>
-  To add exapmles into the MathJax editor:<br>
+ <b>Alterations I made to node_modules:</b><br>
+  
+ <b>To add examples into the MathJax editor:</b><br>
  `\node_modules\@dimakorotkov\tinymce-mathjax\plugin.js` line 159<br>
  `html: 'Examples: \\alpha \\sqrt{2} \\frac{num}{denom} He_2^{4} <div style="text-align:right"><a href="https://wikibooks.org/wiki/LaTeX/Mathematics" target="_blank" style="font-size:small">LaTex</a></div>'`<p>
+
+<b>To get variables (${}, % and spaces) to display properly in MathJax:</b><br>
+Also in `\node_modules\@dimakorotkov\tinymce-mathjax\plugin.js`
+Add these 2 functions right under `tinymce.PluginManager.add('mathjax', function(editor, url) {`:
+```js
+function preLatex(text) {
+  let mode = 0;
+  let array = text.split('');
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] == ' ') {
+      array[i] = '\\ '
+    }
+    if (array[i] == '%') {
+      array[i] = '\\%'
+    }
+    if (mode == 0) {
+      if (array[i] == '$') {
+      console.log('$')
+        mode = 1;
+      }
+    } else if (mode == 1) {
+      if (array[i] == '{') {
+        array[i] = '\\{'
+        mode = 2;
+      } else {
+        mode = 0;
+      }
+    } else if (mode == 2) {
+      if (array[i] == '}') {
+        array[i] = '\\}'
+        mode = 0;
+      }
+    }
+  }
+  string = array.join('');
+  return string;
+}
+
+function postLatex(string){
+return string.replaceAll('\\%', '%').replaceAll('\\{', '{').replaceAll('\\}', '}').replaceAll('\\ ',' ');
+}
+```
+On what will then be lines the following lines, make the following changes: 
+100:  `math.innerHTML = latex;` to `math.innerHTML = preLatex(latex);` 
+180: `latex = latex;` to `latex = postLatex(latex);` 
+262: `refreshDialogMathjax(latex);` to `refreshDialogMathjax(preLatex(latex));`
 
   Hopefully to change default to SVG in MathJax:<br>
  `\node_modules\@dimakorotkov\tinymce-mathjax\config.js` line 16<br>
