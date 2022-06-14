@@ -331,7 +331,7 @@ function qbankToHtml(shallowQbank, title) {
 
     let choiceNumber = 0;
     for (let choice of choices) {
-      if (!choice.trim().match(/^<div class="MJX_LiveRegion"/)) {
+      if (choice.replaceAll(' ','') != '') { 
         if (correct.includes(choiceNumber.toString())) {
           asterisk = `<span class='asterisk'>*</span>`;
         } else {
