@@ -10,6 +10,17 @@ Download files<br>
 Install [Git](https://git-scm.com/download/win) and [Node.js](https://nodejs.org/en/download/current/)<br>
 Open command prompt and navigate to top Qbank folder (where server.js is).
 Enter `npm install` into the command prompt to install dependencies.<p>
+ 
+ <b>Alterations to node_modules:</b><br>
+
+Replace: `\node_modules\@dimakorotkov\tinymce-mathjax\plugin.js` with this <a href="https://github.com/bjalder26/node_modules-alterations/blob/ef3f02f2faaac325aed38d92e74255e16f1aaa8e/plugin.js">file</a><br>.
+Doing so will make the variables (${}, % and spaces) display properly in MathJax.  It will also put examples in the MathJax editor.<br>
+
+Hopefully replacing `\node_modules\@dimakorotkov\tinymce-mathjax\config.js` with this <a href="https://github.com/bjalder26/node_modules-alterations/blob/ef3f02f2faaac325aed38d92e74255e16f1aaa8e/config.js">file</a> will change default to SVG in MathJax.<br>
+
+Also hopefully to change default to SVG in MathJax:<br>
+`\node_modules\mathjax\es5\ui\menu.js`<br>
+`renderer:"CHTML"` to `renderer:"SVG"`<p>
 
 # Starting Server
    You can start the server by double clicking on the node server.bat file.<br>
@@ -43,7 +54,7 @@ The answer choices are currently set at up to 4 answers plus the options of addi
 Note: this is not a secure program (yet).  Logging in is essentially to keep different people's question banks seperate.  You should log out when you are done.
  
 # MathJax
- You may decide to use MathJax to better format equations.  In the editor, the equations won't display properly unless you make the alterations below to the MathJax plugin.  However they should appear correctly in your final product either way.  If you are having problems displaying the MathJax equations, then right click on the equation, select Math Settings, then Renderer, and select SVG.  Do not save a question with this menu open, as it will save the menu in place.  There are some LaTeX notation hints in the editor (if you make the alteration below), but more information is available <a href="https://en.wikibooks.org/wiki/LaTeX/Mathematics">here</a>.
+ You may decide to use MathJax to better format equations.  In the editor, the equations won't display properly unless you make the alterations above to the MathJax plugin.  However they should appear correctly in your final product either way.  If you are having problems displaying the MathJax equations, then right click on the equation, select Math Settings, then Renderer, and select SVG.  Do not save a question with this menu open, as it will save the menu in place.  There are some LaTeX notation hints in the editor (if you make the alteration above), but more information is available <a href="https://en.wikibooks.org/wiki/LaTeX/Mathematics">here</a>.
  
 # Short Answer, Essay Questions, and Fill-in-the-blank.
  Short answer, essay questions, and fill-in-the-blank are possible.  For short answer and essay questions make sure all the answer choices are completely blank, then leave enough carriage returns in the question stem for an appropriate writing area.  For fill-in-the-blank, enter everything in the question stem, and make sure all the answer choices are completely blank.
@@ -51,76 +62,3 @@ Note: this is not a secure program (yet).  Logging in is essentially to keep dif
  # Custom Style
    The custom.css is for overriding the css of your final product (e.g. worksheet).  You can download the HTML of the randomly created quiz, test, or worksheet.  Then in the same folder as the HTML file, put a folder named 'css' with a file named 'custom.css' with your desired css, and it will override any other css.
  
- # Misc
- <b>Alterations I made to node_modules:</b><br>
-  
- <b>To add examples into the MathJax editor:</b><br>
- `\node_modules\@dimakorotkov\tinymce-mathjax\plugin.js` line 159<br>
- `html: 'Examples: \\alpha \\sqrt{2} \\frac{num}{denom} He_2^{4} <div style="text-align:right"><a href="https://wikibooks.org/wiki/LaTeX/Mathematics" target="_blank" style="font-size:small">LaTex</a></div>'`<p>
-
-<b>To get variables (${}, % and spaces) to display properly in MathJax:</b><br>
-Also in `\node_modules\@dimakorotkov\tinymce-mathjax\plugin.js`
-Add these 2 functions right under `tinymce.PluginManager.add('mathjax', function(editor, url) {`:
-```js
-function preLatex(text) {
-  let mode = 0;
-  let array = text.split('');
-  for (let i = 0; i < array.length; i++) {
-    if (array[i] == ' ') {
-      array[i] = '\\ '
-    }
-    if (array[i] == '%') {
-      array[i] = '\\%'
-    }
-    if (mode == 0) {
-      if (array[i] == '$') {
-      console.log('$')
-        mode = 1;
-      }
-    } else if (mode == 1) {
-      if (array[i] == '{') {
-        array[i] = '\\{'
-        mode = 2;
-      } else {
-        mode = 0;
-      }
-    } else if (mode == 2) {
-      if (array[i] == '}') {
-        array[i] = '\\}'
-        mode = 0;
-      }
-    }
-  }
-  string = array.join('');
-  return string;
-}
-
-function postLatex(string){
-return string.replaceAll('\\%', '%').replaceAll('\\{', '{').replaceAll('\\}', '}').replaceAll('\\ ',' ');
-}
-```
-On what will then be lines the following lines, make the following changes: 
-100:  `math.innerHTML = latex;` to `math.innerHTML = preLatex(latex);` 
-180: `latex = latex;` to `latex = postLatex(latex);` 
-262: `refreshDialogMathjax(latex);` to `refreshDialogMathjax(preLatex(latex));`
-
-  Hopefully to change default to SVG in MathJax:<br>
- `\node_modules\@dimakorotkov\tinymce-mathjax\config.js` line 16<br>
-  ```js
-MathJax = {
-  options: {
-    processHtmlClass: className,
-    ignoreHtmlClass: '.*',
-    typesetError: function (doc, math, err) {doc.typesetError(math, err)},
-    menuOptions: {
-      settings: {
-        renderer: 'SVG'
-      }
-    }
-  }
-};
-```
-  Also hopefully to change default to SVG in MathJax:<br>
-  `\node_modules\mathjax\es5\ui\menu.js`<br>
-  `renderer:"CHTML"` to `renderer:"SVG"`<p>
-  
