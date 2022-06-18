@@ -23,6 +23,13 @@ function clearBoxes() {
   }
 }
 
+function createDownloadLink(data, fileName, fileType){
+  var a = document.createElement("a");
+  a.href = window.URL.createObjectURL(new Blob([data], {type: "text/plain"}));
+  a.download = `${fileName}.${fileType}`;
+  a.click();
+}
+
 function createProduct() {
   let passed = {};
   let title = prompt("Title: ", "Worksheet").replaceAll(' ', '_');
@@ -54,6 +61,7 @@ function deleteCourse() {
     passed = encodeURI(JSON.stringify(passed));
     document.location = `/deleteCourse/${passed}`;
   } else if (toDelete != null) {
+    toDelete = toDelete.replaceAll('delete', '')
     alert(`Course ${toDelete} not found.`)
   }
 }
@@ -74,6 +82,7 @@ function deleteQbank() {
     passed = encodeURI(JSON.stringify(passed));
     document.location = `/deleteQbank/${passed}`;
   } else if (toDelete != null) {
+    toDelete = toDelete.replaceAll('delete', '')
     alert(`Question bank ${toDelete} not found.`)
   }
 }
@@ -92,6 +101,7 @@ function deleteSubject() {
     passed = encodeURI(JSON.stringify(passed));
     document.location = `/deleteSubject/${passed}`;
   } else if (toDelete != null) {
+    toDelete = toDelete.replaceAll('delete', '')
     alert(`Subject ${toDelete} not found.`)
   }
 }
@@ -113,6 +123,21 @@ function duplicateThisQuestion() {
   $('duplicateQuestion').checked = false;
 }
 
+function exportCourse() {
+  const data = JSON.stringify (qbanks[$('subject').value][$('course').value]);
+  createDownloadLink(data, $('course').value, 'crs');
+}
+
+function exportQbank() {
+  const data = JSON.stringify (qbanks[$('subject').value][$('course').value][$('question bank').value]);
+  createDownloadLink(data, $('question bank').value, 'qbk');
+}
+
+function exportSubject() {
+  const data = JSON.stringify (qbanks[$('subject').value]);
+  createDownloadLink(data, $('subject').value, 'sbj');
+}
+
 function getCookie(cname) {
   let name = cname + "=";
   let decodedCookie = decodeURIComponent(document.cookie);
@@ -129,6 +154,98 @@ function getCookie(cname) {
   return "";
 }
 
+function importCourse() {
+  const fileList = this.files; /* now you can work with the file list */
+  for (let file of fileList) {
+    const reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+    reader.onload = function(fileLoadedEvent) {
+      const objFromFileLoaded = JSON.parse(fileLoadedEvent.target.result);
+      const fileNameArray = file.name.split('.')
+      const fileName = fileNameArray[0];
+	  const subjectName = $('subject').value;
+      const courseName = prompt('Course title: ', fileName)
+      if (typeof qbanks[subjectName][courseName] == 'undefined') {
+        importQbanks(objFromFileLoaded, user, subjectName, courseName);
+      } else {
+		$('import course').value = null;
+        alert('Course already exists, please delete course first to replace it, or rename new course.');
+      }
+    };
+  }
+}
+
+function importQbank() {
+  const fileList = this.files; /* now you can work with the file list */
+  for (let file of fileList) {
+    const reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+    reader.onload = function(fileLoadedEvent) {
+      const objFromFileLoaded = JSON.parse(fileLoadedEvent.target.result);
+      const fileNameArray = file.name.split('.')
+      const fileName = fileNameArray[0];
+      const subjectName = $('subject').value;
+      const courseName = $('course').value;
+	  const qbankName = prompt('Question bank title: ', fileName)
+      if (typeof qbanks[subjectName][courseName][qbankName] == 'undefined') {
+        importQbanks(objFromFileLoaded, user, subjectName, courseName, qbankName);
+      } else {
+		$('import question bank').value = null;
+        alert('Question bank already exists, please delete question bank first to replace it, or rename new question bank.');
+      }
+    };
+  }
+}
+
+function importQbanks(objFromFileLoaded, userName, subjectName, courseName, qbankName) {
+  var xhr = new XMLHttpRequest();
+  if(subjectName) {setCookie('subjectName', subjectName, 2);}
+  if(courseName) {setCookie('courseName', courseName, 2);}
+  if(qbankName) {
+	setCookie('qbankName', qbankName, 2);
+	setCookie('questionnumber', 0, 2)
+  }
+  
+  xhr.open('POST', '/import', true);
+  xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8'); 
+  
+  xhr.onload = function() {
+	let passed = {};
+    passed.userName = userName; 
+    passed = encodeURI(JSON.stringify(passed));
+    document.location = `${passed}`;
+  };
+  
+  const toSend = {
+	userName: userName,
+	subjectName: subjectName,
+	courseName: courseName,
+	qbankName: qbankName
+  };
+  toSend.objFromFileLoaded = objFromFileLoaded;
+  xhr.send(JSON.stringify(toSend));
+}
+
+function importSubject() {
+  const fileList = this.files; /* now you can work with the file list */
+  for (let file of fileList) {
+    const reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+    reader.onload = function(fileLoadedEvent) {
+      const objFromFileLoaded = JSON.parse(fileLoadedEvent.target.result);
+      const fileNameArray = file.name.split('.')
+      const fileName = fileNameArray[0];
+      const subjectName = prompt('Subject title: ', fileName)
+      if (typeof qbanks[subjectName] == 'undefined') {
+        importQbanks(objFromFileLoaded, user, subjectName);
+      } else {
+		$('import subject').value = null;
+        alert('Subject already exists, please delete subject first to replace it, or rename new subject.');
+      }
+    };
+  }
+}
+
 function incrementQuestionNumber() {
   let numb = parseInt($('question number').innerHTML);
   setCookie('increment', numb, 2);
@@ -138,6 +255,9 @@ function loading(qbanks) {
   initTinyMce();
   populateDD(qbanks, 'subject');
   refreshing(qbanks);
+  $('import subject').addEventListener("change", importSubject, false);
+  $('import course').addEventListener("change", importCourse, false);
+  $('import question bank').addEventListener("change", importQbank, false);
 }
 
 function loadQuestion(qbank, numb) {
@@ -153,8 +273,9 @@ function loadQuestion(qbank, numb) {
       }
       $('rename question bank').disabled = false;
       $('delete question bank').disabled = false;
+      $('export question bank').disabled = false;
       if ($('question bank').value != 'select question bank') {
-	setCookie('qbankName', $('question bank').value, 2);
+	      setCookie('qbankName', $('question bank').value, 2);
         $('question number').innerHTML = numb + 1;
         setCookie('questionnumber', numb + 1, 2);
         const question = qbank[numb];
@@ -324,18 +445,21 @@ function populateDD(obj, dropDown) {
   }
 
   $('new subject').disabled = false;
-
+  $('import subject button').disabled = false;
   if ($('subject').value != 'select subject') {
     $('question bank').value = 'select question bank'; // not sure if needed
     $('rename subject').disabled = false;
     $('delete subject').disabled = false;
+    $('export subject').disabled = false;
     $('new course').disabled = false;
+    $('import course button').disabled = false;
     if ($('course').value != 'select course') {
       $('question bank').value = 'select question bank';
       $('rename course').disabled = false;
       $('delete course').disabled = false;
+      $('export course').disabled = false;
       $('new question bank').disabled = false;
-
+      $('import question bank button').disabled = false;
       if ($('question bank').value != 'select question bank') {
         $('rename question bank').disabled = false;
         $('delete question bank').disabled = false;
@@ -355,13 +479,12 @@ function populateTinyMceOrTextarea(id, newText) {
 }
 
 function refreshing(qbanks) {
-	$('username').innerHTML = `${user}`
+	$('username').innerHTML = `${user}`;
   $('userName').value = `${user}`
   if (document.cookie) {
     const subjectName = getCookie('subjectName') ? getCookie('subjectName') : 'select subject';
     const courseName = getCookie('courseName') ? getCookie('courseName') : 'select course';
     const qbankName = getCookie('qbankName') ? getCookie('qbankName') : 'select question bank';
-
     let numb = 0;
     if (parseInt(getCookie('increment'))) {
       numb = parseInt(getCookie('increment'));
@@ -369,7 +492,6 @@ function refreshing(qbanks) {
     } else {
       numb = parseInt(getCookie('questionnumber')) ? parseInt(getCookie('questionnumber')) - 1 : 0;
     }
-		
     if (typeof qbanks[subjectName] != 'undefined') {
 			$('subject').value = subjectName;
 			populateDD(qbanks[subjectName], 'course')
@@ -477,6 +599,7 @@ function initTinyMce() {
     force_p_newlines: false,
     forced_root_block: '',
     selector: 'textarea.tinymce',
+    browser_spellcheck: true,
     height: 160,
     menubar: false,
 

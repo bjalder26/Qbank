@@ -21,29 +21,39 @@
     </script>
     <div id="content">
       <form id="mainform" action="/submit" method="post" target="_self">
-        <div style="display:inline-flex">Welcome&nbsp;</div>
-        <div id="username" style="display:inline-flex"></div>
-        <div id="logout" style="display:inline-flex">,&nbsp;<a href='javascript:void(0)' onclick='logout()'>logout</a></div>
+        <div style="display:inline-flex">Welcome&nbsp;</div><div id="username" style="display:inline-flex"></div><div id="logout" style="display:inline-flex">,&nbsp;<a href='javascript:void(0)' onclick='logout()'>logout</a></div>
         <div id="navigationmenu">
           <label for="subjectlabel">Subject: </label>
           <select name="subject" id="subject" onchange="populateDD(qbanks[this.value], 'course')"></select>
           <button type="button" title="New Subject" id="new subject" class="small material-icons" onclick="newSubject()">add</button>
           <button type="button" title="Rename Subject" id="rename subject" class="small material-icons" onclick="renameSubject()">mode</button>
           <button type="button" title="Delete Subject" id="delete subject" class="small material-icons" onclick="deleteSubject()">delete</button>
-          <br>
-
+          &nbsp;|&nbsp;
+		      <button type="button" title="Export Subject" id="export subject" class="small material-icons" onclick="exportSubject()">file_download</button>
+		      <input type="button" id="import subject button" value="file_upload" class="small material-icons" onclick="document.getElementById('import subject').click();" />
+		      <input type="file" id="import subject" name="import subject"  title="Import Subject" accept=".sbj" style="display:none;">
+		      <br>
+          
           <label for="courselabel">Course: </label>
           <select name="course" id="course" onchange="populateDD(qbanks[$('subject').value][this.value], 'question bank')"></select>
           <button type="button" title="New Course" id="new course" class="small material-icons" onclick="newCourse()">add</button>
           <button type="button" title="Rename Course" id="rename course" class="small material-icons" onclick="renameCourse()">mode</button>
           <button type="button" title="Delete Course" id="delete course" class="small material-icons" onclick="deleteCourse()">delete</button>
-          <br>
+          &nbsp;|&nbsp;
+		      <button type="button" title="Export Course" id="export course" class="small material-icons" onclick="exportCourse()">file_download</button>
+		      <input type="button" id="import course button" value="file_upload" class="small material-icons" onclick="document.getElementById('import course').click();" />
+		      <input type="file" id="import course" name="import course"  title="Import Course" accept=".crs" style="display:none;">
+		      <br>
 
           <label for="questionbanklabel">Question Bank: </label>
           <select name="question_bank" id="question bank" onchange="loadQuestion(qbanks[$('subject').value][$('course').value][this.value], 0)"></select>
           <button type="button" title="New Question Bank" id="new question bank" class="small material-icons" onclick="newQbank()">add</button>
           <button type="button" title="Rename Question Bank" id="rename question bank" class="small material-icons" onclick="renameQbank()">mode</button>
           <button type="button" title="Delete Question Bank" id="delete question bank" class="small material-icons" onclick="deleteQbank()">delete</button>
+          &nbsp;|&nbsp;
+		      <button type="button" title="Export Question Bank" id="export question bank" class="small material-icons" onclick="exportQbank()">file_download</button>
+		      <input type="button" id="import question bank button" value="file_upload" class="small material-icons" onclick="document.getElementById('import question bank').click();" />
+		      <input type="file" id="import question bank" name="import question bank"  title="Import Question Bank" accept=".qbk" style="display:none;">
           <br>
         </div>
         <div id="question">

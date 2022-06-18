@@ -14,6 +14,7 @@ app.use(express.urlencoded({ // increases the limit on what is sent via url - no
   limit: '5mb',
   extended: true // not sure about
 }));
+app.use(express.json());
 
 // create product, images, and user directories if they don't exist
 if (!fs.existsSync(__dirname + '/products')){fs.mkdirSync(__dirname + '/products');}
@@ -444,6 +445,45 @@ function varToArray(varable) {
 }
 
 // posts
++app.post("/import", (req, res) => {
+  const data = req.body.objFromFileLoaded;
+  const subjectName = req.body.subjectName;
+  const courseName = req.body.courseName;
+  const qbankName = req.body.qbankName;
+  const userName = req.body.userName;
+  
+  var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", "utf8");
+  var qbanks = JSON.parse(qbanksFile);
+
+  if(typeof qbankName != 'undefined') {
+	if(typeof qbanks[subjectName][courseName][qbankName] == 'undefined') {
+	  qbanks[subjectName][courseName][qbankName] = data;	  
+	} else {console.error(`Question bank ${qbankName} already exists`)}
+  } else if(typeof courseName != 'undefined') {
+	if(typeof qbanks[subjectName][courseName] == 'undefined') {
+	  qbanks[subjectName][courseName] = data;	  
+	} else {console.error(`Course ${courseName} already exists`)}
+  } else if(typeof subjectName != 'undefined') {
+	if(typeof qbanks[subjectName] == 'undefined') {
+	  qbanks[subjectName] = data;	  
+	} else {console.error(`Subject ${subjectName} already exists`)}
+  } else {console.error(`Subject undefined`)}
+
+  try {
+    fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
+      flag: 'w+'
+    });
+    console.log("File written successfully");
+  } catch (err) {
+    console.error('qbank write: ' + err);
+  }
+  
+  let passed = {};
+  passed.userName = userName;
+  passed = encodeURI(JSON.stringify(passed));
+  res.redirect(`/edit/${passed}`); // doesn't really control destination, but apparently a response is needed
+});
+
 app.post('/login', async (req, res) => {
   let foundUser = users.find((data) => req.body.email === data.email);
   if (foundUser) {
