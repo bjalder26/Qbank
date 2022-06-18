@@ -275,7 +275,7 @@ function loadQuestion(qbank, numb) {
       $('delete question bank').disabled = false;
       $('export question bank').disabled = false;
       if ($('question bank').value != 'select question bank') {
-	setCookie('qbankName', $('question bank').value, 2);
+	      setCookie('qbankName', $('question bank').value, 2);
         $('question number').innerHTML = numb + 1;
         setCookie('questionnumber', numb + 1, 2);
         const question = qbank[numb];
@@ -446,7 +446,6 @@ function populateDD(obj, dropDown) {
 
   $('new subject').disabled = false;
   $('import subject button').disabled = false;
-
   if ($('subject').value != 'select subject') {
     $('question bank').value = 'select question bank'; // not sure if needed
     $('rename subject').disabled = false;
@@ -493,7 +492,6 @@ function refreshing(qbanks) {
     } else {
       numb = parseInt(getCookie('questionnumber')) ? parseInt(getCookie('questionnumber')) - 1 : 0;
     }
-
     if (typeof qbanks[subjectName] != 'undefined') {
 			$('subject').value = subjectName;
 			populateDD(qbanks[subjectName], 'course')
