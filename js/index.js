@@ -1,6 +1,36 @@
+function sortObj(obj) {
+  return Object.keys(obj).sort(function (a, b) { return a.toLowerCase().localeCompare(b.toLowerCase());}).reduce(function (result, key) {
+    result[key] = obj[key];
+    return result;
+  }, {});
+}
+
+/*function sortObj(obj) {
+if(obj){
+  let keyArray = [];
+  for(let key of Object.keys(obj)) {
+	key = key.replaceAll(' ', '_');
+	keyArray.push(key);
+  }
+  keyArray.sort(function (a, b) { return a.toLowerCase().localeCompare(b.toLowerCase());}); // case insensitive sort
+  let sortedKeyArray = [];
+  for(let key of keyArray) {
+	key = key.replaceAll('_', ' ')
+	sortedKeyArray.push(key);  
+  }
+  return sortedKeyArray
+}
+}*/
+
 function $(x) {
   return document.getElementById(x);
 }
+
+Date.prototype.toDateInputValue = (function() {
+    var local = new Date(this);
+    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+    return local.toJSON().slice(0,10);
+});
 
 function addBlankQuestion() {
   $('addBlank').checked = true;
@@ -32,12 +62,20 @@ function createDownloadLink(data, fileName, fileType){
 
 function createProduct() {
   let passed = {};
-  let title = prompt("Title: ", "Worksheet").replaceAll(' ', '_');
+  let title = prompt("Title: ", "Worksheet");
   if (title) {
+	
+    const subject = $('subject').value;
+    const course = $('course').value;
+    const qbank = $('question bank').value;  
+	  
+	const qbankAndNumArray = [{qbankName: qbank, number: qbanks[subject][course][qbank].length}];
+	title = title.replaceAll(' ', '_');
     passed.title = title;
-    passed.subject = $('subject').value;
-    passed.course = $('course').value;
-    passed.qbank = $('question bank').value;
+    passed.subject = subject;
+    passed.course = course;
+    //passed.qbank = qbank;
+	passed.qbankAndNumArray = qbankAndNumArray;
     passed.userName = user;
     passed = JSON.stringify(passed);
     passed = encodeURI(passed)
@@ -430,8 +468,9 @@ function populateDD(obj, dropDown) {
   var defaultOption = document.createElement('option');
   defaultOption.text = 'select ' + dropDown;
   dd.options.add(defaultOption);
-
-  for (let item in obj) {
+  //alert(JSON.stringify(obj));
+  const sortedObj = sortObj(obj);
+  for (let item in sortedObj) {
     var option = document.createElement('option');
     option.text = item;
     option.value = item;
@@ -590,6 +629,231 @@ function updateCookies(position) {
   setCookie('questionnumber', position, 2)
 }
 
+// overlay functions
+function populateReord() {
+  const qbank = qbanks[$('subject').value][$('course').value][$('question bank').value];
+  let index = 0;
+  for (let problem of qbank) {
+    const listItem = document.createElement('li');
+    listItem.setAttribute("draggable", "true");
+	const noBreaksStem = problem.stem.replaceAll('<br>', ' ').replaceAll('<p>', ' ');
+    const div = document.createElement('div')
+    listItem.innerHTML = `<div>Group: ${problem.group}<br>Stem: ${noBreaksStem}</div>`;
+    listItem.setAttribute("title", problem.stem);
+    listItem.setAttribute("order", index);
+    $('sortlist').appendChild(listItem);
+    index = index + 1;
+  }
+}
+
+function reorder() {
+  const subjectName = $('subject').value;
+  const courseName = $('course').value;
+  const qbankName = $('question bank').value;
+  const numb = $('question number').innerHTML;
+	
+  let qbank = qbanks[subjectName][courseName][qbankName];
+  const qbankCopy = qbank.slice(); 
+  const children = $('sortlist').querySelectorAll('li');
+  let orderArray = [];
+  children.forEach(child => orderArray.push(parseInt(child.getAttribute('order'))));
+  for (let i = 0; i < orderArray.length; i++) {
+    qbank[i] = qbankCopy[orderArray[i]];
+  }
+  
+  var xhr = new XMLHttpRequest();
+  if(subjectName) {setCookie('subjectName', subjectName, 2);}
+  if(courseName) {setCookie('courseName', courseName, 2);}
+  if(qbankName) {
+	setCookie('qbankName', qbankName, 2);
+	setCookie('questionnumber', (orderArray.indexOf(parseInt(numb)-1)+1).toString(), 2)
+  }
+  
+  xhr.open('POST', '/reorder', true);
+  xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8'); 
+  
+  xhr.onload = function() {
+	let passed = {};
+    passed.userName = user; 
+    passed = encodeURI(JSON.stringify(passed));
+    document.location = `${passed}`;
+  };
+  
+  const toSend = {
+	userName: user,
+	subjectName: subjectName,
+	courseName: courseName,
+	qbankName: qbankName
+  };
+  toSend.qbankData = qbank;
+  xhr.send(JSON.stringify(toSend));
+  
+  closeNav();
+}
+
+function setProductNum(num) {
+	$('product number').value = num;
+	$('product number').max = num;
+	$('add from dropdown').disabled = false;
+}
+
+function populateProductOverlayDropDown() { // condense with populatedd
+  var dd = $('product dropdown');
+  while (dd.options.length > 0) { // clear dropdown                
+        dd.remove(0);
+    } 
+  var defaultOption = document.createElement('option');
+  defaultOption.text = 'select question bank';
+  dd.options.add(defaultOption);
+  const subjectName = $('subject').value;
+  const courseName = $('course').value;
+  const sortedObj = sortObj(qbanks[subjectName][courseName]);
+  for (let qbank in sortedObj) {
+    var option = document.createElement('option');
+    option.text = qbank;
+    option.value = qbank;
+    dd.options.add(option);
+  }
+  $('product date').value = new Date().toDateInputValue();
+}
+
+function addfromdropdown() {
+  const order = document.getElementsByClassName('qbankandnum') ? document.getElementsByClassName('qbankandnum').length : 0; //counts elements present
+  const qbankName = $('product dropdown').value;
+  const number = $('product number').value;
+
+  const qbankAndNum = document.createElement('div');
+    qbankAndNum.innerHTML = `${qbankName}: ${number}`;
+    qbankAndNum.setAttribute('qbankName', qbankName);
+    qbankAndNum.setAttribute('number', number);
+	qbankAndNum.setAttribute('class', 'qbankandnum');
+	qbankAndNum.setAttribute('order', order);
+    $('productlist').appendChild(qbankAndNum);
+}
+
+function createAdvancedProduct() {
+  const qbankAndNumElements = document.getElementsByClassName('qbankandnum');
+  let qbankAndNumArray =[];
+  for(let element of qbankAndNumElements) {
+	  let qbankAndNum = {};
+	  qbankAndNum.qbankName = element.getAttribute('qbankName');
+	  qbankAndNum.number = element.getAttribute('number');
+	  qbankAndNumArray.push(qbankAndNum)
+  }
+  let passed = {};
+  let title = $('product title').value ? $('product title').value.replaceAll(' ', '_') : ''; //prompt("Title: ", "Worksheet"); //replace this!!!
+    passed.title = title;
+	passed.instructorName = $('instructor name').value ? $('instructor name').value.replaceAll(' ', '_') : '';
+	if ($('product date').value != '') {
+	  let date = new Date($('product date').value.split("-").join(", "));
+		date = date.toLocaleString("en-US", {
+		month: "short",
+		day: "numeric",
+		year: "numeric"
+	  });
+	  passed.date = date;
+	} else {
+		passed.date = '';
+	}
+    passed.subject = $('subject').value;
+    passed.course = $('course').value;
+    passed.qbankAndNumArray = qbankAndNumArray;
+    passed.userName = user;
+    passed = JSON.stringify(passed);
+    passed = encodeURI(passed)
+    var path = `/product/${passed}`;
+    window.open(path, '_blank');
+}
+
+function hideOverlays() {
+	const overlays = document.getElementsByClassName("overlay");
+  for(let overlay of overlays) {
+	  overlay.style.display = "none";
+  }
+}
+
+function openProductOverlay() {
+  const alreadyOpen = productoverlay.style.display == "flex";
+  hideOverlays();
+  $('productlist').innerHTML = null;
+  const productOverlay = document.getElementById("productoverlay")
+  if(alreadyOpen) {
+	productoverlay.style.display == "none"
+  } else {
+	productoverlay.style.display = "flex";  
+  }
+  populateProductOverlayDropDown();
+}
+
+function closeProductOverlay() {
+  document.getElementById("productoverlay").style.display = "none";
+}
+
+function openNav() {
+  const myNav =  document.getElementById("myNav"); 
+  const alreadyOpen = myNav.style.display == "flex"
+  hideOverlays();	
+  $('sortlist').innerHTML = null;
+  if(alreadyOpen) {
+   myNav.style.display == "none";
+  } else {
+   myNav.style.display = "flex";
+  }
+  populateReord();
+  slist($('sortlist'));
+}
+
+function closeNav() {
+  document.getElementById("myNav").style.display = "none";
+}
+
+function slist(target) {
+  // SET CSS + GET ALL LIST ITEMS
+  //target.classList.add("slist");
+  let items = target.getElementsByTagName("li"),
+    current = null;
+
+  // MAKE ITEMS DRAGGABLE + SORTABLE
+  for (let i of items) {
+    // (B1) ATTACH DRAGGABLE
+    i.draggable = true;
+
+    // DRAG START - YELLOW HIGHLIGHT DROPZONES
+
+    i.ondragstart = (ev) => {
+      current = i;
+    };
+
+    // DRAG OVER - PREVENT THE DEFAULT "DROP", SO WE CAN DO OUR OWN
+    i.ondragover = (evt) => {
+      evt.preventDefault();
+    };
+
+    // (B7) ON DROP - DO SOMETHING
+    i.ondrop = (evt) => {
+      evt.preventDefault();
+      if (i != current) {
+        let currentpos = 0,
+          droppedpos = 0;
+        for (let it = 0; it < items.length; it++) {
+          if (current == items[it]) {
+            currentpos = it;
+          }
+          if (i == items[it]) {
+            droppedpos = it;
+          }
+        }
+        if (currentpos < droppedpos) {
+          i.parentNode.insertBefore(current, i.nextSibling);
+        } else {
+          i.parentNode.insertBefore(current, i);
+        }
+      }
+    };
+  }
+}
+
+
 // tiny mice
 function initTinyMce() {
   tinymce.init({
@@ -602,6 +866,7 @@ function initTinyMce() {
     browser_spellcheck: true,
     height: 160,
     menubar: false,
+    fontsize_formats: "8pt 10pt 10.5pt 11pt 12pt 14pt 18pt 24pt 36pt",
 
     setup: (editor) => {
       editor.ui.registry.addIcon('expand', '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000" ><g transform="rotate (90,12,12)"><path d="M0 0h24v24H0z" fill="none"/><path d="M0 0h24v24H0V0z" fill="none"/><path d="M4 20h16v2H4zM4 2h16v2H4zm9 7h3l-4-4-4 4h3v6H8l4 4 4-4h-3z" /></g></svg>');
@@ -669,7 +934,7 @@ function initTinyMce() {
     image_title: true,
     automatic_uploads: true,
     file_picker_types: 'image',
-    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:10.5pt }',
 
     file_picker_callback: function(cb, value, meta) {
       var input = document.createElement('input');

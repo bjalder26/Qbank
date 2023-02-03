@@ -1,10 +1,11 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
     <title>Chem Qbank</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="/css/index.css">
+	<link rel="stylesheet" href="/css/overlay.css">
   </head>
 
   <body onload="loading(qbanks); resized()" onresize="resized()">
@@ -105,13 +106,71 @@
           <button type="button" title="Insert Blank Question" class="large material-icons" onclick="incrementQuestionNumber(); addBlankQuestion()">add</button>
           <button type="button" title="Duplicate Question" class="large material-icons" onclick="incrementQuestionNumber(); duplicateThisQuestion();">content_copy</button>
           <button type="button" title="Delete Question" class="large material-icons" onclick="if(confirm('Delete this question?')){deleteThisQuestion();}">delete</button>
+		  <button type="button" title="Reorder Question" onclick="openNav()" class="large material-icons">reorder</span>
 
           <button type="button" onclick="copyQuestion()" style="display: none;">Copy Question From Another Question Bank</button>
           <button type="button" onclick="moveQuestion()" style="display: none;">Move Question To Another Question Bank</button>
           <button type="button" title="Create a Quiz, Test, or Worksheet" class="large material-icons" onclick="createProduct()">article</button>
+		  <button type="button" title="Advanced Create a Quiz, Test, or Worksheet Creator" class="large material-icons" onclick="openProductOverlay()">mediation</button>
         </div>
       </form>
     </div>
+	
+	
+	
+
+
+
+<div id="myNav" class="overlay">
+  <div class="widget-wrap">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <h1>Reorder Questions</h1>
+
+    <div id="scrollbar">
+      <ul id="sortlist">
+      </ul>
+    </div>
+    <div id="sortbuttons">
+      <button type="button" id="submit reord" onclick="reorder()">Submit</button>
+      <button type="button" id="cancel reord" onclick="closeNav()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="productoverlay" class="overlay">
+  <div class="widget-wrap">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeProductOverlay()">&times;</a>
+    <h1>Advanced Quiz, Test, or Worksheet Creator</h1>
+
+    <div id="scrollbar">
+      <div id="productlist">
+      </div>
+    </div>
+	
+    <div id="productbuttons">
+	  <div id="productdropdowndiv">
+	  <label for="questionbank">Question bank:&nbsp;</label>
+	  <select name="productdropdown" id="product dropdown" onchange="setProductNum(qbanks[$('subject').value][$('course').value][this.value].length)"></select>
+	  <label for="numberofquestions">&nbsp;Number of questions:&nbsp;</label>
+	  <input type="number" id="product number" name="product_number" min="0" max="0"></input>&nbsp;
+      <button type="button" title="Add Questions" id="add from dropdown" class="overlayButton material-icons" onclick="addfromdropdown()">add_box</button>
+	  </div>
+	  <p>
+	  <label for="producttitle">Title: </label><input type="text" title="producttitle" id="product title">
+	  <p>
+	  <label for="instructorname">Instructor name: </label><input type="text" title="instructorname" id="instructor name">
+	  <p>
+	  <input type="date" title="productdate" id="product date">
+	  </p>
+      <button type="button" id="submit product" onclick="createAdvancedProduct()">Submit</button>
+      <button type="button" id="cancel product" onclick="closeProductOverlay()">Cancel</button>
+	  <p>
+    </div>
+  </div>
+</div>
+	
+	
+	
   </body>
 
 </html>
