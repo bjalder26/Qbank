@@ -3,7 +3,7 @@
 const express = require('express'); // express server
 const http = require('http');
 var fs = require('fs'); // file system
-var parser = require(__dirname + '\\parser.js'); // parser for =[] calculations
+var parser = require(__dirname + '//parser.js'); // parser for =[] calculations
 const bcrypt = require('bcrypt'); // for hashing passwords
 const path = require("path"); // not sure if this is needed
 const app = express();
