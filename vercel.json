@@ -8,8 +8,7 @@
   ],
   "routes": [
     {
-        "src": "package.json",
-        "use": "@express/node"
+        "src": "package.json"
     }
   ]
 }
