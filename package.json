@@ -19,7 +19,7 @@
     "tinymce": "^5.10.4"
   },
   "engines": {
-    "node": "12.x"
+    "node": "18.x"
   },
   "repository": {
     "url": "https://glitch.com/edit/#!/hello-express"
