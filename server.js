@@ -62,7 +62,7 @@ const port = process.env.PORT || 3000;
 //app.listen(port, () => { console.log(`listening port ${port}`);});
 
 const listener = server.listen(port, () => {
-  console.log(`Your server is listening on port ${port}`;)
+  console.log(`Your server is listening on port ${port}`);
 });
 
 // functions
