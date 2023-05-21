@@ -5,7 +5,7 @@
     <title>Chem Qbank</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="/css/index.css">
-	<link rel="stylesheet" href="/css/overlay.css">
+    <link rel="stylesheet" href="/css/overlay.css">
   </head>
 
   <body onload="loading(qbanks); resized()" onresize="resized()">
@@ -22,7 +22,9 @@
     </script>
     <div id="content">
       <form id="mainform" action="/submit" method="post" target="_self">
-        <div style="display:inline-flex">Welcome&nbsp;</div><div id="username" style="display:inline-flex"></div><div id="logout" style="display:inline-flex">,&nbsp;<a href='javascript:void(0)' onclick='logout()'>logout</a></div>
+        <div style="display:inline-flex">Welcome&nbsp;</div>
+        <div id="username" style="display:inline-flex"></div>
+        <div id="logout" style="display:inline-flex">,&nbsp;<a href='javascript:void(0)' onclick='logout()'>logout</a></div>
         <div id="navigationmenu">
           <label for="subjectlabel">Subject: </label>
           <select name="subject" id="subject" onchange="populateDD(qbanks[this.value], 'course')"></select>
@@ -30,21 +32,21 @@
           <button type="button" title="Rename Subject" id="rename subject" class="small material-icons" onclick="renameSubject()">mode</button>
           <button type="button" title="Delete Subject" id="delete subject" class="small material-icons" onclick="deleteSubject()">delete</button>
           &nbsp;|&nbsp;
-		      <button type="button" title="Export Subject" id="export subject" class="small material-icons" onclick="exportSubject()">file_download</button>
-		      <input type="button" id="import subject button" value="file_upload" class="small material-icons" onclick="document.getElementById('import subject').click();" />
-		      <input type="file" id="import subject" name="import subject"  title="Import Subject" accept=".sbj" style="display:none;">
-		      <br>
-          
+          <button type="button" title="Export Subject" id="export subject" class="small material-icons" onclick="exportSubject()">file_download</button>
+          <input type="button" id="import subject button" value="file_upload" class="small material-icons" onclick="document.getElementById('import subject').click();" />
+          <input type="file" id="import subject" name="import subject" title="Import Subject" accept=".sbj" style="display:none;">
+          <br>
+
           <label for="courselabel">Course: </label>
           <select name="course" id="course" onchange="populateDD(qbanks[$('subject').value][this.value], 'question bank')"></select>
           <button type="button" title="New Course" id="new course" class="small material-icons" onclick="newCourse()">add</button>
           <button type="button" title="Rename Course" id="rename course" class="small material-icons" onclick="renameCourse()">mode</button>
           <button type="button" title="Delete Course" id="delete course" class="small material-icons" onclick="deleteCourse()">delete</button>
           &nbsp;|&nbsp;
-		      <button type="button" title="Export Course" id="export course" class="small material-icons" onclick="exportCourse()">file_download</button>
-		      <input type="button" id="import course button" value="file_upload" class="small material-icons" onclick="document.getElementById('import course').click();" />
-		      <input type="file" id="import course" name="import course"  title="Import Course" accept=".crs" style="display:none;">
-		      <br>
+          <button type="button" title="Export Course" id="export course" class="small material-icons" onclick="exportCourse()">file_download</button>
+          <input type="button" id="import course button" value="file_upload" class="small material-icons" onclick="document.getElementById('import course').click();" />
+          <input type="file" id="import course" name="import course" title="Import Course" accept=".crs" style="display:none;">
+          <br>
 
           <label for="questionbanklabel">Question Bank: </label>
           <select name="question_bank" id="question bank" onchange="loadQuestion(qbanks[$('subject').value][$('course').value][this.value], 0)"></select>
@@ -52,9 +54,9 @@
           <button type="button" title="Rename Question Bank" id="rename question bank" class="small material-icons" onclick="renameQbank()">mode</button>
           <button type="button" title="Delete Question Bank" id="delete question bank" class="small material-icons" onclick="deleteQbank()">delete</button>
           &nbsp;|&nbsp;
-		      <button type="button" title="Export Question Bank" id="export question bank" class="small material-icons" onclick="exportQbank()">file_download</button>
-		      <input type="button" id="import question bank button" value="file_upload" class="small material-icons" onclick="document.getElementById('import question bank').click();" />
-		      <input type="file" id="import question bank" name="import question bank"  title="Import Question Bank" accept=".qbk" style="display:none;">
+          <button type="button" title="Export Question Bank" id="export question bank" class="small material-icons" onclick="exportQbank()">file_download</button>
+          <input type="button" id="import question bank button" value="file_upload" class="small material-icons" onclick="document.getElementById('import question bank').click();" />
+          <input type="file" id="import question bank" name="import question bank" title="Import Question Bank" accept=".qbk" style="display:none;">
           <br>
         </div>
         <div id="question">
@@ -66,37 +68,52 @@
 
           <label for="group" style="float:left;">Group: </label><textarea name="group" id="group" rows="1" cols="30"></textarea>
           <p></p>
-          <div class="inline-flex">
-            <label for="question stem">Question: </label><textarea id="question stem" name="question_stem" class="tinymce"></textarea>
+          <div class="flex-container">
+            <div class="checkbox-container">
+              <label for="question stem">Question: </label></div>
+            <textarea id="question stem" name="question_stem" class="tinymce"></textarea>
           </div>
 
-          <div class="inline-flex">
-            <input type="checkbox" id="checkbox A" name="checkbox_A" value="0" class="answercheckbox"><label for="checkbox A">A: &nbsp;</label>
+          <div class="flex-container">
+            <div class="checkbox-container">
+              <input type="checkbox" id="checkbox A" name="checkbox_A" value="0" class="answercheckbox cb"><label for="checkbox A">A: &nbsp;</label>
+            </div>
             <textarea id="choice A" name="choice_A" class="tinymce"></textarea>
           </div>
 
-          <div class="inline-flex">
-            <input type="checkbox" id="checkbox B" name="checkbox_B" value="1" class="answercheckbox"><label for="checkbox B">B: &nbsp;</label>
+          <div class="flex-container">
+            <div class="checkbox-container">
+              <input type="checkbox" id="checkbox B" name="checkbox_B" value="1" class="answercheckbox cb"><label for="checkbox B">B: &nbsp;</label></div>
             <textarea id="choice B" name="choice_B" class="tinymce"></textarea>
           </div>
 
-          <div class="inline-flex">
-            <input type="checkbox" id="checkbox C" name="checkbox_C" value="2" class="answercheckbox"><label for="checkbox C">C: &nbsp;</label>
+          <div class="flex-container">
+            <div class="checkbox-container">
+              <input type="checkbox" id="checkbox C" name="checkbox_C" value="2" class="answercheckbox cb"><label for="checkbox C">C: &nbsp;</label></div>
             <textarea id="choice C" name="choice_C" class="tinymce"></textarea>
           </div>
 
-          <div class="inline-flex">
-            <input type="checkbox" id="checkbox D" name="checkbox_D" value="3" class="answercheckbox"><label for="checkbox D">D: &nbsp;</label>
+          <div class="flex-container">
+            <div class="checkbox-container">
+              <input type="checkbox" id="checkbox D" name="checkbox_D" value="3" class="answercheckbox cb"><label for="checkbox D">D: &nbsp;</label></div>
             <textarea id="choice D" name="choice_D" class="tinymce"></textarea>
+          </div>
+          <div class="flex-container">
+            <div class="checkbox-container">
+              <label for="Solution">Solution: </label></div>
+            <textarea id="solution" name="solution" class="tinymce"></textarea>
+            </div>
             <div>
-              <input type="checkbox" id="all of the above cb" name="all_of_the_above_cb" class="">
-              <label for="all of the above">All of the above &nbsp;</label><input type="checkbox" id="all of the above" name="all_of_the_above" class=""><br>
-              <input type="checkbox" id="none of the above cb" name="none_of_the_above_cb" class="">
-              <label for="none of the above">None of the above &nbsp;</label><input type="checkbox" id="none of the above" name="none_of_the_above" class=""><br>
-              <label for="retain question order">Retain question order &nbsp;</label><input type="checkbox" id="retain question order" name="retain_question_order" class="">
+			  <input type="checkbox" id="all of the above" name="all_of_the_above" class="include">
+              <input type="checkbox" id="all of the above cb" name="all_of_the_above_cb" class="cb" onclick="clickInclude('all of the above cb', 'all of the above')">
+              <label for="all of the above">All of the above &nbsp;</label><br>
+			  <input type="checkbox" id="none of the above" name="none_of_the_above" class="include">
+              <input type="checkbox" id="none of the above cb" name="none_of_the_above_cb" class="cb" onclick="clickInclude('none of the above cb', 'none of the above')">
+              <label for="none of the above">None of the above &nbsp;</label><br>
+			  <input type="checkbox" id="retain question order" name="retain_question_order" class="include">
+              <label for="retain question order">Retain question order &nbsp;</label>
             </div>
           </div>
-        </div>
         <input type="input" id="userName" name="userName" style="display:none">
         <input type="checkbox" id="addBlank" name="addBlank" style="display:none">
         <input type="checkbox" id="duplicateQuestion" name="duplicateQuestion" style="display:none">
@@ -106,71 +123,63 @@
           <button type="button" title="Insert Blank Question" class="large material-icons" onclick="incrementQuestionNumber(); addBlankQuestion()">add</button>
           <button type="button" title="Duplicate Question" class="large material-icons" onclick="incrementQuestionNumber(); duplicateThisQuestion();">content_copy</button>
           <button type="button" title="Delete Question" class="large material-icons" onclick="if(confirm('Delete this question?')){deleteThisQuestion();}">delete</button>
-		  <button type="button" title="Reorder Question" onclick="openNav()" class="large material-icons">reorder</span>
+          <button type="button" title="Reorder Question" onclick="openNav()" class="large material-icons">reorder</button>
 
           <button type="button" onclick="copyQuestion()" style="display: none;">Copy Question From Another Question Bank</button>
           <button type="button" onclick="moveQuestion()" style="display: none;">Move Question To Another Question Bank</button>
           <button type="button" title="Create a Quiz, Test, or Worksheet" class="large material-icons" onclick="createProduct()">article</button>
-		  <button type="button" title="Advanced Create a Quiz, Test, or Worksheet Creator" class="large material-icons" onclick="openProductOverlay()">mediation</button>
+          <button type="button" title="Advanced Create a Quiz, Test, or Worksheet Creator" class="large material-icons" onclick="openProductOverlay()">mediation</button>
         </div>
       </form>
     </div>
-	
-	
-	
+    <div id="myNav" class="overlay">
+      <div class="widget-wrap">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <h1>Reorder Questions</h1>
 
-
-
-<div id="myNav" class="overlay">
-  <div class="widget-wrap">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <h1>Reorder Questions</h1>
-
-    <div id="scrollbar">
-      <ul id="sortlist">
-      </ul>
-    </div>
-    <div id="sortbuttons">
-      <button type="button" id="submit reord" onclick="reorder()">Submit</button>
-      <button type="button" id="cancel reord" onclick="closeNav()">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<div id="productoverlay" class="overlay">
-  <div class="widget-wrap">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeProductOverlay()">&times;</a>
-    <h1>Advanced Quiz, Test, or Worksheet Creator</h1>
-
-    <div id="scrollbar">
-      <div id="productlist">
+        <div id="scrollbar">
+          <ul id="sortlist">
+          </ul>
+        </div>
+        <div id="sortbuttons">
+          <button type="button" id="submit reord" onclick="reorder()">Submit</button>
+          <button type="button" id="cancel reord" onclick="closeNav()">Cancel</button>
+        </div>
       </div>
     </div>
-	
-    <div id="productbuttons">
-	  <div id="productdropdowndiv">
-	  <label for="questionbank">Question bank:&nbsp;</label>
-	  <select name="productdropdown" id="product dropdown" onchange="setProductNum(qbanks[$('subject').value][$('course').value][this.value].length)"></select>
-	  <label for="numberofquestions">&nbsp;Number of questions:&nbsp;</label>
-	  <input type="number" id="product number" name="product_number" min="0" max="0"></input>&nbsp;
-      <button type="button" title="Add Questions" id="add from dropdown" class="overlayButton material-icons" onclick="addfromdropdown()">add_box</button>
-	  </div>
-	  <p>
-	  <label for="producttitle">Title: </label><input type="text" title="producttitle" id="product title">
-	  <p>
-	  <label for="instructorname">Instructor name: </label><input type="text" title="instructorname" id="instructor name">
-	  <p>
-	  <input type="date" title="productdate" id="product date">
-	  </p>
-      <button type="button" id="submit product" onclick="createAdvancedProduct()">Submit</button>
-      <button type="button" id="cancel product" onclick="closeProductOverlay()">Cancel</button>
-	  <p>
-    </div>
-  </div>
-</div>
-	
-	
-	
-  </body>
 
+    <div id="productoverlay" class="overlay">
+      <div class="widget-wrap">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeProductOverlay()">&times;</a>
+        <h1>Advanced Quiz, Test, or Worksheet Creator</h1>
+
+        <div id="scrollbar">
+          <div id="productlist">
+          </div>
+        </div>
+
+        <div id="productbuttons">
+          <div id="productdropdowndiv">
+            <label for="questionbank">Question bank:&nbsp;</label>
+            <select name="productdropdown" id="product dropdown" onchange="setProductNum(qbanks[$('subject').value][$('course').value][this.value].length)"></select>
+            <label for="numberofquestions">&nbsp;Number of questions:&nbsp;</label>
+            <input type="number" id="product number" name="product_number" min="0" max="0">&nbsp;
+            <button type="button" title="Add Questions" id="add from dropdown" class="overlayButton material-icons" onclick="addfromdropdown()">add_box</button>
+          </div>
+          <p>
+            <label for="producttitle">Title: </label><input type="text" title="producttitle" id="product title">
+          </p>
+          <p>
+            <label for="instructorname">Instructor name: </label><input type="text" title="instructorname" id="instructor name">
+          </p>
+          <p>
+            <input type="date" title="productdate" id="product date">
+          </p>
+          <button type="button" id="submit product" onclick="createAdvancedProduct()">Submit</button>
+          <button type="button" id="cancel product" onclick="closeProductOverlay()">Cancel</button>
+
+        </div>
+      </div>
+    </div>
+  </body>
 </html>
