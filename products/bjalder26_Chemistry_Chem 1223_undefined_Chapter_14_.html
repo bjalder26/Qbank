@@ -1,0 +1,175 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Chapter 14</h1>
+	<h4></h4>
+	<h6>Apr 6, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) What is the order of the reaction represented by the graph below?<br><img title="orderx.jpg" src="../images/45.jpeg" alt="" width="284" height="240"></div><div class='option'>A) second</div><div class='option'>B) zeroth</div><div class='option'>C) third</div><div class='option'>D) first<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>2) The following reaction is a second order reaction.&nbsp; If the rate constant is 0.628 M<sup>-1</sup>s<sup>-1</sup>, and the original concentration of O<sub>3</sub> is 1.59x10<sup>-2 </sup>M, then what is the half-life?<br><br>
+<div style="text-align: center;">2 O<sub>3</sub> (g) ➞ 2 O<sub>2</sub> (g)</div></div><div class='option'>A) 39.5 s</div><div class='option'>B) 100. s<span class='asterisk'>*</span></div><div class='option'>C) 1.10 s</div><div class='option'>D) 0.0127 s</div><p></p></div><div class='question'><div class='stem'>3) What generally happens with a reaction when the temperature is increased?</div><div class='option'>A) The rate constant (K) increases, causing the rate of the reaction to increase<span class='asterisk'>*</span></div><div class='option'>B) The rate constant (K) decreases, causing the rate of the reaction to increase</div><div class='option'>C) The rate constant (K) increases, causing the rate of the reaction to decrease</div><div class='option'>D) The rate constant (K) decreases, causing the rate of the reaction to decrease.</div><p></p></div><div class='question'><div class='stem'>4) The energy diagram below is for a 3 step reaction.&nbsp; Which step is the rate determining step?<br><img title="enthalpy reaction.jpg" src="../images/57.jpeg" alt="" width="362" height="189"></div><div class='option'>A) 1st step</div><div class='option'>B) 2nd step<span class='asterisk'>*</span></div><div class='option'>C) 3rd step</div><p></p></div><div class='question'><div class='stem'>5) Using the balanced chemical equation below, calculate the rate of rate reaction with a rate in change of concentration of P<sub>2</sub>O<sub>5</sub> equal to 10.6 M/s.
+<div style="text-align: center;">4 P + 5 O<sub>2</sub> ➞ 2 P<sub>2</sub>O<sub>5</sub></div></div><div class='option'>A) 112 M/s</div><div class='option'>B) 10.6 M/s</div><div class='option'>C) 5.30 M/s<span class='asterisk'>*</span></div><div class='option'>D) 21.2 M/s</div><p></p></div><div class='question'><div class='stem'>6) What are biological catalysts called?</div><div class='option'>A) Substrates</div><div class='option'>B) Exfoliators</div><div class='option'>C) Inhibitors</div><div class='option'>D) Enzymes<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>7) Given the following proposed mechanism, what is the rate law for the reaction?<br>A<sub>2 </sub>+ B <span style="font-size: 10.5pt;">➞ A<sub>2</sub>B (overall reaction)</span><br>
+<table style="border-collapse: collapse; width: 295px;" border="0" width="128" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 108.659px;" height="20">step 1</td>
+<td style="width: 90.733px;">A<sub>2</sub> <span style="font-size: 10.5pt;">➞ 2A</span></td>
+<td style="width: 91.9688px;">fast</td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 108.659px;" height="20">step 2</td>
+<td style="width: 90.733px;">2A + B <span style="font-size: 10.5pt;">➞ A<sub>2</sub>B</span></td>
+<td style="width: 91.9688px;">slow</td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) Rate = <span class="math-tex">\( K[A_2][B] \)</span><span class='asterisk'>*</span></div><div class='option'>B) Rate = <span class="math-tex">\( K[A_2]^2[B] \)</span></div><div class='option'>C) Rate = <span class="math-tex">\( K[A_2]^{1/2}[B] \)</span></div><div class='option'>D) Rate = <span class="math-tex">\( \frac{K[A_2]^2[B]}{2} \)</span></div><p></p></div><div class='question'><div class='stem'>8) The reaction A + B ➞ C + D, has a rate constant of 7.04 × 10<sup>-4</sup> M<sup>-1</sup>s<sup>-1</sup> at 0°C, what is the overall order of the reaction?</div><div class='option'>A) 2<span class='asterisk'>*</span></div><div class='option'>B) 3</div><div class='option'>C) 0</div><div class='option'>D) 1</div><p></p></div><div class='question'><div class='stem'>9) What is are the units for the k in the following rate law.<br>Rate = k[A][B][C]</div><div class='option'>A) M/s or Ms<sup>-1</sup></div><div class='option'>B) 1/(M<sup>2</sup>S) or M<sup>-2</sup>S<sup>-1</sup><span class='asterisk'>*</span></div><div class='option'>C) 1/s or s<sup>-1</sup></div><div class='option'>D) 1/(M<sup>3</sup>s) or M<sup>-3</sup>s<sup>-1</sup></div><p></p></div><div class='question'><div class='stem'>10) Which of the following expressions accurately depicts the rate of this reaction?<br><br>
+<div style="text-align: center;">Pb(OH)<sub>2</sub> + 2 HCl ➞ PbCl<sub>2</sub> (s) + 2 H<sub>2</sub>O (l)</div></div><div class='option'>A) <span class="math-tex">\( -\frac{Δ[Pb(OH)_2]}{Δt} \)</span><span class='asterisk'>*</span></div><div class='option'>B) <span class="math-tex">\( +\frac{Δ[HCl]}{Δt} \)</span></div><div class='option'>C) <span class="math-tex">\( +\frac{1}{2}\frac{Δ[HCl]}{Δt} \)</span></div><div class='option'>D) <span class="math-tex">\( -\frac{Δ[HCl]}{Δt} \)</span></div><p></p></div><div class='question'><div class='stem'>11) Which of these two pathways represents the catalyzed pathway?<br><img title="cat path.jpg" src="../images/58.jpeg" alt="" width="309" height="268"></div><div class='option'>A) A</div><div class='option'>B) B<span class='asterisk'>*</span></div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>12) Given the initial rate data below, what is the rate law for the following reaction?<br>A (g) + B&nbsp;(g) <span style="font-size: 10.5pt;">➞</span> C&nbsp;(g)<br><br>
+<table style="border-collapse: collapse; width: 359px;" border="0" width="256" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.7102px;" width="64" height="20">Trial</td>
+<td style="width: 49.3182px;" width="64">[A]</td>
+<td style="width: 45.3977px;" width="64">[B]</td>
+<td style="width: 194.02px;" width="64">rate (M/s)</td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.7102px;" height="20">1</td>
+<td style="width: 49.3182px;">1.0</td>
+<td style="width: 45.3977px;">1.0</td>
+<td style="width: 194.02px;">8.24x10<sup>-8</sup></td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.7102px;" height="20">2</td>
+<td style="width: 49.3182px;">1.0</td>
+<td style="width: 45.3977px;">2.0</td>
+<td style="width: 194.02px;">8.24x10<sup>-8</sup></td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.7102px;" height="20">3</td>
+<td style="width: 49.3182px;">2.0</td>
+<td style="width: 45.3977px;">1.0</td>
+<td style="width: 194.02px;">6.59x10<sup>-7</sup></td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) rate =<sup> </sup>K[B]<sup>3</sup></div><div class='option'>B) rate =<sup> </sup>K[A]<sup>3</sup><span class='asterisk'>*</span></div><div class='option'>C) rate =<sup> </sup>K[A]<sup>9</sup></div><div class='option'>D) rate =<sup> </sup>K[A]<span style="font-size: 11.6667px;">[B]</span></div><p></p></div><div class='question'><div class='stem'>13) A reaction is found to have an activation energy of 44.3 kJ/mol, and a frequency factor (A) of 1.12x10<sup>10</sup> s<sup>-1</sup>.&nbsp; What is the rate constant of the reaction at 258 K?</div><div class='option'>A) 1.10x10<sup>10</sup></div><div class='option'>B) 12.0<span class='asterisk'>*</span></div><div class='option'>C) 15.0</div><div class='option'>D) 1.04x10<sup>19</sup></div><p></p></div><div class='question'><div class='stem'>14) Identify the statement that is <strong>true</strong>.</div><div class='option'>A) Catalysts only affect the activation energy and not the rate constant</div><div class='option'>B) Adding a catalyst increases the rate constant<span class='asterisk'>*</span></div><div class='option'>C) A catalyst has no affect on the rate of a reaction</div><div class='option'>D) The rate constant is unaffected by temperature changes</div><p></p></div><div class='question'><div class='stem'>15) The decomposition of ammonia on a hot platinum surface is zero-order reaction, and has a rate constant of 2.94x10<sup>-3</sup> <span style="font-size: 11.6667px;">M</span>s<sup>-1</sup>. If the initial concentration of ammonia is 6.51 M, what is the concentration of ammonia after 424 s?</div><div class='option'>A) 8.12 M</div><div class='option'>B) -0.915 M</div><div class='option'>C) 1.87 M</div><div class='option'>D) 5.26 M<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>16) What is the <strong>overall order</strong> of the following reaction?<br>2 NO (g) + O<sub>2</sub> (g) ➞ 2 NO<sub>2</sub> (g);&nbsp; &nbsp; &nbsp; Rate = k[NO]<sup>2</sup>[O<sub>2</sub>]</div><div class='option'>A) first</div><div class='option'>B) second</div><div class='option'>C) zeroth</div><div class='option'>D) third<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>17) (SLO 2.4) What rate is unimolecular?</div><div class='option'>A) Rate = K[A]<span class='asterisk'>*</span></div><div class='option'>B) Rate = K[A][B]<sup>2</sup></div><div class='option'>C) Rate = K[A][B]</div><div class='option'>D) Rate = K[A][B][C]</div><p></p></div><div class='question'><div class='stem'>18) (SLO 2.2) Given the following balanced equation, determine the rate of reaction with respect to [H<sub>2</sub>].<br>N<sub>2</sub> (g) + 3 H<sub>2</sub> (g) ➞ 2 NH<sub>3</sub> (g)</div><div class='option'>A) Rate = <span class="math-tex">\( -\frac{3}{2} \frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>B) Rate = <span class="math-tex">\( +\frac{3}{1} \frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>C) Rate = <span class="math-tex">\( -\frac{2}{3} \frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>D) Rate = <span class="math-tex">\( -\frac{1}{3} \frac{Δ[H_2]}{Δt} \)</span><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>19) (SLO 2.5) For a reaction that follows the general rate law, Rate = K[A]<sup>3</sup>[B]<sup>2</sup>, what will happen to the rate of reaction if the concentration of A is increased by a factor of 5?</div><div class='option'>A) The rate will increase by a factor of 130<span class='asterisk'>*</span></div><div class='option'>B) The rate will decrease by a factor of 1/130</div><div class='option'>C) The rate will increase by a factor of 15</div><div class='option'>D) The rate will decrease by a factor of 1/15</div><p></p></div><div class='question'><div class='stem'>20) (SLO 2.6) At 386 K a reaction is found to have a rate constant of &nbsp;36300 (3 sf) M<sup>-1</sup>s<sup>-1</sup>, at 138 K the reaction is found to have a rate constant of 7.93 M<sup>-1</sup>s<sup>-1</sup>. What is the activation energy for this reaction.</div><div class='option'>A) -15.1 kJ/mol</div><div class='option'>B) 6.54 kJ/mol</div><div class='option'>C) 15.1 kJ/mol<span class='asterisk'>*</span></div><div class='option'>D) -6.54 kJ/mol</div><p></p></div><div class='question'><div class='stem'>21) (SLO 2.1) If the rate of <strong>disappearance </strong>of H<sub>2</sub> in the gas phase reaction is 0.135 M/s, then the rate of <strong>appearance </strong>of HBr&nbsp;is _______&nbsp; M/s
+<div style="text-align: left;">2 HBr (g) ➞ H<sub>2</sub> (g) + Br<sub>2</sub> (g)</div></div><div class='option'>A) 0.27 M/s<span class='asterisk'>*</span></div><div class='option'>B) 0.0675 M/s</div><div class='option'>C) 0.135 M/s</div><div class='option'>D) 7.41 M/s</div><p></p></div><div class='question'><div class='stem'>22) (SLO 2.3) What is the overall order of the following reaction, given the rate law?<br> X + 4 Y ➞ 4 Z&nbsp; &nbsp; &nbsp;Rate = k[X]<sup></sup>[Y]<sup></sup></div><div class='option'>A) 2<span class='asterisk'>*</span></div><div class='option'>B) 1</div><div class='option'>C) 4</div><div class='option'>D) 5</div><p></p></div><div class='question'><div class='stem'>23) (SLO 2.7) Which of the following reactions would you predict to have the largest orientation factor?</div><div class='option'>A) NH<sub>3</sub> (g) + BCl<sub>3</sub> (g) ➞ H<sub>3</sub>N-BCl<sub>3</sub> (g)</div><div class='option'>B) H (g) + F (g) ➞ HF (g)<span class='asterisk'>*</span></div><div class='option'>C) NOCl (g) + NOCl (g) ➞ 2 NO (g) + Cl<sub>2</sub> (g)</div><div class='option'>D) Br<sub>2</sub> (g) + H<sub>2</sub>C-CH<sub>2</sub> (g) ➞ H<sub>2</sub>BrC-CBrH<sub>2</sub> (g)</div><p></p></div></body></html>

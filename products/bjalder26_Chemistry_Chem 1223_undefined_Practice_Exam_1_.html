@@ -1,0 +1,236 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Practice Exam 1</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Feb 23, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) What is the main reason why the boiling point of HF is much higher than that of HCl?&nbsp;</div><div class='option'>A) HF has dipole-dipole forces whereas HCl does not</div><div class='option'>B) HF has stronger London dispersion forces than HCl</div><div class='option'>C) HF can hydrogen bond whereas HCl cannot<span class='asterisk'>*</span></div><div class='option'>D) HCl&nbsp;can hydrogen bond whereas HF&nbsp;cannot</div><p></p></div><div class='question'><div class='stem'>2) Which of the following <strong>increases </strong>the rate of vaporization?</div><div class='option'>A) Strong intermolecular bonds</div><div class='option'>B) Decreasing temperature</div><div class='option'>C) Increasing temperature<span class='asterisk'>*</span></div><div class='option'>D) Decreasing the surface area</div><p></p></div><div class='question'><div class='stem'>3) Which substance has the <strong>lowest </strong>intermolecular forces?</div><div class='option'>A) Kr</div><div class='option'>B) Ne<span class='asterisk'>*</span></div><div class='option'>C) Ar</div><div class='option'>D) Xe</div><p></p></div><div class='question'><div class='stem'>4) Determine the normal boiling point (at 760 mm Hg) of a substance whose vapor pressure is 59.4 mm Hg at 57.4°C and has a ΔH<sub>vap</sub> of 35.1 kJ/mol.</div><div class='option'>A) 331 K</div><div class='option'>B) 276 K</div><div class='option'>C) 59.5 K</div><div class='option'>D) 413 K<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>5) Which of the following has the <strong>highest </strong>viscosity?</div><div class='option'>A) <img title="c3.jpg" src="../images/49.jpeg" alt="" width="150" height="124"></div><div class='option'>B) <img title="c4.jpg" src="../images/50.jpeg" alt="" width="150" height="124"><span class='asterisk'>*</span></div><div class='option'>C) <img title="c2.jpg" src="../images/48.jpeg" alt="" width="150" height="124"></div><div class='option'>D) <img title="c1.jpg" src="../images/47.jpeg" alt="" width="150" height="124"></div><p></p></div><div class='question'><div class='stem'>6) Place the following substances in order of <strong>decreasing </strong>boiling point.&nbsp;<br>H<sub>2</sub>O&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; N<sub>2</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; CO</div><div class='option'>A) CO &gt; H<sub>2</sub>O &gt; N<sub>2</sub></div><div class='option'>B) N<sub>2</sub> &gt; CO &gt; H<sub>2</sub>O</div><div class='option'>C) H<sub>2</sub>O &gt; CO &gt; N<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>D) CO &gt; N<sub>2</sub> &gt; H<sub>2</sub>O</div><p></p></div><div class='question'><div class='stem'>7) What is the strongest type of intermolecular force present in a solution of NaCl &amp; water?&nbsp;</div><div class='option'>A) Dipole-dipole forces</div><div class='option'>B) Ion-dipole forces<span class='asterisk'>*</span></div><div class='option'>C) Hydrogen bonding</div><div class='option'>D) London dispersion forces</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>8) Which of the following statements is TRUE?</div><div class='option'>A) London dispersion forces are generally stronger than dipole-dipole forces</div><div class='option'>B) Forming new bonds requires energy</div><div class='option'>C) Two bonded oxygen atoms are at a lower potential energy than two individual oxygen atoms<span class='asterisk'>*</span></div><div class='option'>D) Decreasing the temperature of a liquid generally causes it to become a gas</div><p></p></div><div class='question'><div class='stem'>9) Place the following substances in order of <strong>increasing</strong> vapor pressure at a given temperature.&nbsp;<br>SF<sub>6</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; SiH<sub>4</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; SF<sub>4</sub></div><div class='option'>A) SiH<sub>4</sub> &lt; SF<sub>4</sub> &lt; SF<sub>6</sub></div><div class='option'>B) SF<sub>6</sub> &lt; SiH<sub>4</sub> &lt; SF<sub>4</sub></div><div class='option'>C) SF<sub>4</sub> &lt; SF<sub>6</sub> &lt; SiH<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>D) SF<sub>6</sub> &lt; SF<sub>4</sub> &lt; SiH<sub>4</sub></div><p></p></div><div class='question'><div class='stem'>10) <span style="font-size: 10.5pt;">How much energy is required to heat 33.6 g H<sub>2</sub>O from a liquid at 79.0°C to a gas at 120°C?<br>ΔH<sub>vap</sub> = 40.7 kJ/mol<br>C<sub>liquid</sub>&nbsp;= 4.184 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;<br>C<sub>gas</sub> = 2.01 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;&nbsp;<br>C<sub>solid</sub> = 2.09 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;<br>T<sub>melting</sub> = 0°C&nbsp;<br>T<sub>boiling</sub> = 100°C<br></span></div><div class='option'>A) 95.1 kJ</div><div class='option'>B) 1370 kJ</div><div class='option'>C) 4380 kJ</div><div class='option'>D) 80.2 kJ<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>11) Using the phase diagram below, what phase transition would occur if H<sub>2</sub>O was cooled from 42°C to -62°C at 0.005 atm?<br><img title="phase diagram water.jpg" src="../images/51.jpeg" alt="" width="299" height="245"></div><div class='option'>A) Deposition<span class='asterisk'>*</span></div><div class='option'>B) Condensation</div><div class='option'>C) Freezing</div><div class='option'>D) Sublimation</div><p></p></div><div class='question'><div class='stem'>12) How much energy is required to vaporize 42.3 g of benzene (C<sub>6</sub>H<sub>6</sub>) at its boiling point, if its ΔH<sub>vap</sub> is 30.72 kJ/mol?</div><div class='option'>A) 16.6 kJ/mol<span class='asterisk'>*</span></div><div class='option'>B) 108 kJ/mol</div><div class='option'>C) 1300 (3 sf) (3 sf) kJ/mol</div><div class='option'>D) 0.542 kJ/mol</div><p></p></div><div class='question'><div class='stem'>13) Identify the place which has the <strong>highest </strong>boiling point of water.</div><div class='option'>A) Death Valley, 282 feet below sea level<span class='asterisk'>*</span></div><div class='option'>B) New Orleans, sea level</div><div class='option'>C) Mt. Everest, 29,035 feet</div><div class='option'>D) Denver, Colorado, 5280 feet</div><p></p></div><div class='question'><div class='stem'>14) Choose the substance with the <strong>highest </strong>ΔH<sub>vap</sub>.</div><div class='option'>A) SiS<sub>2</sub></div><div class='option'>B) H<sub>2</sub>O</div><div class='option'>C) MgCl<span class='asterisk'>*</span></div><div class='option'>D) H<sub>2</sub>S</div><p></p></div><div class='question'><div class='stem'>15) (SLO 1.5) List the compounds below in <strong>decreasing </strong>boiling point order.<br>CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Ne&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO</div><div class='option'>A) Ne &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub></div><div class='option'>B) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt; Ne<span class='asterisk'>*</span></div><div class='option'>C) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO &gt; Ne</div><div class='option'>D) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt; Ne &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO</div><p></p></div><div class='question'><div class='stem'>16) (SLO 1.2) In liquid butanol CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>OH, which intermolecular forces are present?</div><div class='option'>A) Only hydrogen bonding forces are present</div><div class='option'>B) Only dipole-dipole and ion-dipole forces are present</div><div class='option'>C) Only dispersion and dipole-dipole forces are present</div><div class='option'>D) Dispersion, hydrogen bonding, and dipole-dipole forces are present<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>17) What is the major intermolecular force between CH<sub>4</sub> and CH<sub>2</sub>CH<sub>2</sub>?</div><div class='option'>A) London dispersion forces<span class='asterisk'>*</span></div><div class='option'>B) Ion-dipole forces</div><div class='option'>C) Hydrogen bonding</div><div class='option'>D) Dipole-dipole forces</div><p></p></div><div class='question'><div class='stem'>18) Which of the following compounds will be most soluble in methanol (CH<sub>3</sub>OH)?</div><div class='option'>A) Ethandiol <img title="ethandiol.jpg" src="../images/54.jpeg" alt="" width="87" height="107"><span class='asterisk'>*</span></div><div class='option'>B) Hexane<img title="hexane.jpg" src="../images/55.jpeg" alt="" width="155" height="57"></div><div class='option'>C) Acetone <img title="acetone.png" src="../images/53.png" alt="" width="155" height="92"></div><div class='option'>D) Trimethylamine <img title="tma.jpg" src="../images/52.jpeg" alt="" width="112" height="107"></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>19) Determine the Henry's law constant for an unknown gas in water at 25°C if the unknown gas at a pressure of 0.0117 atm produces a solution with a concentration of 4.86 M.</div><div class='option'>A) 1.42 M/atm</div><div class='option'>B) 0.00241 M/atm</div><div class='option'>C) 0.0569 M/atm</div><div class='option'>D) 415 M/atm<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>20) A sealed container contains 0.385 L of water with an atmosphere of oxygen gas. What is the concentration of O<sub>2</sub> in the water if the external pressure is 3.72 atm given that k<sub>H</sub> for O<sub>2</sub> is 1.66 × 10<sup>-6</sup> M/mm Hg at this temperature?</div><div class='option'>A) 0.00469 M<span class='asterisk'>*</span></div><div class='option'>B) 2950 M</div><div class='option'>C) 6.18x10<sup>-6</sup> M</div><div class='option'>D) 8.13x10<sup>-9</sup> M</div><p></p></div><div class='question'><div class='stem'>21) What mass (in g) of NH<sub>3</sub> (17.03 g/mol) must be dissolved in 450. g of methanol (32.04 g/mol) to make a 0.260 m solution?</div><div class='option'>A) 0.117 g</div><div class='option'>B) 3.75 g</div><div class='option'>C) 1.99 g<span class='asterisk'>*</span></div><div class='option'>D) 0.0622 g</div><p></p></div><div class='question'><div class='stem'>22) Determine the vapor pressure of a solution at 25°C that contains 78.2 g of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>) (180.2 g/mol) in 400 mL of water (18.02 g/mol).&nbsp; The vapor pressure of pure water at 25°C is 23.8 torr, and the density of water is 1.00 g/mL.</div><div class='option'>A) 23.3 torr<span class='asterisk'>*</span></div><div class='option'>B) 0.456 torr</div><div class='option'>C) 1220 torr</div><div class='option'>D) 0.465 torr</div><p></p></div><div class='question'><div class='stem'>23) Which of the following would result in an endothermic reaction?</div><div class='option'>A) The reactants are at a higher potential energy than the products</div><div class='option'>B) The reactants have weaker bonds than the products</div><div class='option'>C) The reactants have stronger bonds than the products<span class='asterisk'>*</span></div><div class='option'>D) The products and reactants have equal strength bonds</div><p></p></div><div class='question'><div class='stem'>24) Which of the following have a great impact on the solubility of a gas in a liquid?</div><div class='option'>A) Pressure only</div><div class='option'>B) Temperature and pressure<span class='asterisk'>*</span></div><div class='option'>C) Temperature only</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>25) A 2.66 L sample of a water solution contains 0.174 g of sodium ions.&nbsp; Determine the concentration of sodium ions in ppm if the density of the solution is 1.02 g/mL.</div><div class='option'>A) 71.3 ppm</div><div class='option'>B) 0.0000641 ppm</div><div class='option'>C) 6.41x10<sup>4</sup> ppm</div><div class='option'>D) 64.1 ppm<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>26) How many moles of NaI are contained in 305 g of water in a 0.142 m NaI solution?</div><div class='option'>A) 0.0433 mol<span class='asterisk'>*</span></div><div class='option'>B) 6.49 mol</div><div class='option'>C) 43.3 mol</div><div class='option'>D) 0.451 mol</div><p></p></div><div class='question'><div class='stem'>27) Calculate the mass of oxygen (in mg) dissolved in a 3.00 L bucket of water exposed to a pressure of 1.19 atm of air. Assume the mole fraction of O<sub>2</sub> in air to be 0.21 given that k<sub>H</sub> for O<sub>2</sub> is 1.3 × 10<sup>-3</sup> M/atm at this temperature.</div><div class='option'>A) 31.2 mg<span class='asterisk'>*</span></div><div class='option'>B) 0.0312 mg</div><div class='option'>C) 15.6 mg</div><div class='option'>D) 149 mg</div><p></p></div><div class='question'><div class='stem'>28) What is the mol fraction of ethanol, C<sub>2</sub>H<sub>5</sub>OH (46.07 g/mol), in a solution of 77.9 g of ethanol and 300 g of water (18.02 g/mol)?</div><div class='option'>A) 0.0922<span class='asterisk'>*</span></div><div class='option'>B) 0.102</div><div class='option'>C) 0.908</div><div class='option'>D) 9.85</div><p></p></div><div class='question'><div class='stem'>29) (SLO 1.6) What is the <strong>change </strong>in boiling point of a solution of 32.1 g KCl (74.55 g/mol) in 765 g of water? K<sub>b</sub> for water is 0.512°C/m.&nbsp; Assume ideal behavior.</div><div class='option'>A) 0.576°C<span class='asterisk'>*</span></div><div class='option'>B) 0.288°C</div><div class='option'>C) 0.000288°C</div><div class='option'>D) 21.5°C</div><p></p></div><div class='question'><div class='stem'>30) (SLO 1.1) The osmotic pressure of a solution formed by dissolving 32.1 mg of Aspirin (C<sub>9</sub>H<sub>8</sub>O<sub>4</sub>) (180.16 g/mol) in enough water to make 0.368 L of solution at 40°C is _____ atm.</div><div class='option'>A) 0.0124<span class='asterisk'>*</span></div><div class='option'>B) 12.4</div><div class='option'>C) 0.00159</div><div class='option'>D) 0.00458</div><p></p></div><div class='question'><div class='stem'>31) (SLO 1.3) The Henry’s law constant for carbon dioxide gas in water at 20ºC is 392 x 10<sup>-4</sup> M/atm. When the partial pressure of helium above a sample of water is 0.425 atm, the concentration of helium in the water is ______ M.</div><div class='option'>A) 0.0167<span class='asterisk'>*</span></div><div class='option'>B) 167</div><div class='option'>C) 0.0922</div><div class='option'>D) 10.8</div><p></p></div><div class='question'><div class='stem'>32) (SLO 1.4) A solution is 0.551 m LiF (25.94 g/mol). &nbsp;What is the molarity of the solution if the density of the solution is 1.04 g/mL?</div><div class='option'>A) 0.543 M</div><div class='option'>B) 0.565 M<span class='asterisk'>*</span></div><div class='option'>C) 0.573 M</div><div class='option'>D) 0.0375 M</div><p></p></div><div class='question'><div class='stem'>33) (SLO 1.7) What is a solution containing less than the equilibrium amount of solute is called?</div><div class='option'>A) A concentrated solution</div><div class='option'>B) A saturated solution</div><div class='option'>C) A supersaturated solution</div><div class='option'>D) An unsaturated solution<span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>34) Given the following proposed mechanism, what is the rate law for the reaction?<br>A<sub>2 </sub>+ B <span style="font-size: 10.5pt;">➞ A<sub>2</sub>B (overall reaction)</span><br>
+<table style="border-collapse: collapse; width: 295px;" border="0" width="128" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 108.659px;" height="20">step 1</td>
+<td style="width: 90.733px;">A<sub>2</sub> <span style="font-size: 10.5pt;">➞ 2A</span></td>
+<td style="width: 91.9688px;">fast</td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 108.659px;" height="20">step 2</td>
+<td style="width: 90.733px;">2A + B <span style="font-size: 10.5pt;">➞ A<sub>2</sub>B</span></td>
+<td style="width: 91.9688px;">slow</td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) Rate = <span class="math-tex">\( K[A_2][B] \)</span><span class='asterisk'>*</span></div><div class='option'>B) Rate = <span class="math-tex">\( K[A_2]^2[B] \)</span></div><div class='option'>C) Rate = <span class="math-tex">\( \frac{K[A_2]^2[B]}{2} \)</span></div><div class='option'>D) Rate = <span class="math-tex">\( K[A_2]^{1/2}[B] \)</span></div><p></p></div><div class='question'><div class='stem'>35) Given the initial rate data below, what is the rate law for the following reaction?<br>A (g) + B&nbsp;(g) <span style="font-size: 10.5pt;">➞</span> C&nbsp;(g)<br><br>
+<table style="border-collapse: collapse; width: 359px;" border="0" width="256" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.7102px;" width="64" height="20">Trial</td>
+<td style="width: 49.3182px;" width="64">[A]</td>
+<td style="width: 45.3977px;" width="64">[B]</td>
+<td style="width: 194.02px;" width="64">rate (M/s)</td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.7102px;" height="20">1</td>
+<td style="width: 49.3182px;">1.0</td>
+<td style="width: 45.3977px;">1.0</td>
+<td style="width: 194.02px;">1.91x10<sup>-8</sup></td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.7102px;" height="20">2</td>
+<td style="width: 49.3182px;">1.0</td>
+<td style="width: 45.3977px;">2.0</td>
+<td style="width: 194.02px;">1.53x10<sup>-7</sup></td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.7102px;" height="20">3</td>
+<td style="width: 49.3182px;">2.0</td>
+<td style="width: 45.3977px;">1.0</td>
+<td style="width: 194.02px;">7.64x10<sup>-8</sup></td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) rate =<sup> </sup>K[A]<sup>2</sup>[B]<sup>3</sup><span class='asterisk'>*</span></div><div class='option'>B) rate =<sup> </sup>K[A]<sup>3</sup>[B]<sup>2</sup></div><div class='option'>C) rate =<sup> </sup>K[A]<sup>4</sup>[B]<sup>9</sup></div><div class='option'>D) rate =<sup> </sup>K[A][B]</div><p></p></div><div class='question'><div class='stem'>36) What is the order of the reaction represented by the graph below?<br><img title="orderz.jpg" src="../images/44.jpeg" alt="" width="275" height="240"></div><div class='option'>A) zeroth<span class='asterisk'>*</span></div><div class='option'>B) second</div><div class='option'>C) first</div><div class='option'>D) third</div><p></p></div><div class='question'><div class='stem'>37) A reaction is found to have an activation energy of 44.3 kJ/mol, and a frequency factor (A) of 7.27x10<sup>10</sup> s<sup>-1</sup>.&nbsp; What is the rate constant of the reaction at 204 K?</div><div class='option'>A) 0.330<span class='asterisk'>*</span></div><div class='option'>B) 1.60x10<sup>22</sup></div><div class='option'>C) 7.08x10<sup>10</sup></div><div class='option'>D) 0.264</div><p></p></div><div class='question'><div class='stem'>38) The following reaction is a zero order reaction.&nbsp; If the rate constant is 1.08 M/s, and the original concentration of&nbsp; A&nbsp;is 2.41x10<sup>-2 </sup>M, then what is the half-life?<br><br>
+<div style="text-align: center;">A (g) + 2 B (g)<span style="font-size: 10.5pt;">➞</span><span style="font-size: 10.5pt;">&nbsp;AB</span><sub>2</sub><span style="font-size: 10.5pt;"> (g)</span></div></div><div class='option'>A) 38.4 s</div><div class='option'>B) 0.0112 s<span class='asterisk'>*</span></div><div class='option'>C) 0.642 s</div><div class='option'>D) 44.8 s</div><p></p></div><div class='question'><div class='stem'>39) Using the balanced chemical equation below, calculate the rate of rate reaction with a rate in change of concentration of P equal to -20.0 M/s.
+<div style="text-align: center;">4 P + 5 O<sub>2</sub> ➞ 2 P<sub>2</sub>O<sub>5</sub></div></div><div class='option'>A) 5.00 M/s<span class='asterisk'>*</span></div><div class='option'>B) 1.60x10<sup>5</sup> M/s</div><div class='option'>C) 80.0 M/s</div><div class='option'>D) 20.0 M/s</div><p></p></div><div class='question'><div class='stem'>40) Identify the statement that is <strong>true</strong>.</div><div class='option'>A) A catalyst has no affect on the rate of a reaction</div><div class='option'>B) Adding a catalyst increases the rate constant<span class='asterisk'>*</span></div><div class='option'>C) Catalysts only affect the activation energy and not the rate constant</div><div class='option'>D) The rate constant is unaffected by temperature changes</div><p></p></div><div class='question'><div class='stem'>41) Calculate the ΔG°<sub>rxn</sub> at 25°C using the following information. <br>2 HNO<sub>3</sub> (aq) + NO (g) → 3 NO<sub>2</sub> (g) + H<sub>2</sub>O (l), ΔG°rxn = ?<br>
+<div class="section-content">
+<figure class="table-container">
+<table>
+<tbody>
+<tr>
+<th scope="row">&nbsp;</th>
+<td>ΔH°<sub>f</sub> (kJ/mol)</td>
+<td>S°(J/mol∙K)</td>
+</tr>
+<tr>
+<th scope="row">HNO<sub>3</sub> (aq)</th>
+<td>-207.0</td>
+<td>146.0&nbsp;</td>
+</tr>
+<tr>
+<th scope="row">NO (g)</th>
+<td>91.3</td>
+<td>210.8&nbsp;</td>
+</tr>
+<tr>
+<th scope="row">NO<sub>2</sub> (g)</th>
+<td>33.2</td>
+<td>240.1&nbsp;</td>
+</tr>
+<tr>
+<th scope="row">H<sub>2</sub>O (l)</th>
+<td>-285.8</td>
+<td>70.0</td>
+</tr>
+</tbody>
+</table>
+</figure>
+</div>
+<section aria-labelledby="what_is_a_table"></section></div><div class='option'>A) -56.6 kJ</div><div class='option'>B) -8.56x10<sup>4</sup> kJ</div><div class='option'>C) 129 kJ</div><div class='option'>D) 50.8 kJ<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>42) Consider a reaction that has a positive ΔH and a positive ΔS.&nbsp; Which of the following statements is <strong>TRUE</strong>.</div><div class='option'>A) The reaction will be spontaneous at high temperatures<span class='asterisk'>*</span></div><div class='option'>B) The reaction will be spontaneous at low temperatures</div><div class='option'>C) The reaction will be spontaneous at all temperatures</div><div class='option'>D) The reaction will be nonspontaneous at all temperatures</div><p></p></div><div class='question'><div class='stem'>43) Calculate the ΔS°<sub>rxn</sub> at 25°C using the following information. <br>C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> (s) + 6 O<sub>2</sub> (g) →&nbsp; 6 CO<sub>2</sub> (g) + 6 H<sub>2</sub>O (l), ΔS°rxn = ?<br>
+<div class="section-content">
+<figure class="table-container">
+<table style="width: 111.943%; height: 180.37px;">
+<tbody>
+<tr style="height: 42.358px;">
+<th style="width: 51.3969%; height: 42.358px;" scope="row">&nbsp;</th>
+<td style="width: 48.8259%; height: 42.358px;">S°(J/mol∙K)</td>
+</tr>
+<tr style="height: 23.3523px;">
+<th style="width: 51.3969%; height: 23.3523px;" scope="row">C<sub>6</sub>H<sub>12</sub>O<sub>6 </sub>(s)</th>
+<td style="width: 48.8259%; height: 23.3523px;">212.1</td>
+</tr>
+<tr style="height: 25.5966px;">
+<th style="width: 51.3969%; height: 25.5966px;" scope="row">&nbsp;O<sub>2</sub> (aq)</th>
+<td style="width: 48.8259%; height: 25.5966px;">205.2</td>
+</tr>
+<tr style="height: 46.108px;">
+<th style="width: 51.3969%; height: 46.108px;" scope="row">CO<sub>2</sub> (g)</th>
+<td style="width: 48.8259%; height: 46.108px;">213.8</td>
+</tr>
+<tr style="height: 23.3523px;">
+<th style="width: 51.3969%; height: 23.3523px;" scope="row">&nbsp;H<sub>2</sub>O (l)</th>
+<td style="width: 48.8259%; height: 23.3523px;">70.0</td>
+</tr>
+</tbody>
+</table>
+</figure>
+</div>
+<section aria-labelledby="what_is_a_table"></section></div><div class='option'>A) -133 J/K</div><div class='option'>B) 580. J/K</div><div class='option'>C) 3150 J/K</div><div class='option'>D) 260. J/K<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>44) Assuming little to no change in ΔH due to temperature, above what temperature does the following reaction become nonspontaneous?<br>A + B → C, ΔH = -14.8 kJ; ΔS = -13.7 J/K</div><div class='option'>A) 0.926 K</div><div class='option'>B) 0.000926 K</div><div class='option'>C) 1.08 K</div><div class='option'>D) 1080 K<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>45) Given the change in Gibbs free energy for these equations,<br>(1) C (s, graphite) + H<sub>2</sub>O (g) → CO (g) + H<sub>2</sub> (g), ΔG = 91.4 kJ<br>(2) CO (g) + H<sub>2</sub>O (g) → CO<sub>2</sub> (g) + H<sub>2</sub> (g), ΔG = -28.6 kJ<br>(3) CH<sub>4</sub> (g) + H<sub>2</sub>O (g) → CO (g) + 3 H<sub>2</sub> (g), ΔG = 141.9 kJ<br><br>solve for the change in Gibbs free energy for the following equation.&nbsp;<br>2 C (s) + 2 H<sub>2</sub>O (g) &nbsp;→&nbsp; CO<sub>2</sub> (g) + CH<sub>4</sub> (g),&nbsp; ΔG = ?</div><div class='option'>A) 205 kJ</div><div class='option'>B) 12.3 kJ<span class='asterisk'>*</span></div><div class='option'>C) 296 kJ</div><div class='option'>D) -79.1 kJ</div><p></p></div><div class='question'><div class='stem'>46) (SLO 5.3) Does the following reaction show an increase, decrease, or no change in entropy of the system?<br><br>CH<sub>3</sub>OH (l) ➞ CO (g) + 2 H<sub>2</sub>(g)</div><div class='option'>A) Increase<span class='asterisk'>*</span></div><div class='option'>B) Decrease</div><div class='option'>C) No change in entropy</div><p></p></div><div class='question'><div class='stem'>47) (SLO 5.7) Which answer correctly identifies the sign on change in enthalpy and entropy?<br>H<sub>2</sub>O (g) ➞ H<sub>2</sub>O (l)</div><div class='option'>A) A positive ΔH and a negative ΔS</div><div class='option'>B) A positive ΔH and a positive ΔS</div><div class='option'>C) A negative ΔH and a negative ΔS<span class='asterisk'>*</span></div><div class='option'>D) A negative ΔH and a positive ΔS</div><div class='option'>E)  All of the above.</div><p></p></div><div class='question'><div class='stem'>48) (SLO 5.2) Given the following equation<br>Given the following equation,<br>4 NH<sub>3</sub> (g) + 3 O<sub>2</sub> (g) ➞ 2 N<sub>2</sub> (g) + 6 H<sub>2</sub>O (g), ΔG°<sub>rxn</sub> = -1267kJ<br>Calculate the ΔG°<sub>rxn</sub> for the following reaction.<br>20. NH<sub>3</sub> (g) + 15 O<sub>2</sub> (g) ➞ 10. N<sub>2</sub> (g) + 30. H<sub>2</sub>O (g)</div><div class='option'>A) -1267kJ</div><div class='option'>B) 6335 kJ</div><div class='option'>C) -6335 kJ<span class='asterisk'>*</span></div><div class='option'>D) -253.4 kJ</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>49) (SLO 5.4) Which law of thermodynamics states that energy is neither created or destroyed in a chemical process?</div><div class='option'>A) Zero</div><div class='option'>B) First<span class='asterisk'>*</span></div><div class='option'>C) Second</div><div class='option'>D) Third</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>50) (SLO 5.1) Consider the following reaction at constant pressure. Use the information here to determine the value of ΔS<sub>surr</sub> (enthalpy change in the surrounding) at 370. K.&nbsp; Predict whether or not this reaction will be spontaneous at this temperature.<br><br>2 N<sub>2</sub>O (g) ➞ 2 N<sub>2</sub> (g) + O<sub>2</sub> (g), ΔH = -164.2 kJ</div><div class='option'>A) ΔS<sub>surr</sub> = -444 J/K, reaction is spontaneous<span class='asterisk'>*</span></div><div class='option'>B) ΔS<sub>surr</sub> = -1.64x10<sup>5</sup> J/K, reaction is spontaneous</div><div class='option'>C) ΔS<sub>surr</sub> = -444 J/K, reaction is nonspontaneous</div><div class='option'>D) ΔS<sub>surr</sub> = -164 J/K, reaction is nonspontaneous</div><p></p></div><div class='question'><div class='stem'>51) (SLO 5.5) For a given compound, list the <strong>increasing </strong>order of entropy for a liquid, solid and gas.</div><div class='option'>A) Gas &lt; solid &lt; liquid</div><div class='option'>B) Solid &lt; liquid &lt; gas<span class='asterisk'>*</span></div><div class='option'>C) Solid &lt; gas &lt; liquid</div><div class='option'>D) Gas &lt; liquid &lt; solid</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>52) (SLO 5.3) Which one of the following reactions would have a negative value for ΔS?</div><div class='option'>A) BaCO<sub>3</sub> (s) ➞ BaO (s) + CO<sub>2</sub> (g)</div><div class='option'>B) 4 Fe (s) &nbsp;+ &nbsp;3 O<sub>2</sub> (g) ➞ 2 Fe<sub>2</sub>O<sub>3</sub> (s)<span class='asterisk'>*</span></div><div class='option'>C) 2 NH<sub>3</sub> (g) ➞ N<sub>2</sub> (g) &nbsp;+ &nbsp;3 H<sub>2</sub> (g)</div><div class='option'>D) 2 Fe(s) &nbsp;+ &nbsp;6 HCl (aq) ➞ 2 FeCl<sub>3</sub> (aq) &nbsp;+ &nbsp;3 H<sub>2</sub>(g)</div><p></p></div></body></html>

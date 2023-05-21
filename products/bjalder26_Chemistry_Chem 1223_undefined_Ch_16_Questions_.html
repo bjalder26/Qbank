@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Ch 16 Questions</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Apr 12, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Determine the pH of a 0.0384 M KOH&nbsp; solution.</div><div class='option'>A) 2.60x10<sup>-13</sup></div><div class='option'>B) 12.6<span class='asterisk'>*</span></div><div class='option'>C) 1.42</div><div class='option'>D) 1.70</div><p></p></div><div class='question'><div class='stem'>2) Which of the following K<sub>a</sub> values would correspond to the strongest acid?</div><div class='option'>A) K<sub>a</sub> = 8.09 x 10<sup>-4</sup></div><div class='option'>B) K<sub>a</sub> = 1.45 x 10<sup>-4</sup></div><div class='option'>C) K<sub>a</sub> = 7.52 x 10<sup>-8</sup></div><div class='option'>D) K<sub>a</sub> = 1.57 x 10<sup>-3</sup><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>3) Which of the following is the strongest Lewis acid (best at giving up H<sup>+</sup> or binding OH<sup>-</sup>)?</div><div class='option'>A) K<sup>+</sup></div><div class='option'>B) Li<sup>+</sup></div><div class='option'>C) Na<sup>+</sup></div><div class='option'>D) NH<sub>4</sub><sup>+</sup><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>4) If a solution has a pH of 6.61, then what is the hydronium (hydrogen) ion concentration at 25°C?</div><div class='option'>A) 2.45x10<sup>-7</sup> M<span class='asterisk'>*</span></div><div class='option'>B) -0.82 M</div><div class='option'>C) 4.07x10<sup>6</sup> M</div><div class='option'>D) 7.39 M</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>5) Which of the following chemicals are amphoteric?</div><div class='option'>A) H<sub>3</sub>O+</div><div class='option'>B) NaOH</div><div class='option'>C) SO<sup>2-</sup></div><div class='option'>D) H<sub>2</sub>O<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>6) Which of the following is the strongest acid?</div><div class='option'>A) H<sub>3</sub>PO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>B) HPO<sub>4</sub><sup>2-</sup></div><div class='option'>C) PO<sub>4</sub><sup>3-</sup></div><div class='option'>D) H<sub>2</sub>PO<sub>4</sub><sup>-</sup></div><p></p></div><div class='question'><div class='stem'>7) Which of the following has the strongest conjugate base?</div><div class='option'>A) HF<span class='asterisk'>*</span></div><div class='option'>B) HCl</div><div class='option'>C) HI</div><div class='option'>D) HBr</div><p></p></div><div class='question'><div class='stem'>8) Determine the pH&nbsp;in a 0.645 M HF solution. The K<sub>a</sub> of <span style="font-size: 10.5pt;">HF is 3.5 × 10<sup>-4</sup></span><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 3.65</div><div class='option'>B) 2.17</div><div class='option'>C) 0.0150</div><div class='option'>D) 1.82<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>9) Determine the pOH of a 0.000334 M KOH&nbsp; solution.</div><div class='option'>A) 4.17</div><div class='option'>B) 2.99x10<sup>-11</sup></div><div class='option'>C) 10.5</div><div class='option'>D) 3.48<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>10) If a solution has a hydroxide ion concentration of 3.22x10<sup>-8</sup> M, then what is the pH of the solution at 25°C?</div><div class='option'>A) -7.64</div><div class='option'>B) 3.11x10<sup>-7</sup></div><div class='option'>C) 7.49</div><div class='option'>D) 6.51<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>11) Determine the pH in a 0.569 M <span style="font-size: 10.5pt;">C<sub>5</sub>H<sub>5</sub>N</span>&nbsp;solution. The K<sub>b</sub> of C<sub>5</sub>H<sub>5</sub>N</span></span><span style="font-size: 10.5pt;"> is 1.7x10<sup>-9</sup></span><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 9.49<span class='asterisk'>*</span></div><div class='option'>B) 4.51</div><div class='option'>C) 9.01</div><div class='option'>D) 4.99</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>12) What is the conjugate acid of NH<sub>3</sub>?</div><div class='option'>A) NH<sub>2</sub><sup>+</sup></div><div class='option'>B) NH<sub>2</sub><sup>-</sup></div><div class='option'>C) NH<sub>4</sub><sup>+</sup><span class='asterisk'>*</span></div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>13) Which of the following pK<sub>a</sub> values would correspond to the strongest acid?</div><div class='option'>A) pK<sub>a</sub> = 8.68</div><div class='option'>B) pK<sub>a</sub> = 5.51</div><div class='option'>C) pK<sub>a</sub> = 3.94</div><div class='option'>D) pK<sub>a</sub> = 1.71<span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>14) Determine the pH in a 0.893 M HSO<sub>4</sub><sup>-</sup> solution. The K<sub>a</sub> of HSO<sub>4</sub><sup>-</sup><span style="font-size: 10.5pt;"> is 1.2 × 10<sup>-2</sup></span><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 1.01<span class='asterisk'>*</span></div><div class='option'>B) 0.985</div><div class='option'>C) 1.81</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>15) Calculate the concentration of H<sub>3</sub>O<sup>+</sup> (H<sup>+</sup>) in a solution that has a concentration of OH<sup>-</sup>&nbsp;of 2.89x10<sup>-3</sup> M at 25°C.</div><div class='option'>A) 4.15x10<sup>-12</sup> M</div><div class='option'>B) 3.46x10<sup>-12</sup> M<span class='asterisk'>*</span></div><div class='option'>C) 3.53x10<sup>-18</sup> M</div><div class='option'>D) 3.11x10<sup>-12</sup> M</div><p></p></div><div class='question'><div class='stem'>16) If a solution has a hydronium (hydrogen) ion concentration of 9.24x10<sup>-5</sup> M, then what is the pH of the solution at 25°C?</div><div class='option'>A) 1.08x10<sup>-10</sup></div><div class='option'>B) -4.12</div><div class='option'>C) 9.97</div><div class='option'>D) 4.03<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>17) What is the conjugate base of &nbsp;H<sub>2</sub>O?</div><div class='option'>A) OH<sup>-</sup></div><div class='option'>B) O<sub>2</sub><sup>-</sup><span class='asterisk'>*</span></div><div class='option'>C) H<sub>3</sub>O<sup>+</sup></div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>18) Determine the [H<sub>3</sub>O<sup>+</sup>] in a 0.928 M HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub></span> solution. The K<sub>a</sub> of </span></span><span style="font-size: 10.5pt;">HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> is 1.8 × 10<sup>-5</sup></span><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 1.67x10<sup>-10</sup> M</div><div class='option'>B) 1.27x10<sup>5</sup> M</div><div class='option'>C) 4.09x10<sup>-8</sup> M<span class='asterisk'>*</span></div><div class='option'>D) 4.90x10<sup>-8</sup> M</div><p></p></div><div class='question'><div class='stem'>19) Calculate pK<sub>a</sub> for the conjugate acid of a base that has a pK<sub>b</sub> of 13.0 (at 25°C).</div><div class='option'>A) 1.00<span class='asterisk'>*</span></div><div class='option'>B) 7.69x10<sup>-16</sup></div><div class='option'>C) 0.100</div><div class='option'>D) 1.00x10<sup>-13</sup></div><p></p></div><div class='question'><div class='stem'>20) If a solution has a pOH of 10.5, then what is the hydronium (hydrogen) ion concentration at 25°C?</div><div class='option'>A) 3.16x10<sup>-11</sup> M</div><div class='option'>B) 0.000316 M<span class='asterisk'>*</span></div><div class='option'>C) 3.16x10<sup>10</sup> M</div><div class='option'>D) 3.50 M</div><p></p></div><div class='question'><div class='stem'>21) Determine the pH of a 0.000950 M HCl&nbsp; solution.</div><div class='option'>A) 1.05x10<sup>-11</sup></div><div class='option'>B) 3.32</div><div class='option'>C) 11.0</div><div class='option'>D) 3.02<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>22) Determine the pH in a 0.153 M HSO<sub>4</sub><sup>-</sup>&nbsp;solution. The K<sub>b</sub> of SO<sub>4</sub><sup>2-</sup><span style="font-size: 10.5pt;"> is 8.33 × 10<sup>-13</sup></span><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 1.43<span class='asterisk'>*</span></div><div class='option'>B) 12.6</div><div class='option'>C) NaN00</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>23) (SLO 4.3) Identify the strongest acid.</div><div class='option'>A) HIO</div><div class='option'>B) HIO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>C) HIO<sub>3</sub></div><div class='option'>D) HIO<sub>2</sub></div><p></p></div><div class='question'><div class='stem'>24) (SLO 4.1) Which of the following is a Brønsted–Lowry acid?</div><div class='option'>A) HClO<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>B) LiOH</div><div class='option'>C) NH<sub>3</sub></div><div class='option'>D) CHCH</div><div class='option'>E)  All of the above.</div><p></p></div><div class='question'><div class='stem'>25) (SLO 4.5) Calculate the percent ionization of a monoprotic weak acid (HA) in a solution that is 0.219 M, if the acid dissociation constant (K<sub>a</sub>) is 3.77x10<sup>-6</sup>.&nbsp;<br>HA ➞ H<sup>+</sup> + A<sup>-</sup></div><div class='option'>A) 0.415 %<span class='asterisk'>*</span></div><div class='option'>B) 0.000377 %</div><div class='option'>C) 0.00415 %</div><div class='option'>D) 0.388 %</div><p></p></div><div class='question'><div class='stem'>26) (SLO 4.2) Which of the following is a Brønsted–Lowry base?</div><div class='option'>A) HClO<sub>2</sub></div><div class='option'>B) Cl<sub>2</sub></div><div class='option'>C) CHCH</div><div class='option'>D) LiOH<span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>27) (SLO 4.4) Calculate the pOH of a solution that contains 4.43x10<sup>-2</sup>&nbsp;M H<sub>3</sub>O<sup>+</sup> at 25°C</div><div class='option'>A) 12.6<span class='asterisk'>*</span></div><div class='option'>B) 1.35</div><div class='option'>C) 2.26x10<sup>-13</sup></div><div class='option'>D) 2.00</div><p></p></div><div class='question'><div class='stem'>28) (SLO 4.7) How many milliliters of 0.0672 M NaOH are required to titrate 30 mL of 0.169 M HBr to the equivalence point.</div><div class='option'>A) 75.4 mL<span class='asterisk'>*</span></div><div class='option'>B) 11.9 mL</div><div class='option'>C) 7.54 mL</div><div class='option'>D) 64.1 mL</div><p></p></div><div class='question'><div class='stem'>29) (SLO 4.6) What is the [CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H] ratio necessary to make a buffer solution with a pH of 5.95?&nbsp;<br>K<sub>a</sub> = 1.8x10<sup>-5</sup> for CH<sub>3</sub>CO<sub>2</sub>H.</div><div class='option'>A) 0.062 : 1</div><div class='option'>B) 8.9 : 1</div><div class='option'>C) 16 : 1<span class='asterisk'>*</span></div><div class='option'>D) 19 : 1</div><p></p></div></body></html>

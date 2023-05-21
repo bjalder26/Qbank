@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Ch 17 Questions</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Apr 12, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) How many moles of Fe(OH)<sub>2</sub> can be dissolved in 3.00 L of solution. K<sub>sp</sub> (Fe(OH)<sub>2</sub>) = 4.87×10<sup>-17</sup>.</div><div class='option'>A) 6.90x10<sup>-6</sup> moles<span class='asterisk'>*</span></div><div class='option'>B) 0.0000110 moles</div><div class='option'>C) 2.30x10<sup>-6</sup> moles</div><div class='option'>D) 1.05x10<sup>-8</sup> moles</div><p></p></div><div class='question'><div class='stem'>2) You add 600 mL of a 0.140 M KOH solution to 700 mL of a 0.160 M HCN solution (K<sub>a</sub> for HCN&nbsp;is 6.2x10<sup>-10</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 9.68<span class='asterisk'>*</span></div><div class='option'>B) 10.9</div><div class='option'>C) 3.23</div><div class='option'>D) 9.33</div><p></p></div><div class='question'><div class='stem'>3) If you are using an acid and it's conjugate base to prepare a buffer that will be effective at a pH of 6.00 at 25°C, which of the following K<sub>a</sub> values would be best for your acid?</div><div class='option'>A) 9.91x10<sup>-9</sup></div><div class='option'>B) 1.08x10<sup>-7</sup></div><div class='option'>C) 1.04x10<sup>-6</sup><span class='asterisk'>*</span></div><div class='option'>D) 9.59x10<sup>-6</sup></div><p></p></div><div class='question'><div class='stem'>4) You add 400 mL of a 0.130 M HCl solution to 400 mL of a 0.130 M NH<sub>3</sub> solution (K<sub>b</sub> for NH<sub>3</sub> is 1.8x10<sup>-5</sup></sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 5.22<span class='asterisk'>*</span></div><div class='option'>B) 4.74</div><div class='option'>C) 9.26</div><div class='option'>D) 2.97</div><p></p></div><div class='question'><div class='stem'>5) How many moles of AgI can be dissolved in 3.00 L of solution. K<sub>sp</sub> (AgI) = 8.51x10<sup>-17</sup>.</div><div class='option'>A) 2.77x10<sup>-8</sup> moles<span class='asterisk'>*</span></div><div class='option'>B) 9.22x10<sup>-9</sup> moles</div><div class='option'>C) 2.55x10<sup>-16</sup> moles</div><div class='option'>D) 1.38x10<sup>-8</sup> moles</div><p></p></div><div class='question'><div class='stem'>6) You add 600 mL of a 0.150 M NaOH solution to 600 mL of a 0.150 M HClO solution (K<sub>a</sub> for HClO&nbsp;is 3.5x10<sup>-8</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 10.2<span class='asterisk'>*</span></div><div class='option'>B) 10.5</div><div class='option'>C) 6.33</div><div class='option'>D) 3.76</div><p></p></div><div class='question'><div class='stem'>7) If you have a 1.0 L buffer solution with 0.1 M acetic acid (Ka 1.75x10<sup>-5</sup>) and 0.1 M sodium acetate, then what will be the pH after adding 0.0700 moles of solid HCl (assume no change in volume)?</div><div class='option'>A) 4.00<span class='asterisk'>*</span></div><div class='option'>B) 5.51</div><div class='option'>C) 4.76</div><div class='option'>D) 3.81</div><p></p></div><div class='question'><div class='stem'>8) You add 800 mL of a 0.160 M HBr solution to 500 mL of a 0.140 M CH<sub>3</sub>NH<sub>2</sub> solution (K<sub>b</sub> for CH<sub>3</sub>NH<sub>2</sub> is 4.38x10<sup>-4</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 1.35<span class='asterisk'>*</span></div><div class='option'>B) 1.24</div><div class='option'>C) 3.36</div><div class='option'>D) 3.10</div><p></p></div><div class='question'><div class='stem'>9) A solution contains 3.8x10<sup>-4</sup> M in Al(NO<sub>3</sub>)<sub>3</sub> and 0.478 M in NaF. If the K<sub>f</sub> for AlF<sub>6</sub><sup>3-</sup> is 7.0x10<sup>19</sup>, what concentration of aluminum (III) ions remain at equilibrium?</div><div class='option'>A) 6.37x10<sup>-22</sup></div><div class='option'>B) 3.25x10<sup>-22</sup></div><div class='option'>C) 1.14x10<sup>-23</sup></div><div class='option'>D) 4.55x10<sup>-22</sup><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>10) What would be the pH of a solution formed by mixing 200 mL of 1.03 M H<sub>2</sub>CO<sub>3</sub> with 200 mL of 0.272 M NaHCO<sub>3</sub>?&nbsp; The K<sub>b</sub> for HCO<sub>3</sub><sup>-</sup> is 2.2x10<sup>-8</sup>.</div><div class='option'>A) 5.76<span class='asterisk'>*</span></div><div class='option'>B) 6.82</div><div class='option'>C) 6.35</div><div class='option'>D) 6.93</div><p></p></div><div class='question'><div class='stem'>11) Adding HCl to a solution would cause which of the following to become <strong>more</strong> soluble?</div><div class='option'>A) Mg(OH)<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>B) LiF</div><div class='option'>C) CaBr<sub>2</sub></div><div class='option'>D) NaBr</div><p></p></div><div class='question'><div class='stem'>12) How many moles of Al(OH)<sub>3</sub> can be dissolved in 3.00 L of solution. K<sub>sp</sub> (Al(OH)<sub>3</sub>) = 1.3×10<sup>-33</sup>.</div><div class='option'>A) 7.90x10<sup>-9</sup> moles<span class='asterisk'>*</span></div><div class='option'>B) 1.04x10<sup>-8</sup> moles</div><div class='option'>C) 2.08x10<sup>-17</sup> moles</div><div class='option'>D) 1.44x10<sup>-34</sup> moles</div><p></p></div><div class='question'><div class='stem'>13) If 4.11x10<sup>-9</sup> moles of Al(OH)<sub>3</sub> are placed in 2.00 L of solution. K<sub>sp</sub> (Al(OH)<sub>3</sub>) = 1.3×10<sup>-33</sup>, will a precipitate form?</div><div class='option'>A) Yes, a precipitate will form</div><div class='option'>B) No, a precipitate will not form<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>14) The molar solubility of Ag<sub>2</sub>S is 1.26×10<sup>-16</sup> M in pure water.&nbsp; Calculate the K<sub>sp</sub> for Ag<sub>2</sub>S.</div><div class='option'>A) 8.00x10<sup>-48</sup><span class='asterisk'>*</span></div><div class='option'>B) 5.04x10<sup>-16</sup></div><div class='option'>C) 2.00x10<sup>-48</sup></div><div class='option'>D) 4.00x10<sup>-48</sup></div><p></p></div><div class='question'><div class='stem'>15) You add 500 mL of a 0.150 M HBr solution to 700 mL of a 0.190 M CH<sub>3</sub>NH<sub>2</sub> solution (K<sub>b</sub> for CH<sub>3</sub>NH<sub>2</sub> is 4.38x10<sup>-4</sup></sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 10.5<span class='asterisk'>*</span></div><div class='option'>B) 3.47</div><div class='option'>C) 10.8</div><div class='option'>D) 10.1</div><p></p></div><div class='question'><div class='stem'>16) What would be the pH of a solution formed by mixing 600 mL of 0.295 M HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> with 600 mL of 1.49 M NaC<sub>2</sub>H<sub>3</sub>O<sub>2</sub>?&nbsp; The K<sub>a</sub> for HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> is 1.75x10<sup>-5</sup>.</div><div class='option'>A) 4.76</div><div class='option'>B) 5.46<span class='asterisk'>*</span></div><div class='option'>C) 4.05</div><div class='option'>D) 6.48</div><p></p></div><div class='question'><div class='stem'>17) You add 500 mL of a 0.10 M LiOH solution to 700 mL of a 0.190 M HCl solution.&nbsp; What will be the pH of that solution?</div><div class='option'>A) 1.38</div><div class='option'>B) 0.955</div><div class='option'>C) 1.08</div><div class='option'>D) 1.16<span class='asterisk'>*</span></div><p></p></div></body></html>

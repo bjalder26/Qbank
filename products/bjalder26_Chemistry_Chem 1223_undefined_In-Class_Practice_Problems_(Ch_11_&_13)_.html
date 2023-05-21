@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>In-Class Practice Problems (Ch 11 & 13)</h1>
+	<h4></h4>
+	<h6>Feb 15, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Which substance has the <strong>highest </strong>intermolecular forces?</div><div class='option'>A) Xe<span class='asterisk'>*</span></div><div class='option'>B) Ar</div><div class='option'>C) Kr</div><div class='option'>D) Ne</div><p></p></div><div class='question'><div class='stem'>2) <span style="font-size: 10.5pt;">How much energy is required to heat 38.9 g H<sub>2</sub>O from a liquid at 69.2°C to a gas at 130°C?<br>ΔH<sub>vap</sub> = 40.7 kJ/mol<br>C<sub>liquid</sub>&nbsp;= 4.184 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;<br>C<sub>gas</sub> = 2.01 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;&nbsp;<br>C<sub>solid</sub> = 2.09 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;<br>T<sub>melting</sub> = 0°C&nbsp;<br>T<sub>boiling</sub> = 100°C<br></span></div><div class='option'>A) 109 kJ</div><div class='option'>B) 1590 kJ</div><div class='option'>C) 7450 kJ</div><div class='option'>D) 95.2 kJ<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>3) Choose the substance with the <strong>highest </strong>vapor pressure at a given temperature.&nbsp;</div><div class='option'>A) CH<sub>3</sub>OH</div><div class='option'>B) NaOH</div><div class='option'>C) SeF<sub>2</sub></div><div class='option'>D) CO<sub>2</sub><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>4) What is the strongest type of intermolecular force present in a solution of NaCl &amp; water?&nbsp;</div><div class='option'>A) Dipole-dipole forces</div><div class='option'>B) Ion-dipole forces<span class='asterisk'>*</span></div><div class='option'>C) Hydrogen bonding</div><div class='option'>D) London dispersion forces</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>5) Identify the place which has the <strong>lowest </strong>boiling point of water.</div><div class='option'>A) New Orleans, sea level</div><div class='option'>B) Mt. Everest, 29,035 feet<span class='asterisk'>*</span></div><div class='option'>C) Death Valley, 282 feet below sea level</div><div class='option'>D) Denver, Colorado, 5280 feet</div><p></p></div><div class='question'><div class='stem'>6) Which of the following has the <strong>lowest </strong>viscosity?</div><div class='option'>A) <img title="c1.jpg" src="../images/47.jpeg" alt="" width="150" height="124"><span class='asterisk'>*</span></div><div class='option'>B) <img title="c4.jpg" src="../images/50.jpeg" alt="" width="150" height="124"></div><div class='option'>C) <img title="c3.jpg" src="../images/49.jpeg" alt="" width="150" height="124"></div><div class='option'>D) <img title="c2.jpg" src="../images/48.jpeg" alt="" width="150" height="124"></div><p></p></div><div class='question'><div class='stem'>7) Determine the normal boiling point (at 760 mm Hg) of a substance whose vapor pressure is 50.7 mm Hg at 45.2°C and has a ΔHvap of 36.5 kJ/mol.</div><div class='option'>A) 396 K<span class='asterisk'>*</span></div><div class='option'>B) 266 K</div><div class='option'>C) 319 K</div><div class='option'>D) 46.5 K</div><p></p></div><div class='question'><div class='stem'>8) Which of the following <strong>increases </strong>the rate of vaporization?</div><div class='option'>A) Decreasing temperature</div><div class='option'>B) Weak intermolecular bonds<span class='asterisk'>*</span></div><div class='option'>C) Strong intermolecular bonds</div><div class='option'>D) Decreasing the surface area</div><p></p></div><div class='question'><div class='stem'>9) How much energy is required to vaporize 53.3 g of dichloromethane (CH<sub>2</sub>Cl<sub>2</sub>) at its boiling point, if its ΔH<sub>vap</sub> is 28.06 kJ/mol?</div><div class='option'>A) 161 kJ/mol</div><div class='option'>B) 17.6 kJ/mol<span class='asterisk'>*</span></div><div class='option'>C) 1500 (3 sf) kJ/mol</div><div class='option'>D) 0.628 kJ/mol</div><p></p></div><div class='question'><div class='stem'>10) What is the main reason why the boiling point of HF is much higher than that of HCl?&nbsp;</div><div class='option'>A) HF has dipole-dipole forces whereas HCl does not</div><div class='option'>B) HF has stronger London dispersion forces than HCl</div><div class='option'>C) HF can hydrogen bond whereas HCl cannot<span class='asterisk'>*</span></div><div class='option'>D) HCl&nbsp;can hydrogen bond whereas HF&nbsp;cannot</div><p></p></div><div class='question'><div class='stem'>11) Place the following substances in order of increasing vapor pressure at a given temperature.&nbsp;<br>SF<sub>6</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; SiH<sub>4</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; SF<sub>4</sub></div><div class='option'>A) SF<sub>4</sub> &lt; SF<sub>6</sub> &lt; SiH<sub>4</sub></div><div class='option'>B) SF<sub>6</sub> &lt; SF<sub>4</sub> &lt; SiH<sub>4</sub></div><div class='option'>C) SiH<sub>4</sub> &lt; SF<sub>4</sub> &lt; SF<sub>6</sub><span class='asterisk'>*</span></div><div class='option'>D) SF<sub>6</sub> &lt; SiH<sub>4</sub> &lt; SF<sub>4</sub></div><p></p></div><div class='question'><div class='stem'>12) Choose the substance with the <strong>lowest </strong>ΔH<sub>vap</sub>.</div><div class='option'>A) SiS<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>B) MgCl</div><div class='option'>C) H<sub>2</sub>S</div><div class='option'>D) H<sub>2</sub>O</div><p></p></div><div class='question'><div class='stem'>13) Which of the following statements is TRUE?</div><div class='option'>A) Hydrogen bonding is generally stronger than covalent bonds</div><div class='option'>B) Particles move to a lower potential energy when they form bonds<span class='asterisk'>*</span></div><div class='option'>C) Increasing the temperature of a liquid generally causes it to become a solid</div><div class='option'>D) Breaking bonds releases energy</div><p></p></div><div class='question'><div class='stem'>14) Using the phase diagram below, what phase transition would occur if H<sub>2</sub>O was heated from 4.6°C to 400 (2 sf)°C at 50 atm?<br><img title="phase diagram water.jpg" src="../images/51.jpeg" alt="" width="299" height="245"></div><div class='option'>A) Melting</div><div class='option'>B) Condensation</div><div class='option'>C) Vaporization (boiling)<span class='asterisk'>*</span></div><div class='option'>D) Sublimation</div><p></p></div><div class='question'><div class='stem'>15) (SLO 1.2) In bromine Br<sub>2</sub>, which intermolecular forces are present?</div><div class='option'>A) London dispersion and hydrogen bonding</div><div class='option'>B) London dispersion and dipole-dipole</div><div class='option'>C) Only London dispersion<span class='asterisk'>*</span></div><div class='option'>D) Only dipole-dipole and ion-dipole forces are present</div><p></p></div><div class='question'><div class='stem'>16) (SLO 1.5) List the compounds below in <strong>decreasing </strong>boiling point order.<br>CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; He&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>OH</div><div class='option'>A) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt; He &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>OH</div><div class='option'>B) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>OH &gt; He</div><div class='option'>C) &nbsp;CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>OH &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt;&nbsp;He<span class='asterisk'>*</span></div><div class='option'>D) &nbsp; He &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>OH &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub></div><p></p></div><div class='question'><div class='stem'>17) What is the major intermolecular force between NaCl and H<sub>2</sub>O?</div><div class='option'>A) Hydrogen bonding</div><div class='option'>B) London dispersion forces</div><div class='option'>C) Ion-dipole forces<span class='asterisk'>*</span></div><div class='option'>D) Dipole-dipole forces</div><p></p></div><div class='question'><div class='stem'>18) Which of the following compounds will be most soluble in methanol (CH<sub>3</sub>OH)?</div><div class='option'>A) Ethandiol <img title="ethandiol.jpg" src="../images/54.jpeg" alt="" width="87" height="107"><span class='asterisk'>*</span></div><div class='option'>B) Hexane<img title="hexane.jpg" src="../images/55.jpeg" alt="" width="155" height="57"></div><div class='option'>C) Trimethylamine <img title="tma.jpg" src="../images/52.jpeg" alt="" width="112" height="107"></div><div class='option'>D) Acetone <img title="acetone.png" src="../images/53.png" alt="" width="155" height="92"></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>19) A sealed container contains 0.786 L of water with an atmosphere of oxygen gas. What is the concentration of O<sub>2</sub> in the water if the external pressure is 3.25 atm given that k<sub>H</sub> for O<sub>2</sub> is 1.66 × 10<sup>-6</sup> M/mm Hg at this temperature?</div><div class='option'>A) 7.10x10<sup>-9</sup> M</div><div class='option'>B) 5.39x10<sup>-6</sup> M</div><div class='option'>C) 2580 M</div><div class='option'>D) 0.0041 M<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>20) Calculate the mass of oxygen (in mg) dissolved in a 5.00 L bucket of water exposed to a pressure of 1.14 atm of air. Assume the mole fraction of oxygen in air to be 0.21 given that kH for O<sub>2</sub> is 1.3 × 10<sup>-3</sup> M/ atm at this temperature.</div><div class='option'>A) 0.00741 mg</div><div class='option'>B) 23.7 mg</div><div class='option'>C) 119 mg<span class='asterisk'>*</span></div><div class='option'>D) 0.12 mg</div><p></p></div><div class='question'><div class='stem'>21) Determine the vapor pressure of a solution at 25°C that contains 86.2 g of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>) (180.2 g/mol) in 200 mL of water (18.02 g/mol).&nbsp; The vapor pressure of pure water at 25°C is 23.8 torr, and the density of water is 1.00 g/mL.</div><div class='option'>A) 22.8 torr<span class='asterisk'>*</span></div><div class='option'>B) 0.983 torr</div><div class='option'>C) 552 torr</div><div class='option'>D) 1.03 torr</div><p></p></div><div class='question'><div class='stem'>22) What is the mol fraction of ethanol, C<sub>2</sub>H<sub>5</sub>OH (46.07 g/mol), in a solution of 71.6 g of ethanol and 800 g of water (18.02 g/mol)?</div><div class='option'>A) 0.966</div><div class='option'>B) 28.6</div><div class='option'>C) 0.0338<span class='asterisk'>*</span></div><div class='option'>D) 0.035</div><p></p></div><div class='question'><div class='stem'>23) Determine the Henry's law constant for an unknown gas in water at 25°C if the unknown gas at a pressure of 0.0409 atm produces a solution with a concentration of 3.75 M.</div><div class='option'>A) 0.153 M/atm</div><div class='option'>B) 91.7 M/atm<span class='asterisk'>*</span></div><div class='option'>C) 3.83 M/atm</div><div class='option'>D) 0.0109 M/atm</div><p></p></div><div class='question'><div class='stem'>24) Which of the following have a great impact on the solubility of a gas in a liquid?</div><div class='option'>A) Temperature and pressure<span class='asterisk'>*</span></div><div class='option'>B) Temperature only</div><div class='option'>C) Pressure only</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>25) How many moles of NaI are contained in 331 g of water in a 0.258 m NaI solution?</div><div class='option'>A) 0.0854 mol<span class='asterisk'>*</span></div><div class='option'>B) 12.8 mol</div><div class='option'>C) 0.89 mol</div><div class='option'>D) 85.4 mol</div><p></p></div><div class='question'><div class='stem'>26) What mass (in g) of NH<sub>3</sub> (17.03 g/mol) must be dissolved in 500. g of methanol (32.04 g/mol) to make a 0.258 m solution?</div><div class='option'>A) 0.0684 g</div><div class='option'>B) 4.13 g</div><div class='option'>C) 0.129 g</div><div class='option'>D) 2.19 g<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>27) A 2.44 L sample of a water solution contains 0.107 g of sodium ions.&nbsp; Determine the concentration of sodium ions in ppm is the density of the solution is 1.00 g/mL.</div><div class='option'>A) 43.9 ppm<span class='asterisk'>*</span></div><div class='option'>B) 48.7 ppm</div><div class='option'>C) 0.0000439 ppm</div><div class='option'>D) 4.39x10<sup>4</sup> ppm</div><p></p></div><div class='question'><div class='stem'>28) Which of the following would result in an endothermic reaction?</div><div class='option'>A) The reactants have stronger bonds than the products<span class='asterisk'>*</span></div><div class='option'>B) The reactants are at a higher potential energy than the products</div><div class='option'>C) The reactants have weaker bonds than the products</div><div class='option'>D) The products and reactants have equal strength bonds</div><p></p></div><div class='question'><div class='stem'>29) (SLO) The osmotic pressure of a solution formed by dissolving 33.6 mg of Aspirin (C<sub>9</sub>H<sub>8</sub>O<sub>4</sub>) (180.16 g/mol) in enough water to make 0.207 L of solution at 20°C is _____ atm.</div><div class='option'>A) 0.00449</div><div class='option'>B) 21.7</div><div class='option'>C) 0.00148</div><div class='option'>D) 0.0217<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>30) (SLO) What is the <strong>change </strong>in boiling point of a solution of 32.5 g KCl (74.55 g/mol) in 774 g of water? K<sub>b</sub> for water is 0.512°C/m.&nbsp; Assume ideal behavior.</div><div class='option'>A) 0.288°C</div><div class='option'>B) 0.577°C<span class='asterisk'>*</span></div><div class='option'>C) 0.000288°C</div><div class='option'>D) 21.5°C</div><p></p></div><div class='question'><div class='stem'>31) (SLO) The Henry’s law constant for hydrogen gas in water at 20ºC is 8.1 x 10<sup>-4</sup> M/atm. When the partial pressure of helium above a sample of water is 0.744 atm, the concentration of helium in the water is ______ M.</div><div class='option'>A) 6.03x10<sup>4</sup><span class='asterisk'>*</span></div><div class='option'>B) 9.19x10<sup>-6</sup></div><div class='option'>C) 6.03</div><div class='option'>D) 1.09x10<sup>5</sup></div><p></p></div><div class='question'><div class='stem'>32) (SLO) A solution is 0.649 m MgCl<sub>2</sub> (95.21 g/mol). &nbsp;What is the molarity of the solution if the density is 1.02 g/mL?</div><div class='option'>A) 0.623 M<span class='asterisk'>*</span></div><div class='option'>B) 0.0105 M</div><div class='option'>C) 0.662 M</div><div class='option'>D) 0.611 M</div><p></p></div><div class='question'><div class='stem'>33) (SLO) What is a solution containing less than the equilibrium amount of solute is called?</div><div class='option'>A) A concentrated solution</div><div class='option'>B) An unsaturated solution<span class='asterisk'>*</span></div><div class='option'>C) A supersaturated solution</div><div class='option'>D) A saturated solution</div><div class='option'>E)  None of the above.</div><p></p></div></body></html>

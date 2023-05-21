@@ -1,0 +1,95 @@
+<html>
+
+  <head>
+    <style>
+      h1 {
+        display: flex;
+        justify-content: center;
+      }
+
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        display: inline-flex;
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+
+      div.option {
+        text-indent: 14px;
+        display: block;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+  </head>
+
+  <body><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Worksheet</h1><br>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'>1)  Choose the correct value for x:<br>x = 19.9/46.8<br><br>The question stem will either ask to solve for, or choose the correct value for x.<br>The numberator (a) will be between 10.0 and 20.0 with 3 significant figures.<br>The denominator (b) variable will be within +/- 50% of 40 and will have 3 significant figures.<br><br>The value of the variables will be randomized according to the specifications.&nbsp; The order of questions and the order of the answers will be randomized.&nbsp; The correct answer(s) are determined by selecting the checkbox before the choice.&nbsp; Clicking on the "Create Quiz, Test, or Worksheet" button will open dialog box asking for a title, then open a new window with a randomized printable format.&nbsp; You can keep refreshing the page to get a new randomized quiz, test, or worksheet.<br><p></p></div><div class='question'>2) Solve for x:<br>x = <span class="math-tex">\( \frac{3.2}{7.5} \)</span><br>Using the "Mathjax" button you can produce better looking fractions.<br><br>The formulas in the answers default to 3 significant figures.&nbsp; Since I want two, I'm putting a 2 after a semicolon.<br><div class='option'>A) -4.3</div><div class='option'>B) 11</div><div class='option'>C) 24</div><div class='option'>D) 0.43<span class='asterisk'>*</span></div><p></p></div></body></html>

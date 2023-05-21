@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Chapter 11</h1>
+	<h4></h4>
+	<h6>Apr 6, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Determine the normal boiling point (at 760 mm Hg) of a substance whose vapor pressure is 36.6 mm Hg at 45.7°C and has a ΔH<sub>vap</sub> of 31.0 kJ/mol.</div><div class='option'>A) 431 K<span class='asterisk'>*</span></div><div class='option'>B) 253 K</div><div class='option'>C) 47.5 K</div><div class='option'>D) 320. K</div><p></p></div><div class='question'><div class='stem'>2) Which of the following has the <strong>lowest </strong>viscosity?</div><div class='option'>A) <img title="c2.jpg" src="../images/48.jpeg" alt="" width="150" height="124"></div><div class='option'>B) <img title="c4.jpg" src="../images/50.jpeg" alt="" width="150" height="124"></div><div class='option'>C) <img title="c1.jpg" src="../images/47.jpeg" alt="" width="150" height="124"><span class='asterisk'>*</span></div><div class='option'>D) <img title="c3.jpg" src="../images/49.jpeg" alt="" width="150" height="124"></div><p></p></div><div class='question'><div class='stem'>3) Which substance has the <strong>highest </strong>intermolecular forces?</div><div class='option'>A) CH<sub>4</sub></div><div class='option'>B) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub><span class='asterisk'>*</span></div><div class='option'>C) CH<sub>3</sub>CH<sub>2</sub>CH<sub>3</sub></div><div class='option'>D) CH<sub>3</sub>CH<sub>3</sub></div><p></p></div><div class='question'><div class='stem'>4) Place the following substances in order of <strong>increasing</strong> vapor pressure at a given temperature.&nbsp;<br>SF<sub>6</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; SiH<sub>4</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; SF<sub>4</sub></div><div class='option'>A) SiH<sub>4</sub> &lt; SF<sub>4</sub> &lt; SF<sub>6</sub></div><div class='option'>B) SF<sub>6</sub> &lt; SiH<sub>4</sub> &lt; SF<sub>4</sub></div><div class='option'>C) SF<sub>4</sub> &lt; SF<sub>6</sub> &lt; SiH<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>D) SF<sub>6</sub> &lt; SF<sub>4</sub> &lt; SiH<sub>4</sub></div><p></p></div><div class='question'><div class='stem'>5) What is the strongest type of intermolecular force present in NH<sub>3</sub>?&nbsp;</div><div class='option'>A) London dispersion forces</div><div class='option'>B) Ion-dipole forces</div><div class='option'>C) Dipole-dipole forces</div><div class='option'>D) Hydrogen bonding<span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>6) Using the phase diagram below, what phase transition would occur if H<sub>2</sub>O was cooled from 43°C to -54°C at 0.005 atm?<br><img title="phase diagram water.jpg" src="../images/51.jpeg" alt="" width="299" height="245"></div><div class='option'>A) Sublimation</div><div class='option'>B) Freezing</div><div class='option'>C) Condensation</div><div class='option'>D) Deposition<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>7) Identify the place which has the <strong>highest </strong>boiling point of water.</div><div class='option'>A) New Orleans, sea level</div><div class='option'>B) Mt. Everest, 29,035 feet</div><div class='option'>C) Denver, Colorado, 5280 feet</div><div class='option'>D) Death Valley, 282 feet below sea level<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>8) How much energy is required to vaporize 58.4 g of dichloromethane (CH<sub>2</sub>Cl<sub>2</sub>) at its boiling point, if its ΔH<sub>vap</sub> is 28.06 kJ/mol?</div><div class='option'>A) 0.688 kJ/mol</div><div class='option'>B) 177 kJ/mol</div><div class='option'>C) 1640 kJ/mol</div><div class='option'>D) 19.3 kJ/mol<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>9) Which of the following statements is TRUE?</div><div class='option'>A) Two bonded oxygen atoms are at a lower potential energy than two individual oxygen atoms<span class='asterisk'>*</span></div><div class='option'>B) Decreasing the temperature of a liquid generally causes it to become a gas</div><div class='option'>C) London dispersion forces are generally stronger than dipole-dipole forces</div><div class='option'>D) Forming new bonds requires energy</div><p></p></div><div class='question'><div class='stem'>10) <span style="font-size: 10.5pt;">How much energy is required to heat 35.4 g H<sub>2</sub>O from a liquid at 41.1°C to a gas at 110°C?<br>ΔH<sub>vap</sub> = 40.7 kJ/mol<br>C<sub>liquid</sub>&nbsp;= 4.184 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;<br>C<sub>gas</sub> = 2.01 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;&nbsp;<br>C<sub>solid</sub> = 2.09 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;<br>T<sub>melting</sub> = 0°C&nbsp;<br>T<sub>boiling</sub> = 100°C<br></span></div><div class='option'>A) 89.4 kJ<span class='asterisk'>*</span></div><div class='option'>B) 9520 kJ</div><div class='option'>C) 1450 kJ</div><div class='option'>D) 93.9 kJ</div><p></p></div><div class='question'><div class='stem'>11) Which of the following <strong>increases </strong>the rate of vaporization?</div><div class='option'>A) Strong intermolecular bonds</div><div class='option'>B) Decreasing temperature</div><div class='option'>C) Increasing temperature<span class='asterisk'>*</span></div><div class='option'>D) Decreasing the surface area</div><p></p></div><div class='question'><div class='stem'>12) Choose the substance with the <strong>highest </strong>ΔH<sub>vap</sub>.</div><div class='option'>A) NH<sub>3</sub></div><div class='option'>B) OF<sub>2</sub></div><div class='option'>C) KF<span class='asterisk'>*</span></div><div class='option'>D) CH<sub>4</sub></div><p></p></div><div class='question'><div class='stem'>13) Choose the substance with the <strong>lowest </strong>vapor pressure at a given temperature.</div><div class='option'>A) H<sub>2</sub>O<span class='asterisk'>*</span></div><div class='option'>B) H<sub>2</sub>S</div><div class='option'>C) O<sub>2</sub></div><div class='option'>D) SiS<sub>2</sub></div><p></p></div><div class='question'><div class='stem'>14) What is the main reason why the boiling point of NH<sub>3</sub> is much higher than that of PH<sub>3</sub>?&nbsp;</div><div class='option'>A) NH<sub>3</sub> can hydrogen bond whereas PH<sub>3</sub> cannot<span class='asterisk'>*</span></div><div class='option'>B) NH<sub>3</sub> has dipole-dipole forces whereas PH<sub>3</sub> does not</div><div class='option'>C) NH<sub>3</sub> has stronger London dispersion forces than PH<sub>3</sub></div><div class='option'>D) PH<sub>3</sub>&nbsp;can hydrogen bond whereas NH<sub>3</sub>&nbsp;cannot</div><p></p></div><div class='question'><div class='stem'>15) (SLO 1.2) In liquid butanol CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>OH, which intermolecular forces are present?</div><div class='option'>A) Dispersion, hydrogen bonding, and dipole-dipole forces are present<span class='asterisk'>*</span></div><div class='option'>B) Only dispersion and dipole-dipole forces are present</div><div class='option'>C) Only hydrogen bonding forces are present</div><div class='option'>D) Only dipole-dipole and ion-dipole forces are present</div><p></p></div><div class='question'><div class='stem'>16) (SLO 1.5) List the compounds below in <strong>decreasing </strong>boiling point order.<br>CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Ne&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO</div><div class='option'>A) Ne &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub></div><div class='option'>B) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt; Ne &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO</div><div class='option'>C) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO &gt; Ne</div><div class='option'>D) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt; Ne<span class='asterisk'>*</span></div><p></p></div></body></html>

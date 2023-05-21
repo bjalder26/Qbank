@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Retake Exam 3 (Ch 16-17)</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Apr 28, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) (SLO 4.2) Which of the following is a Arrhenius base?</div><div class='option'>A) NaOH<span class='asterisk'>*</span></div><div class='option'>B) H<sub>2</sub>SO<sub>4</sub></div><div class='option'>C) I<sub>2</sub></div><div class='option'>D) CH<sub>3</sub>CH<sub>3</sub></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>2) (SLO 4.5) Calculate the percent ionization of a monoprotic weak acid (HA) in a solution that is 0.160 M, if the acid dissociation constant (K<sub>a</sub>) is 7.86x10<sup>-5</sup>.&nbsp;<br>HA ➞ H<sup>+</sup> + A<sup>-</sup></div><div class='option'>A) 2.22 %<span class='asterisk'>*</span></div><div class='option'>B) 0.00786 %</div><div class='option'>C) 0.0213 %</div><div class='option'>D) 2.06 %</div><p></p></div><div class='question'><div class='stem'>3) (SLO 4.6) What is the [CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H] ratio necessary to make a buffer solution with a pH of 5.90?&nbsp;<br>K<sub>a</sub> = 1.8x10<sup>-5</sup> for CH<sub>3</sub>CO<sub>2</sub>H.</div><div class='option'>A) 7.9 : 1</div><div class='option'>B) 0.070 : 1</div><div class='option'>C) 11 : 1</div><div class='option'>D) 14 : 1<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>4) (SLO 4.1) Which of the following is a Arrhenius acid?</div><div class='option'>A) NH<sub>2</sub>CH<sub>3</sub></div><div class='option'>B) H<sub>2</sub>SO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>C) CH<sub>3</sub>CH<sub>3</sub></div><div class='option'>D) NaOH</div><div class='option'>E)  All of the above.</div><p></p></div><div class='question'><div class='stem'>5) (SLO 4.3) Identify the strongest acid.</div><div class='option'>A) HIO<sub>3</sub></div><div class='option'>B) HIO<sub>2</sub></div><div class='option'>C) HIO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>D) HIO</div><p></p></div><div class='question'><div class='stem'>6) (SLO 4.4) Calculate the pOH of a solution that contains 8.78x10<sup>-2</sup>&nbsp;M H<sub>3</sub>O<sup>+</sup> at 25°C</div><div class='option'>A) 12.9<span class='asterisk'>*</span></div><div class='option'>B) 1.06</div><div class='option'>C) 1.14x10<sup>-13</sup></div><div class='option'>D) 2.00</div><p></p></div><div class='question'><div class='stem'>7) (SLO 4.7) How many milliliters of 0.0507 M NaOH are required to titrate 10 mL of 0.175 M HBr to the equivalence point.</div><div class='option'>A) 34.5 mL<span class='asterisk'>*</span></div><div class='option'>B) 2.90 mL</div><div class='option'>C) 3.45 mL</div><div class='option'>D) 41.4 mL</div><p></p></div><div class='question'><div class='stem'>8) Determine the pH in a 0.592 M <span style="font-size: 10.5pt;">C<sub>5</sub>H<sub>5</sub>N</span>&nbsp;solution. The K<sub>b</sub> of C<sub>5</sub>H<sub>5</sub>N</span></span><span style="font-size: 10.5pt;"> is 1.7x10<sup>-9</sup></span><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 9.50<span class='asterisk'>*</span></div><div class='option'>B) 4.50</div><div class='option'>C) 9.00</div><div class='option'>D) 5.00</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>9) Which of the following is the strongest Lewis acid (best at giving up H<sup>+</sup> or binding OH<sup>-</sup>)?</div><div class='option'>A) K<sup>+</sup></div><div class='option'>B) Li<sup>+</sup></div><div class='option'>C) Na<sup>+</sup></div><div class='option'>D) HF<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>10) Which of the following has the strongest conjugate base?</div><div class='option'>A) HI</div><div class='option'>B) HCl</div><div class='option'>C) HF<span class='asterisk'>*</span></div><div class='option'>D) HBr</div><p></p></div><div class='question'><div class='stem'>11) You add 400 mL of a 0.140 M KOH solution to 400 mL of a 0.140 M HCN solution (K<sub>a</sub> for HCN&nbsp;is 6.2x10<sup>-10</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 11.0<span class='asterisk'>*</span></div><div class='option'>B) 11.4</div><div class='option'>C) 8.05</div><div class='option'>D) 2.91</div><p></p></div><div class='question'><div class='stem'>12) A solution contains 2.2x10<sup>-3</sup> M in Cu(NO<sub>3</sub>)<sub>2</sub> and 0.424 M in LiCN. If the K<sub>f</sub> for Cu(CN)<sub>4</sub><sup>2-</sup> is 1.0x10<sup>25</sup>, what concentration of copper (II) ions remain at equilibrium?</div><div class='option'>A) 4.86x10<sup>-27</sup></div><div class='option'>B) 6.81x10<sup>-27</sup><span class='asterisk'>*</span></div><div class='option'>C) 9.53x10<sup>-27</sup></div><div class='option'>D) 5.19x10<sup>-28</sup></div><p></p></div><div class='question'><div class='stem'>13) If you are using an acid and it's conjugate base to prepare a buffer that will be effective at a pH of 5.00 at 25°C, which of the following K<sub>a</sub> values would be best for your acid?</div><div class='option'>A) 9.81x10<sup>-6</sup><span class='asterisk'>*</span></div><div class='option'>B) 1.07x10<sup>-6</sup></div><div class='option'>C) 0.000101</div><div class='option'>D) 9.06x10<sup>-8</sup></div><p></p></div><div class='question'><div class='stem'>14) If you have a 1.0 L buffer solution with 0.1 M acetic acid (Ka 1.75x10^-5) and 0.1 M sodium acetate, then what will be the pH after adding 0.0500 moles of solid NaOH (assume no change in volume)?</div><div class='option'>A) 5.23<span class='asterisk'>*</span></div><div class='option'>B) 4.28</div><div class='option'>C) 4.76</div><div class='option'>D) 5.46</div><p></p></div><div class='question'><div class='stem'>15) You add 500 mL of a 0.120 M HNO<sub>3</sub> solution to 800 mL of a 0.200 M NaOH solution.&nbsp; What will be the pH of that solution?</div><div class='option'>A) 13.2</div><div class='option'>B) 12.9<span class='asterisk'>*</span></div><div class='option'>C) 12.5</div><div class='option'>D) 1.11</div><p></p></div><div class='question'><div class='stem'>16) You add 300 mL of a 0.150 M HCl solution to 300 mL of a 0.150 M NH<sub>3</sub> solution (K<sub>b</sub> for NH<sub>3</sub> is 1.8x10<sup>-5</sup></sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 5.19<span class='asterisk'>*</span></div><div class='option'>B) 4.74</div><div class='option'>C) 9.26</div><div class='option'>D) 2.93</div><p></p></div><div class='question'><div class='stem'>17) What would be the pH of a solution formed by mixing 400 mL of 1.12 M HCN with 400 mL of 0.708 M NaCN?&nbsp; The K<sub>a</sub> for HCN is 6.2x10<sup>-10</sup>.</div><div class='option'>A) 9.01<span class='asterisk'>*</span></div><div class='option'>B) 7.96</div><div class='option'>C) 9.21</div><div class='option'>D) 9.41</div><p></p></div><div class='question'><div class='stem'>18) You add 600 mL of a 0.110 M HCl solution to 800 mL of a 0.150 M NH<sub>3</sub> solution (K<sub>b</sub> for NH<sub>3</sub> is 1.8x10<sup>-5</sup></sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 9.17<span class='asterisk'>*</span></div><div class='option'>B) 4.83</div><div class='option'>C) 9.37</div><div class='option'>D) 8.87</div><p></p></div><div class='question'><div class='stem'>19) Determine the molar solubility of BaF<sub>2</sub> in a solution containing 0.180 M LiF. K<sub>sp</sub> (BaF<sub>2</sub>) = 1.7 × 10<sup>-6</sup>.</div><div class='option'>A) 0.0000525 M<span class='asterisk'>*</span></div><div class='option'>B) 9.44x10<sup>-6</sup> M</div><div class='option'>C) 9.44x10<sup>-6</sup> M</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>20) What would be the pH of a solution formed by mixing 500 mL of 0.616 M H<sub>2</sub>CO<sub>3</sub> with 500 mL of 1.24 M NaHCO<sub>3</sub>?&nbsp; The K<sub>b</sub> for HCO<sub>3</sub><sup>-</sup> is 2.2x10<sup>-8</sup>.</div><div class='option'>A) 6.35</div><div class='option'>B) 6.65<span class='asterisk'>*</span></div><div class='option'>C) 7.70</div><div class='option'>D) 6.04</div><p></p></div></body></html>

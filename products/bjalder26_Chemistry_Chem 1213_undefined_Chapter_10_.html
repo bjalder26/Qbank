@@ -1,0 +1,133 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Chapter 10</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) What volume (in mL) will a sample of F<sub>2</sub> gas occupy in a syringe at 7.88 atm, if the F<sub>2</sub> has a volume of 22.3 mL at 1.70 atm?</div><div class='option'>A) 4.81 mL<span class='asterisk'>*</span></div><div class='option'>B) 6.18 mL</div><div class='option'>C) 9.58 mL</div><div class='option'>D) 103 mL</div><p></p></div><div class='question'><div class='stem'>2) To what temperature must a balloon, initially at 29.9°C and 2.00 L, be heated in order to have a volume of 5.00 L?</div><div class='option'>A) 484°C<span class='asterisk'>*</span></div><div class='option'>B) 758°C</div><div class='option'>C) -152°C</div><div class='option'>D) 74.8°C</div><p></p></div><div class='question'><div class='stem'>3) What is the volume (in mL) of 1.82g of F<sub>2</sub> at 1705 mm Hg and 166°C?</div><div class='option'>A) 291 mL</div><div class='option'>B) 769 mL<span class='asterisk'>*</span></div><div class='option'>C) 2.92x10<sup>4</sup> mL</div><div class='option'>D) 0.769 mL</div><p></p></div><div class='question'><div class='stem'>4) A large balloon is initially filled to a volume of 22.3 L at 297 K and a pressure of 2950 mm Hg. What volume of gas will the balloon contain at 1.20 atm and 156 K?</div><div class='option'>A) 137 L</div><div class='option'>B) 37.9 L<span class='asterisk'>*</span></div><div class='option'>C) 1.04x10<sup>5</sup> L</div><div class='option'>D) 13.1 L</div><p></p></div><div class='question'><div class='stem'>5) A 0.904 g sample of an unknown halogen occupies 149 mL at 396 K and 2.78 atm. What is the identity of the halogen?</div><div class='option'>A) <sub> </sub>Br<sub>2</sub></div><div class='option'>B) Cl<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>C) F<sub>2</sub></div><div class='option'>D) I<sub>2</sub></div><p></p></div><div class='question'><div class='stem'>6) If a sample of 0.405 moles of Ne occupies 6.91 L under certain conditions, what volume (in L) will 0.784 moles occupy under the same conditions?</div><div class='option'>A) 13.4 L<span class='asterisk'>*</span></div><div class='option'>B) 1.19 L</div><div class='option'>C) 0.379 L</div><div class='option'>D) 3.57 L</div><p></p></div><div class='question'><div class='stem'>7) A 0.128 g sample of an unknown gas occupies 203 mL at 344 K and 2.22 atm. What is the molar mass of the unknown gas?</div><div class='option'>A) 0.0160 g/mol</div><div class='option'>B) 62.6 g/mol</div><div class='option'>C) 8.02 g/mol<span class='asterisk'>*</span></div><div class='option'>D) 0.00802 g/mol</div><p></p></div><div class='question'><div class='stem'>8) The rate of effusion of nitrogen to an unknown gas is 1.194. What is the other gas?</div><div class='option'>A) Ne</div><div class='option'>B) Kr</div><div class='option'>C) Ar<span class='asterisk'>*</span></div><div class='option'>D) Xe</div><p></p></div><div class='question'><div class='stem'>9) What is the density of CO<sub>2</sub> gas at STP.</div><div class='option'>A) 4.24 g/L</div><div class='option'>B) 44.01 g/L</div><div class='option'>C) 1.96 g/L<span class='asterisk'>*</span></div><div class='option'>D) 0.0446 g/L</div><p></p></div><div class='question'><div class='stem'>10) A gas mixture consists of CO<sub>2</sub>, Ar, and O<sub>2</sub>, where the mole fraction of CO<sub>2</sub> is 0.206 and the mole fraction of O<sub>2</sub> is 0.181. If the mixture is at STP in a 2.00 L container, how many moles of Ar are present?</div><div class='option'>A) 0.0346 mol</div><div class='option'>B) 0.0184 mol</div><div class='option'>C) 0.0547 mol<span class='asterisk'>*</span></div><div class='option'>D) 0.0162 mol</div><p></p></div><div class='question'><div class='stem'>11) Magnesium is dissolved in hydrochloric acid producing hydrogen gas. If 2.08 L of gas is collected at 30.0°C and has a total pressure of 761 mm Hg, what mass of hydrogen is produced? A possibly useful table of water vapor pressures is provided below.
+<p style="text-align: center;">Mg(s) + 2 HCl(aq) → MgCl<sub>2</sub>(aq) + H<sub>2</sub>(g)<br><br><img title="water vapor pressure table.jpg" src="../images/43.jpeg" alt="" width="174" height="151"></p></div><div class='option'>A) 0.162 g<span class='asterisk'>*</span></div><div class='option'>B) 0.169 g</div><div class='option'>C) 0.176 g</div><div class='option'>D) 0.0802 g</div><p></p></div><div class='question'><div class='stem'>12) What mass of water (in grams) is formed when 11.8 L NH<sub>3</sub> (at 260. K and 1.96 atm) is reacted with an excess of O<sub>2</sub>.
+<p style="text-align: center;">4 NH<sub>3</sub>(g) + 5 O<sub>2</sub>(g) → 4 NO(g) + 6 H<sub>2</sub>O(g)</p></div><div class='option'>A) 1.08 g</div><div class='option'>B) 1.63 g</div><div class='option'>C) 19.5 g</div><div class='option'>D) 29.3 g<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>13) What pressure (in atm) will 19.7 g of H<sub>2</sub> exert in a 2.7 L container at 78°C?</div><div class='option'>A) 46.7 atm</div><div class='option'>B) 210. atm</div><div class='option'>C) 23.2 atm</div><div class='option'>D) 104 atm<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>14) Determine the volume of O<sub>2</sub> (at STP) formed when 33.1 g of KClO<sub>3</sub> decomposes according to the following reaction. The molar mass for KClO<sub>3</sub> is 122.55 g/mol.
+<p style="text-align: center;">2 KClO<sub>3</sub>(s) → 2 KCl(s) + 3 O<sub>2</sub>(g)</p></div><div class='option'>A) 22.1 L</div><div class='option'>B) 9.08 L<span class='asterisk'>*</span></div><div class='option'>C) 6.05 L</div><div class='option'>D) 4.03 L</div><p></p></div><div class='question'><div class='stem'>15) A mixture of 6.50 g of Ar and 13.4 g CO<sub>2</sub> Ne have a total pressure of 1.29 atm. What is the partial pressure of Ar?</div><div class='option'>A) 0.689 atm</div><div class='option'>B) 0.449 atm<span class='asterisk'>*</span></div><div class='option'>C) 0.421 atm</div><div class='option'>D) 0.394 atm</div><p></p></div><div class='question'><div class='stem'>16) Determine the volume of H<sub>2</sub>S (at 303 K and 1.84 atm) needed to produce 40.2 g of S. Assume that there is excess SO<sub>2</sub> present (molar mass of S is 32.06 g/mol).
+<p style="text-align: center;">2 H<sub>2</sub>S(g) + SO<sub>2</sub>(g) → 3 S(s) + 2 H<sub>2</sub>O(g)</p></div><div class='option'>A) 11.3 L<span class='asterisk'>*</span></div><div class='option'>B) 16.9 L</div><div class='option'>C) 362 L</div><div class='option'>D) 543 L</div><p></p></div><div class='question'><div class='stem'>17) Under what circumstances is a gas <strong>most</strong><strong> </strong>likely to behave like an ideal gas?</div><div class='option'>A) High temperature and high pressure</div><div class='option'>B) High temperature and low pressure<span class='asterisk'>*</span></div><div class='option'>C) Low temperature and high pressure</div><div class='option'>D) Low temperature and low pressure</div><p></p></div><div class='question'><div class='stem'>18) Calculate the root mean square velocity of nitrogen gas molecules at 25°C.</div><div class='option'>A) 515 m/s<span class='asterisk'>*</span></div><div class='option'>B) 729 m/s</div><div class='option'>C) 51.2 m/s</div><div class='option'>D) 149 m/s</div><p></p></div></body></html>

@@ -1,0 +1,130 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>test</h1>
+	<h4></h4>
+	<h6>Apr 11, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Divide the following numbers and indicate the answer with correct number of significant figures. <br><span class="math-tex">\( \frac{158.1}{10.4} \)</span></div><div class='option'>A) 1640</div><div class='option'>B) 15.2<span class='asterisk'>*</span></div><div class='option'>C) 15.20</div><div class='option'>D) 15</div><p></p></div><div class='question'><div class='stem'>2) How many significant figures are in the measurement, 0.00020. kg?</div><div class='option'>A) 6</div><div class='option'>B) 2<span class='asterisk'>*</span></div><div class='option'>C) 5</div><div class='option'>D) 4</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>3) Indicate the measurement at the red arrow below with the correct number of significant figures.<br><br><img title="ruler2.jpg" src="../images/2.jpeg" alt="" width="448" height="144" data-mce-id="__mcenew"></div><div class='option'>A) 3.2 cm</div><div class='option'>B) 3.25 cm<span class='asterisk'>*</span></div><div class='option'>C) 3.3 cm</div><div class='option'>D) 3.35 cm</div><p></p></div><div class='question'><div class='stem'>4) Subtract the following numbers and indicate the correct number of significant figures.<br>
+<div style="text-align: center;">1063.7 - 365.37</div></div><div class='option'>A) 3.886x10<sup>5</sup></div><div class='option'>B) 3.9x10<sup>5</sup><span class='asterisk'>*</span></div><div class='option'>C) 3.89x10<sup>5</sup></div><div class='option'>D) 3.8864x10<sup>5</sup></div><p></p></div><div class='question'><div class='stem'>5) Which of the following is an accurate description of random error?</div><div class='option'>A) Error that tends to be too high or tends to be too low</div><div class='option'>B) Error that has equal probability of being too high or too low<span class='asterisk'>*</span></div><div class='option'>C) Error that is always in the same direction</div><div class='option'>D) Error where it is impossible to determine the source</div><p></p></div><div class='question'><div class='stem'>6) An experiment to determine the density of a glucose solution garners the following results: 1.14 g/mL, 1.13 g/mL, 1.14 g/mL, 1.13 g/mL. If the known value for the density of the glucose solution is 0.558 g/mL, which statement below best describes her results?</div><div class='option'>A) The results are precise but not accurate..</div><div class='option'>B) The results are accurate but not precise.</div><div class='option'>C) The results are accurate and precise.</div><div class='option'>D) The results are neither accurate nor precise.<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>7) Determine the volume of an object that has a mass of 269.2 g and a density of 13.7 g/cm<sup>3</sup>.</div><div class='option'>A) 19.6 cm<sup>3</sup><span class='asterisk'>*</span></div><div class='option'>B) 3690 cm<sup>3</sup></div><div class='option'>C) 0.0509 cm<sup>3</sup></div><div class='option'>D) 256 cm<sup>3</sup></div><p></p></div></body></html>

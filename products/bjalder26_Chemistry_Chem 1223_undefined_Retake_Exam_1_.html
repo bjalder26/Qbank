@@ -1,0 +1,215 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Retake Exam 1</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Mar 1, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) (SLO 5.5) For a given compound, list the <strong>increasing </strong>order of entropy for a liquid, solid and gas.</div><div class='option'>A) Solid &lt; liquid &lt; gas<span class='asterisk'>*</span></div><div class='option'>B) Gas &lt; solid &lt; liquid</div><div class='option'>C) Solid &lt; gas &lt; liquid</div><div class='option'>D) Gas &lt; liquid &lt; solid</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>2) (SLO 5.3) Which one of the following reactions would have a negative value for ΔS?</div><div class='option'>A) 2 NH<sub>3</sub> (g) ➞ N<sub>2</sub> (g) &nbsp;+ &nbsp;3 H<sub>2</sub> (g)</div><div class='option'>B) 4 Fe (s) &nbsp;+ &nbsp;3 O<sub>2</sub> (g) ➞ 2 Fe<sub>2</sub>O<sub>3</sub> (s)<span class='asterisk'>*</span></div><div class='option'>C) BaCO<sub>3</sub> (s) ➞ BaO (s) + CO<sub>2</sub> (g)</div><div class='option'>D) 2 Fe(s) &nbsp;+ &nbsp;6 HCl (aq) ➞ 2 FeCl<sub>3</sub> (aq) &nbsp;+ &nbsp;3 H<sub>2</sub>(g)</div><p></p></div><div class='question'><div class='stem'>3) (SLO 5.2) Given the following equation<br>Given the following equation,<br>4 NH<sub>3</sub> (g) + 3 O<sub>2</sub> (g) ➞ 2 N<sub>2</sub> (g) + 6 H<sub>2</sub>O (g), ΔG°<sub>rxn</sub> = -1267kJ<br>Calculate the ΔG°<sub>rxn</sub> for the following reaction.<br>20. NH<sub>3</sub> (g) + 15 O<sub>2</sub> (g) ➞ 10. N<sub>2</sub> (g) + 30. H<sub>2</sub>O (g)</div><div class='option'>A) -6335 kJ<span class='asterisk'>*</span></div><div class='option'>B) 6335 kJ</div><div class='option'>C) -1267kJ</div><div class='option'>D) -253.4 kJ</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>4) (SLO 5.1) Consider the following reaction at constant pressure. Use the information here to determine the value of ΔS<sub>surr</sub> (enthalpy change in the surrounding) at 432 K.&nbsp; Predict whether or not this reaction will be spontaneous at this temperature.<br><br>4 NH<sub>3</sub> (g) + 3 O<sub>2</sub> (g) ➞ N<sub>2</sub> (g) + 6 H<sub>2</sub>O (g), ΔH = -1267 kJ</div><div class='option'>A) ΔS<sub>surr</sub> = -2930 J/K, reaction is spontaneous<span class='asterisk'>*</span></div><div class='option'>B) ΔS<sub>surr</sub> = -1270 J/K, reaction is nonspontaneous</div><div class='option'>C) ΔS<sub>surr</sub> = -1.27x10<sup>6</sup> J/K, reaction is spontaneous</div><div class='option'>D) ΔS<sub>surr</sub> = -2930 J/K, reaction is nonspontaneous</div><p></p></div><div class='question'><div class='stem'>5) (SLO 5.7) Which answer correctly identifies the sign on change in enthalpy and entropy?<br>H<sub>2</sub>O (l) ➞ H<sub>2</sub>O (g)</div><div class='option'>A) A negative ΔH and a positive ΔS</div><div class='option'>B) A positive ΔH and a positive ΔS<span class='asterisk'>*</span></div><div class='option'>C) A negative ΔH and a negative ΔS</div><div class='option'>D) A positive ΔH and a negative ΔS</div><div class='option'>E)  All of the above.</div><p></p></div><div class='question'><div class='stem'>6) (SLO 5.3) Does the following reaction show an increase, decrease, or no change in entropy of the system?<br><br>2 NO (g) + O<sub>2</sub> ➞ (g) 2 NO<sub>2</sub> (g)</div><div class='option'>A) Decrease<span class='asterisk'>*</span></div><div class='option'>B) Increase</div><div class='option'>C) No change in entropy</div><p></p></div><div class='question'><div class='stem'>7) (SLO 5.4) Which law of thermodynamics states that energy is conserved in a chemical process?</div><div class='option'>A) First<span class='asterisk'>*</span></div><div class='option'>B) Zero</div><div class='option'>C) Second</div><div class='option'>D) Third</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>8) (SLO 1.2) In fluoromethane CH<sub>3</sub>F, which intermolecular forces are present?</div><div class='option'>A) Only dipole-dipole and ion-dipole forces are present</div><div class='option'>B) London dispersion and hydrogen bonding</div><div class='option'>C) Only London dispersion</div><div class='option'>D) London dispersion and dipole-dipole<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>9) (SLO 1.5) List the compounds below in <strong>decreasing </strong>boiling point order.<br>CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Ne&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO</div><div class='option'>A) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt; Ne &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO</div><div class='option'>B) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO &gt; Ne</div><div class='option'>C) Ne &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub></div><div class='option'>D) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CHO &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt; Ne<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>10) (SLO 1.6) What is the <strong>change </strong>in boiling point of a solution of 28.8 g Na<sub>3</sub>PO<sub>4</sub> (163.9 g/mol) in 707 g of water? K<sub>b</sub> for water is 0.512°C/m.&nbsp; Assume ideal behavior.</div><div class='option'>A) 20.9°C</div><div class='option'>B) 0.509°C<span class='asterisk'>*</span></div><div class='option'>C) 0.127°C</div><div class='option'>D) 0.000127°C</div><p></p></div><div class='question'><div class='stem'>11) (SLO 1.4) A solution is 0.771 m MgCl<sub>2</sub> (95.21 g/mol). &nbsp;What is the molarity of the solution if the density of the solution is 1.08 g/mL?</div><div class='option'>A) 0.718 M</div><div class='option'>B) 0.776 M<span class='asterisk'>*</span></div><div class='option'>C) 0.833 M</div><div class='option'>D) 0.0112 M</div><p></p></div><div class='question'><div class='stem'>12) (SLO 1.7) What is a solution containing more than the equilibrium amount of solute is called?</div><div class='option'>A) A dilute solution</div><div class='option'>B) A saturated solution</div><div class='option'>C) An unsaturated solution</div><div class='option'>D) A supersaturated solution<span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>13) (SLO 1.1) The osmotic pressure of a solution formed by dissolving 22.1 mg of Aspirin (C<sub>9</sub>H<sub>8</sub>O<sub>4</sub>) (180.16 g/mol) in enough water to make 0.311 L of solution at 30°C is _____ atm.</div><div class='option'>A) 0.00305</div><div class='option'>B) 0.00981<span class='asterisk'>*</span></div><div class='option'>C) 0.000971</div><div class='option'>D) 9.81</div><p></p></div><div class='question'><div class='stem'>14) (SLO 1.3) The Henry’s law constant for carbon dioxide gas in water at 20ºC is 392 x 10<sup>-4</sup> M/atm. When the partial pressure of helium above a sample of water is 0.499 atm, the concentration of helium in the water is ______ M.</div><div class='option'>A) 0.0196<span class='asterisk'>*</span></div><div class='option'>B) 196</div><div class='option'>C) 12.7</div><div class='option'>D) 0.0786</div><p></p></div><div class='question'><div class='stem'>15) Which of the following statements is TRUE?</div><div class='option'>A) Intermolecular forces are generally stronger than bonding forces</div><div class='option'>B) The potential energy of molecules decrease as they get closer to one another<span class='asterisk'>*</span></div><div class='option'>C) Increasing the pressure on a solid usually causes it to become a liquid</div><div class='option'>D) Energy is given off when the attraction between two molecules is broken</div><p></p></div><div class='question'><div class='stem'>16) Place the following substances in order of <strong>decreasing </strong>boiling point.&nbsp;<br>H<sub>2</sub>O&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; N<sub>2</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; CO</div><div class='option'>A) CO &gt; H<sub>2</sub>O &gt; N<sub>2</sub></div><div class='option'>B) CO &gt; N<sub>2</sub> &gt; H<sub>2</sub>O</div><div class='option'>C) N<sub>2</sub> &gt; CO &gt; H<sub>2</sub>O</div><div class='option'>D) H<sub>2</sub>O &gt; CO &gt; N<sub>2</sub><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>17) Identify the place which has the <strong>lowest </strong>boiling point of water.</div><div class='option'>A) Mt. Everest, 29,035 feet<span class='asterisk'>*</span></div><div class='option'>B) New Orleans, sea level</div><div class='option'>C) Denver, Colorado, 5280 feet</div><div class='option'>D) Death Valley, 282 feet below sea level</div><p></p></div><div class='question'><div class='stem'>18) Choose the substance with the <strong>highest </strong>ΔH<sub>vap</sub>.</div><div class='option'>A) KF<span class='asterisk'>*</span></div><div class='option'>B) NH<sub>3</sub></div><div class='option'>C) CH<sub>4</sub></div><div class='option'>D) OF<sub>2</sub></div><p></p></div><div class='question'><div class='stem'>19) What is the main reason why the boiling point of HF is much higher than that of HCl?&nbsp;</div><div class='option'>A) HCl&nbsp;can hydrogen bond whereas HF&nbsp;cannot</div><div class='option'>B) HF has stronger London dispersion forces than HCl</div><div class='option'>C) HF has dipole-dipole forces whereas HCl does not</div><div class='option'>D) HF can hydrogen bond whereas HCl cannot<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>20) How much energy is required to vaporize 45.1 g of benzene (C<sub>6</sub>H<sub>6</sub>) at its boiling point, if its ΔH<sub>vap</sub> is 30.72 kJ/mol?</div><div class='option'>A) 115 kJ/mol</div><div class='option'>B) 17.7 kJ/mol<span class='asterisk'>*</span></div><div class='option'>C) 1390 kJ/mol</div><div class='option'>D) 0.577 kJ/mol</div><p></p></div><div class='question'><div class='stem'>21) Using the phase diagram below, what phase transition would occur if H<sub>2</sub>O was cooled from 48°C to -74°C at 0.005 atm?<br><img title="phase diagram water.jpg" src="../images/51.jpeg" alt="" width="299" height="245"></div><div class='option'>A) Sublimation</div><div class='option'>B) Freezing</div><div class='option'>C) Condensation</div><div class='option'>D) Deposition<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>22) Which of the following <strong>increases </strong>the rate of vaporization?</div><div class='option'>A) Increasing the surface area<span class='asterisk'>*</span></div><div class='option'>B) Decreasing the surface area</div><div class='option'>C) Decreasing temperature</div><div class='option'>D) Strong intermolecular bonds</div><p></p></div><div class='question'><div class='stem'>23) What is the major intermolecular force between CH<sub>3</sub>OH and H<sub>2</sub>O?</div><div class='option'>A) Hydrogen bonding<span class='asterisk'>*</span></div><div class='option'>B) Dipole-dipole forces</div><div class='option'>C) London dispersion forces</div><div class='option'>D) Ion-dipole forces</div><p></p></div><div class='question'><div class='stem'>24) Which of the following compounds will be most soluble in water (H<sub>2</sub>O)?</div><div class='option'>A) Methane (CH<sub>4</sub>)</div><div class='option'>B) Ethane (C<sub>2</sub>H<sub>6</sub>)</div><div class='option'>C) Ammonia (NH<sub>3</sub>)<span class='asterisk'>*</span></div><div class='option'>D) Acetylene (C<sub>2</sub>H<sub>2</sub>)</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>25) Which of the following have a great impact on the solubility of a solid in a liquid?</div><div class='option'>A) Temperature only<span class='asterisk'>*</span></div><div class='option'>B) Temperature and pressure</div><div class='option'>C) Pressure only</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>26) A sealed container contains 0.700 L of water with an atmosphere of oxygen gas. What is the concentration of O<sub>2</sub> in the water if the external pressure is 4.48 atm given that k<sub>H</sub> for O<sub>2</sub> is 1.66 × 10<sup>-6</sup> M/mm Hg at this temperature?</div><div class='option'>A) 9.79x10<sup>-9</sup> M</div><div class='option'>B) 0.00565 M<span class='asterisk'>*</span></div><div class='option'>C) 3550 M</div><div class='option'>D) 7.44x10<sup>-6</sup> M</div><p></p></div><div class='question'><div class='stem'>27) Calculate the ΔG°<sub>rxn</sub> at 25°C using the following information. <br>AgBr (s) → Ag<sup>+</sup> (aq) + Br<sup>-</sup> (aq), ΔG°rxn = ?<br>
+<div class="section-content">
+<figure class="table-container">
+<table style="width: 111.524%;">
+<tbody>
+<tr>
+<th style="width: 15.7336%;" scope="row">&nbsp;</th>
+<td style="width: 17.4625%;">ΔH°<sub>f</sub> (kJ/mol)</td>
+<td style="width: 15.3878%;">S°(J/mol∙K)</td>
+<td style="width: 15.2149%;">&nbsp;</td>
+<td style="width: 17.633%;">ΔH°<sub>f</sub> (kJ/mol)</td>
+<td style="width: 18.5023%;">S°(J/mol∙K)</td>
+</tr>
+<tr>
+<th style="width: 15.7336%;" scope="row">AgBr (s)</th>
+<td style="width: 17.4625%;">-100.4</td>
+<td style="width: 15.3878%;">107.1&nbsp;</td>
+<td style="width: 15.2149%;"><strong>Ag<sup>+</sup> (aq)</strong></td>
+<td style="width: 17.633%;">105.79</td>
+<td style="width: 18.5023%;">73.45</td>
+</tr>
+<tr>
+<th style="width: 15.7336%;" scope="row">Br<sup>-</sup> (aq)</th>
+<td style="width: 17.4625%;">121.4</td>
+<td style="width: 15.3878%;">80.71&nbsp;</td>
+<td style="width: 15.2149%;"><strong>PO<sub>4</sub><sup>3-</sup>(aq)</strong></td>
+<td style="width: 17.633%;">-1277.4</td>
+<td style="width: 18.5023%;">-220.5</td>
+</tr>
+<tr>
+<th style="width: 15.7336%;" scope="row">HPO<sub>4</sub><sup>2-</sup> (aq)</th>
+<td style="width: 17.4625%;">-1292.1</td>
+<td style="width: 15.3878%;">-33.5</td>
+<td style="width: 15.2149%;"><strong>H<sub>2</sub>PO<sub>4</sub><sup>-</sup>(aq)</strong></td>
+<td style="width: 17.633%;">-1296.3</td>
+<td style="width: 18.5023%;">90.4</td>
+</tr>
+<tr>
+<th style="width: 15.7336%;" scope="row">H<sup>+</sup> (aq)</th>
+<td style="width: 17.4625%;">0</td>
+<td style="width: 15.3878%;">0</td>
+<td style="width: 15.2149%;"><strong>Cl<sup>-</sup> (aq)</strong></td>
+<td style="width: 17.633%;">167.1</td>
+<td style="width: 18.5023%;">56.6</td>
+</tr>
+<tr>
+<th style="width: 15.7336%;" scope="row">AgCl(s)</th>
+<td style="width: 17.4625%;">-127.0</td>
+<td style="width: 15.3878%;">96.3</td>
+<td style="width: 15.2149%;">&nbsp;</td>
+<td style="width: 17.633%;">&nbsp;</td>
+<td style="width: 18.5023%;">&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</figure>
+</div>
+<section aria-labelledby="what_is_a_table"></section></div><div class='option'>A) 314&nbsp;kJ<span class='asterisk'>*</span></div><div class='option'>B) -1.37x10<sup>4</sup> kJ</div><div class='option'>C) 326 kJ</div><div class='option'>D) -307 kJ</div><p></p></div><div class='question'><div class='stem'>28) Calculate the ΔS°<sub>rxn</sub> at 25°C using the following information. <br>C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> (s) + 6 O<sub>2</sub> (g) →&nbsp; 6 CO<sub>2</sub> (g) + 6 H<sub>2</sub>O (l), ΔS°rxn = ?<br>
+<div class="section-content">
+<figure class="table-container">
+<table style="width: 111.943%; height: 180.37px;">
+<tbody>
+<tr style="height: 42.358px;">
+<th style="width: 51.3969%; height: 42.358px;" scope="row">&nbsp;</th>
+<td style="width: 48.8259%; height: 42.358px;">S°(J/mol∙K)</td>
+</tr>
+<tr style="height: 23.3523px;">
+<th style="width: 51.3969%; height: 23.3523px;" scope="row">C<sub>6</sub>H<sub>12</sub>O<sub>6 </sub>(s)</th>
+<td style="width: 48.8259%; height: 23.3523px;">212.1</td>
+</tr>
+<tr style="height: 25.5966px;">
+<th style="width: 51.3969%; height: 25.5966px;" scope="row">&nbsp;O<sub>2</sub> (aq)</th>
+<td style="width: 48.8259%; height: 25.5966px;">205.2</td>
+</tr>
+<tr style="height: 46.108px;">
+<th style="width: 51.3969%; height: 46.108px;" scope="row">CO<sub>2</sub> (g)</th>
+<td style="width: 48.8259%; height: 46.108px;">213.8</td>
+</tr>
+<tr style="height: 23.3523px;">
+<th style="width: 51.3969%; height: 23.3523px;" scope="row">&nbsp;H<sub>2</sub>O (l)</th>
+<td style="width: 48.8259%; height: 23.3523px;">70.0</td>
+</tr>
+</tbody>
+</table>
+</figure>
+</div>
+<section aria-labelledby="what_is_a_table"></section></div><div class='option'>A) -133 J/K</div><div class='option'>B) 580. J/K</div><div class='option'>C) 3150 J/K</div><div class='option'>D) 260. J/K<span class='asterisk'>*</span></div><p></p></div></body></html>

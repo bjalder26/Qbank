@@ -1,0 +1,210 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Exam 4(Ch 9-10)</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Nov 28, 2022</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Which of the following is an exothermic process?</div><div class='option'>A) Sweat evaporating</div><div class='option'>B) You mix an acid and a base and the solution becomes hot<span class='asterisk'>*</span></div><div class='option'>C) Melting ice</div><div class='option'>D) Boiling water</div><p></p></div><div class='question'><div class='stem'>2) Which of the following is true regarding reactions carried out in a bomb calorimeter?</div><div class='option'>A) Reactions occur at a fixed temperature</div><div class='option'>B) Reactions occur under constant pressure</div><div class='option'>C) Reactions have zero enthalpy change</div><div class='option'>D) Reactions occur under constant volume<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>3) Use the bond energies provided to estimate ΔH°<sub>rxn</sub> for the reaction below.
+<p>CH<sub>3</sub>OH(l) + 2 O<sub>2</sub>(g) → CO<sub>2</sub>(g) + 2 H<sub>2</sub>O(g), ΔH°<sub>rxn</sub> = ?</p>
+<table style="border-collapse: collapse; border-color: #7e8c8d; border-style: dashed; width: 14.5392%;" border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d;" width="66">Bond</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d;" width="66">
+<p>Bond Energy (kJ/mol)</p>
+</td>
+</tr>
+<tr>
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d;" width="66">C-H</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d;" width="66">414</td>
+</tr>
+<tr>
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d;" width="66">C-O</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d;" width="66">360</td>
+</tr>
+<tr>
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d;" width="66">C=O</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d;" width="66">799</td>
+</tr>
+<tr>
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d;" width="66">O=O</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d;" width="66">498</td>
+</tr>
+<tr>
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d;" width="66">O-H</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d;" width="66">464</td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) -486 kJ</div><div class='option'>B) +473 kJ</div><div class='option'>C) -392 kJ<span class='asterisk'>*</span></div><div class='option'>D) -91 kJ</div><p></p></div><div class='question'><div class='stem'>4) Which of the following statements is TRUE?</div><div class='option'>A) ΔH<sub>rxn</sub> can be determined using constant volume calorimetry.</div><div class='option'>B) Energy is created or destroyed in all chemical reactions.</div><div class='option'>C) E<sub>rxn</sub> can be determined using constant pressure calorimetry.</div><div class='option'>D) State functions do not depend on the path taken to arrive at a particular state.<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>5) A 3.24 g sample of aniline (C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub>, molar mass = 93.13 g/mol) was combusted in a coffee cup (constant pressure) calorimeter with a heat capacity of 3.89 kJ/°C. If the temperature rose from 34.2°C to 78.9°C, determine the value of ΔH°<sub>combustion</sub> for aniline (for this problem the water is considered part of the calorimeter, so consider all the heat produced as being absorbed by the calorimeter).</div><div class='option'>A) -8820 kJ/mol</div><div class='option'>B) 5000 (3 sf) kJ/mol</div><div class='option'>C) -5000 (3 sf) kJ/mol<span class='asterisk'>*</span></div><div class='option'>D) 8820 kJ/mol</div><p></p></div><div class='question'><div class='stem'>6) The temperature rises from 23.2°C to 30.0°C in a bomb calorimeter when 2.28 g of an unknown compound undergoes combustion in a bomb calorimeter. Calculate ΔE<sub>rxn</sub> for the combustion of sucrose in kJ/mol of the unknown compound. The heat capacity of the calorimeter is 3.11 kJ/°C. The molar mass of the unknown compound is 317342.3 g/mol (for this problem the water is considered part of the calorimeter, so consider all the heat produced as being absorbed by the calorimeter).</div><div class='option'>A) 2940 kJ/mol<span class='asterisk'>*</span></div><div class='option'>B) 9.28 kJ/mol</div><div class='option'>C) 1.30x10<sup>4</sup> kJ/mol</div><div class='option'>D) 432 kJ/mol</div><p></p></div><div class='question'><div class='stem'>7) Use the ΔH°f information provided to calculate ΔH°<sub>rxn</sub>&nbsp;for the following
+<p>&nbsp;SO<sub>2</sub>Cl<sub>2</sub>(g) + 2 H<sub>2</sub>O(l) → 2 HCl(g) + H<sub>2</sub>SO<sub>4</sub>(l), ΔH°<sub>rxn</sub> = ?</p>
+<table style="border-collapse: collapse; border-color: #7e8c8d; border-style: dashed; width: 18.4287%;" border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">&nbsp;</td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p><u>ΔH</u>°f (kJ/mol)</p>
+</td>
+</tr>
+<tr>
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p>SO<sub>2</sub>Cl<sub>2</sub>(g)</p>
+</td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p>-364</p>
+</td>
+</tr>
+<tr>
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66"><span style="text-align: start;">H<sub>2</sub>O(l)</span></td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p><span style="text-align: start;">-286</span></p>
+</td>
+</tr>
+<tr>
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p><span style="text-align: start;">HCl(g)</span></p>
+</td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p><span style="text-align: start;">-92</span></p>
+</td>
+</tr>
+<tr>
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p><span style="text-align: start;">H<sub>2</sub>SO<sub>4</sub>(l)</span></p>
+</td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p><span style="text-align: start;">-814</span></p>
+</td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) +161 kJ</div><div class='option'>B) +800. kJ</div><div class='option'>C) -62 kJ<span class='asterisk'>*</span></div><div class='option'>D) -256 kJ</div><p></p></div><div class='question'><div class='stem'>8) How much energy is <strong>required</strong> to decompose 762 g of PCl<sub>3</sub>, according to the reaction below? The molar mass of PCl<sub>3</sub> is 137.32 g/mol and may be useful.
+<p style="text-align: center;">4 PCl<sub>3</sub>(g) → P<sub>4</sub>(s) + 6 Cl<sub>2</sub>(g), ΔH°<sub>rxn</sub> = +1207 kJ</p></div><div class='option'>A) 4.14x10<sup>4</sup> kJ</div><div class='option'>B) 6700 (3 sf) kJ</div><div class='option'>C) 2.30x10<sup>5</sup> kJ</div><div class='option'>D) 1670 kJ<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>9) Use the standard reaction enthalpies given below to determine ΔH°<sub>rxn</sub> for the following reaction
+<p>2 NO(g) + O<sub>2</sub>(g) → 2 NO<sub>2</sub>(g), ΔH°<sub>rxn</sub> = ?</p>
+<p>Given:</p>
+<p>N<sub>2</sub>(g) + O<sub>2</sub>(g) → 2 NO(g), ΔH°<sub>rxn</sub> = +183 kJ</p>
+<p>1/2 N<sub>2</sub>(g) + O<sub>2</sub>(g) → NO<sub>2</sub>(g), ΔH°<sub>rxn</sub> = +33 kJ</p></div><div class='option'>A) -117 kJ<span class='asterisk'>*</span></div><div class='option'>B) -150. kJ</div><div class='option'>C) -333 kJ</div><div class='option'>D) +115 kJ</div><p></p></div><div class='question'><div class='stem'>10) A piece of aluminum (mass is 21.4 g) at 430 K is placed in a Styrofoam coffee cup containing 30.0 mL of water at 298 K. Assuming that <strong>no heat is lost to the cup or the surroundings</strong>, what will the final temperature of the water be? The specific heat capacity of aluminum is 0.900 J/g°C and water is 4.184 J/g°C.&nbsp; The density of water is 1.00 g/mL.</div><div class='option'>A) -30.5 K</div><div class='option'>B) 353 K</div><div class='option'>C) 274 K</div><div class='option'>D) 316 K<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>11) A sample of gold absorbs 36.9 kJ of heat, resulting in a temperature rise of 70°C, determine the mass (in Kg) of the gold sample if the specific heat capacity of gold is 0.129 J/g°C.<br>this one</div><div class='option'>A) 4.09</div><div class='option'>B) 777</div><div class='option'>C) 4090<span class='asterisk'>*</span></div><div class='option'>D) 527</div><p></p></div><div class='question'><div class='stem'>12) A 7.39 g sample of aniline (C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub>, molar mass = 93.13 g/mol) was combusted in a bomb calorimeter. If the temperature rose by 24.0°C, use the information below to determine the heat capacity of the calorimeter (for this problem the water is considered part of the calorimeter, so consider all the heat produced as being absorbed by the calorimeter).
+<p style="text-align: center;">4 C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub>(l) + 35 O<sub>2</sub>(g) → 24 CO<sub>2</sub>(g) + 14 H<sub>2</sub>O(g) + 4 NO<sub>2</sub>(g), ΔH°rxn = -1.28 × 10<sup>4</sup>&nbsp;kJ</p></div><div class='option'>A) 42.3 kJ/°C</div><div class='option'>B) 10.6 kJ/°C<span class='asterisk'>*</span></div><div class='option'>C) 254 kJ/°C</div><div class='option'>D) 0.394 kJ/°C</div><p></p></div><div class='question'><div class='stem'>13) Determine the volume of H<sub>2</sub>S (at 260. K and 1.51 atm) needed to produce 49.8 g of S. Assume that there is excess SO<sub>2</sub> present (molar mass of S is 32.06 g/mol).
+<p style="text-align: center;">2 H<sub>2</sub>S(g) + SO<sub>2</sub>(g) → 3 S(s) + 2 H<sub>2</sub>O(g)</p></div><div class='option'>A) 14.6 L<span class='asterisk'>*</span></div><div class='option'>B) 21.9 L</div><div class='option'>C) 469 L</div><div class='option'>D) 704 L</div><p></p></div><div class='question'><div class='stem'>14) Calculate the root mean square velocity of nitrogen gas molecules at 25°C.</div><div class='option'>A) 515 m/s<span class='asterisk'>*</span></div><div class='option'>B) 51.2 m/s</div><div class='option'>C) 729 m/s</div><div class='option'>D) 149 m/s</div><p></p></div><div class='question'><div class='stem'>15) What mass of water (in grams) is formed when 14.1 L NH<sub>3</sub> (at 279 K and 1.05 atm) is reacted with an excess of O<sub>2</sub>.
+<p style="text-align: center;">4 NH<sub>3</sub>(g) + 5 O<sub>2</sub>(g) → 4 NO(g) + 6 H<sub>2</sub>O(g)</p></div><div class='option'>A) 11.7 g</div><div class='option'>B) 0.647 g</div><div class='option'>C) 0.97 g</div><div class='option'>D) 17.5 g<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>16) What is the volume (in mL) of 2.08g of N<sub>2</sub> at 3135 mm Hg and 80.5°C?</div><div class='option'>A) 119 mL</div><div class='option'>B) 1.46x10<sup>4</sup> mL</div><div class='option'>C) 522 mL<span class='asterisk'>*</span></div><div class='option'>D) 0.522 mL</div><p></p></div><div class='question'><div class='stem'>17) What volume (in mL) will a sample of O<sub>2</sub> gas occupy in a syringe at 6.66 atm, if the O<sub>2</sub> has a volume of 27.0 mL at 1.29 atm?</div><div class='option'>A) 7.95 mL</div><div class='option'>B) 5.37 mL</div><div class='option'>C) 139 mL</div><div class='option'>D) 5.23 mL<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>18) Magnesium is dissolved in hydrochloric acid producing hydrogen gas. If 2.71 L of gas is collected at 30.0°C and has a total pressure of 743 mm Hg, what mass of hydrogen is produced? A possibly useful table of water vapor pressures is provided below.
+<p style="text-align: center;">Mg(s) + 2 HCl(aq) → MgCl<sub>2</sub>(aq) + H<sub>2</sub>(g)<br><br><img title="water vapor pressure table.jpg" src="../images/43.jpeg" alt="" width="174" height="151"></p></div><div class='option'>A) 0.206 g<span class='asterisk'>*</span></div><div class='option'>B) 0.102 g</div><div class='option'>C) 0.224 g</div><div class='option'>D) 0.215 g</div><p></p></div><div class='question'><div class='stem'>19) A large balloon is initially filled to a volume of 26.3 L at 371 K and a pressure of 2160 mm Hg. What volume of gas will the balloon contain at 1.88 atm and 172 K?</div><div class='option'>A) 85.8 L</div><div class='option'>B) 37.5 L</div><div class='option'>C) 6.52x10<sup>4</sup> L</div><div class='option'>D) 18.4 L<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>20) A 0.446 g sample of an unknown gas occupies 253 mL at 266 K and 1.26 atm. What is the molar mass of the unknown gas?</div><div class='option'>A) 0.0305 g/mol</div><div class='option'>B) 0.0146 g/mol</div><div class='option'>C) 68.5 g/mol</div><div class='option'>D) 30.5 g/mol<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>21) If a sample of 0.363 moles of Kr occupies 7.10 L under certain conditions, what volume (in L) will 0.741 moles occupy under the same conditions?</div><div class='option'>A) 1.10 L</div><div class='option'>B) 0.378 L</div><div class='option'>C) 3.48 L</div><div class='option'>D) 14.5 L<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>22) To what temperature must a balloon, initially at 14.6°C and 2.00 L, be heated in order to have a volume of 8.00 L?</div><div class='option'>A) 878°C<span class='asterisk'>*</span></div><div class='option'>B) -201°C</div><div class='option'>C) 1150°C</div><div class='option'>D) 58.4°C</div><p></p></div><div class='question'><div class='stem'>23) What pressure (in atm) will 11.5 g of Ar exert in a 3.8 L container at 72°C?</div><div class='option'>A) 2.15 atm<span class='asterisk'>*</span></div><div class='option'>B) 85.7 atm</div><div class='option'>C) 0.448 atm</div><div class='option'>D) 17.9 atm</div><p></p></div><div class='question'><div class='stem'>24) Under what circumstances is a gas <strong>least</strong><strong> </strong>likely to behave like an ideal gas?</div><div class='option'>A) High temperature and high pressure</div><div class='option'>B) Low temperature and low pressure</div><div class='option'>C) High temperature and low pressure</div><div class='option'>D) Low temperature and high pressure<span class='asterisk'>*</span></div><p></p></div></body></html>

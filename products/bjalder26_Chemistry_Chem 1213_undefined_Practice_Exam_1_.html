@@ -1,0 +1,130 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Practice Exam 1</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Sep 6, 2022</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Subtract the following numbers and indicate the correct number of significant figures.<br>
+<div style="text-align: center;">975.8 - 218.17</div></div><div class='option'>A) 757.63</div><div class='option'>B) 757.6<span class='asterisk'>*</span></div><div class='option'>C) 760</div><div class='option'>D) 758</div><p></p></div><div class='question'><div class='stem'>2) Determine the density of an object object that has a mass of 182.4 g and displaces 9.84 mL of water when placed in a graduated cylinder.</div><div class='option'>A) 0.0539 g/mL</div><div class='option'>B) 1790 g/mL</div><div class='option'>C) 18.5 g/mL<span class='asterisk'>*</span></div><div class='option'>D) 173 g/mL</div><p></p></div><div class='question'><div class='stem'>3) An experiment to determine the density of a sugar solution garners the following results: 1.15 g/mL, 1.81 g/mL, 2.03 g/mL, 1.74 g/mL. If the actual value for the density of the sugar solution is 2.15 g/mL, which statement below best describes her results?</div><div class='option'>A) The results are neither accurate nor precise.<span class='asterisk'>*</span></div><div class='option'>B) The results are precise but not accurate..</div><div class='option'>C) The results are accurate but not precise.</div><div class='option'>D) The results are accurate and precise.</div><p></p></div><div class='question'><div class='stem'>4) Which of the following is an accurate description of random error?</div><div class='option'>A) Error where it is impossible to determine the source</div><div class='option'>B) Error that tends to be too high or tends to be too low</div><div class='option'>C) Error that has equal probability of being too high or too low<span class='asterisk'>*</span></div><div class='option'>D) Error that is always in the same direction</div><p></p></div><div class='question'><div class='stem'>5) Divide the following numbers and indicate the answer with correct number of significant figures. <br><span class="math-tex">\( \frac{179.2}{15.3} \)</span></div><div class='option'>A) 11.71</div><div class='option'>B) 2740</div><div class='option'>C) 11.7<span class='asterisk'>*</span></div><div class='option'>D) 12</div><p></p></div><div class='question'><div class='stem'>6) Indicate the measurement at the red arrow below with the correct number of significant figures.<br><br><img title="ruler2.jpg" src="../images/2.jpeg" alt="" width="448" height="144" data-mce-id="__mcenew"></div><div class='option'>A) 3.35 in</div><div class='option'>B) 3.2 in</div><div class='option'>C) 3.3 in</div><div class='option'>D) 3.25 in<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>7) How many significant figures are in the measurement, 6800. cm?</div><div class='option'>A) 2</div><div class='option'>B) 3</div><div class='option'>C) 4<span class='asterisk'>*</span></div><div class='option'>D) 5</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>8) The scientific method:</div><div class='option'>A) is a set of government directed scientific procedures.</div><div class='option'>B) is a strict set of rules and procedures that lead to irrefutable facts.</div><div class='option'>C) is a method for insuring consensus within the scientific community.</div><div class='option'>D) is based on continued observation and experimentation.<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>9) In the following isotope symbol, the letters for the element have been replaced with an X.&nbsp; What is the name of the isotope?<br><span class="math-tex">\( ^{17}_{8}X \)</span></div><div class='option'>A) Oxygen-17<span class='asterisk'>*</span></div><div class='option'>B) Oxygen-8</div><div class='option'>C) Oxygen-8</div><div class='option'>D) Sulfur-16</div><p></p></div><div class='question'><div class='stem'>10) What element is defined by the following information?&nbsp;<br>p<sup>+</sup> = 12 n° = 13 e<sup>-</sup> = 12</div><div class='option'>A) Sulfur</div><div class='option'>B) Phosphorous</div><div class='option'>C) Aluminum</div><div class='option'>D) Magnesium<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>11) An element has an atomic mass of 105.28 amu. The X-108 isotope (107.98 amu) is 34.54%. What is the mass, in amu, of the other isotope?</div><div class='option'>A) 102.57 amu</div><div class='option'>B) 103.85 amu<span class='asterisk'>*</span></div><div class='option'>C) 105 amu</div><div class='option'>D) 103 amu</div><p></p></div><div class='question'><div class='stem'>12) The statement "samples of a compound will always contain the same proportion of elements by mass" belongs to:</div><div class='option'>A) the Law of Multiple Proportions</div><div class='option'>B) Dalton's Atomic Theory</div><div class='option'>C) the Law of Definite Proportions<span class='asterisk'>*</span></div><div class='option'>D) the Law of Conservation of Mass</div><p></p></div><div class='question'><div class='stem'>13) Which of the following describes the characteristics of a liquid</div><div class='option'>A) definite volume and shape</div><div class='option'>B) definite volume but no definite shape<span class='asterisk'>*</span></div><div class='option'>C) no definite volume but a definite shape</div><div class='option'>D) no definite volume or shape</div><p></p></div><div class='question'><div class='stem'>14) What mass (in mg) does 8.23 moles of carbon have?</div><div class='option'>A) 9.88x10<sup>4</sup> mg<span class='asterisk'>*</span></div><div class='option'>B) 98.8 mg</div><div class='option'>C) 685 mg</div><div class='option'>D) 4.85x10<sup>5</sup> mg</div><p></p></div><div class='question'><div class='stem'>15) Calculate the mass (in g) of 5.51 × 10<sup>23</sup> atoms of Zn.</div><div class='option'>A) 59.8 g<span class='asterisk'>*</span></div><div class='option'>B) 2170 g</div><div class='option'>C) 0.915 g</div><div class='option'>D) 0.0167 g</div><p></p></div><div class='question'><div class='stem'>16) Which of the following describe an element?</div><div class='option'>A) A substance that can't be chemically broken down into simpler substances<span class='asterisk'>*</span></div><div class='option'>B) A substance composed of two or more elements in a fixed</div><div class='option'>C) Two or more substances in variable proportions</div><div class='option'>D) Two or more substances in variable proportions</div><p></p></div><div class='question'><div class='stem'>17) In the following isotope symbol, the letters for the element have been replaced with an X.&nbsp; Determine the number of protons, neutrons and electrons?<br><span class="math-tex">\( ^{16}_{8}X^{3+} \)</span></div><div class='option'>A) protons: 8; neutrons: 16; electrons: 5</div><div class='option'>B) protons: 5; neutrons: 8; electrons: 8</div><div class='option'>C) protons: 8; neutrons: 8; electrons: 5<span class='asterisk'>*</span></div><div class='option'>D) protons: 8; neutrons: 8; electrons: 11</div><p></p></div><div class='question'><div class='stem'>18) A new compound was recently discovered and found to have an atomic weight of 357.66 amu. This element has two isotopes, the lighter of which has a mass of 341.47&nbsp; amu and an abundance of 78.561%. What is the mass of the heavier isotope?</div><div class='option'>A) 362.08</div><div class='option'>B) 337.05</div><div class='option'>C) 416.99<span class='asterisk'>*</span></div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>19) Which of the following describes a homogeneous mixture?</div><div class='option'>A) two or more elements that are not covalently or ionically bonded and have a uniform composition<span class='asterisk'>*</span></div><div class='option'>B) two or more atoms covalently bonded together</div><div class='option'>C) two or more elements bonded to each other</div><div class='option'>D) two or more elements or compounds that are not covalently or ionically bonded and do <strong>not </strong>have a uniform composition</div><p></p></div><div class='question'><div class='stem'>20) Which of the following statements are true?</div><div class='option'>A) Electrons and neutrons have approximately the same mass (about 1 amu), whereas protons have almost no mass.</div><div class='option'>B) Protons and electrons have approximately the same mass (about 1 amu), whereas neutrons have almost no mass.</div><div class='option'>C) Protons and neutrons have approximately the same mass (about 1 amu), whereas electrons have almost no mass.<span class='asterisk'>*</span></div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>21) Calculate the atomic mass of element "X," if it has 2 naturally occurring isotopes with the&nbsp;<br>following masses and natural abundances.<br>X-106 106.49120 amu 77.186%<br>X-109 109.06112 amu 22.814%</div><div class='option'>A) 107.08 amu<span class='asterisk'>*</span></div><div class='option'>B) 108.47 amu</div><div class='option'>C) 106.68 amu</div><div class='option'>D) 161.02 amu</div><p></p></div><div class='question'><div class='stem'>22) How are gases <strong>different </strong>from solids and liquids?</div><div class='option'>A) Gases retain their volume</div><div class='option'>B) Gases are compressible<span class='asterisk'>*</span></div><div class='option'>C) Only gases take the shape of their container</div><div class='option'>D) Gases are always diatomic</div><p></p></div><div class='question'><div class='stem'>23) When a neutral atom gains an electron it becomes a(n) ____________, with a _____________ charge.</div><div class='option'>A) cation, positive</div><div class='option'>B) anion, positive</div><div class='option'>C) anion, negative<span class='asterisk'>*</span></div><div class='option'>D) cation, negative</div><p></p></div><div class='question'><div class='stem'>24) How many moles of Ga are contained in 439 mg of Ga?</div><div class='option'>A) 0.000159 mol</div><div class='option'>B) 0.0063 mol<span class='asterisk'>*</span></div><div class='option'>C) 30.6 mol</div><div class='option'>D) 6.30 mol</div><p></p></div><div class='question'><div class='stem'>25) Which of the following statements about subatomic particles are true.</div><div class='option'>A) charge = protons - neutrons</div><div class='option'>B) mass number = protons + electrons</div><div class='option'>C) negatively charged ions have more protons than electrons</div><div class='option'>D) mass number = protons + neutrons<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>26) Which of the following statements about isotopes is true?</div><div class='option'>A) isotopes have different atomic masses<span class='asterisk'>*</span></div><div class='option'>B) isotopes have the same mass number</div><div class='option'>C) isotopes have different chemical properties</div><div class='option'>D) isotopes have the same number of neutrons but different numbers of protons</div><p></p></div><div class='question'><div class='stem'>27) Which of the following mixtures will <strong>NOT</strong> be homogeneous?</div><div class='option'>A) vinegar and water</div><div class='option'>B) salt and water</div><div class='option'>C) mud and water<span class='asterisk'>*</span></div><div class='option'>D) sugar and coffee</div><p></p></div><div class='question'><div class='stem'>28) What is the average atomic mass of I?</div><div class='option'>A) 53 amu</div><div class='option'>B) 127 amu</div><div class='option'>C) 74 amu</div><div class='option'>D) 126.90 amu<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>29) What is the name of the Mg isotope that has 12 neutrons?</div><div class='option'>A) Magnesium-24<span class='asterisk'>*</span></div><div class='option'>B) Magnesium-24</div><div class='option'>C) Magnesium-12</div><div class='option'>D) Magnesium-12</div><p></p></div><div class='question'><div class='stem'>30) Which of the following is the elemental symbol for tungsten?</div><div class='option'>A) Ag</div><div class='option'>B) W<span class='asterisk'>*</span></div><div class='option'>C) S</div><div class='option'>D) Tu</div><p></p></div><div class='question'><div class='stem'>31) How many atoms are present in 2.44 mg of Ni?</div><div class='option'>A) 0.25 atoms</div><div class='option'>B) 3.99x10<sup>-20</sup> atoms</div><div class='option'>C) 4.16x10<sup>18</sup> atoms</div><div class='option'>D) 2.50x10<sup>19</sup> atoms<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>32) The atomic number (Z) is the number of ________ found in the nucleus of an atom.</div><div class='option'>A) Protons<span class='asterisk'>*</span></div><div class='option'>B) Neutrons</div><div class='option'>C) Electrons</div><div class='option'>D) Protons and neutrons</div><p></p></div><div class='question'><div class='stem'>33) An element has three stable isotopes with masses of 29.141 amu, 31.220 amu, and 33.414 amu. The heavier two isotopes have an abundance of 17.5% (middle mass) and 3.47% (largest mass), respectively. What is the average atomic mass of the element?</div><div class='option'>A) 30.0 amu</div><div class='option'>B) 32.9 amu</div><div class='option'>C) 31.3 amu</div><div class='option'>D) 29.7 amu<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>34) What is the charge, and approximate mass of protons, neutrons, and electrons?</div><div class='option'>A) protons: +1 charge &amp; 1 amu; neutron: -1 charge &amp; 0 amu; electron: no charge &amp; 1 amu</div><div class='option'>B) protons: no charge &amp; 1 amu; neutron: -1 charge &amp; 0 amu; electron: +1 charge &amp; 1 amu</div><div class='option'>C) protons: +1 charge &amp; 1 amu; neutron: no charge &amp; 1 amu; electron: -1 charge &amp; 0 amu<span class='asterisk'>*</span></div><div class='option'>D) protons: -1 charge &amp; 0 amu; neutron: no charge &amp; 1 amu; electron: +1 charge &amp; 1 amu</div><p></p></div><div class='question'><div class='stem'>35) Which ion is represented by the following information?<br>p<sup>+</sup> = 11, e<sup>-</sup> = 14</div><div class='option'>A) Na<sup>3+</sup></div><div class='option'>B) Na<sup>3-</sup><span class='asterisk'>*</span></div><div class='option'>C) P<sup>3-</sup></div><div class='option'>D) Mg<sup>3+</sup></div><p></p></div><div class='question'><div class='stem'>36) Which of the following colors has the lowest frequency</div><div class='option'>A) red<span class='asterisk'>*</span></div><div class='option'>B) green</div><div class='option'>C) violet</div><div class='option'>D) yellow</div><p></p></div><div class='question'><div class='stem'>37) Calculate the energy of a photon (in joules) with a wavelength of 626.1 nm.</div><div class='option'>A) 4.79x10<sup>14</sup> J</div><div class='option'>B) 3.15x10<sup>18</sup> J</div><div class='option'>C) 3.17x10<sup>-37</sup> J</div><div class='option'>D) 3.17x10<sup>-19</sup> J<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>38) Determine the frequency of light associated with the transition from n=5 to n=1&nbsp; in the hydrogen atom.</div><div class='option'>A) 2.63x10<sup>15</sup> Hz</div><div class='option'>B) 2.09x10<sup>-18</sup> Hz</div><div class='option'>C) 9.50x10<sup>-8</sup> Hz</div><div class='option'>D) 3.16x10<sup>15</sup> Hz<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>39) Which class of the electromagnetic spectrum is used to visualize bones and internal organs?</div><div class='option'>A) infrared radiation</div><div class='option'>B) microwaves</div><div class='option'>C) ultraviolet radiation</div><div class='option'>D) x-rays<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>40) For n = 1, what are the possible subshells?</div><div class='option'>A) s<span class='asterisk'>*</span></div><div class='option'>B) s and p</div><div class='option'>C) s‚ p and d</div><div class='option'>D) s‚ p‚ d and f</div><p></p></div><div class='question'><div class='stem'>41) What is the distance between adjacent crests of a wave called?</div><div class='option'>A) wavediameter</div><div class='option'>B) amplitude</div><div class='option'>C) frequency</div><div class='option'>D) wavelength<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>42) According to the Heisenberg Uncertainty Principle, which of the following is true?</div><div class='option'>A) It is not possible to accurately determine both the position and momentum of an electron at the same time.<span class='asterisk'>*</span></div><div class='option'>B) Two electrons cannot have the same spin.</div><div class='option'>C) There are no electron shells above 4.</div><div class='option'>D) It is impossible to determine the charge of a single electron.</div><p></p></div><div class='question'><div class='stem'>43) Calculate the frequency of a photon (in Hz) with a wavelength of 116.8 nm.</div><div class='option'>A) 2.57x10<sup>15</sup> Hz<span class='asterisk'>*</span></div><div class='option'>B) 1.70x10<sup>-18</sup> Hz</div><div class='option'>C) 0.00257 Hz</div><div class='option'>D) 3.89x10<sup>-16</sup> Hz</div><p></p></div><div class='question'><div class='stem'>44) Calculate the wavelength (in meters) of an electron (m = 9.11 × 10<sup>-31</sup> Kg) moving at 5.85 × 10<sup>7</sup> m/s.</div><div class='option'>A) 1.24x10<sup>-11</sup> m<span class='asterisk'>*</span></div><div class='option'>B) 5.33x10<sup>-23</sup> m</div><div class='option'>C) 1.56x10<sup>-38</sup> m</div><div class='option'>D) 3.53x10<sup>-56</sup> m</div><p></p></div><div class='question'><div class='stem'>45) Calculate the wavelength (in nm) of light that has a frequency of 5.23 x 10<sup>14</sup> Hz.</div><div class='option'>A) 5.74x10<sup>-7</sup> nm</div><div class='option'>B) 574 nm<span class='asterisk'>*</span></div><div class='option'>C) 0.00174 nm</div><div class='option'>D) 1.74x10<sup>13</sup> nm</div><p></p></div><div class='question'><div class='stem'>46) Which of the following sets of quantum numbers is possible?</div><div class='option'>A) (4, 3, +3, +<span class="math-tex">\( \frac{1}{2} \)</span>)<span class='asterisk'>*</span></div><div class='option'>B) (2, 2, +2, -<span class="math-tex">\( \frac{1}{2} \)</span>)</div><div class='option'>C) (2, NaNx10<sup>-Infinity</sup>, +NaNx10<sup>-Infinity</sup>, + 1)</div><div class='option'>D) (3, 1, -3, +<span class="math-tex">\( \frac{1}{2} \)</span>)</div><p></p></div><div class='question'><div class='stem'>47) Calculate the energy (in joules) of a photon that has a frequency of 9.55 x 10<sup>14</sup> Hz.</div><div class='option'>A) 6.33x10<sup>-19</sup> J<span class='asterisk'>*</span></div><div class='option'>B) 1.44x10<sup>-20</sup> J</div><div class='option'>C) 6.94x10<sup>-49</sup> J</div><div class='option'>D) 6.94x10<sup>-21</sup> J</div><p></p></div><div class='question'><div class='stem'>48) Describe the shape of a&nbsp; p orbital.</div><div class='option'>A) spherical</div><div class='option'>B) four lobes</div><div class='option'>C) three lobes</div><div class='option'>D) dumbbell shaped<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>49) What total energy (in kJ) is contained in 6.00 mol of photons, all with a frequency of 4.76 × 10<sup>14</sup> Hz?</div><div class='option'>A) 8.78x10<sup>-10</sup> KJ</div><div class='option'>B) 3.42x10<sup>-17</sup> KJ</div><div class='option'>C) 1140 KJ<span class='asterisk'>*</span></div><div class='option'>D) 1.14x10<sup>-25</sup> KJ</div><p></p></div><div class='question'><div class='stem'>50) One of the wave behaviors exhibited by light waves is that they will bend around an obstacle or slit comparable in size to their wavelength.&nbsp; What is this characteristic called?</div><div class='option'>A) refraction</div><div class='option'>B) interference</div><div class='option'>C) effusion</div><div class='option'>D) diffraction<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>51) What is the maximum number of electrons that can be present in subshell f (l = 3)?</div><div class='option'>A) 7</div><div class='option'>B) 14<span class='asterisk'>*</span></div><div class='option'>C) 3</div><div class='option'>D) 6</div><p></p></div><div class='question'><div class='stem'>52) Which of the following happens when the frequency of a photon increases?</div><div class='option'>A) The wavelength increases</div><div class='option'>B) The wavelength stays the same</div><div class='option'>C) The wavelength decreases<span class='asterisk'>*</span></div><div class='option'>D) The speed increases</div><p></p></div></body></html>

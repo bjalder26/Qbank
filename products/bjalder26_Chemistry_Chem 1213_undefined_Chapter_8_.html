@@ -1,0 +1,132 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Chapter 8</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) What is the oxidation state of S in SO<sub>4</sub><sup>2-</sup>?</div><div class='option'>A) +2</div><div class='option'>B) +4</div><div class='option'>C) +8</div><div class='option'>D) +6<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>2) According to the following reaction, what volume (in&nbsp; mL) of 0.110 M NaCl solution is required to react exactly with 20.6 mL of 0.123 M Cu(NO<sub>3</sub>)<sub>2</sub> solution?
+<div style="text-align: center;">2 NaCl(aq) + Cu(NO<sub>3</sub>)<sub>2</sub>(aq) → CuCl<sub>2</sub>(s) + 2 NaNO<sub>3</sub>(aq)</div></div><div class='option'>A) 46.1 mL<span class='asterisk'>*</span></div><div class='option'>B) 0.0461 mL</div><div class='option'>C) 36.8 mL</div><div class='option'>D) 11.5 mL</div><p></p></div><div class='question'><div class='stem'>3) How many grams of sucrose (C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>, molar mass = 342.30 g/mol) are contained 300 mL of a 0.469 M glucose solution?</div><div class='option'>A) 0.000411 g</div><div class='option'>B) 5.35 g</div><div class='option'>C) 48.2 g<span class='asterisk'>*</span></div><div class='option'>D) 8.47x10<sup>22</sup> g</div><p></p></div><div class='question'><div class='stem'>4) According to the following reaction, how many grams of KCl solution is required to react exactly with 37.4 mL of 0.230 M Zn(ClO<sub>3</sub>)<sub>2</sub> solution?
+<div style="text-align: center;">2 KCl(aq) + Zn(ClO<sub>3</sub>)<sub>2</sub>(aq) → ZnCl<sub>2</sub>(s) + 2 KClO<sub>3</sub>(aq)</div></div><div class='option'>A) 0.641 g</div><div class='option'>B) 0.0172 g</div><div class='option'>C) 0.231 g</div><div class='option'>D) 1.28 g<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>5) How many molecules of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>, molar mass = 180.16 g/mol) are contained 100 mL of a 0.222 M glucose solution?</div><div class='option'>A) 2.71x10<sup>23</sup> molecules</div><div class='option'>B) 4.00 molecules</div><div class='option'>C) 0.134 molecules</div><div class='option'>D) 1.34x10<sup>22</sup> molecules<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>6) What would be the molarity of a solution formed by dissolving 20.6 g of KBr in enough water to yield 400.0 mL of solution?</div><div class='option'>A) 23.1 M</div><div class='option'>B) 2.31x10<sup>4</sup> M</div><div class='option'>C) 0.433 M<span class='asterisk'>*</span></div><div class='option'>D) 0.000433 M</div><p></p></div><div class='question'><div class='stem'>7) Write the <strong>net</strong> ionic equation for following the reaction that occurs when aqueous solutions of Na<sub>2</sub>S and Cu(NO<sub>3</sub>)<sub>2</sub> are mixed.&nbsp; If no reaction occurs write "NR" or "no reaction".<br><span style="color: #ecf0f1;">.</span><br><span style="color: #ecf0f1;">.</span><br><span style="color: #ecf0f1;">.</span><br></div><p></p></div><div class='question'><div class='stem'>8) What would be the molarity of a solution formed by dissolving 0.133 mol of NaBr in enough water to yield 900.0 mL of solution?</div><div class='option'>A) 0.148 M<span class='asterisk'>*</span></div><div class='option'>B) 805 M</div><div class='option'>C) 8.05x10<sup>5</sup> M</div><div class='option'>D) 1.48 M</div><p></p></div><div class='question'><div class='stem'>9) What <strong>element </strong>is undergoing reduction (if any) in the following reaction?
+<div style="text-align: center;">Cd(s) + 2 AgNO<sub>3</sub>(aq) → Cd(NO<sub>3</sub>)<sub>2</sub>(aq) + 2 Ag(s)</div></div><div class='option'>A) Ag<span class='asterisk'>*</span></div><div class='option'>B) Cd(NO<sub>3</sub>)<sub>2</sub></div><div class='option'>C) AgNO<sub>3</sub></div><div class='option'>D) Cd</div><p></p></div><div class='question'><div class='stem'>10) What is the name of the acid H<sub>3</sub>PO<sub>4</sub>?</div><div class='option'>A) Hydrophosphorous acid</div><div class='option'>B) Phosphorous acid</div><div class='option'>C) Hydrophosphoric acid</div><div class='option'>D) Phosphoric acid<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>11) All of the following compounds are soluble except which one?</div><div class='option'>A) (NH<sub>3</sub>)<sub>2</sub>CO<sub>3</sub></div><div class='option'>B) BeI</div><div class='option'>C) PbCl<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>D) MgSO<sub>4</sub></div><p></p></div><div class='question'><div class='stem'>12) What type of reaction is the following reaction?<br>2 HCl (aq) + Ca(OH)<sub>2</sub> (aq) → 2 H<sub>2</sub>O (l) + CaCl<sub>2</sub> (aq)</div><div class='option'>A) An acid-base reaction<span class='asterisk'>*</span></div><div class='option'>B) A combustion reaction</div><div class='option'>C) A redox reaction</div><div class='option'>D) A precipitation reaction</div><p></p></div></body></html>

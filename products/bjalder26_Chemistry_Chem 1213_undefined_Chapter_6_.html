@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Chapter 6</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Use the molecular orbital diagram shown below to determine which of the following are the MOST stable.<br><br><img title="molecular orbital diagram 1.png" src="../images/42.png" alt="" width="207" height="352"></div><div class='option'>A) C<sub>2</sub><sup>+</sup></div><div class='option'>B) NC<sup>-</sup><span class='asterisk'>*</span></div><div class='option'>C) C<sub>2</sub></div><div class='option'>D) NC</div><p></p></div><div class='question'><div class='stem'>2) Give the molecular shape for CO<sub>2</sub></div><div class='option'>A) Linear<span class='asterisk'>*</span></div><div class='option'>B) Trigonal planar</div><div class='option'>C) Tetrahedral</div><div class='option'>D) Bent</div><p></p></div><div class='question'><div class='stem'>3) What is the hybridization on the central atom for HSiN?</div><div class='option'>A) sp<sup>3</sup></div><div class='option'>B) sp<sup>2</sup></div><div class='option'>C) sp<span class='asterisk'>*</span></div><div class='option'>D) sp<sup>3</sup>d</div><p></p></div><div class='question'><div class='stem'>4) Give the electron domain geometry for KrF<sub>4</sub></div><div class='option'>A) Octahedral<span class='asterisk'>*</span></div><div class='option'>B) Square pyramidal</div><div class='option'>C) Tetrahedral</div><div class='option'>D) Linear</div><p></p></div><div class='question'><div class='stem'>5) Identify the number of electron groups around a molecule with sp hybridization.</div><div class='option'>A) 2<span class='asterisk'>*</span></div><div class='option'>B) 5</div><div class='option'>C) 3</div><div class='option'>D) 4</div><p></p></div><div class='question'><div class='stem'>6) Use the molecular orbital diagram shown below to determine which of the following are the MOST stable.<br><img title="molecular orbital diagram.png" src="../images/41.png" alt="" width="207" height="352"></div><div class='option'>A) OF</div><div class='option'>B) F<sub>2</sub><sup>-</sup></div><div class='option'>C) OF<sup>-</sup></div><div class='option'>D) O<sub>2</sub><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>7) Use the molecular orbital diagram shown below to determine which of the following are the diamagnetic (<strong>there may be more than one answer</strong>).<br><img title="molecular orbital diagram.png" src="../images/41.png" alt="" width="207" height="352"></div><div class='option'>A) OF<sup>-</sup><span class='asterisk'>*</span></div><div class='option'>B) O<sub>2</sub></div><div class='option'>C) OF</div><div class='option'>D) F<sub>2</sub><sup>-</sup></div><p></p></div><div class='question'><div class='stem'>8) Use the molecular orbital diagram shown below to determine which of the following are the paramagnetic (<strong>there may be more than one answer</strong>).<br><br><img title="molecular orbital diagram 1.png" src="../images/42.png" alt="" width="207" height="352"></div><div class='option'>A) C<sub>2</sub><sup>-</sup><span class='asterisk'>*</span></div><div class='option'>B) BC<sup>-</sup></div><div class='option'>C) BC<span class='asterisk'>*</span></div><div class='option'>D) N<sub>2</sub></div><p></p></div></body></html>

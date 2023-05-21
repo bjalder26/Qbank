@@ -1,0 +1,197 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Chapter 18</h1>
+	<h4></h4>
+	<h6>Apr 6, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Calculate the ΔG°<sub>rxn</sub> at 25°C using the following information. <br>4 NH<sub>3</sub> (g) + 3 O<sub>2</sub> (g) → 2 N<sub>2</sub> (g) + 6 H<sub>2</sub>O (g), ΔG°rxn = ?<br>
+<div class="section-content">
+<figure class="table-container">
+<table>
+<tbody>
+<tr>
+<th scope="row">&nbsp;</th>
+<td>ΔH°<sub>f</sub> (kJ/mol)</td>
+<td>S°(J/mol∙K)</td>
+</tr>
+<tr>
+<th scope="row">H<sub>2</sub>O (l)</th>
+<td>-285.8</td>
+<td>70.0</td>
+</tr>
+<tr>
+<th scope="row">H<sub>2</sub>O (g)</th>
+<td>-241.8</td>
+<td>188.8</td>
+</tr>
+<tr>
+<th scope="row">NH<sub>3</sub> (g)</th>
+<td>-45.9</td>
+<td>192.8</td>
+</tr>
+<tr>
+<th scope="row">N<sub>2</sub> (g)</th>
+<td>0</td>
+<td>191.6</td>
+</tr>
+<tr>
+<th scope="row">O<sub>2</sub> (g)</th>
+<td>0</td>
+<td>205.2</td>
+</tr>
+</tbody>
+</table>
+</figure>
+</div>
+<section aria-labelledby="what_is_a_table"></section></div><div class='option'>A) -1360 kJ</div><div class='option'>B) -1310 kJ<span class='asterisk'>*</span></div><div class='option'>C) -1270 kJ</div><div class='option'>D) 1330 kJ</div><p></p></div><div class='question'><div class='stem'>2) Consider a reaction that has a negative ΔH and a negative ΔS.&nbsp; Which of the following statements is <strong>TRUE</strong>.</div><div class='option'>A) The reaction will be nonspontaneous at all temperatures</div><div class='option'>B) The reaction will be spontaneous at high temperatures</div><div class='option'>C) The reaction will be spontaneous at all temperatures</div><div class='option'>D) The reaction will be spontaneous at low temperatures<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>3) Given the change in Gibbs free energy for these equations,<br>(1) S (s, rhombic) + O<sub>2</sub> (g) &nbsp;→ &nbsp;SO<sub>2</sub> (g) , ΔG = -300.1 kJ<br>(2) SO<sub>3</sub>(g) &nbsp;→ SO<sub>2</sub>(g) + <span class="math-tex">\( \frac{1}{2} \)</span>O<sub>2</sub>(g), ΔG = -71.0 kJ<br><br>solve for the change in Gibbs free energy for the following equation.&nbsp;<br>2 S (s) + 3 O<sub>2</sub> (g) &nbsp;→ &nbsp;2 SO<sub>3</sub> (g),&nbsp; ΔG = ?</div><div class='option'>A) -742 kJ</div><div class='option'>B) -229 kJ</div><div class='option'>C) -458 kJ<span class='asterisk'>*</span></div><div class='option'>D) -371 kJ</div><p></p></div><div class='question'><div class='stem'>4) Assuming little to no change in ΔH due to temperature, above what temperature does the following reaction become nonspontaneous?<br>A + B → C, ΔH = -36.2 kJ; ΔS = -14.7 J/K</div><div class='option'>A) 2.46 K</div><div class='option'>B) 0.406 K</div><div class='option'>C) 2460 K<span class='asterisk'>*</span></div><div class='option'>D) 0.000406 K</div><p></p></div><div class='question'><div class='stem'>5) Calculate the ΔS°<sub>rxn</sub> at 25°C using the following information. <br>C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> (s) + 6 O<sub>2</sub> (g) →&nbsp; 6 CO<sub>2</sub> (g) + 6 H<sub>2</sub>O (l), ΔS°rxn = ?<br>
+<div class="section-content">
+<figure class="table-container">
+<table style="width: 111.943%; height: 180.37px;">
+<tbody>
+<tr style="height: 42.358px;">
+<th style="width: 51.3969%; height: 42.358px;" scope="row">&nbsp;</th>
+<td style="width: 48.8259%; height: 42.358px;">S°(J/mol∙K)</td>
+</tr>
+<tr style="height: 23.3523px;">
+<th style="width: 51.3969%; height: 23.3523px;" scope="row">C<sub>6</sub>H<sub>12</sub>O<sub>6 </sub>(s)</th>
+<td style="width: 48.8259%; height: 23.3523px;">212.1</td>
+</tr>
+<tr style="height: 25.5966px;">
+<th style="width: 51.3969%; height: 25.5966px;" scope="row">&nbsp;O<sub>2</sub> (aq)</th>
+<td style="width: 48.8259%; height: 25.5966px;">205.2</td>
+</tr>
+<tr style="height: 46.108px;">
+<th style="width: 51.3969%; height: 46.108px;" scope="row">CO<sub>2</sub> (g)</th>
+<td style="width: 48.8259%; height: 46.108px;">213.8</td>
+</tr>
+<tr style="height: 23.3523px;">
+<th style="width: 51.3969%; height: 23.3523px;" scope="row">&nbsp;H<sub>2</sub>O (l)</th>
+<td style="width: 48.8259%; height: 23.3523px;">70.0</td>
+</tr>
+</tbody>
+</table>
+</figure>
+</div>
+<section aria-labelledby="what_is_a_table"></section></div><div class='option'>A) 3150 J/K</div><div class='option'>B) 260. J/K<span class='asterisk'>*</span></div><div class='option'>C) -133 J/K</div><div class='option'>D) 580. J/K</div><p></p></div><div class='question'><div class='stem'>6) (SLO 5.3) Which one of the following reactions would have a negative value for ΔS?</div><div class='option'>A) 4 Fe (s) &nbsp;+ &nbsp;3 O<sub>2</sub> (g) ➞ 2 Fe<sub>2</sub>O<sub>3</sub> (s)<span class='asterisk'>*</span></div><div class='option'>B) BaCO<sub>3</sub> (s) ➞ BaO (s) + CO<sub>2</sub> (g)</div><div class='option'>C) 2 NH<sub>3</sub> (g) ➞ N<sub>2</sub> (g) &nbsp;+ &nbsp;3 H<sub>2</sub> (g)</div><div class='option'>D) 2 Fe(s) &nbsp;+ &nbsp;6 HCl (aq) ➞ 2 FeCl<sub>3</sub> (aq) &nbsp;+ &nbsp;3 H<sub>2</sub>(g)</div><p></p></div><div class='question'><div class='stem'>7) (SLO 5.1) Consider the following reaction at constant pressure. Use the information here to determine the value of ΔS<sub>surr</sub> (enthalpy change in the surrounding) at 418 K.&nbsp; Predict whether or not this reaction will be spontaneous at this temperature.<br><br>C<sub>(graphite)</sub> + 2 Br<sub>2</sub> (l) ➞ CBr<sub>4</sub> (s), ΔH = 29.4 kJ</div><div class='option'>A) ΔS<sub>surr</sub> = 2.94x10<sup>4</sup> J/K, reaction is nonspontaneous</div><div class='option'>B) ΔS<sub>surr</sub> = -70.3 J/K, reaction is nonspontaneous<span class='asterisk'>*</span></div><div class='option'>C) ΔS<sub>surr</sub> = 29.4 J/K, reaction is spontaneous</div><div class='option'>D) ΔS<sub>surr</sub> = 70.3 J/K, reaction is spontaneous</div><p></p></div><div class='question'><div class='stem'>8) (SLO 5.4) Which law of thermodynamics states that energy is conserved in a chemical process?</div><div class='option'>A) Zero</div><div class='option'>B) First<span class='asterisk'>*</span></div><div class='option'>C) Second</div><div class='option'>D) Third</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>9) (SLO 5.5) For a given compound, list the <strong>decreasing </strong>order of entropy for a liquid, solid and gas.</div><div class='option'>A) Gas &gt; solid &gt; liquid</div><div class='option'>B) Gas &gt; liquid &gt; solid<span class='asterisk'>*</span></div><div class='option'>C) Solid &gt; gas &gt; liquid</div><div class='option'>D) Solid &gt; liquid &gt; gas</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>10) (SLO 5.7) Which answer correctly identifies the sign on change in enthalpy and entropy?<br>H<sub>2</sub>O (l) ➞ H<sub>2</sub>O (g)</div><div class='option'>A) A positive ΔH and a positive ΔS<span class='asterisk'>*</span></div><div class='option'>B) A negative ΔH and a positive ΔS</div><div class='option'>C) A negative ΔH and a negative ΔS</div><div class='option'>D) A positive ΔH and a negative ΔS</div><div class='option'>E)  All of the above.</div><p></p></div><div class='question'><div class='stem'>11) (SLO 5.2) Given the following equation<br>Given the following equation,<br>CH<sub>4</sub> (g) + 3 Cl<sub>2</sub> (g) ➞ CHCl<sub>3</sub> (l) + 3 HCl (g), ΔG°<sub>rxn</sub> = -305.49 kJ<br>Calculate the ΔG°<sub>rxn</sub> for the following reaction.<br>5 CH<sub>4</sub> (g) + 15 Cl<sub>2</sub> (g) ➞ 5 CHCl<sub>3</sub> (l) + 15 HCl (g)</div><div class='option'>A) -305.49 kJ</div><div class='option'>B) -1527.5 kJ<span class='asterisk'>*</span></div><div class='option'>C) 1527.5 kJ</div><div class='option'>D) -61.098 kJ</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>12) (SLO 5.3) Does the following reaction show an increase, decrease, or no change in entropy of the system?<br><br>CH<sub>3</sub>OH (l) ➞ CO (g) + 2 H<sub>2</sub>(g)</div><div class='option'>A) No change in entropy</div><div class='option'>B) Decrease</div><div class='option'>C) Increase<span class='asterisk'>*</span></div><p></p></div></body></html>

@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Chapter 2 Practice Exam Questions</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Aug 29, 2022</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Determine the frequency of light associated with the transition from n=6 to n=1&nbsp; in the hydrogen atom.</div><div class='option'>A) 2.74x10<sup>15</sup> Hz</div><div class='option'>B) 9.38x10<sup>-8</sup> Hz</div><div class='option'>C) 3.20x10<sup>15</sup> Hz<span class='asterisk'>*</span></div><div class='option'>D) 2.12x10<sup>-18</sup> Hz</div><p></p></div><div class='question'><div class='stem'>2) Calculate the wavelength (in meters) of an electron (m = 9.11 × 10<sup>-31</sup> Kg) moving at 9.82 × 10<sup>7</sup> m/s.</div><div class='option'>A) 5.93x10<sup>-56</sup> m</div><div class='option'>B) 8.95x10<sup>-23</sup> m</div><div class='option'>C) 7.41x10<sup>-12</sup> m<span class='asterisk'>*</span></div><div class='option'>D) 9.28x10<sup>-39</sup> m</div><p></p></div><div class='question'><div class='stem'>3) Which class of the electromagnetic spectrum is used to cook food in a common kitchen appliance by vibrating water molecules to produce heat?</div><div class='option'>A) x-rays</div><div class='option'>B) infrared radiation</div><div class='option'>C) microwaves<span class='asterisk'>*</span></div><div class='option'>D) radio waves</div><p></p></div><div class='question'><div class='stem'>4) What total energy (in kJ) is contained in 7.00 mol of photons, all with a frequency of 5.61 × 10<sup>14</sup> Hz?</div><div class='option'>A) 1.57x10<sup>-25</sup> KJ</div><div class='option'>B) 6.38x10<sup>-10</sup> KJ</div><div class='option'>C) 4.70x10<sup>-17</sup> KJ</div><div class='option'>D) 1570 KJ<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>5) According to the Heisenberg Uncertainty Principle, which of the following is true?</div><div class='option'>A) It is not possible to accurately determine both the position and momentum of an electron at the same time.<span class='asterisk'>*</span></div><div class='option'>B) Two electrons cannot have the same spin.</div><div class='option'>C) It is impossible to determine the charge of a single electron.</div><div class='option'>D) There are no electron shells above 4.</div><p></p></div><div class='question'><div class='stem'>6) Which of the following happens when the wavelength of a photon increases?</div><div class='option'>A) The frequency decreases<span class='asterisk'>*</span></div><div class='option'>B) The speed increases</div><div class='option'>C) The frequency increases</div><div class='option'>D) The frequency stays the same</div><p></p></div><div class='question'><div class='stem'>7) Calculate the frequency of a photon (in Hz) with a wavelength of 994.7 nm.</div><div class='option'>A) 3.32x10<sup>-15</sup> Hz</div><div class='option'>B) 0.000302 Hz</div><div class='option'>C) 2.00x10<sup>-19</sup> Hz</div><div class='option'>D) 3.02x10<sup>14</sup> Hz<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>8) Calculate the energy (in joules) of a photon that has a frequency of 8.24 x 10<sup>14</sup> Hz.</div><div class='option'>A) 1.24x10<sup>-20</sup> J</div><div class='option'>B) 8.04x10<sup>-49</sup> J</div><div class='option'>C) 8.04x10<sup>-21</sup> J</div><div class='option'>D) 5.46x10<sup>-19</sup> J<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>9) What is the maximum number of electrons that can be present in subshell f (l = 3)?</div><div class='option'>A) 6</div><div class='option'>B) 3</div><div class='option'>C) 14<span class='asterisk'>*</span></div><div class='option'>D) 7</div><p></p></div><div class='question'><div class='stem'>10) For n = 1, what are the possible subshells?</div><div class='option'>A) s and p</div><div class='option'>B) s<span class='asterisk'>*</span></div><div class='option'>C) s‚ p and d</div><div class='option'>D) s‚ p‚ d and f</div><p></p></div><div class='question'><div class='stem'>11) Calculate the wavelength (in nm) of light that has a frequency of 4.55 x 10<sup>14</sup> Hz.</div><div class='option'>A) 1.52x10<sup>13</sup> nm</div><div class='option'>B) 0.00152 nm</div><div class='option'>C) 6.59x10<sup>-7</sup> nm</div><div class='option'>D) 659 nm<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>12) Which of the following sets of quantum numbers is possible?</div><div class='option'>A) (4, 2, +2, +<span class="math-tex">\( \frac{1}{2} \)</span>)<span class='asterisk'>*</span></div><div class='option'>B) (3, 4, +2, -<span class="math-tex">\( \frac{1}{2} \)</span>)</div><div class='option'>C) (4, 3, -4, +<span class="math-tex">\( \frac{1}{2} \)</span>)</div><div class='option'>D) (4, 3, +3, + 1)</div><p></p></div><div class='question'><div class='stem'>13) What is it called when two waves of equal amplitude that are in phase interact?</div><div class='option'>A) constructive interference<span class='asterisk'>*</span></div><div class='option'>B) destructive interference</div><div class='option'>C) refraction</div><div class='option'>D) diffraction</div><p></p></div><div class='question'><div class='stem'>14) Which of the following colors has the highest frequency</div><div class='option'>A) blue</div><div class='option'>B) violet<span class='asterisk'>*</span></div><div class='option'>C) red</div><div class='option'>D) green</div><p></p></div><div class='question'><div class='stem'>15) Calculate the energy of a photon (in joules) with a wavelength of 168.1 nm.</div><div class='option'>A) 8.46x10<sup>17</sup> J</div><div class='option'>B) 1.18x10<sup>-36</sup> J</div><div class='option'>C) 1.78x10<sup>15</sup> J</div><div class='option'>D) 1.18x10<sup>-18</sup> J<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>16) Describe the shape of a&nbsp; p orbital.</div><div class='option'>A) four lobes</div><div class='option'>B) three lobes</div><div class='option'>C) dumbbell shaped<span class='asterisk'>*</span></div><div class='option'>D) spherical</div><p></p></div><div class='question'><div class='stem'>17) What is the number of waves that pass through a stationary point per second called?</div><div class='option'>A) amplitude</div><div class='option'>B) wavediameter</div><div class='option'>C) wavelength</div><div class='option'>D) frequency<span class='asterisk'>*</span></div><p></p></div></body></html>

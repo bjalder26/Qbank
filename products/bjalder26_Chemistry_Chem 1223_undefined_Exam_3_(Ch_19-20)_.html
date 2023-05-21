@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Exam 3 (Ch 19-20)</h1>
+	<h4>Mr. Alder</h4>
+	<h6>May 3, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Which element is <strong>oxidized</strong> in the following (unbalanced) redox reaction?<br>MnO<sub>4</sub><sup>⁻</sup>(aq) + H<sub>2</sub>C<sub>2</sub>O<sub>4</sub>(aq) → Mn<sup>2+</sup>(aq) + CO<sub>2</sub>(g)</div><div class='option'>A) C<span class='asterisk'>*</span></div><div class='option'>B) H</div><div class='option'>C) O</div><div class='option'>D) Mn</div><p></p></div><div class='question'><div class='stem'>2) Identify the location of reduction in an electrolytic cell.</div><div class='option'>A) the wire between electrodes</div><div class='option'>B) the salt bridge</div><div class='option'>C) the cathode<span class='asterisk'>*</span></div><div class='option'>D) the anode</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>3) A reaction will be spontaneous (in the forward direction) in which of the following sets of conditions?</div><div class='option'>A) E<sub>cell</sub> is positive, K is greater than 1, ΔG is negative<span class='asterisk'>*</span></div><div class='option'>B) E<sub>cell</sub> is positive, K is positive, ΔG is positive</div><div class='option'>C) E<sub>cell</sub> is greater than 1, K is positive, ΔG is negative</div><div class='option'>D) E<sub>cell</sub> is negative, K is less than 1, ΔG is positive</div><p></p></div><div class='question'><div class='stem'>4) (SLO 6.3) Balance the following <strong>redox reaction</strong> if it occurs in acid. What are the coefficients in front of MnO<sub>4</sub><sup>-</sup> and I<sup>-</sup>&nbsp;in the balanced<br>reaction?<br>MnO<sub>4</sub><sup>-</sup> (aq) + I<sup>-</sup> (s) ➞ MnO<sub>2</sub> (aq) + I<sub>2</sub>&nbsp;(aq)</div><div class='option'>A) MnO<sub>4</sub><sup>-</sup> = 1, I<sup>-</sup> = 3</div><div class='option'>B) MnO<sub>4</sub><sup>-</sup> = 2, I<sup>-</sup> = 4</div><div class='option'>C) MnO<sub>4</sub><sup>-</sup> = 2, I<sup>-</sup> = 6<span class='asterisk'>*</span></div><div class='option'>D) MnO<sub>4</sub><sup>-</sup> = 1, I<sup>-</sup> = 2</div><p></p></div><div class='question'><div class='stem'>5) (SLO 6.7) Determine which of the following pairs of reactants will result in a spontaneous reaction at 25 ºC.</div><div class='option'>A) Fe<sup>3+</sup> (aq) + Ni (s)<span class='asterisk'>*</span></div><div class='option'>B) Ag<sup>+</sup> (aq) + Br<sup>-</sup> (aq)</div><div class='option'>C) Pb<sup>2+</sup> (aq) + Au (s)</div><div class='option'>D) Li<sup>+</sup> (aq) + Cr (s)</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>6) (SLO 6.2) A galvanic cell consists of one half-cell that contains Ag (s) and Ag<sup>+</sup> (aq), and one half-cell that contains Pb (s) and Pb<sup>2+</sup> (aq). What species are produced at the electrodes under standard conditions?<br>Ag<sup>+</sup>(aq) + e<sup>-</sup> → Ag(s), E° = +0.80 V<br>Pb<sup>2+</sup>(aq) + 2 e<sup>-</sup> → Pb(s), E° = -0.13 V</div><div class='option'>A) Pb (s) is formed at the cathode, and Ag<sup>+</sup> (aq) is formed at the anode</div><div class='option'>B) Ag (s) is formed at the cathode, and Pb<sup>2+</sup> (aq) is formed at the anode.<span class='asterisk'>*</span></div><div class='option'>C) Pb<sup>2+</sup> (aq) is formed at the cathode, and Ag (s) is formed at the anode.</div><div class='option'>D) Ag<sup>+</sup> (aq) is formed at the cathode, and Pb (s) is formed at the anode.</div><p></p></div><div class='question'><div class='stem'>7) (SLO 6.6) Consider the galvanic cell, Zn (s) | Zn<sup>2+</sup> (aq) || Pb<sup>2+</sup> (aq) | Pb (s). Which one of the following changes to the cell would cause the cell potential to increase (i.e. become more positive)?</div><div class='option'>A) increase the [Zn<sup>2+</sup>] concentration</div><div class='option'>B) increase the [Pb<sup>2+</sup>] concentration<span class='asterisk'>*</span></div><div class='option'>C) decrease the mass of Zn (s)</div><div class='option'>D) increase the mass of Zn (s)</div><p></p></div><div class='question'><div class='stem'>8) (SLO 6.4) Use the tabulated half-cell potentials to calculate the equilibrium constant (K) for the following balanced redox reaction at 25 ºC.<br>Pb<sup>2+</sup> (aq) + Cu (s) ➞ Pb (s) + Cu<sup>2+</sup> (aq)</div><div class='option'>A) 8.9 x 10<sup>7</sup></div><div class='option'>B) 7.9 x 10<sup>15</sup></div><div class='option'>C) 7.9 x 10<sup>-8</sup></div><div class='option'>D) 1.1 x 10<sup>-22</sup><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>9) (SLO 6.5) Which of the following batteries is used most frequently in cars?</div><div class='option'>A) lead-acid storage battery<span class='asterisk'>*</span></div><div class='option'>B) lithium ion battery</div><div class='option'>C) fuel cell</div><div class='option'>D) NiCad battery</div><p></p></div><div class='question'><div class='stem'>10) (SLO 6.1) Determine the cell notation for the redox reaction given below.<br>Pb (s) + 2 Ag<sup>+</sup> (aq) ➞ Pb<sup>2+</sup> (aq) + 2 Ag (s)</div><div class='option'>A) Pb(s) ∣ Ag(s) || Pb<sup>2+</sup>(aq) ∣ Ag<sup>+</sup>(aq)</div><div class='option'>B) Pb(s) ∣ Pb<sup>2+</sup>(aq) || Ag<sup>+</sup>(aq) ∣ Ag(s)<span class='asterisk'>*</span></div><div class='option'>C) Pb<sup>2+</sup>(aq) ∣ Pb(s) || Ag(s) ∣ Ag<sup>+</sup>(aq)</div><div class='option'>D) Ag<sup>+</sup>(aq) ∣ Ag(s) || Pb(s) ∣ Pb<sup>2+</sup>(aq)</div><p></p></div><div class='question'><div class='stem'>11) If carbon-14 has a half-life of 5730 years, and you find animal bones that have 1/7th the carbon-14 content of living bones, then how long ago would you estimate the animal died?</div><div class='option'>A) 1.61x10<sup>4</sup> years<span class='asterisk'>*</span></div><div class='option'>B) 1.61x10<sup>4</sup> years</div><div class='option'>C) 4.01x10<sup>4</sup> years</div><div class='option'>D) -4840 years</div><p></p></div><div class='question'><div class='stem'>12) If <span class="math-tex">\( _{6}^{11}C \)</span> undergoes a positron emission, what is the resulting daughter nuclide?</div><div class='option'>A) <span class="math-tex">\( _{7}^{11}N \)</span></div><div class='option'>B) <span class="math-tex">\( _{5}^{10}B \)</span></div><div class='option'>C) <span class="math-tex">\( _{7}^{12}N \)</span></div><div class='option'>D) <span class="math-tex">\( _{5}^{11}B \)</span><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>13) If <span class="math-tex">\( _{37}^{81}Rb \)</span> undergoes beta decay, what is the resulting daughter nuclide?</div><div class='option'>A) <span class="math-tex">\( _{36}^{81}Kr \)</span></div><div class='option'>B) <span class="math-tex">\( _{38}^{81}Sr \)</span><span class='asterisk'>*</span></div><div class='option'>C) <span class="math-tex">\( _{39}^{85}Y \)</span></div><div class='option'>D) <span class="math-tex">\( _{36}^{80}Kr \)</span></div><p></p></div><div class='question'><div class='stem'>14) What is the unknown particle emitted, which is represented by <span class="math-tex">\( _{?}^{?}X \)</span>?<br><span class="math-tex">\( _{55}^{137}Cs \)</span> ➞ <span class="math-tex">\( _{?}^{?}X \)</span> + <span class="math-tex">\( _{54}^{137}Xe \)</span></div><div class='option'>A) A positron</div><div class='option'>B) A gamma particle</div><div class='option'>C) A beta particle<span class='asterisk'>*</span></div><div class='option'>D) An alpha particle</div><p></p></div><div class='question'><div class='stem'>15) Fluorine-18 has a half-life of 110 minutes.&nbsp; If a patient is injected with a 256 mg dose of Fluorine-18 for a PET scan, then how many mg would remain after 5.2 hours?</div><div class='option'>A) 35.8 mg<span class='asterisk'>*</span></div><div class='option'>B) 248 mg</div><div class='option'>C) 128 mg</div><div class='option'>D) 64.0 mg</div><p></p></div><div class='question'><div class='stem'>16) Which particle has the lowest penetrating power?</div><div class='option'>A) gamma particle</div><div class='option'>B) beta particle</div><div class='option'>C) alpha particle<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>17) Iodine-131 is an unstable isotope of iodine that is used to treat hyperthyroidism.&nbsp; It has a half-life of 8.02 days.&nbsp; If 54.2 mg of iodine-131 is injected into a patient, then how long will it take for the amount of iodine in their system to drop to&nbsp; 12.1 mg (assume none is excreted)?</div><div class='option'>A) 28.8 days</div><div class='option'>B) 8.02 days</div><div class='option'>C) 17.3 days<span class='asterisk'>*</span></div><div class='option'>D) 2.16 days</div><p></p></div><div class='question'><div class='stem'>18) If <span class="math-tex">\( _{38}^{89}Sr \)</span> undergoes positron emission, what is the resulting daughter nuclide?</div><div class='option'>A) <span class="math-tex">\( _{36}^{85}Kr \)</span></div><div class='option'>B) <span class="math-tex">\( _{38}^{90}Sr \)</span></div><div class='option'>C) <span class="math-tex">\( _{39}^{90}Y \)</span></div><div class='option'>D) <span class="math-tex">\( _{37}^{89}Rb \)</span><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>19) If <span class="math-tex">\( _{95}^{241}Am \)</span> undergoes positron emission, what is the resulting daughter nuclide?</div><div class='option'>A) <span class="math-tex">\( _{94}^{241}Pu \)</span><span class='asterisk'>*</span></div><div class='option'>B) <span class="math-tex">\( _{93}^{237}Np \)</span></div><div class='option'>C) <span class="math-tex">\( _{97}^{245}Bk \)</span></div><div class='option'>D) <span class="math-tex">\( _{96}^{241}Cm \)</span></div><p></p></div><div class='question'><div class='stem'>20) Which of the following is a beta particle?</div><div class='option'>A) <span class="math-tex">\( _{+1}^{  0}e \)</span></div><div class='option'>B) <span class="math-tex">\( _{-1}^{  0}e \)</span><span class='asterisk'>*</span></div><div class='option'>C) <span class="math-tex">\( _0^0γ \)</span></div><div class='option'>D) <span class="math-tex">\( _2^4He \)</span></div><p></p></div></body></html>

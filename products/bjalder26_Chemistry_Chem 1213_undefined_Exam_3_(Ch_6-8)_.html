@@ -1,0 +1,141 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Exam 3 (Ch 6-8)</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Nov 28, 2022</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) What is the hybridization on the central atom for OF2?</div><div class='option'>A) sp<sup>3</sup><span class='asterisk'>*</span></div><div class='option'>B) sp</div><div class='option'>C) sp<sup>3</sup>d<sup>2</sup></div><div class='option'>D) sp<sup>3</sup>d</div><p></p></div><div class='question'><div class='stem'>2) Give the electron domain geometry for KrF<sub>4</sub></div><div class='option'>A) Tetrahedral</div><div class='option'>B) Square pyramidal</div><div class='option'>C) Linear</div><div class='option'>D) Octahedral<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>3) Use the molecular orbital diagram shown below to determine which of the following are the MOST stable.<br><br><img title="molecular orbital diagram 1.png" src="../images/42.png" alt="" width="207" height="352"></div><div class='option'>A) NC<sup>+</sup></div><div class='option'>B) B<sub>2</sub><sup>-</sup></div><div class='option'>C) C<sub>2</sub><sup>2-</sup><span class='asterisk'>*</span></div><div class='option'>D) BC<sup>2-</sup></div><p></p></div><div class='question'><div class='stem'>4) Use the molecular orbital diagram shown below to determine which of the following are the diamagnetic (<strong>there may be more than one answer</strong>).<br><img title="molecular orbital diagram.png" src="../images/41.png" alt="" width="207" height="352"></div><div class='option'>A) O<sub>2</sub></div><div class='option'>B) OF</div><div class='option'>C) F<sub>2</sub><sup>-</sup></div><div class='option'>D) OF<sup>-</sup><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>5) Use the molecular orbital diagram shown below to determine which of the following are the paramagnetic (<strong>there may be more than one answer</strong>).<br><br><img title="molecular orbital diagram 1.png" src="../images/42.png" alt="" width="207" height="352"></div><div class='option'>A) NC<sup>-</sup></div><div class='option'>B) C<sub>2</sub></div><div class='option'>C) NC<span class='asterisk'>*</span></div><div class='option'>D) C<sub>2</sub><sup>+</sup><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>6) Give the molecular shape for XeF<sub>6</sub></div><div class='option'>A) Trigonal planar</div><div class='option'>B) Octahedral<span class='asterisk'>*</span></div><div class='option'>C) Square planar</div><div class='option'>D) Trigonal bipyramid</div><p></p></div><div class='question'><div class='stem'>7) Identify the number of electron groups around a molecule with sp<sup>3</sup> hybridization.</div><div class='option'>A) 5</div><div class='option'>B) 2</div><div class='option'>C) 4<span class='asterisk'>*</span></div><div class='option'>D) 6</div><p></p></div><div class='question'><div class='stem'>8) Use the molecular orbital diagram shown below to determine which of the following are the MOST stable.<br><img title="molecular orbital diagram.png" src="../images/41.png" alt="" width="207" height="352"></div><div class='option'>A) F<sub>2</sub><sup>-</sup></div><div class='option'>B) OF<sup>-</sup></div><div class='option'>C) OF</div><div class='option'>D) O<sub>2</sub><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>9) What is the limiting reactant when 6.81 g of B<sub>2</sub>Br<sub>6</sub> react with 16.9 g of HNO<sub>3</sub>?
+<div style="text-align: center;">B<sub>2</sub>Br<sub>6</sub> + 6 HNO<sub>3</sub> ➞ 2 B(NO<sub>3</sub>)<sub>3</sub> + 6 HBr</div></div><div class='option'>A) B(NO<sub>3</sub>)<sub>3</sub></div><div class='option'>B) B<sub>2</sub>Br<sub>6</sub><span class='asterisk'>*</span></div><div class='option'>C) HBr</div><div class='option'>D) HNO<sub>3</sub></div><p></p></div><div class='question'><div class='stem'>10) How many grams of KNO<sub>3</sub> will react with 138 grams of H<sub>2</sub>CO<sub>3</sub>?
+<div style="text-align: center;">2 KNO<sub>3</sub> + H<sub>2</sub>CO<sub>3</sub> ➞ K<sub>2</sub>CO<sub>3</sub> + 2 HNO<sub>3</sub></div></div><div class='option'>A) 42.3 g</div><div class='option'>B) 112 g</div><div class='option'>C) 42.3 g</div><div class='option'>D) 450. g<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>11) Balance the following equation.<br><br>________ C<sub>8</sub>H<sub>20</sub> + ________ O<sub>2</sub> → ________ H<sub>2</sub>O + ________ CO<sub>2</sub></div><p></p></div><div class='question'><div class='stem'>12) Which of the following is a physical change?</div><div class='option'>A) Baking bread</div><div class='option'>B) Dissolving magnesium chloride in water<span class='asterisk'>*</span></div><div class='option'>C) Burning ethane</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>13) How many molecules of water can be produced when 10.9 g of CH<sub>4</sub>&nbsp;reacts with excess oxygen?
+<div style="text-align: center;">CH<sub>4</sub> + 2 O<sub>2</sub> ➞ CO<sub>2</sub> + 2 H<sub>2</sub>O</div></div><div class='option'>A) 1.82x10<sup>23</sup> molecules</div><div class='option'>B) 8.18x10<sup>23</sup> molecules<span class='asterisk'>*</span></div><div class='option'>C) 24.5 molecules</div><div class='option'>D) 2.05x10<sup>23</sup> molecules</div><p></p></div><div class='question'><div class='stem'>14) <div>What is the percent yield of the reaction if 19.2 g of Fe are produced when 11.8g of Al&nbsp; react with excess Fe<sub>2</sub>O<sub>3</sub> according to the following reaction.</div>
+<div style="text-align: center;">Fe<sub>2</sub>O<sub>3</sub>(s) + 2 Al(s) → Al<sub>2</sub>O<sub>3</sub>(s) + 2 Fe(s)</div></div><div class='option'>A) 163 %</div><div class='option'>B) 61.5 %</div><div class='option'>C) 29.7 %</div><div class='option'>D) 78.6 %<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>15) Which orbitals overlap in the carbon-hydrogen bonds in C<sub>2</sub>H<sub>4</sub>?</div><div class='option'>A) sp<sup>2</sup> and s<span class='asterisk'>*</span></div><div class='option'>B) Two p orbitals</div><div class='option'>C) sp and s</div><div class='option'>D) sp<sup>3</sup> and s</div><p></p></div><div class='question'><div class='stem'>16) How many grams of LiF can be formed from 2.88 moles of BF<sub>3</sub>? Assume an excess of Li<sub>2</sub>SO<sub>3</sub>.
+<div style="text-align: center;">2 BF<sub>3</sub> + 3 Li<sub>2</sub>SO<sub>3</sub> ➞ B<sub>2</sub>(SO<sub>3</sub>)<sub>3</sub> + 6 LiF</div></div><div class='option'>A) 224 g<span class='asterisk'>*</span></div><div class='option'>B) 24.9 g</div><div class='option'>C) 0.333 g</div><div class='option'>D) 3.31 g</div><p></p></div><div class='question'><div class='stem'>17) What is the limiting reactant when 12.3 moles of ZnS react with 11.0 moles of AlP?
+<div style="text-align: center;">3 ZnS + 2 AlP ➞ Zn<sub>3</sub>P<sub>2</sub> + Al<sub>2</sub>S<sub>3</sub></div></div><div class='option'>A) Zn<sub>3</sub>P<sub>2</sub></div><div class='option'>B) AlP</div><div class='option'>C) Al<sub>2</sub>S<sub>3</sub></div><div class='option'>D) ZnS&nbsp;<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>18) How many moles of FeBr<sub>3</sub> can be formed from 1.71 moles of KBr? Assume an excess of Fe(OH)<sub>3</sub>.
+<div style="text-align: center;">3 KBr + Fe(OH)<sub>3</sub> ➞ 3 KOH + FeBr<sub>3</sub></div></div><div class='option'>A) 0.57 moles<span class='asterisk'>*</span></div><div class='option'>B) 168 moles</div><div class='option'>C) 5.13 moles</div><div class='option'>D) 1.71 moles</div><p></p></div><div class='question'><div class='stem'>19) What is the theoretical yield, in moles of CO<sub>2</sub>, from the reaction of 17.1 moles of C<sub>2</sub>H<sub>6</sub> with 29.4 moles of O<sub>2</sub>?
+<div style="text-align: center;">2 C<sub>2</sub>H<sub>6</sub> + 7 O<sub>2</sub> ➞ 4 CO<sub>2</sub> + 6 H<sub>2</sub>O</div></div><div class='option'>A) 51.4 moles</div><div class='option'>B) 34.2 moles</div><div class='option'>C) 16.8 moles<span class='asterisk'>*</span></div><div class='option'>D) 9.77 moles</div><p></p></div><div class='question'><div class='stem'>20) What is the theoretical yield, in grams of CO<sub>2</sub>, from the reaction of 4.69 moles of C<sub>3</sub>H<sub>8</sub> with 39.8 moles of O<sub>2</sub>?
+<div style="text-align: center;">C<sub>3</sub>H<sub>8</sub> + 5 O<sub>2</sub> ➞ 3 CO<sub>2</sub> + 4 H<sub>2</sub>O</div></div><div class='option'>A) 619 g<span class='asterisk'>*</span></div><div class='option'>B) 1050 g</div><div class='option'>C) 68.8 g</div><div class='option'>D) 14.1 g</div><p></p></div><div class='question'><div class='stem'>21) What is the oxidation state of S in SO<sub>4</sub><sup>2-</sup>?</div><div class='option'>A) +2</div><div class='option'>B) +4</div><div class='option'>C) +8</div><div class='option'>D) +6<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>22) How many molecules of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>, molar mass = 180.16 g/mol) are contained 700 mL of a 0.102 M glucose solution?</div><div class='option'>A) 12.9 molecules</div><div class='option'>B) 4.13x10<sup>24</sup> molecules</div><div class='option'>C) 0.43 molecules</div><div class='option'>D) 4.30x10<sup>22</sup> molecules<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>23) What is the name of the acid H<sub>3</sub>PO<sub>4</sub>?</div><div class='option'>A) Hydrophosphorous acid</div><div class='option'>B) Phosphorous acid</div><div class='option'>C) Hydrophosphoric acid</div><div class='option'>D) Phosphoric acid<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>24) What would be the molarity of a solution formed by dissolving 20.4 g of KBr in enough water to yield 500.0 mL of solution?</div><div class='option'>A) 29.2 M</div><div class='option'>B) 2.92x10<sup>4</sup> M</div><div class='option'>C) 0.343 M<span class='asterisk'>*</span></div><div class='option'>D) 0.000343 M</div><p></p></div><div class='question'><div class='stem'>25) What type of reaction is the following reaction?<br>2 HCl (aq) + Ca(OH)<sub>2</sub> (aq) → 2 H<sub>2</sub>O (l) + CaCl<sub>2</sub> (aq)</div><div class='option'>A) A precipitation reaction</div><div class='option'>B) A combustion reaction</div><div class='option'>C) A redox reaction</div><div class='option'>D) An acid-base reaction<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>26) All of the following compounds are soluble except which one?</div><div class='option'>A) PbCl<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>B) MgSO<sub>4</sub></div><div class='option'>C) BeI</div><div class='option'>D) (NH<sub>3</sub>)<sub>2</sub>CO<sub>3</sub></div><p></p></div><div class='question'><div class='stem'>27) Write the <strong>net</strong> ionic equation for following the reaction that occurs when aqueous solutions of Na<sub>2</sub>S and Cu(NO<sub>3</sub>)<sub>2</sub> are mixed.&nbsp; If no reaction occurs write "NR" or "no reaction".<br><span style="color: #ecf0f1;">.</span><br><span style="color: #ecf0f1;">.</span><br><span style="color: #ecf0f1;">.</span><br></div><p></p></div><div class='question'><div class='stem'>28) According to the following reaction, how many grams of KCl solution is required to react exactly with 44.1 mL of 0.237 M Zn(ClO<sub>3</sub>)<sub>2</sub> solution?
+<div style="text-align: center;">2 KCl(aq) + Zn(ClO<sub>3</sub>)<sub>2</sub>(aq) → ZnCl<sub>2</sub>(s) + 2 KClO<sub>3</sub>(aq)</div></div><div class='option'>A) 0.28 g</div><div class='option'>B) 0.0209 g</div><div class='option'>C) 1.56 g<span class='asterisk'>*</span></div><div class='option'>D) 0.779 g</div><p></p></div><div class='question'><div class='stem'>29) According to the following reaction, what volume (in&nbsp; mL) of 0.369 M NaCl solution is required to react exactly with 66.8 mL of 0.643 M Cu(NO<sub>3</sub>)<sub>2</sub> solution?
+<div style="text-align: center;">2 NaCl(aq) + Cu(NO<sub>3</sub>)<sub>2</sub>(aq) → CuCl<sub>2</sub>(s) + 2 NaNO<sub>3</sub>(aq)</div></div><div class='option'>A) 58.2 mL</div><div class='option'>B) 0.233 mL</div><div class='option'>C) 76.7 mL</div><div class='option'>D) 233 mL<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>30) How many grams of sucrose (C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>, molar mass = 342.30 g/mol) are contained 500 mL of a 0.145 M glucose solution?</div><div class='option'>A) 4.37x10<sup>22</sup> g</div><div class='option'>B) 0.993 g</div><div class='option'>C) 24.8 g<span class='asterisk'>*</span></div><div class='option'>D) 0.000212 g</div><p></p></div><div class='question'><div class='stem'>31) What <strong>element </strong>is undergoing oxidation (if any) in the following reaction?
+<div style="text-align: center;">Cd(s) + 2 AgNO<sub>3</sub>(aq) → Cd(NO<sub>3</sub>)<sub>2</sub>(aq) + 2 Ag(s)</div></div><div class='option'>A) Cd<span class='asterisk'>*</span></div><div class='option'>B) AgNO<sub>3</sub></div><div class='option'>C) Cd(NO<sub>3</sub>)<sub>2</sub></div><div class='option'>D) Ag</div><p></p></div><div class='question'><div class='stem'>32) What would be the molarity of a solution formed by dissolving 0.164 mol of NaBr in enough water to yield 100.0 mL of solution?</div><div class='option'>A) 7.26x10<sup>4</sup> M</div><div class='option'>B) 1.64 M<span class='asterisk'>*</span></div><div class='option'>C) 72.6 M</div><div class='option'>D) 16.4 M</div><p></p></div></body></html>

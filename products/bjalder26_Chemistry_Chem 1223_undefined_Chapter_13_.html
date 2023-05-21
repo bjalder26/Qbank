@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Chapter 13</h1>
+	<h4></h4>
+	<h6>Apr 6, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) What mass (in g) of NH<sub>3</sub> (17.03 g/mol) must be dissolved in 625 g of methanol (32.04 g/mol) to make a 0.755 m solution?</div><div class='option'>A) 8.04 g<span class='asterisk'>*</span></div><div class='option'>B) 0.472 g</div><div class='option'>C) 0.251 g</div><div class='option'>D) 15.1 g</div><p></p></div><div class='question'><div class='stem'>2) Which of the following would result in an endothermic reaction?</div><div class='option'>A) The products and reactants are at the same potential energy level</div><div class='option'>B) The reactants have weaker bonds than the products</div><div class='option'>C) The reactants are at a higher potential energy than the products</div><div class='option'>D) The reactants are at a lower potential energy than the products<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>3) A 7.57 L sample of a water solution contains 0.153 g of sodium ions.&nbsp; Determine the concentration of sodium ions in ppm if the density of the solution is 1.04 g/mL.</div><div class='option'>A) 21.6 ppm</div><div class='option'>B) 19.4 ppm<span class='asterisk'>*</span></div><div class='option'>C) 1.94x10<sup>4</sup> ppm</div><div class='option'>D) 0.0000194 ppm</div><p></p></div><div class='question'><div class='stem'>4) A sealed container contains 0.269 L of water with an atmosphere of oxygen gas. What is the concentration of O<sub>2</sub> in the water if the external pressure is 1.77 atm given that k<sub>H</sub> for O<sub>2</sub> is 1.66 × 10<sup>-6</sup> M/mm Hg at this temperature?</div><div class='option'>A) 2.94x10<sup>-6</sup> M</div><div class='option'>B) 1400 (3 sf) M</div><div class='option'>C) 0.00223 M<span class='asterisk'>*</span></div><div class='option'>D) 3.87x10<sup>-9</sup> M</div><p></p></div><div class='question'><div class='stem'>5) Which of the following compounds will be most soluble in water (H<sub>2</sub>O)?</div><div class='option'>A) Ethane (C<sub>2</sub>H<sub>6</sub>)</div><div class='option'>B) Methane (CH<sub>4</sub>)</div><div class='option'>C) Ammonia (NH<sub>3</sub>)<span class='asterisk'>*</span></div><div class='option'>D) Acetylene (C<sub>2</sub>H<sub>2</sub>)</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>6) Determine the vapor pressure of a solution at 25°C that contains 90.4 g of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>) (180.2 g/mol) in 400 mL of water (18.02 g/mol).&nbsp; The vapor pressure of pure water at 25°C is 23.8 torr, and the density of water is 1.00 g/mL.</div><div class='option'>A) 0.526 torr</div><div class='option'>B) 1050 torr</div><div class='option'>C) 23.3 torr<span class='asterisk'>*</span></div><div class='option'>D) 0.538 torr</div><p></p></div><div class='question'><div class='stem'>7) Determine the Henry's law constant for an unknown gas in water at 25°C if the unknown gas at a pressure of 0.0117 atm produces a solution with a concentration of 2.57 M.</div><div class='option'>A) 0.752 M/atm</div><div class='option'>B) 220. M/atm<span class='asterisk'>*</span></div><div class='option'>C) 0.0301 M/atm</div><div class='option'>D) 0.00455 M/atm</div><p></p></div><div class='question'><div class='stem'>8) How many moles of NaI are contained in 308 g of water in a 0.224 m NaI solution?</div><div class='option'>A) 69.0 mol</div><div class='option'>B) 0.719 mol</div><div class='option'>C) 10.3 mol</div><div class='option'>D) 0.069 mol<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>9) What is the major intermolecular force between CH<sub>3</sub>OH and H<sub>2</sub>O?</div><div class='option'>A) Hydrogen bonding<span class='asterisk'>*</span></div><div class='option'>B) Dipole-dipole forces</div><div class='option'>C) Ion-dipole forces</div><div class='option'>D) London dispersion forces</div><p></p></div><div class='question'><div class='stem'>10) Which of the following have a great impact on the solubility of a gas in a liquid?</div><div class='option'>A) Temperature and pressure<span class='asterisk'>*</span></div><div class='option'>B) Pressure only</div><div class='option'>C) Temperature only</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>11) What is the mol fraction of ethanol, C<sub>2</sub>H<sub>5</sub>OH (46.07 g/mol), in a solution of 60.5 g of ethanol and 700 g of water (18.02 g/mol)?</div><div class='option'>A) 29.6</div><div class='option'>B) 0.0338</div><div class='option'>C) 0.0327<span class='asterisk'>*</span></div><div class='option'>D) 0.967</div><p></p></div><div class='question'><div class='stem'>12) Calculate the mass of oxygen (in mg) dissolved in a 7.00 L bucket of water exposed to a pressure of 1.12 atm of air. Assume the mole fraction of O<sub>2</sub> in air to be 0.21 given that k<sub>H</sub> for O<sub>2</sub> is 1.3 × 10<sup>-3</sup> M/atm at this temperature.</div><div class='option'>A) 0.0685 mg</div><div class='option'>B) 34.2 mg</div><div class='option'>C) 326 mg</div><div class='option'>D) 68.5 mg<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>13) (SLO 1.3) The Henry’s law constant for carbon dioxide gas in water at 20ºC is 392 x 10<sup>-4</sup> M/atm. When the partial pressure of helium above a sample of water is 0.765 atm, the concentration of helium in the water is ______ M.</div><div class='option'>A) 0.0512</div><div class='option'>B) 19.5</div><div class='option'>C) 300.</div><div class='option'>D) 0.03<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>14) (SLO 1.1) The osmotic pressure of a solution formed by dissolving 33.4 mg of Aspirin (C<sub>9</sub>H<sub>8</sub>O<sub>4</sub>) (180.16 g/mol) in enough water to make 0.249 L of solution at 30°C is _____ atm.</div><div class='option'>A) 18.5</div><div class='option'>B) 0.0185<span class='asterisk'>*</span></div><div class='option'>C) 0.00461</div><div class='option'>D) 0.00183</div><p></p></div><div class='question'><div class='stem'>15) (SLO 1.6) What is the <strong>change </strong>in boiling point of a solution of 29.5 g MgI<sub>2</sub> (278.1 g/mol) in 796 g of water? K<sub>b</sub> for water is 0.512°C/m.&nbsp; Assume ideal behavior.</div><div class='option'>A) 19.0°C</div><div class='option'>B) 0.0682°C</div><div class='option'>C) 0.205°C<span class='asterisk'>*</span></div><div class='option'>D) 0.0000682°C</div><p></p></div><div class='question'><div class='stem'>16) (SLO 1.4) A solution is 0.726 m MgCl<sub>2</sub> (95.21 g/mol). &nbsp;What is the molarity of the solution if the density of the solution is 1.05 g/mL?</div><div class='option'>A) 0.679 M</div><div class='option'>B) 0.0109 M</div><div class='option'>C) 0.713 M<span class='asterisk'>*</span></div><div class='option'>D) 0.762 M</div><p></p></div><div class='question'><div class='stem'>17) (SLO 1.7) What is a solution containing more than the equilibrium amount of solute is called?</div><div class='option'>A) A supersaturated solution<span class='asterisk'>*</span></div><div class='option'>B) An unsaturated solution</div><div class='option'>C) A saturated solution</div><div class='option'>D) A dilute solution</div><div class='option'>E)  None of the above.</div><p></p></div></body></html>

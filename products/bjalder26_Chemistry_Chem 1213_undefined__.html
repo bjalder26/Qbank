@@ -1,0 +1,130 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1></h1>
+	<h4></h4>
+	<h6>Apr 11, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Divide the following numbers and indicate the answer with correct number of significant figures. <br><span class="math-tex">\( \frac{136.4}{7.11} \)</span></div><div class='option'>A) 19.2<span class='asterisk'>*</span></div><div class='option'>B) 19.18</div><div class='option'>C) 19</div><div class='option'>D) 970.</div><p></p></div><div class='question'><div class='stem'>2) Determine the density of an item object that has a mass of 196.5 g and displaces 9.71 mL of fluid when submersed in a beaker.</div><div class='option'>A) 0.0494 g/mL</div><div class='option'>B) 20.2 g/mL<span class='asterisk'>*</span></div><div class='option'>C) 187 g/mL</div><div class='option'>D) 1910 g/mL</div><p></p></div><div class='question'><div class='stem'>3) An experiment to determine the density of a glucose solution garners the following results: 1.14 g/mL, 1.82 g/mL, 2.07 g/mL, 1.77 g/mL. If the known value for the density of the glucose solution is 1.13 g/mL, which statement below best describes her results?</div><div class='option'>A) The results are precise but not accurate..</div><div class='option'>B) The results are neither accurate nor precise.<span class='asterisk'>*</span></div><div class='option'>C) The results are accurate but not precise.</div><div class='option'>D) The results are accurate and precise.</div><p></p></div><div class='question'><div class='stem'>4) How many significant figures are in the measurement, 6.61 L?</div><div class='option'>A) 1</div><div class='option'>B) 2</div><div class='option'>C) 3<span class='asterisk'>*</span></div><div class='option'>D) 4</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>5) Subtract the following numbers and indicate the correct number of significant figures.<br>
+<div style="text-align: center;">919.6 - 280.06</div></div><div class='option'>A) 639.5<span class='asterisk'>*</span></div><div class='option'>B) 639.54</div><div class='option'>C) 640.</div><div class='option'>D) 640</div><p></p></div><div class='question'><div class='stem'>6) Which of the following is an accurate description of systematic error?</div><div class='option'>A) Error that tends to be too high or tends to be too low<span class='asterisk'>*</span></div><div class='option'>B) Error that is random</div><div class='option'>C) Error that has equal probability of being too high or too low</div><div class='option'>D) Error that averages out over repeated trials</div><p></p></div><div class='question'><div class='stem'>7) Read the water level (shown in mL) with the correct number of significant figures.&nbsp;<br><br><img title="graduated cylindar 3.jpg" src="../images/1.jpeg" alt="" width="151" height="262"></div><div class='option'>A) 2.65 mL<span class='asterisk'>*</span></div><div class='option'>B) 2.6 mL</div><div class='option'>C) 2.7 mL</div><div class='option'>D) 2.75 mL</div><p></p></div></body></html>

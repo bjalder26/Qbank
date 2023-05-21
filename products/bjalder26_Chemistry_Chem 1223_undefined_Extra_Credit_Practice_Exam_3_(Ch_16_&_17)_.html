@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Extra Credit Practice Exam 3 (Ch 16 & 17)</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Apr 12, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Calculate pK<sub>b</sub> for the conjugate base of an acid that has a pK<sub>a</sub> of 6.73 (at 25°C).</div><div class='option'>A) 1.86x10<sup>-7</sup></div><div class='option'>B) 1.49x10<sup>-15</sup></div><div class='option'>C) 7.27<span class='asterisk'>*</span></div><div class='option'>D) 5.37x10<sup>-8</sup></div><p></p></div><div class='question'><div class='stem'>2) Determine the [H<sub>3</sub>O<sup>+</sup>] in a 0.872 M HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub></span> solution. The K<sub>a</sub> of </span></span><span style="font-size: 10.5pt;">HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> is 1.8 × 10<sup>-5</sup></span><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 4.75x10<sup>-8</sup> M</div><div class='option'>B) 3.96x10<sup>-8</sup> M<span class='asterisk'>*</span></div><div class='option'>C) 1.23x10<sup>5</sup> M</div><div class='option'>D) 1.57x10<sup>-10</sup> M</div><p></p></div><div class='question'><div class='stem'>3) If a solution has a hydroxide ion concentration of 3.15x10<sup>-6</sup> M, then what is the pOH of the solution at 25°C?</div><div class='option'>A) 8.50</div><div class='option'>B) 3.17x10<sup>-9</sup></div><div class='option'>C) 5.50<span class='asterisk'>*</span></div><div class='option'>D) -5.61</div><p></p></div><div class='question'><div class='stem'>4) Determine the pOH of a 0.000953 M NaOH&nbsp; solution.</div><div class='option'>A) 3.32</div><div class='option'>B) 1.05x10<sup>-11</sup></div><div class='option'>C) 3.02<span class='asterisk'>*</span></div><div class='option'>D) 11.0</div><p></p></div><div class='question'><div class='stem'>5) Determine the pH&nbsp;in a 0.666 M HClO solution. The K<sub>a</sub> of HClO is 2.9 × 10<sup>-8</sup>.<br></span></div><div class='option'>A) 3.86<span class='asterisk'>*</span></div><div class='option'>B) 4.13</div><div class='option'>C) 7.71</div><div class='option'>D) 0.000139</div><p></p></div><div class='question'><div class='stem'>6) If a solution has a hydroxide ion concentration of 2.93x10<sup>-7</sup> M, then what is the pH of the solution at 25°C?</div><div class='option'>A) 6.53</div><div class='option'>B) -6.66</div><div class='option'>C) 7.47<span class='asterisk'>*</span></div><div class='option'>D) 3.41x10<sup>-8</sup></div><p></p></div><div class='question'><div class='stem'>7) Which of the following chemicals are amphoteric?</div><div class='option'>A) NaOH</div><div class='option'>B) H<sub>2</sub>O<span class='asterisk'>*</span></div><div class='option'>C) H<sub>3</sub>O+</div><div class='option'>D) SO<sup>2-</sup></div><p></p></div><div class='question'><div class='stem'>8) What is the conjugate acid of HSO<sub>4</sub><sup>-</sup>?</div><div class='option'>A) H<sub>2</sub>SO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>B) SO<sub>4</sub><sup>2-</sup></div><div class='option'>C) SO<sub>4</sub>OH</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>9) Determine the pH of a 0.00607 M HBr&nbsp; solution.</div><div class='option'>A) 2.66</div><div class='option'>B) 1.65x10<sup>-12</sup></div><div class='option'>C) 11.8</div><div class='option'>D) 2.22<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>10) Determine the pH of a 0.000415 M NaOH&nbsp; solution.</div><div class='option'>A) 3.72</div><div class='option'>B) 2.41x10<sup>-11</sup></div><div class='option'>C) 10.6<span class='asterisk'>*</span></div><div class='option'>D) 3.38</div><p></p></div><div class='question'><div class='stem'>11) What is the conjugate base of &nbsp;HSO<sub>4</sub><sup>-</sup>?</div><div class='option'>A) SO<sub>4</sub>OH</div><div class='option'>B) SO<sub>4</sub><sup>2-</sup><span class='asterisk'>*</span></div><div class='option'>C) H<sub>2</sub>SO<sub>4</sub></div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>12) Which of the following is the strongest acid?</div><div class='option'>A) HC<sub>6</sub>H<sub>5</sub>O<sub>7</sub><sup>2-</sup></div><div class='option'>B) H<sub>2</sub>C<sub>6</sub>H<sub>5</sub>O<sub>7</sub><sup>-</sup></div><div class='option'>C) C<sub>6</sub>H<sub>5</sub>O<sub>7</sub><sup>3-</sup></div><div class='option'>D) H<sub>3</sub>C<sub>6</sub>H<sub>5</sub>O<sub>7</sub><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>13) If a solution has a pH of 12.8, then what is the hydroxide ion concentration at 25°C?</div><div class='option'>A) 6.31x10<sup>12</sup> M</div><div class='option'>B) 0.0631 M<span class='asterisk'>*</span></div><div class='option'>C) 1.58x10<sup>-13</sup> M</div><div class='option'>D) 1.20 M</div><p></p></div><div class='question'><div class='stem'>14) Which of the following pK<sub>a</sub> values would correspond to the strongest acid?</div><div class='option'>A) pK<sub>a</sub> = 5.18</div><div class='option'>B) pK<sub>a</sub> = 4.29</div><div class='option'>C) pK<sub>a</sub> = 8.20</div><div class='option'>D) pK<sub>a</sub> = 0.939<span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>15) Determine the pH in a 0.840 M H<sub>2</sub>SO<sub>3</sub>&nbsp;solution. The K<sub>b</sub> of HSO<sub>3</sub><sup>-</sup> is 8.33 × 10<sup>-13</sup>.<br></span></div><div class='option'>A) 1.02<span class='asterisk'>*</span></div><div class='option'>B) 13.0</div><div class='option'>C) 1.99</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>16) If a solution has a pH of 6.86, then what is the hydronium (hydrogen) ion concentration at 25°C?</div><div class='option'>A) 1.38x10<sup>-7</sup> M<span class='asterisk'>*</span></div><div class='option'>B) 7.24x10<sup>6</sup> M</div><div class='option'>C) -0.836 M</div><div class='option'>D) 7.14 M</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>17) Which of the following has the strongest conjugate base?</div><div class='option'>A) HF<span class='asterisk'>*</span></div><div class='option'>B) HBr</div><div class='option'>C) HCl</div><div class='option'>D) HI</div><p></p></div><div class='question'><div class='stem'>18) Calculate the concentration of H<sub>3</sub>O<sup>+</sup> (H<sup>+</sup>) in a solution that has a concentration of OH<sup>-</sup>&nbsp;of 3.39x10<sup>-8</sup> M at 25°C.</div><div class='option'>A) 2.65x10<sup>-7</sup> M</div><div class='option'>B) 3.54x10<sup>-7</sup> M</div><div class='option'>C) 3.01x10<sup>-23</sup> M</div><div class='option'>D) 2.95x10<sup>-7</sup> M<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>19) Which of the following K<sub>a</sub> values would correspond to the strongest acid?</div><div class='option'>A) K<sub>a</sub> = 8.79 x 10<sup>-5</sup></div><div class='option'>B) K<sub>a</sub> = 1.46 x 10<sup>-5</sup></div><div class='option'>C) K<sub>a</sub> = 1.39 x 10<sup>-2</sup><span class='asterisk'>*</span></div><div class='option'>D) K<sub>a</sub> = 7.96 x 10<sup>-9</sup></div><p></p></div><div class='question'><div class='stem'>20) Determine the pH in a 0.530 M HSO<sub>4</sub><sup>-</sup> solution. The K<sub>a</sub> of HSO<sub>4</sub><sup>-</sup><span style="font-size: 10.5pt;"> is 1.2 × 10<sup>-2</sup></span><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 1.13<span class='asterisk'>*</span></div><div class='option'>B) 1.10</div><div class='option'>C) 2.17</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>21) Which of the following is the strongest Lewis acid?</div><div class='option'>A) K<sup>+</sup></div><div class='option'>B) Ag<sup>+</sup><span class='asterisk'>*</span></div><div class='option'>C) Na<sup>+</sup></div><div class='option'>D) Li<sup>+</sup></div><p></p></div><div class='question'><div class='stem'>22) Determine the pH in a 0.278 M CH<sub>3</sub>NH<sub>2</sub>&nbsp;solution. The K<sub>b</sub> of CH<sub>3</sub>NH<sub>2</sub><span style="font-size: 10.5pt;"> is 4.38x10<sup>-4</sup></span><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 12.0<span class='asterisk'>*</span></div><div class='option'>B) 1.96</div><div class='option'>C) 3.91</div><div class='option'>D) 10.1</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>23) (SLO 4.5) Calculate the percent ionization of a monoprotic weak acid (HA) in a solution that is 0.376 M, if the acid dissociation constant (K<sub>a</sub>) is 3.72x10<sup>-7</sup>.&nbsp;<br>HA ➞ H<sup>+</sup> + A<sup>-</sup></div><div class='option'>A) 0.0995 %<span class='asterisk'>*</span></div><div class='option'>B) 0.0000372 %</div><div class='option'>C) 0.00101 %</div><div class='option'>D) 0.0917 %</div><p></p></div><div class='question'><div class='stem'>24) (SLO 4.2) Which of the following is a Brønsted–Lowry base?</div><div class='option'>A) Cl<sub>2</sub></div><div class='option'>B) LiOH<span class='asterisk'>*</span></div><div class='option'>C) HClO<sub>2</sub></div><div class='option'>D) CHCH</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>25) (SLO 4.7) How many milliliters of 0.0542 M NaOH are required to titrate 35 mL of 0.199 M HBr to the equivalence point.</div><div class='option'>A) 129 mL<span class='asterisk'>*</span></div><div class='option'>B) 9.53 mL</div><div class='option'>C) 12.9 mL</div><div class='option'>D) 103 mL</div><p></p></div><div class='question'><div class='stem'>26) (SLO 4.3) Identify the strongest acid.</div><div class='option'>A) H<sub>2</sub>SO<sub>3</sub></div><div class='option'>B) They are all equal strength</div><div class='option'>C) H<sub>2</sub>SO<sub>2</sub></div><div class='option'>D) H<sub>2</sub>SO<sub>4</sub><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>27) (SLO 4.1) Which of the following is a Brønsted–Lowry acid?</div><div class='option'>A) NH<sub>3</sub></div><div class='option'>B) LiOH</div><div class='option'>C) HClO<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>D) CHCH</div><div class='option'>E)  All of the above.</div><p></p></div><div class='question'><div class='stem'>28) (SLO 4.6) What is the [CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H] ratio necessary to make a buffer solution with a pH of 5.02?&nbsp;<br>K<sub>a</sub> = 1.8x10<sup>-5</sup> for CH<sub>3</sub>CO<sub>2</sub>H.</div><div class='option'>A) 1.0 : 1</div><div class='option'>B) 0.53 : 1</div><div class='option'>C) 1.5 : 1</div><div class='option'>D) 1.9 : 1<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>29) (SLO 4.4) Calculate the pOH of a solution that contains 7.97x10<sup>-2</sup>&nbsp;M H<sub>3</sub>O<sup>+</sup> at 25°C</div><div class='option'>A) 12.9<span class='asterisk'>*</span></div><div class='option'>B) 1.10</div><div class='option'>C) 1.25x10<sup>-13</sup></div><div class='option'>D) 2.00</div><p></p></div><div class='question'><div class='stem'>30) If you are using an acid and it's conjugate base to prepare a buffer that will be effective at a pH of 8.00 at 25°C, which of the following K<sub>a</sub> values would be best for your acid?</div><div class='option'>A) 1.01x10<sup>-10</sup></div><div class='option'>B) 9.20x10<sup>-10</sup></div><div class='option'>C) 9.11x10<sup>-8</sup></div><div class='option'>D) 9.34x10<sup>-9</sup><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>31) You add 800 mL of a 0.180 M HBr solution to 600 mL of a 0.120 M CH<sub>3</sub>NH<sub>2</sub> solution (K<sub>b</sub> for CH<sub>3</sub>NH<sub>2</sub> is 4.38x10<sup>-4</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 1.29<span class='asterisk'>*</span></div><div class='option'>B) 1.14</div><div class='option'>C) 3.36</div><div class='option'>D) 3.06</div><p></p></div><div class='question'><div class='stem'>32) How many moles of Fe(OH)<sub>2</sub>&nbsp;can be dissolved in 3.00 L of solution. K<sub>sp</sub> (Fe(OH)<sub>2</sub>) = 4.87×10<sup>-17</sup>.</div><div class='option'>A) 6.90x10<sup>-6</sup> moles<span class='asterisk'>*</span></div><div class='option'>B) 0.0000110 moles</div><div class='option'>C) 1.05x10<sup>-8</sup> moles</div><div class='option'>D) 2.30x10<sup>-6</sup> moles</div><p></p></div><div class='question'><div class='stem'>33) How many moles of PbSO<sub>4</sub> can be dissolved in 2.00 L of solution. K<sub>sp</sub> (PbSO<sub>4</sub>) = 1.8x10<sup>-8</sup>.</div><div class='option'>A) 0.000134 moles</div><div class='option'>B) 0.000268 moles<span class='asterisk'>*</span></div><div class='option'>C) 3.60x10<sup>-8</sup> moles</div><div class='option'>D) 0.000134 moles</div><p></p></div><div class='question'><div class='stem'>34) How many moles of Pb<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub>&nbsp;can be dissolved in 2.00 L of solution. K<sub>sp</sub> (Pb<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub>) = 1.0x10<sup>-54</sup>.</div><div class='option'>A) 9.16x10<sup>-10</sup> moles</div><div class='option'>B) 1.24x10<sup>-11</sup> moles<span class='asterisk'>*</span></div><div class='option'>C) 1.92x10<sup>-28</sup> moles</div><div class='option'>D) 1.55x10<sup>-11</sup> moles</div><p></p></div><div class='question'><div class='stem'>35) If you have a 1.0 L buffer solution with 0.1 M acetic acid (Ka 1.75x10^-5) and 0.1 M sodium acetate, then what will be the pH after adding 0.0300 moles of solid NaOH (assume no change in volume)?</div><div class='option'>A) 5.03<span class='asterisk'>*</span></div><div class='option'>B) 4.49</div><div class='option'>C) 4.76</div><div class='option'>D) 5.17</div><p></p></div><div class='question'><div class='stem'>36) You add 600 mL of a 0.130 M KOH solution to 700 mL of a 0.160 M HCN solution (K<sub>a</sub> for HCN&nbsp;is 6.2x10<sup>-10</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 9.57<span class='asterisk'>*</span></div><div class='option'>B) 10.8</div><div class='option'>C) 3.19</div><div class='option'>D) 9.36</div><p></p></div><div class='question'><div class='stem'>37) What would be the pH of a solution formed by mixing 500 mL of 0.110 M HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> with 500 mL of 1.59 M NaC<sub>2</sub>H<sub>3</sub>O<sub>2</sub>?&nbsp; The K<sub>a</sub> for HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> is 1.75x10<sup>-5</sup>.</div><div class='option'>A) 6.94</div><div class='option'>B) 3.60</div><div class='option'>C) 4.76</div><div class='option'>D) 5.92<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>38) You add 500 mL of a 0.100 M NaOH solution to 500 mL of a 0.100 M HClO solution (K<sub>a</sub> for HClO&nbsp;is 3.5x10<sup>-8</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 10.1<span class='asterisk'>*</span></div><div class='option'>B) 10.4</div><div class='option'>C) 6.15</div><div class='option'>D) 3.84</div><p></p></div><div class='question'><div class='stem'>39) What would be the pH of a solution formed by mixing 300 mL of 1.08 M H<sub>2</sub>CO<sub>3</sub> with 300 mL of 0.482 M NaHCO<sub>3</sub>?&nbsp; The K<sub>b</sub> for HCO<sub>3</sub><sup>-</sup> is 2.2x10<sup>-8</sup>.</div><div class='option'>A) 6.70</div><div class='option'>B) 5.99<span class='asterisk'>*</span></div><div class='option'>C) 6.35</div><div class='option'>D) 7.05</div><p></p></div><div class='question'><div class='stem'>40) You add 600 mL of a 0.130 M HCl solution to 700 mL of a 0.200 M NH<sub>3</sub> solution (K<sub>b</sub> for NH<sub>3</sub> is 1.8x10<sup>-5</sup></sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 9.16<span class='asterisk'>*</span></div><div class='option'>B) 4.84</div><div class='option'>C) 9.36</div><div class='option'>D) 8.86</div><p></p></div><div class='question'><div class='stem'>41) Adding HCl to a solution would cause which of the following to become <strong>less </strong>soluble?</div><div class='option'>A) BaBr<sub>2</sub></div><div class='option'>B) Ca(OH)<sub>2</sub></div><div class='option'>C) NaOH</div><div class='option'>D) KCl<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>42) You add 600 mL of a 0.110 M HBr solution to 800 mL of a 0.170 M NaOH solution.&nbsp; What will be the pH of that solution?</div><div class='option'>A) 12.7<span class='asterisk'>*</span></div><div class='option'>B) 13.0</div><div class='option'>C) 12.3</div><div class='option'>D) 1.30</div><p></p></div><div class='question'><div class='stem'>43) You add 700 mL of a 0.110 M HI solution to 700 mL of a 0.110 M C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub> solution (K<sub>b</sub> for C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub> is 3.8x10<sup>-10</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 2.92<span class='asterisk'>*</span></div><div class='option'>B) 9.42</div><div class='option'>C) 4.58</div><div class='option'>D) 5.34</div><p></p></div><div class='question'><div class='stem'>44) Determine the molar solubility of BaF<sub>2</sub> in a solution containing 0.0750 M LiF. K<sub>sp</sub> (AgBr) = 1.7 × 10<sup>-6</sup>.</div><div class='option'>A) 0.000302 M<span class='asterisk'>*</span></div><div class='option'>B) 0.0000227 M</div><div class='option'>C) 0.0000227 M</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>45) A solution contains 2.2x10<sup>-3</sup> M in Cu(NO<sub>3</sub>)<sub>2</sub> and 0.781 M in LiCN. If the K<sub>f</sub> for Cu(CN)<sub>4</sub><sup>2-</sup> is 1.0x10<sup>25</sup>, what concentration of copper (II) ions remain at equilibrium?</div><div class='option'>A) 5.91x10<sup>-28</sup><span class='asterisk'>*</span></div><div class='option'>B) 7.69x10<sup>-28</sup></div><div class='option'>C) 4.55x10<sup>-28</sup></div><div class='option'>D) 2.82x10<sup>-28</sup></div><p></p></div><div class='question'><div class='stem'>46) If 4.58x10<sup>-9</sup> moles of Al(OH)<sub>3</sub> are placed in 2.00 L of solution. K<sub>sp</sub> (Al(OH)<sub>3</sub>) = 1.3×10<sup>-33</sup>, will a precipitate form?</div><div class='option'>A) Yes, a precipitate will form</div><div class='option'>B) No, a precipitate will not form<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>47) The molar solubility of Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub> is 8.89x10<sup>-9</sup> M in pure water.&nbsp; Calculate the K<sub>sp</sub> for Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub>.</div><div class='option'>A) 2.00x10<sup>-39</sup></div><div class='option'>B) 6.00x10<sup>-39</sup><span class='asterisk'>*</span></div><div class='option'>C) 9.60x10<sup>-7</sup></div><div class='option'>D) 5.55x10<sup>-41</sup></div><p></p></div></body></html>

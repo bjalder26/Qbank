@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1></h1>
+	<h4></h4>
+	<h6>Jul 4, 2022</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1)  Choose the correct value for x:<br>x = 14.6/24.5<br><br>The question stem will either ask to solve for, or choose the correct value for x.<br>The numberator (a) will be between 10.0 and 20.0 with 3 significant figures.<br>The denominator (b) variable will be within +/- 50% of 40 and will have 3 significant figures.<br><br>The value of the variables will be randomized according to the specifications.&nbsp; The order of questions and the order of the answers will be randomized.&nbsp; The correct answer(s) are determined by selecting the checkbox before the choice.&nbsp; Clicking on the "Create Quiz, Test, or Worksheet" button will open dialog box asking for a title, then open a new window with a randomized printable format.&nbsp; You can keep refreshing the page to get a new randomized quiz, test, or worksheet.</div><p></p></div><div class='question'><div class='stem'>2) Solve for x:<br>x = <span class="math-tex">\( \frac{4.8}{8.4} \)</span><br>Using the "Mathjax" button you can produce better looking fractions.<br><br>The formulas in the answers default to 3 significant figures.&nbsp; Since I want two, I'm putting a 2 after a semicolon.</div><div class='option'>A) 0.57<span class='asterisk'>*</span></div><div class='option'>B) 13</div><div class='option'>C) -3.6</div><div class='option'>D) 40.</div><p></p></div><div class='question'><div class='stem'>3)  Annie is doing fractions. She needs to convert 4 <span class="math-tex">\( \frac{2}{8} \)</span> to an improper fraction.</div><div class='option'>A) 8.00</div><div class='option'>B) <span class="math-tex">\( \frac{34}{8} \)</span><span class='asterisk'>*</span></div><div class='option'>C) 4.00</div><div class='option'>D) 2.00</div><p></p></div><div class='question'><div class='stem'>4) Bessie is doing fractions. She needs to convert 5 8 / 3 to an improper fraction.</div><div class='option'>A) 3.00</div><div class='option'>B) 8.00</div><div class='option'>C) 5.00</div><div class='option'>D) 13<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>5) </div><p></p></div><div class='question'><div class='stem'>6) </div><p></p></div><div class='question'><div class='stem'>7) </div><p></p></div><div class='question'><div class='stem'>8)  Choose the correct value for x:<br>x = 15.7/24.0<br><br>The question stem will either ask to solve for, or choose the correct value for x.<br>The numberator (a) will be between 10.0 and 20.0 with 3 significant figures.<br>The denominator (b) variable will be within +/- 50% of 40 and will have 3 significant figures.<br><br>The value of the variables will be randomized according to the specifications.&nbsp; The order of questions and the order of the answers will be randomized.&nbsp; The correct answer(s) are determined by selecting the checkbox before the choice.&nbsp; Clicking on the "Create Quiz, Test, or Worksheet" button will open dialog box asking for a title, then open a new window with a randomized printable format.&nbsp; You can keep refreshing the page to get a new randomized quiz, test, or worksheet.</div><p></p></div><div class='question'><div class='stem'>9) Solve for x:<br>x = <span class="math-tex">\( \frac{3.1}{3.5} \)</span><br>Using the "Mathjax" button you can produce better looking fractions.<br><br>The formulas in the answers default to 3 significant figures.&nbsp; Since I want two, I'm putting a 2 after a semicolon.</div><div class='option'>A) -0.4</div><div class='option'>B) 6.6</div><div class='option'>C) 0.89<span class='asterisk'>*</span></div><div class='option'>D) 11</div><p></p></div><div class='question'><div class='stem'>10) Bessie is doing fractions. She needs to convert 3 <span class="math-tex">\( \frac{4}{7} \)</span> to an improper fraction.</div><div class='option'>A) 3.00</div><div class='option'>B) <span class="math-tex">\( \frac{25}{7} \)</span><span class='asterisk'>*</span></div><div class='option'>C) 4.00</div><div class='option'>D) 7.00</div><p></p></div><div class='question'><div class='stem'>11) </div><p></p></div><div class='question'><div class='stem'>12) </div><p></p></div><div class='question'><div class='stem'>13) Bessie is doing fractions. She needs to convert 4 8 / 6 to an improper fraction.</div><div class='option'>A) 6.00</div><div class='option'>B) 4.00</div><div class='option'>C) 12<span class='asterisk'>*</span></div><div class='option'>D) 8.00</div><p></p></div><div class='question'><div class='stem'>14) </div><p></p></div></body></html>

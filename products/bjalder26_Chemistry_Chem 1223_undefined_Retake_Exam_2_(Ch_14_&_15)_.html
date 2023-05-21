@@ -1,0 +1,132 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Retake Exam 2 (Ch 14 & 15)</h1>
+	<h4>Mr. Alder</h4>
+	<h6>May 4, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) (SLO 2.4) What rate is bimolecular?</div><div class='option'>A) Rate = K[A][B]<sup>2</sup></div><div class='option'>B) Rate = K[A]<sup>3</sup></div><div class='option'>C) Rate = K[A]<sup>2</sup><span class='asterisk'>*</span></div><div class='option'>D) Rate = K[A][B][C]</div><p></p></div><div class='question'><div class='stem'>2) (SLO 2.1) If the rate of <strong>disappearance </strong>of HBr in the gas phase reaction is 0.186 M/s, then the rate of <strong>appearance </strong>of H<sub>2</sub>&nbsp;is _______&nbsp; M/s
+<div style="text-align: left;">2 HBr (g) ➞ H<sub>2</sub> (g) + Br<sub>2</sub> (g)</div></div><div class='option'>A) 0.372 M/s</div><div class='option'>B) 0.186 M/s</div><div class='option'>C) 0.0930 M/s<span class='asterisk'>*</span></div><div class='option'>D) 5.38 M/s</div><p></p></div><div class='question'><div class='stem'>3) (SLO 2.6) At 363 K a reaction is found to have a rate constant of &nbsp;21800 M<sup>-1</sup>s<sup>-1</sup>, at 289 K the reaction is found to have a rate constant of 7.39 M<sup>-1</sup>s<sup>-1</sup>. What is the activation energy for this reaction.</div><div class='option'>A) -94.2 kJ/mol</div><div class='option'>B) -40.9 kJ/mol</div><div class='option'>C) 94.2 kJ/mol<span class='asterisk'>*</span></div><div class='option'>D) 40.9 kJ/mol</div><p></p></div><div class='question'><div class='stem'>4) (SLO 2.5) For a reaction that follows the general rate law, Rate = K[A]<sup>2</sup>[B]<sup>2</sup>, what will happen to the rate of reaction if the concentration of A is increased by a factor of 6?</div><div class='option'>A) The rate will increase by a factor of 36<span class='asterisk'>*</span></div><div class='option'>B) The rate will decrease by a factor of 1/36</div><div class='option'>C) The rate will increase by a factor of 24</div><div class='option'>D) The rate will decrease by a factor of 1/24</div><p></p></div><div class='question'><div class='stem'>5) (SLO 2.2) Given the following balanced equation, determine the rate of reaction with respect to [H<sub>2</sub>].<br>N<sub>2</sub> (g) + 3 H<sub>2</sub> (g) ➞ 2 NH<sub>3</sub> (g)</div><div class='option'>A) Rate = <span class="math-tex">\( -\frac{3}{2} \frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>B) Rate = <span class="math-tex">\( -\frac{1}{3} \frac{Δ[H_2]}{Δt} \)</span><span class='asterisk'>*</span></div><div class='option'>C) Rate = <span class="math-tex">\( -\frac{2}{3} \frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>D) Rate = <span class="math-tex">\( +\frac{3}{1} \frac{Δ[H_2]}{Δt} \)</span></div><p></p></div><div class='question'><div class='stem'>6) (SLO 2.7) Which of the following reactions would you predict to have the largest orientation factor?</div><div class='option'>A) H (g) + F (g) ➞ HF (g)<span class='asterisk'>*</span></div><div class='option'>B) NH<sub>3</sub> (g) + BCl<sub>3</sub> (g) ➞ H<sub>3</sub>N-BCl<sub>3</sub> (g)</div><div class='option'>C) NOCl (g) + NOCl (g) ➞ 2 NO (g) + Cl<sub>2</sub> (g)</div><div class='option'>D) Br<sub>2</sub> (g) + H<sub>2</sub>C-CH<sub>2</sub> (g) ➞ H<sub>2</sub>BrC-CBrH<sub>2</sub> (g)</div><p></p></div><div class='question'><div class='stem'>7) (SLO 2.3) What is the overall order of the following reaction, given the rate law?<br>3 X + 2 Y ➞ 4 Z&nbsp; &nbsp; &nbsp;Rate = k[X]<sup>2</sup>[Y]<sup>2</sup></div><div class='option'>A) 4<span class='asterisk'>*</span></div><div class='option'>B) 5</div><div class='option'>C) 3</div><div class='option'>D) 2</div><p></p></div><div class='question'><div class='stem'>8) What is the <strong>overall order</strong> of the following reaction?<br>2 NH<sub>3</sub> (g) + N<sub>2</sub> (g) ➞ 3 H<sub>2</sub> (g);&nbsp; &nbsp; &nbsp; Rate = k</div><div class='option'>A) third</div><div class='option'>B) second</div><div class='option'>C) first</div><div class='option'>D) zeroth<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>9) What are biological catalysts called?</div><div class='option'>A) Exfoliators</div><div class='option'>B) Inhibitors</div><div class='option'>C) Substrates</div><div class='option'>D) Enzymes<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>10) What is the order of the reaction represented by the graph below?<br><img title="ordery.jpg" src="../images/46.jpeg" alt="" width="288" height="240"></div><div class='option'>A) second<span class='asterisk'>*</span></div><div class='option'>B) third</div><div class='option'>C) first</div><div class='option'>D) zeroth</div><p></p></div><div class='question'><div class='stem'>11) Using the balanced chemical equation below, calculate the rate of rate reaction with a rate in change of concentration of P equal to -11.5 M/s.
+<div style="text-align: center;">4 P + 5 O<sub>2</sub> ➞ 2 P<sub>2</sub>O<sub>5</sub></div></div><div class='option'>A) 11.5 M/s</div><div class='option'>B) 46.0 M/s</div><div class='option'>C) 1.75x10<sup>4</sup> M/s</div><div class='option'>D) 2.88 M/s<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>12) The decomposition of cyclopropane to propene is a first-order reaction that has a rate constant of 5.51x10<sup>-4</sup> s<sup>-1</sup>. If the initial concentration of cyclopropane is 7.14 M, what is the concentration of cyclopropane after 153 s?</div><div class='option'>A) 0.602 M</div><div class='option'>B) 7.06 M</div><div class='option'>C) 6.56 M<span class='asterisk'>*</span></div><div class='option'>D) 17.9 M</div><p></p></div><div class='question'><div class='stem'>13) Which of the following expressions accurately depicts the rate of this reaction?<br><br>
+<div style="text-align: center;">4 P + 5 O<sub>2</sub> ➞ 2 P<sub>2</sub>O<sub>5</sub></div></div><div class='option'>A) <span class="math-tex">\( -\frac{Δ[P_2]}{Δt} \)</span></div><div class='option'>B) <span class="math-tex">\( -\frac{1}{5}\frac{Δ[O_2]}{Δt} \)</span><span class='asterisk'>*</span></div><div class='option'>C) <span class="math-tex">\( -\frac{5}{1}\frac{Δ[P_2]}{Δt} \)</span></div><div class='option'>D) <span class="math-tex">\( -\frac{1}{2}\frac{Δ[P_2O_5]}{Δt} \)</span></div><p></p></div><div class='question'><div class='stem'>14) (SLO 3.1) What is the equilibrium constant equation for the following reaction?<br>2 O<sub>3</sub> (g) ⇌ 3 O<sub>2</sub>&nbsp;(g)</div><div class='option'>A) K = <span class="math-tex">\( \frac{[H_2O]}{[H_2][O_2]} \)</span></div><div class='option'>B) K = <span class="math-tex">\( \frac{[H_2]^2[O_2]}{[H_2O]^2} \)</span><span class='asterisk'>*</span></div><div class='option'>C) K = <span class="math-tex">\( \frac{[H_2][O_2]}{[H_2O]} \)</span></div><p></p></div><div class='question'><div class='stem'>15) (SLO 3.2) The equilibrium constant is given for one of the reactions below.&nbsp; Determine the value of the missing equilibrium constant (K<sub>c2</sub>).<br>N<sub>2</sub>O<sub>4</sub> (g) ⇌ 2 NO<sub>2</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;K<sub>c1</sub> = 1.83<br>3 N<sub>2</sub>O<sub>4</sub> (g) ⇌ 6 NO<sub>2</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;K<sub>c2</sub> = ?</div><div class='option'>A) 5.49</div><div class='option'>B) 37.6</div><div class='option'>C) 6.13<span class='asterisk'>*</span></div><div class='option'>D) 7.47</div><p></p></div><div class='question'><div class='stem'>16) (SLO 3.7) Consider the following reaction.<br>Xe (g) + 2 F<sub>2</sub> (g) ⇌ XeF<sub>4</sub> (g)<br><br>A reaction mixture contains 5.55 atm of Xe, 8.08 atm F<sub>2</sub>.&nbsp; Once the reaction reaches equilibrium, the pressure of Xe is 4.12 atm.&nbsp; What is the equilibrium constant (K<sub>p</sub>) for the reaction?</div><div class='option'>A) 0.0665</div><div class='option'>B) 0.00785</div><div class='option'>C) 78.5</div><div class='option'>D) 0.0127<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>17) (SLO 3.3) The K<sub>p</sub> for the reaction below is 9.64 x 10<sup>-3</sup> at 260<em>°</em>C.<br>CO (g) + Cl<sub>2</sub> (g) ⇌ COCl<sub>2</sub> (g)<br><br>In an equilibrium mixture of the three gases, P<sub>CO</sub> = P<sub>Cl2</sub> = 8.85 x 10<sup>-4</sup> atm.&nbsp; The partial pressure of the product, phosgene (COCl<sub>2</sub>), is __________ atm.</div><div class='option'>A) 7.83x10<sup>-7</sup> atm</div><div class='option'>B) 8.53x10<sup>-6</sup> atm</div><div class='option'>C) 0.0000812 atm</div><div class='option'>D) 7.55x10<sup>-9</sup> atm<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>18) (SLO 3.4) The following reaction is endothermic.&nbsp; Which change will shift the equilibrium to the left?<br>N<sub>2</sub>O<sub>4</sub> ⇌ 2 NO<sub>2</sub></div><div class='option'>A) Lowering the temperature<span class='asterisk'>*</span></div><div class='option'>B) Raising the temperature</div><div class='option'>C) Adding a catalyst</div><div class='option'>D)  All of the above.</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>19) (SLO 3.5) Identify the change that will always shift the equilibrium to the right.</div><div class='option'>A) Increasing volume</div><div class='option'>B) Adding product</div><div class='option'>C) Adding reactant<span class='asterisk'>*</span></div><div class='option'>D) Decreasing temperature</div><p></p></div><div class='question'><div class='stem'>20) (SLO 3.6) In a reaction mixture containing <strong>only </strong>reactants, what is the value of Q<sub>c</sub>?</div><div class='option'>A) ꝏ (infinity)</div><div class='option'>B) -1</div><div class='option'>C) 1</div><div class='option'>D) 0<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>21) If Q (the reactant quotient) is greater than the equilibrium constant, then which way will the reaction proceed more quickly?</div><div class='option'>A) In the reverse direction<span class='asterisk'>*</span></div><div class='option'>B) In the forward direction</div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>22) What is Δn for the following equation in relating K<sub>c</sub> to K<sub>p</sub>?<br>2 SO<sub>2 </sub>(g) + O<sub>2 </sub>(g) ⇌ 2 SO<sub>3 </sub>(g)</div><div class='option'>A) -1<span class='asterisk'>*</span></div><div class='option'>B) 2</div><div class='option'>C) 1</div><div class='option'>D) -3</div><p></p></div><div class='question'><div class='stem'>23) The reaction below has a K<sub>p</sub> value of 7.45x10<sup>-4</sup>. What is the value of K<sub>c</sub> for this reaction at 580 K?<br>3 A (g) + 2 B (g) ⇌ A<sub>3</sub>B<sub>2</sub> (g)</div><div class='option'>A) 3.38x10<sup>-8</sup></div><div class='option'>B) 3820<span class='asterisk'>*</span></div><div class='option'>C) 1.45x10<sup>-10</sup></div><div class='option'>D) 1.45x10<sup>-10</sup></div><p></p></div><div class='question'><div class='stem'>24) Once this reaction has reached equilibrium, which of the following changes would shift the equilibrium to the right?<br>2 SO<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 SO<sub>3</sub> (g),&nbsp; &nbsp; &nbsp; ΔH = -197.7 kJ</div><div class='option'>A) An increase in pressure<span class='asterisk'>*</span></div><div class='option'>B) Removing reactant</div><div class='option'>C) An increase in volume</div><div class='option'>D) An increase in temperature</div><p></p></div><div class='question'><div class='stem'>25) At equilibrium, which of the following are true?</div><div class='option'>A) The rate constant of the forward reaction is equal to the equilibrium constant</div><div class='option'>B) The reaction stops</div><div class='option'>C) The concentration of the reactants and products are equal</div><div class='option'>D) The rate of the forward reaction is equal to the rate of the reverse reaction<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>26) Once this reaction has reached equilibrium, which of the following changes would shift the equilibrium to the left?<br>2 SO<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 SO<sub>3</sub> (g),&nbsp; &nbsp; &nbsp; ΔH = -197.7 kJ</div><div class='option'>A) A decrease in temperature</div><div class='option'>B) Adding SO<sub>2</sub></div><div class='option'>C) A decrease in volume</div><div class='option'>D) Removing SO<sub>2</sub><span class='asterisk'>*</span></div><p></p></div></body></html>

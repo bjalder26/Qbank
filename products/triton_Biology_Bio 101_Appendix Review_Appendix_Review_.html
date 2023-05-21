@@ -1,0 +1,112 @@
+<html>
+
+  <head>
+    <style>
+      h1 {
+        display: flex;
+        justify-content: center;
+      }
+
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        display: inline-flex;
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+
+      div.option {
+        text-indent: 14px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .svg {
+        line-height: 2.0;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Appendix Review</h1><br>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'>1) What cavity are the lungs located in?<br><div class='option'>A) Pelvic</div><div class='option'>B) Abdominal</div><div class='option'>C) Thoraxic (pleural)<span class='asterisk'>*</span></div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'>2) What seperates the abdominal and thoracic cavities?<br><div class='option'>A) Stomach</div><div class='option'>B) Lungs</div><div class='option'>C) Pelvis</div><div class='option'>D) Diaphragm<span class='asterisk'>*</span></div><p></p></div><div class='question'>3) The muscles are __________ to the skin?<br><div class='option'>A) Deep<span class='asterisk'>*</span></div><div class='option'>B) Anterior</div><div class='option'>C) Superficial</div><div class='option'>D) Superior</div><p></p></div><div class='question'>4) Which direction do a person's palms face in the anatomical position?<br><div class='option'>A) forward (frontal)<span class='asterisk'>*</span></div><div class='option'>B) backwards (posteriorly)</div><div class='option'>C)  None of the above.</div><p></p></div><div class='question'>5) The ears are __________ to the nose?<br><div class='option'>A) Posterior</div><div class='option'>B) Distal</div><div class='option'>C) Medial</div><div class='option'>D) Lateral<span class='asterisk'>*</span></div><p></p></div><div class='question'>6) The kneecap is on the __________ side of the body?<br><div class='option'>A) Superior</div><div class='option'>B) Inferior</div><div class='option'>C) Posterior</div><div class='option'>D) Anterior<span class='asterisk'>*</span></div><p></p></div><div class='question'>7) A coronal (frontal) section of the head divides the head into:<br><div class='option'>A) left and right sides</div><div class='option'>B) front and back<span class='asterisk'>*</span></div><div class='option'>C) top and bottom</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'>8) The spine is __________ to the stomach?<br><div class='option'>A) Posterior<span class='asterisk'>*</span></div><div class='option'>B) Superior</div><div class='option'>C) Inferior</div><div class='option'>D) Anterior</div><p></p></div><div class='question'>9) The elbow is ____________ to the wrist?<br><div class='option'>A) Anterior</div><div class='option'>B) Inferior</div><div class='option'>C) Distal</div><div class='option'>D) Proximal<span class='asterisk'>*</span></div><p></p></div><div class='question'>10) The eyes are located in the __________ cavity.<br><div class='option'>A) Oral</div><div class='option'>B) Axillary</div><div class='option'>C) Orbital<span class='asterisk'>*</span></div><div class='option'>D) Thoracic</div><p></p></div><div class='question'>11) Which region is the brain in?<br><div class='option'>A) Cephalic&nbsp;<span class='asterisk'>*</span></div><div class='option'>B) Vertebral</div><div class='option'>C) Femoral</div><div class='option'>D) Cervical</div><p></p></div><div class='question'>12) The intestines are located in what region/cavity?<br><div class='option'>A) Pelvis/pelvic</div><div class='option'>B) Abdomen/abdominal<span class='asterisk'>*</span></div><div class='option'>C) Thorax/thoracic</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'>13) The urinary bladder is located in what region?<br><div class='option'>A) Abdomen</div><div class='option'>B) Pelvis<span class='asterisk'>*</span></div><div class='option'>C) Thorax</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'>14) Your armpits are in what body region?<br><div class='option'>A) Crural</div><div class='option'>B) Axilary<span class='asterisk'>*</span></div><div class='option'>C) Pubic</div><div class='option'>D) Umbilical</div><p></p></div><div class='question'>15) A saggital section divides the body into:<br><div class='option'>A) left and right sides<span class='asterisk'>*</span></div><div class='option'>B) top and bottom</div><div class='option'>C) front and back</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'>16) The wrist is ____________ to the elbow?<br><div class='option'>A) Anterior</div><div class='option'>B) Inferior</div><div class='option'>C) Distal<span class='asterisk'>*</span></div><div class='option'>D) Proximal</div><p></p></div><div class='question'>17) What region is the heart located in?<br><div class='option'>A) Thorax (Mediastinum)<span class='asterisk'>*</span></div><div class='option'>B) Abdomen</div><div class='option'>C) Pelvis</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'>18) What region are the lungs located in?<br><div class='option'>A) Thorax<span class='asterisk'>*</span></div><div class='option'>B) Abdomen</div><div class='option'>C) Pelvis</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'>19) What region is your voice box in?<br><div class='option'>A) Sacral</div><div class='option'>B) Lumbar</div><div class='option'>C) Thoracic</div><div class='option'>D) Cervical<span class='asterisk'>*</span></div><p></p></div><div class='question'>20) The naval is __________ to the rib cage?<br><div class='option'>A) Anterior</div><div class='option'>B) Inferior<span class='asterisk'>*</span></div><div class='option'>C) Posterior</div><div class='option'>D) Superior</div><p></p></div><div class='question'>21) The skin is __________ to the bones.<br><div class='option'>A) Superficial<span class='asterisk'>*</span></div><div class='option'>B) Deep</div><div class='option'>C) Anterior</div><div class='option'>D) Superior</div><p></p></div><div class='question'>22) The heart is ____________ to the lungs?<br><div class='option'>A) Medial<span class='asterisk'>*</span></div><div class='option'>B) Superior</div><div class='option'>C) Lateral</div><div class='option'>D) Posterior</div><p></p></div></body></html>
