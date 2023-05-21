@@ -46,6 +46,14 @@ function clearAnswerBoxes() {
   }
 }
 
+function clickInclude(thisid, targetid) {
+	if ($(thisid).checked == true) {
+		if ($(targetid).checked == false) {
+			$(targetid).checked = true;
+		}
+	}
+}
+
 function clearBoxes() {
   var boxes = document.getElementsByClassName('answercheckbox');
   for (let box of boxes) {
@@ -69,12 +77,13 @@ function createProduct() {
     const course = $('course').value;
     const qbank = $('question bank').value;  
 	  
-	const qbankAndNumArray = [{qbankName: qbank, number: qbanks[subject][course][qbank].length}];
+	const qbankAndNumArray = [{qbankName: qbank, number: qbanks[subject][course][qbank].length.toString()}];
 	title = title.replaceAll(' ', '_');
     passed.title = title;
+	passed.instructorName = "";
+	passed.date = "";
     passed.subject = subject;
     passed.course = course;
-    //passed.qbank = qbank;
 	passed.qbankAndNumArray = qbankAndNumArray;
     passed.userName = user;
     passed = JSON.stringify(passed);
@@ -299,20 +308,22 @@ function loading(qbanks) {
 }
 
 function loadQuestion(qbank, numb) {
-  if (typeof qbank != 'undefined') {
-    if (numb > qbank.length) {
-      loadQuestion(qbank, qbank.length);
-    } else if (numb < 0) {
+  if (typeof qbank != 'undefined') { // checks to see if qbank var defined
+    if (numb > qbank.length) { // limits question loaded to length of qbank
+      loadQuestion(qbank, qbank.length); //### should this be qbank.length - 1? - probably
+    } else if (numb < 0) { // limits question loaded to positive number ### should this be 1? - probably not
       loadQuestion(qbank, 0);
     } else {
-      const buttons = document.getElementsByClassName('large material-icons');
-      for (let button of buttons) {
+      const buttons = document.getElementsByClassName('large material-icons'); // selects all large buttons
+      for (let button of buttons) { //enables all large buttons
         button.disabled = false;
       }
       $('rename question bank').disabled = false;
       $('delete question bank').disabled = false;
       $('export question bank').disabled = false;
-      if ($('question bank').value != 'select question bank') {
+      if ($('question bank').value != 'select question bank') { // sets cookie when question loaded
+	      setCookie('courseName', $('course').value, 2);
+		  setCookie('subjectName', $('subject').value, 2);
 	      setCookie('qbankName', $('question bank').value, 2);
         $('question number').innerHTML = numb + 1;
         setCookie('questionnumber', numb + 1, 2);
@@ -321,13 +332,14 @@ function loadQuestion(qbank, numb) {
         const choices = question ? question.choices : [];
         const correct = question ? question.correct : [];
         const group = question ? question.group : '';
+		const solution = question ? question.solution ? question.solution : '' : '';
         const letters = [];
         $('group').innerHTML = group;
-
+		
         populateTinyMceOrTextarea('question stem', stem); // need more sophisticated replaceAll
 
         clearAnswerBoxes();
-        const numTextAreasToClear = document.getElementsByClassName('tinymce').length - 1;
+        const numTextAreasToClear = document.getElementsByClassName('tinymce').length - 2; // doesn't clear solution 
         for (let i = 0; i < numTextAreasToClear; i++) {
           populateTinyMceOrTextarea('choice ' + String.fromCharCode(parseInt(i) + 65), '');
         }
@@ -335,6 +347,7 @@ function loadQuestion(qbank, numb) {
         for (let choice in choices) {
           populateTinyMceOrTextarea('choice ' + String.fromCharCode(parseInt(choice) + 65), choices[parseInt(choice)]); // need better replaceAll
         }
+		populateTinyMceOrTextarea('solution', solution); // need better replaceAll?
         clearBoxes();
         for (let ans of correct) {
           $('checkbox ' + String.fromCharCode(parseInt(ans) + 65)).checked = true;
@@ -354,6 +367,10 @@ function loadQuestion(qbank, numb) {
           $('none of the above cb').checked = false;
           $('none of the above').checked = false;
         }
+		
+      if (question.rqo != undefined) {
+        $('retain question order').checked = question.rqo;
+      }
 
       } else { // this is IF no question bank
         $('question number').innerHTML = '';
@@ -362,9 +379,6 @@ function loadQuestion(qbank, numb) {
         clearBoxes();
       }
 
-      if (question.rqo != undefined) {
-        $('retain question order').checked = question.rqo;
-      }
       $("left arrow").disabled = false;
 
       if (numb == null || numb <= 0) {
@@ -442,6 +456,7 @@ function newSubject() {
   if (subjectName && courseName && qbankName) {
     let passed = {};
     setCookie('subjectName', subjectName, 2);
+	alert(subjectName);
     setCookie('courseName', courseName, 2);
     setCookie('qbankName', qbankName, 2);
     setCookie('questionnumber', 0, 2)
@@ -508,14 +523,35 @@ function populateDD(obj, dropDown) {
 }
 
 function populateTinyMceOrTextarea(id, newText) {
+  // TinyMCE is already initialized, destroy it
+  tinymce.EditorManager.execCommand('mceRemoveEditor', true, id);
+  // Set the content in the textarea
+  $(id).value = newText;
+  // Reinitialize TinyMce
+  initTinyMce();
+}
+
+/*
+function populateTinyMceOrTextarea(id, newText) {
   if ($(id).style.display == 'none') {
-    tinymce.get(id).setContent(newText);
+    // this is a test
+	tinymce.EditorManager.editors = []
+	//tinymce.activeEditor.destroy();  
+	//(id).style.display == 'block';
+	//tinymce.get(id).removeChild(id);
+	$(id).value = newText;
+    initTinyMce();
+	
+	//tinymce.get(id).setContent(newText);
+	console.log(newText);
     //tinymce.get(id).getBody().innerHTML = newText => seems to cause problems
   } else {
     $(id).value = newText;
     initTinyMce();
+	console.log('else')
   }
 }
+*/
 
 function refreshing(qbanks) {
 	$('username').innerHTML = `${user}`;
@@ -906,6 +942,13 @@ function initTinyMce() {
     },
 
     // mathjax 
+	plugins: [
+      'advlist autolink lists link image charmap print preview anchor',
+      'searchreplace visualblocks code fullscreen',
+      'insertdatetime media table paste code help wordcount',
+	  'mathjax' // not sure if needed
+    ],
+	
     external_plugins: {
       'mathjax': '/node_modules/@dimakorotkov/tinymce-mathjax/plugin.js'
     },
@@ -921,12 +964,6 @@ function initTinyMce() {
       configUrl: '/node_modules/@dimakorotkov/tinymce-mathjax/config.js' //optional: mathjax config js
     },
 
-
-    plugins: [
-      'advlist autolink lists link image charmap print preview anchor',
-      'searchreplace visualblocks code fullscreen',
-      'insertdatetime media table paste code help wordcount'
-    ],
     toolbar: 'undo redo | ' +
       'bold italic superscript subscript forecolor backcolor | image | mathjax | ${} RangeVar PercentVar ListVar Calculate | alignleft aligncenter ' + //mathjax
       'alignright alignjustify | formatselect | fontsizeselect |  bullist numlist outdent indent | ' +
