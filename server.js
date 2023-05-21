@@ -1,14 +1,34 @@
-// express (MIT), fs (MIT), peg parser, (Free, MIT), tinyMCE (LGPL), mathJAX (apache), tinymce-mathjax (MIT)
+// express (MIT), fs (MIT), mathjs (open source), (Free, MIT), tinyMCE (LGPL), mathJAX (apache), tinymce-mathjax (MIT)
 
 const express = require('express'); // express server
 const http = require('http');
 var fs = require('fs'); // file system
-var parser = require(__dirname + '\\parser.js'); // parser for =[] calculations
+//const parser = require('./parser'); // parser for =[] calculations
+//const parser = require(__dirname + '//parser.js'); // parser for =[] calculations
+
+
 const bcrypt = require('bcrypt'); // for hashing passwords
 const path = require("path"); // not sure if this is needed
 const app = express();
 const threeHours = 10800000;
 const server = http.createServer(app); // not sure if this is important
+
+const math = require('mathjs'); // for =[] calculations
+
+
+// Define custom functions
+const ln = x => Math.log(x);
+const log10 = x => Math.log10(x);
+const log = log10; // Use the same function name for log() as log10()
+
+
+//const ln = x => math.log(x, math.e); //const ln = math.log;
+//const log10 = math.log10;
+//const log = x => math.log(x, math.e);//const log = math.log10; // Use the same function name for log() as log10()
+// Add custom functions to math object
+//math.import({ ln, log10, log });
+
+
 
 app.use(express.urlencoded({ // increases the limit on what is sent via url - not sure if needed anymore
   limit: '5mb',
@@ -46,9 +66,8 @@ files.forEach(function(file) {
 });
 imageNumberArray.sort((a, b) => a - b);
 imageNumberArray.reverse();
-console.log(imageNumberArray);
 var nextImageNumber = imageNumberArray[0] ? parseInt(imageNumberArray[0]) + 1: 1; //increments
-console.log(nextImageNumber);
+console.log('nextImageNumber: ' + nextImageNumber);
 
 // const listener = app.listen(process.env.PORT, () => { //random port
 /*
@@ -61,6 +80,15 @@ const listener = server.listen(3000, () => {
 });
 
 // functions
+
+function evaluateWithCustomFunctions(equation) {
+  const scope = {
+    ln,
+    log10,
+    log,
+  };
+  return math.evaluate(equation, scope);
+}
 
 const deepCopyFunction = (inObject) => {
   let outObject, value, key;
@@ -99,11 +127,14 @@ function minMaxType(variable) {
     let regex = '(?<=\\$\{)(.+?)(?=\\s)'; // matches between ${ and first space
     const letter = variable.match(regex)[0];
     const min = variable.match(/(?<=\s)(.+?)(?=\s|})/)[0]; // matches between first space and either second space or }
+console.log('min: '+min)
     const minSigFigs = getSigFigs(min);
     const max = variable.match(/(?<=\d\s)(.+?)(?=\s|})/) ? variable.match(/(?<=\d\s)(.+?)(?=\s|})/)[0] : min * 10; // matches between first space after a digit and either space or } defaults to 10 times min number
+console.log('max: '+max)
     const maxSigFigs = getSigFigs(max);
-    regex = new RegExp('(?<=' + max + '\\s)(.*)(?=})', 'i'); // matches between max number and }
+	regex = new RegExp('(?<=' + min + '\\s' + max + '\\s)(.*)(?=})', 'i'); // matches between min and max number and }
     const sigFigs = variable.match(regex) ? variable.match(regex)[0] : Math.min(parseInt(minSigFigs), parseInt(maxSigFigs)); //consider changing
+console.log('sigFigs minMaxType: '+sigFigs)
     let newNumber = Math.random() * (parseFloat(max) - parseFloat(min)) + parseFloat(min);
     newNumber = newNumber.setSigFigs(sigFigs);
     return [letter, newNumber.toString()];
@@ -231,6 +262,72 @@ function reverseString(string) {
 }
 
 Number.prototype.setSigFigs = function(sf) {
+ console.log('this setSigFigs: '+this);
+ console.log('------------------------------------------');
+  sf = sf*1;
+  let n = Number(this.toPrecision(sf)).toString(); // rounded here, but not sig figs
+  console.log('n1: '+n)
+  let exp = 0;
+  if (n.includes('e')) { // splits exponents from coefficient
+    const numpartsarray = n.split('e');
+    n = numpartsarray[0];
+    console.log('n2: '+n);
+	if (!n.includes('.')) {
+		if(n.length < sf) {
+			n = n+'.';
+		}		
+	}
+	n = n.padEnd(sf+1, 0)
+    console.log('n3: '+n);
+    exp = numpartsarray[1];
+  }
+  let neg = false;
+  if (parseInt(n) < 0) { // removes negative, and remembers it was negative
+    n = n.replace('-', '');
+    neg = true;
+  }
+  if (n >= 1) { // if > 1
+    if (n.length < sf || n.length == sf && n[n.length - 1] == 0) {
+      n = n + '.';
+    }
+    let end = sf - n.length;
+    if (n.includes('.')) {
+      end = end + 1;
+    }
+    for (let i = 0; i < end; i++) {
+      n = n + '0';
+    }
+    let checkIfAllZeros = n.slice(sf-1)
+    if (+checkIfAllZeros == 0 && !n.includes('.')) {
+      n = n + ` (${sf} sf)`;
+    }
+  } else if (n != 0) { // if < 1
+  console.log('n4: '+n)
+  console.log('sf1: '+sf)
+  let zeros = n.match(/(?<=\.)(0*)/g);
+  console.log('zeros: '+zeros);
+  let zerosLength = zeros ? zeros[0].length : 0;
+  console.log('zl/sf: ' + zerosLength + ' ' + sf);
+  n = n.padEnd(zerosLength+sf+2, 0);
+  } else {
+	  n = n + '.'; 
+	  zerosLength = 0;
+  n = n.padEnd(zerosLength+sf+1, 0);
+  //n = n.padEnd(sf+2, 0);
+  console.log('n5: '+n)
+  }
+  if (neg) {
+    n = '-' + n;
+  }
+  if (exp != 0) {
+    n = (parseFloat(n) * 10 ** parseInt(exp)).toPrecision(sf).toString();
+  }
+  console.log('n6: '+n)
+  return n;
+};
+
+/*
+Number.prototype.setSigFigs = function(sf) {
   let n = Number(this.toPrecision(sf)).toString();
   let exp = 0;
   if(n.includes('e')) {
@@ -277,7 +374,7 @@ Number.prototype.setSigFigs = function(sf) {
 	  n = (parseFloat(n)*10**parseInt(exp)).toString();
   }
   return n;
-};
+}; */
 
 function shuffleArray(arr) {
   arr.sort(() => Math.random() - 0.5);
@@ -302,41 +399,124 @@ function toArray(item) {
     return item.split(',');
   }
 }
+// ==================
 
+function generateHeadHTML(title, instructor, date) { // Creates the HTML head section based on the provided title, instructor, and date.
+  let html = headFile.replace('${title}', `<h1>${title}</h1>`);
+  if (typeof instructor !== 'undefined') {
+    html = html.replace('${instructor}', `<h4>${instructor}</h4>`);
+  } else {
+    html = html.replace('${instructor}', '');
+  }
+  if (typeof date !== 'undefined') {
+    html = html.replace('${date}', `<h6>${date}</h6>`);
+  } else {
+    html = html.replace('${date}', '');
+  }
+  return html;
+}
+
+function readQbanksFile(userName) {
+  const qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", "utf8");
+  return JSON.parse(qbanksFile);
+}
+
+function copyQbank(qbanks, subject, course, qbankName) {
+  const shallowQbank = qbanks[subject][course][qbankName];
+  return deepCopyFunction(shallowQbank);
+}
+
+function removeRandomQuestions(qbank) {
+  let groupObj = {};
+  for (let i = 0; i < qbank.length; i++) {
+    if (typeof qbank[i]['group'] !== 'undefined' && qbank[i]['group'] !== '') {
+      const groupName = qbank[i]['group'];
+      if (typeof groupObj[groupName] === 'undefined') {
+        groupObj[groupName] = [];
+      }
+      groupObj[groupName].push(i);
+    }
+  }
+  
+  let indexesToDelete = [];
+  for (let group of Object.keys(groupObj)) {
+    const keep = Math.floor(Math.random() * groupObj[group].length);
+    groupObj[group].splice(keep, 1);
+    indexesToDelete = indexesToDelete.concat(groupObj[group]);
+  }
+  
+  for (let index of indexesToDelete.reverse()) {
+    qbank.splice(index, 1);
+  }
+  // return indexesToDelete;
+}
+
+function generateQuestionHTML(questionNumber, question) { //Generates the HTML markup for a single question using the provided question data.
+  let html = `<div class='question'><div class='stem'>${questionNumber}) ${question.stem}</div>`;
+  // Generate the HTML for the question's choices and other elements
+  // ...
+  //html += `<p></p></div>`;
+  //html = fixMathJaxAdjustments(html);
+  //html = replaceVariables(html);
+  return html;
+}
+
+function pushChoicesToAnswerArray(choice, correct, choiceNumber, answerArray) {
+	if (choice.replaceAll(' ','') != '') {
+	  let asterisk = '';
+        if (correct.includes(choiceNumber.toString())) {
+          asterisk = `<span class='asterisk'>*</span>`;
+        } 
+        answerArray.push(`${choice}${asterisk}</div>`);
+      }
+	  return answerArray;
+}
+
+function fixMathJaxAdjustments(html) {
+  const updatedHtml = html
+    .replaceAll('\\%', '%')
+    .replaceAll('\\{', '{')
+    .replaceAll('\\}', '}')
+    .replaceAll('\\ ', ' ');
+
+  return updatedHtml;
+}
+
+//====================
 	
 function qbankToHtml(subject, course, qbankAndNumArray, userName, title, instructor, date) {
   let questionNumber = 1;
-  console.log('title');
-  console.log(title);
-  console.log('instructor');
-console.log(instructor);
-console.log('date');
-console.log(date);  
+  let html = generateHeadHTML(title, instructor, date);
+/*
   let html = headFile.replace('${title}', `<h1>${title}</h1>`);
-  console.log(html);
   if(typeof instructor != 'undefined') {
     html = html.replace('${instructor}', `<h4>${instructor}</h4>`); 
   } else {
     html = html.replace('${instructor}', '');
   }
-  console.log(html);
+  
   if(typeof date != 'undefined') {
     html = html.replace('${date}', `<h6>${date}</h6>`); 
   } else {
     html = html.replace('${date}', '');
   }
-  console.log(html);
-  
+  */
+  let qbanks = readQbanksFile(userName);
+  /*
   var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", "utf8");
   var qbanks = JSON.parse(qbanksFile);
-  
+  */
   for(let qbankAndNum of qbankAndNumArray) {
   let qNum = 1;
+  let qbank = copyQbank(qbanks, subject, course, qbankAndNum.qbankName);
+  /*
   const shallowQbank = qbanks[subject][course][qbankAndNum.qbankName];
   const number = qbankAndNum.number;   
   let qbank = deepCopyFunction(shallowQbank);  
-  
+  */
 
+  removeRandomQuestions(qbank); //let indexesToDelete = removeRandomQuestions(qbank);
+  /*
   let groupObj = {};
   for (let i = 0; i < qbank.length; i++) { 
     if (typeof qbank[i]['group'] !== 'undefined' && qbank[i]['group'] !== '') {
@@ -347,7 +527,7 @@ console.log(date);
       groupObj[groupName].push(i);
     }
   }
-console.log(JSON.stringify(groupObj));
+//console.log(JSON.stringify(groupObj));
   let indexesToDelete = [];
   for (let group of Object.keys(groupObj)) {
     const keep = Math.floor(Math.random() * groupObj[group].length);
@@ -356,35 +536,34 @@ console.log(JSON.stringify(groupObj));
   }
   
   for (let index of indexesToDelete.reverse()) {
-	console.log(indexesToDelete)
+	//console.log(indexesToDelete)
     qbank.splice(index, 1);
-  }
+  }*/
 
   shuffleArray(qbank);
   for (let question of qbank) { 
-    if(qNum <= number) { // set limit here
-	qNum = qNum + 1;
-    const stem = question.stem;
-    html = html + `<div class='question'><div class='stem'>${questionNumber}) ${stem}</div>`; // removed br from end
-    questionNumber = questionNumber + 1;
-    const correct = question.correct;
+    if(qNum <= qbankAndNum.number) { // set limit here
+	qNum++;
+	//qNum = qNum + 1;
+	
+	html += generateQuestionHTML(questionNumber, question);
+	questionNumber++;
+	
+    //const stem = question.stem;
+    //html = html + `<div class='question'><div class='stem'>${questionNumber}) ${stem}</div>`; // removed br from end
+    //questionNumber = questionNumber + 1;
+    //const correct = question.correct;
     let choices = question.choices;
-    let asterisk = '';
+	
+    //let asterisk = '';
     let answerArray = [];
 
     let choiceNumber = 0;
-    for (let choice of choices) {
-      if (choice.replaceAll(' ','') != '') { 
-        if (correct.includes(choiceNumber.toString())) {
-          asterisk = `<span class='asterisk'>*</span>`;
-        } else {
-          asterisk = '';
-        }
-        answerArray.push(`${choice}${asterisk}</div>`);
-        choiceNumber = choiceNumber + 1;
-      }
+    for (let choice of choices) { // pushes choices into array
+		answerArray = pushChoicesToAnswerArray(choice, question.correct, choiceNumber, answerArray);
+		choiceNumber++;
     }
-    if (!question.rqo) {
+    if (!question.rqo) { // shuffels answer array if retain question order not selected
       shuffleArray(answerArray);
     }
 
@@ -396,7 +575,7 @@ console.log(JSON.stringify(groupObj));
       answerNumber = answerNumber + 1;
     }
 
-    for (let each of answerArray) {
+    for (let each of answerArray) { // adds answer choices to html
       html = html + each;
     }
 
@@ -419,17 +598,23 @@ console.log(JSON.stringify(groupObj));
       }
       html = html + `</div>`;
     }
+	
+	let solution = question.solution ? question.solution : "";
+	if (solution != '') {
+		html = html + `<div class='solution'><span class='asterisk'>${solution}</span></div>`
+	}
 
     html = html + `<p></p></div>`;
     
     // fix adjustments made for MathJax
-    html = html.replaceAll('\\%', '%').replaceAll('\\{', '{').replaceAll('\\}', '}').replaceAll('\\ ',' ');
+	fixMathJaxAdjustments(html);
+    //html = html.replaceAll('\\%', '%').replaceAll('\\{', '{').replaceAll('\\}', '}').replaceAll('\\ ',' ');
 	  	  
     // replace variables with numbers
     try {
       html = replaceVariables(html);
     } catch (err) {
-      console.error('replacevar: ' + err);
+      console.error('replacevar: ' + err + '\nquestion: ' + question.stem);
     }
   } else {break;}
   }
@@ -441,7 +626,7 @@ console.log(JSON.stringify(groupObj));
   try {
     html = html.replaceAll(reg, '..\/images');
   } catch (err) {
-    console.error(err);
+    console.error('error: ' + err + '\nquestion: ' + question.stem);
   }
 
   // parse equations
@@ -456,11 +641,35 @@ console.log(JSON.stringify(groupObj));
       const equation = equationSFArray[0];
       //  need to find a solution to scientific notation with e/E later: let equation2 = equation.replaceAll(/(\d)e(\d)/g,'$1*10^$2').replaceAll(/(\d)E(\d)/g,'$1*10^$2');
       const SF = equationSFArray[1] ? equationSFArray[1] : 3; // defaults oto 3 significant figures in equations
-      let solution = parser.parse(equation.replaceAll(/ \(\d+ sf\)/g, ''));
-	  console.log('solution: '+solution);
+	  console.log('equation: '+equation);
+	  console.log('equation 2: '+equation.replaceAll(/ \(\d+ sf\)/g, ''));
+
+      let solution;
+	  try {
+		solution = evaluateWithCustomFunctions(equation.replaceAll(/ \(\d+ sf\)/g, ''));
+	  } catch(error) {
+		  console.log(error +'\nEquation:' + equation);
+		  return (error +'<p>Equation:' + equation);
+		  }
+		  //regex = new RegExp(/'.*'+equation/);
+		  //console.error(html.match(regex));
+		  //console.error('error: ' + err + ' equation: ' + equation);
+	  
+	  
+	  console.log('solution a: '+solution);
+	  let addOnSF = '';
       try {
-		console.log('solution: '+parseFloat(solution));
-        solution = parseFloat(solution).setSigFigs(SF);
+console.log('SF pf: ' + SF);
+		console.log('solution pF: '+parseFloat(solution).setSigFigs(SF));
+					
+		console.log('match: '+parseFloat(solution).setSigFigs(SF).match(/ \(\d+ sf\)/g));
+		console.log('replace: '+parseFloat(solution).setSigFigs(SF).replace(/ \(\d+ sf\)/g, ''))
+		
+		addOnSF = parseFloat(solution).setSigFigs(SF).match(/ \(\d+ sf\)/g) ? parseFloat(solution).setSigFigs(SF).match(/ \(\d+ sf\)/g) : '';
+		console.log("addOnSF: "+addOnSF)
+        if (addOnSF != null) {
+			solution = parseFloat(solution).setSigFigs(SF).replace(/ \(\d+ sf\)/g, '');
+		}
 		console.log('solution: '+solution);
       } catch (err) {
         console.error('error: ' + err + ' equation: ' + equation + 'solution: ' + solution);
@@ -468,22 +677,63 @@ console.log(JSON.stringify(groupObj));
 
       // convert >10k and <0.0001 to scientific notation
       let solutionNum = solution.replace(/\s\(.*\)/, '') * 1;
-      let exp;
+      let exp = 0;
+	  console.log('solutionNum1: '+solutionNum);
+	  
       if (Math.abs(solutionNum) >= 10000) {
-		  
-        exp = Math.floor(Math.log(solutionNum) / Math.log(10));
-		if(solutionNum/(10 ** exp) == 10) { // fix for when edge issue of num exactly 10
+		console.log('solutionNum2: '+solutionNum);
+		console.log(typeof(solutionNum));
+		console.log(Math.log(solutionNum));
+		console.log(Math.floor(Math.log(solutionNum)));
+		console.log(Math.floor(Math.log(solutionNum) / Math.log(10)));
+        exp = Math.floor(Math.log10(Math.abs(solutionNum)));
+		console.log('exp: '+exp);
+		if (Math.abs(solutionNum / (10 ** exp) - 10) < 0.00001) { // fix for when edge issue of num exactly 10
 			exp = exp + 1
 		}
+		console.log('solutionNum3: '+solutionNum);
+		console.log('exp: '+exp);
         solutionNum = solutionNum / (10 ** exp);
-		solutionNum = parseFloat(solutionNum).setSigFigs(SF);
+		console.log('solutionNum4: '+solutionNum);
+console.log('SF: '+SF);
+		solutionNum = solutionNum.setSigFigs(SF); //solutionNum = parseFloat(solutionNum).setSigFigs(SF);
+		console.log('solutionNum5: '+solutionNum);
+
         solution = solutionNum + 'x10' + '<sup>' + exp + '</sup>';
-      } else if (Math.abs(solutionNum) < 0.00001) {
-        exp = Math.ceil((Math.log(solutionNum) / Math.log(10))-1);
-		solutionNum = solutionNum / (10 ** exp);
-		solutionNum = parseFloat(solutionNum).setSigFigs(SF);
-        solution = solutionNum + 'x10' + '<sup>' + exp + '</sup>';
-      }
+		console.log('solution6: '+solution);
+      } else if (Math.abs(solutionNum) < 0.00001 && Math.abs(solutionNum) !== 0) {
+		  if (Math.abs(solutionNum) <= Number.EPSILON) {
+  exp = 1;
+} else {
+  exp = Math.floor(Math.log10(Math.abs(solutionNum)));
+}
+  //exp = Math.floor(Math.log10(Math.abs(solutionNum))) - 1;
+  console.log('solutionNum: '+solutionNum)
+  if (Math.abs(solutionNum / (10 ** exp) - 10) < 0.00001) {
+    exp = exp + 1;
+  }
+console.log('solutionNum: '+solutionNum)
+console.log('exp: '+exp)
+  solutionNum = solutionNum / (10 ** exp);
+  console.log('solutionNum: '+solutionNum)
+  console.log('is it here?');
+  solutionNum = solutionNum.setSigFigs(SF); //solutionNum = parseFloat(solutionNum).setSigFigs(SF);
+  solution = solutionNum + 'x10<sup>' + exp + '</sup>';
+}
+ else {
+		  console.log('solution')
+		  console.log(solution)
+		  console.log('solution*1')
+		  console.log(solution*1)
+		  console.log('solution*1.setSigFigs(SF)')
+		  console.log((solution*1).setSigFigs(SF))
+		  solution = (solution*1).setSigFigs(SF);
+		  console.log(solution)
+		  if (addOnSF != null) {
+			//solution = solution + addOnSF; // not sure if I need this at all
+		  }
+		  //solution = parseFloat(solutionNum).setSigFigs(SF) + addOnSF;
+	  }
       html = html.replaceAll('=[' + equationSF + ']', solution.toString());
     }
   } else {
@@ -621,7 +871,7 @@ app.post("/reorder", (req, res) => {
   const qbankName = req.body.qbankName;
   const qbankData = req.body.qbankData;
   const userName = req.body.userName;
-  console.log(userName);
+  console.log('userName: '+userName);
   
   var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", "utf8");
   var qbanks = JSON.parse(qbanksFile);
@@ -653,8 +903,8 @@ app.post("/submit", (req, res) => {
   var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", "utf8");
   var qbanks = JSON.parse(qbanksFile);
 
-  if (typeof obj.deleteQuestion === 'undefined') {
-    if (typeof obj.addBlank === 'undefined') {
+  if (typeof obj.deleteQuestion === 'undefined') { // if not deleting question
+    if (typeof obj.addBlank === 'undefined') {  // if not adding blank question
       //duplicating question
       let newQuestion = {};
       newQuestion.group = obj.group;
@@ -682,6 +932,8 @@ app.post("/submit", (req, res) => {
       newQuestion.choices = choiceArray; //needs if statement?
 
       newQuestion.correct = correctArray;
+	  
+	  newQuestion.solution = obj.solution;
 
       const aotacb = obj.all_of_the_above_cb;
       const notacb = obj.none_of_the_above_cb;
@@ -692,11 +944,9 @@ app.post("/submit", (req, res) => {
       if (obj.none_of_the_above) {
         newQuestion.nota = notacb == 'on';
       }
-
       if (obj.retain_question_order) {
-        newQuestion.rqo = obj.retain_question_order = 'on';
+        newQuestion.rqo = obj.retain_question_order == 'on';
       }
-
       if (obj.duplicateQuestion) {
         qbanks = spliceQuestion(obj, newQuestion, qbanks);
       } else {
