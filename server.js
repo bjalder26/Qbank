@@ -5,9 +5,13 @@ const http = require('http');
 var fs = require('fs'); // file system
 //const parser = require('./parser'); // parser for =[] calculations
 //const parser = require(__dirname + '//parser.js'); // parser for =[] calculations
+const nodemailer = require('nodemailer'); // required to send passwords via email
+const sgMail = require('@sendgrid/mail');// required to send passwords via sendgrid
 
 
 const bcrypt = require('bcrypt'); // for hashing passwords
+const crypto = require('crypto'); // for generating random passwords for password recovery
+
 const path = require("path"); // not sure if this is needed
 const app = express();
 const threeHours = 10800000;
@@ -817,16 +821,111 @@ app.post('/login', async (req, res) => {
       passed = encodeURI(JSON.stringify(passed));
       res.redirect(`/edit/${passed}`);
     } else {
-      res.send("<div align ='center'><h2>Invalid email or password</h2></div><br><br><div align ='center'><a href='./login'>login again</a></div>");
+      res.send("<div align ='center'><h2>Invalid email or password</h2></div><br><br><div align ='center'><a href='./login'>Login again</a></div>");
     }
   } else {
 
     let fakePass = `$2b$$10$ifgfgfgfgfgfgfggfgfgfggggfgfgfga`;
     await bcrypt.compare(req.body.password, fakePass);
 
-    res.send("<div align ='center'><h2>Invalid email or password</h2></div><br><br><div align='center'><a href='./login'>login again<a><div>");
+    res.send("<div align ='center'><h2>Invalid email or password</h2></div><br><br><div align='center'><a href='./login'>Login again<a><div>");
   }
 });
+
+app.post('/newpassword', async (req, res) => {
+  let foundUser = users.find((data) => req.body.email === data.email);
+  if (foundUser) {
+	const targetIndex = users.indexOf(foundUser);
+    let submittedPass = req.body.password;
+    let storedPass = foundUser.password; // gets password 
+	let newPass = req.body.newpassword;
+    const passwordMatch = await bcrypt.compare(submittedPass, storedPass); //compares passwords
+    if (passwordMatch) {
+		try {
+      userName = foundUser.username; // sets userName variable
+    let hashPassword = await bcrypt.hash(newPass, 10);
+    let oldUser = {
+      id: foundUser.id,
+      username: foundUser.username,
+      email: req.body.email,
+      password: hashPassword,
+    };
+    users[targetIndex] = oldUser;
+		} catch (err) {
+      console.error(err);
+    }
+	
+	try {
+      fs.writeFileSync(__dirname + "/users/users.txt", JSON.stringify(users), {
+        flag: 'w+'
+      });
+      console.log("File written successfully");
+    } catch (err) {
+      console.error(err);
+    }
+	  
+	  res.send("<div align ='center'><h2>Your password has been updated.</h2></div><br><br><div align ='center'><a href='./login'>Login</a></div>");
+	  
+    } else {
+      res.send("<div align ='center'><h2>Invalid email or password</h2></div><br><br><div align ='center'><a href='./newpassword'>Try again</a></div>");
+    }
+  } else {
+    res.send("<div align ='center'><h2>Invalid email or password</h2></div><br><br><div align='center'><a href='./newpassword'>Try again<a><div>");
+  }
+});
+
+app.post('/password', async (req, res) => {
+  try {
+    let foundUser = users.find((data) => req.body.email === data.email);
+    console.log(foundUser);
+    if (foundUser) {
+	  const targetIndex = users.indexOf(foundUser);		
+      let storedPass = foundUser.password; // gets password 
+      console.log(storedPass);
+      
+      const apiKey = fs.readFileSync(__dirname + "/users/api.txt", "utf8");
+      console.log(apiKey);
+      sgMail.setApiKey(apiKey);
+	  
+	  // generate temporary password
+	  const generateTemporaryPassword = () => {
+		const length = 10;
+		return crypto.randomBytes(length).toString('hex');
+	  };
+	  const temporaryPassword = generateTemporaryPassword();
+      // Set up the email message
+	  console.log(req.body.email);
+      const msg = {
+        from: 'bradyalder@gmail.com',
+        to: req.body.email,
+        subject: 'Qbank Password',
+        text: 'This is your temporary qbank password: ' + temporaryPassword + '\nUse your email address and password to log in at http://qbank.tk/newpassword.html to set up a new password using your tempoary password.'
+      };
+	  console.log(msg);
+  
+	  try {
+      await sgMail.send(msg);
+	  } catch (err) {
+      console.error(err);
+		}
+	  let hashPassword = await bcrypt.hash(temporaryPassword, 10);
+      let oldUser = {
+        id: foundUser.id,
+        username: foundUser.username,  
+        email: req.body.email,
+        password: hashPassword,
+      };
+      users[targetIndex] = oldUser;
+		
+      console.log('Email sent');
+      res.send("<div align ='center'><h2>Check your email for your temporary password.  Then follow the link below to set up a new password.</h2></div><br><br><div align ='center'><a href='./newpassword'>Set up new password</a></div>");
+    }
+  } catch (error) {
+    console.error('Error occurred:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 app.post('/register', async (req, res) => {
   let foundUser = users.find((data) => req.body.email === data.email);
@@ -859,7 +958,7 @@ app.post('/register', async (req, res) => {
       console.error(err);
     }
 
-    res.send("<div align ='center'><h2>Registration successful</h2></div><br><br><div align='center'><a href='./login'>login</a></div><br><br><div align='center'><a href='./register'>Register another user</a></div>");
+    res.send("<div align ='center'><h2>Registration successful</h2></div><br><br><div align='center'><a href='./login'>Login</a></div><br><br><div align='center'><a href='./register'>Register another user</a></div>");
   } else {
     res.send("<div align ='center'><h2>Email already used</h2></div><br><br><div align='center'><a href='./register'>Register again</a></div>");
   }
@@ -1157,6 +1256,11 @@ app.get("/newCourse/:passed", (req, res) => {
   }
 });
 
+app.get("/newpassword", (req, res) => {
+  var loginFile = fs.readFileSync(__dirname + "/html/newpassword.html", "utf8");
+  res.send(loginFile.toString());
+});
+
 app.get("/newQbank/:passed", (req, res) => {
   if (req.params.passed) {
 
@@ -1221,6 +1325,11 @@ app.get("/newSubject/:passed", (req, res) => {
       res.redirect(`/edit/${passed}`);
     }
   }
+});
+
+app.get('/password', (req, res) => {
+  var loginFile = fs.readFileSync(__dirname + '/html/password.html', 'utf8');
+  res.send(loginFile.toString());
 });
 
 app.get("/product/:passed", (req, res) => {

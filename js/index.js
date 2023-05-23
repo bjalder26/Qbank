@@ -94,7 +94,7 @@ function createProduct() {
 }
 
 function deleteCourse() {
-  const toDelete = prompt(`Type "delete ${$('course').value}" to delete this course.`);
+  let toDelete = prompt(`Type "delete ${$('course').value}" to delete this course.`);
   if (toDelete == `delete ${$('course').value}`) {
     setCookie('subjectName', $('subject').value, 2);
     setCookie('courseName', 'select course', 0);
