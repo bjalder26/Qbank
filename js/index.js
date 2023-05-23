@@ -1,9 +1,49 @@
 function sortObj(obj) {
+  return Object.keys(obj).sort(function(a, b) {
+    var aParts = a.toLowerCase().match(/([a-z]+)|(\d+)/g);
+    var bParts = b.toLowerCase().match(/([a-z]+)|(\d+)/g);
+
+    for (var i = 0; i < Math.min(aParts.length, bParts.length); i++) {
+      var aPart = aParts[i];
+      var bPart = bParts[i];
+
+      if (isNaN(aPart) && isNaN(bPart)) {
+        // Both parts are non-numeric, perform alphabetical comparison
+        var result = aPart.localeCompare(bPart);
+        if (result !== 0) {
+          return result;
+        }
+      } else if (!isNaN(aPart) && !isNaN(bPart)) {
+        // Both parts are numeric, perform numerical comparison
+        var aNum = parseInt(aPart);
+        var bNum = parseInt(bPart);
+        if (aNum !== bNum) {
+          return aNum - bNum;
+        }
+      } else {
+        // One part is numeric, the other is non-numeric
+        // Sort non-numeric before numeric
+        return isNaN(aPart) ? -1 : 1;
+      }
+    }
+
+    // If all parts are the same up to the minimum length, compare lengths
+    return aParts.length - bParts.length;
+  }).reduce(function(result, key) {
+    result[key] = obj[key];
+    return result;
+  }, {});
+}
+
+
+/*
+function sortObj(obj) {
   return Object.keys(obj).sort(function (a, b) { return a.toLowerCase().localeCompare(b.toLowerCase());}).reduce(function (result, key) {
     result[key] = obj[key];
     return result;
   }, {});
 }
+*/
 
 /*function sortObj(obj) {
 if(obj){
