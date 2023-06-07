@@ -1,0 +1,259 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Take Home Quiz Chapter 2</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) One of the wave behaviors exhibited by light waves is that they will bend around an obstacle or slit comparable in size to their wavelength.&nbsp; What is this characteristic called?</div><div class='option'>A) refraction</div><div class='option'>B) effusion</div><div class='option'>C) interference</div><div class='option'>D) diffraction<span class='asterisk'>*</span></div><div class='solution'><span class='asterisk'>The characteristic of light waves bending around an obstacle or slit comparable in size to their wavelength is called <strong>diffraction</strong>. Diffraction is a wave phenomenon that occurs when waves encounter an obstacle or pass through an opening and exhibit bending or spreading out.&nbsp;<br><br>
+<p><strong>Interference</strong>: Interference is a phenomenon that occurs when two or more waves meet and interact with each other. It results in the superposition of the waves, leading to the formation of regions of constructive and destructive interference. In regions of constructive interference, the waves reinforce each other, resulting in an increase in amplitude. In regions of destructive interference, the waves cancel each other out, leading to a decrease in amplitude.</p>
+<p><strong>Refraction</strong>: Refraction is the bending of waves as they pass from one medium to another, caused by a change in the speed of the waves. When a wave encounters a boundary between two mediums with different optical densities, such as air and water or air and glass, the change in speed causes the wave to change direction. This change in direction is known as refraction. Refraction is responsible for various phenomena, such as the bending of light rays in lenses, the formation of rainbows, and the apparent shift of objects when viewed through a medium.</p>
+<p><strong>Effusion</strong>: Effusion refers to the process by which gas molecules escape from a container through a small opening. It occurs due to the random motion and high kinetic energy of gas molecules. Effusion is governed by Graham's law, which states that the rate of effusion of a gas is inversely proportional to the square root of its molar mass. This means that lighter gas molecules effuse faster than heavier ones. Effusion plays a role in various applications, such as gas separation techniques and the operation of gas diffusion pumps.</p></span></div><p></p></div><div class='question'><div class='stem'>2) What is the vertical height of a wave called?</div><div class='option'>A) wavelength</div><div class='option'>B) frequency</div><div class='option'>C) amplitude<span class='asterisk'>*</span></div><div class='option'>D) wavediameter</div><div class='solution'><span class='asterisk'><p>Frequency: Frequency refers to the number of complete cycles or oscillations of a wave that occur in one second. It is typically measured in hertz (Hz) and represents how many times a wave repeats per second.</p>
+<p>Wavelength: Wavelength is the distance between two consecutive corresponding points on a wave, such as from peak to peak or trough to trough. It is usually represented by the Greek letter lambda (λ) and is measured in units such as meters (m), nanometers (nm), or angstroms (Å), depending on the scale of the wave.</p>
+<p>Amplitude: Amplitude represents the maximum displacement or distance from the equilibrium position of a wave. In other words, it measures the intensity or strength of a wave. For example, in a transverse wave, it refers to the distance from the baseline to the peak or trough of the wave. It can indicate the brightness or loudness of a wave, depending on the type of wave. Amplitude is typically measured in units such as meters (m) or volts (V).<br><br>Wavediameter is a made-up term.</p></span></div><p></p></div><div class='question'><div class='stem'>3) For n = 1, what are the possible subshells?</div><div class='option'>A) s‚ p and d</div><div class='option'>B) s and p</div><div class='option'>C) s<span class='asterisk'>*</span></div><div class='option'>D) s‚ p‚ d and f</div><div class='solution'><span class='asterisk'><p>For the principal quantum number (n) values of 1, 2, 3, and 4, the possible subshells are as follows:</p>
+<p>n = 1: Only one subshell is possible, which is the s subshell.</p>
+<p>n = 2: Two subshells are possible, which are the s and p subshells.</p>
+<p>n = 3: Three subshells are possible, which are the s, p, and d subshells.</p>
+<p>n = 4: Four subshells are possible, which are the s, p, d, and f subshells.</p>
+<p>The subshells are named after the azimuthal quantum numbers (s, p, d, f) that represent the shape of the electron orbitals within each subshell.</p></span></div><p></p></div><div class='question'><div class='stem'>4) Which of the following colors has the longest wavelength</div><div class='option'>A) violet</div><div class='option'>B) red<span class='asterisk'>*</span></div><div class='option'>C) yellow</div><div class='option'>D) orange</div><div class='solution'><span class='asterisk'>ROY G. BIV is a mnemonic for remembering the order of visible light from lowest energy, lowest frequency to highest energy and highest frequency or from longest wavelength to shortest wavelength.<br><br>Lowest energy, lowest frequency, highest wavelength<br>Red<br>Orange<br>Yellow<br>Green<br>Blue<br>Indigo<br>Violet<br>Highest energy, highest frequency, shortest wavelength<br><br>It can also help to remember that infrared (which is right by red) has low energy, low frequency, and a high wavelength, and that ultraviolet (which is right by violet) has high energy, high frequency, and a short wavelength.</span></div><p></p></div><div class='question'><div class='stem'>5) What total energy (in kJ) is contained in 2.00 mol of photons, all with a frequency of 5.86 × 10<sup>13</sup> Hz?</div><div class='option'>A) 2.14x10<sup>-8</sup> KJ</div><div class='option'>B) 46.8 KJ<span class='asterisk'>*</span></div><div class='option'>C) 4.68x10<sup>-25</sup> KJ</div><div class='option'>D) 1.40x10<sup>-16</sup> KJ</div><div class='solution'><span class='asterisk'><p>To calculate the total energy contained in a single photon, you can use the equation:</p>
+<p>E = h * ν</p>
+<p>Where: E is the total energy in joules h is Planck's constant (6.626 x 10^-34 J·s) ν is the frequency of each photon in Hz</p>
+<p>First, let's convert the frequency from Hz to 1/s because a Hz is the same as 1/s:</p>
+<p>ν = 5.86 × 10<sup>13</sup> 1/s</p>
+<p>Now we can calculate energy of 1 photon:<br>E<sub>photon</sub> = (6.626 x 10^-34 J·s) * (5.86 × 10<sup>13</sup> 1/s) <br>E<sub>photon</sub> ≈ 3.88x10<sup>-20</sup> J<br><br>Now calculate the energy of 1 mol of photons:<br>E<sub>one mol photons</sub> = E<sub>photon</sub> x 6.022 x 10<sup>23</sup><br><br>Now calculate the energy in 2.00 mol of photons.<br>E<sub>total</sub> = E<sub>one mol photons</sub> x Moles of photons = 3.88x10<sup>-20</sup> J/mol x 2.00 mol = 4.68x10<sup>4</sup> J<br><br>To convert the energy from joules to kilojoules, divide by 1000:<br>E ≈ 4.68x10<sup>4</sup> J x <span class="math-tex">\( \frac{1 kJ}{1000 J} \)</span> 46.8 KJ</p></span></div><p></p></div><div class='question'><div class='stem'>6) Which of the following happens when the frequency of a photon increases?</div><div class='option'>A) The speed increases</div><div class='option'>B) The energy stays the same</div><div class='option'>C) The energy increases<span class='asterisk'>*</span></div><div class='option'>D) The wavelength increases</div><div class='solution'><span class='asterisk'><p>When the frequency of a photon increases, the energy of the photon also increases. This relationship is described by the equation:</p>
+<p>E = hν</p>
+<p>where E represents the energy of the photon, h is Planck's constant (a fundamental constant of nature), and ν is the frequency of the photon.</p>
+<p>According to this equation, the energy of a photon is directly proportional to its frequency. As the frequency increases, the energy of the photon increases proportionally. This relationship is a fundamental concept in quantum mechanics and is known as the energy-frequency relationship.</p>
+<p>It's important to note that the energy of a photon is quantized, meaning it can only exist in discrete amounts or "quanta." Each quantum of energy is associated with a specific frequency of the photon. Therefore, as the frequency increases, the energy of the photon increases in discrete steps.</p></span></div><p></p></div><div class='question'><div class='stem'>7) Which of the following sets of quantum numbers is possible?</div><div class='option'>A) (3, 1, -1, -1)</div><div class='option'>B) (3, 2, -2, -<span class="math-tex">\( \frac{1}{2} \)</span>)<span class='asterisk'>*</span></div><div class='option'>C) (4, 5, -3, +<span class="math-tex">\( \frac{1}{2} \)</span>)</div><div class='option'>D) (3, 2, +3, -<span class="math-tex">\( \frac{1}{2} \)</span>)</div><div class='solution'><span class='asterisk'><p>For a set of quantum numbers to be valid, the following relationships must be satisfied:</p>
+<ol>
+<li>The principal quantum number (n) must be a positive integer (1, 2, 3, ...).</li>
+<li>The azimuthal quantum number (ℓ) must be an integer ranging from 0 to (n-1).</li>
+<li>The magnetic quantum number (m<sub>ℓ</sub>) must be an integer ranging from -ℓ to +ℓ.</li>
+<li>The spin quantum number (m<sub>s</sub>) must be either +1/2 or -1/2.</li>
+</ol>
+<p>Let's evaluate the given sets of quantum numbers:</p>
+<p>(3, 2, -2, -<span class="math-tex">\( \frac{1}{2} \)</span>)</p>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 3 (valid as it is a positive integer).</li>
+<li>ℓ = 2 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = -2 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = -<span class="math-tex">\( \frac{1}{2} \)</span> (valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>valid</strong>.</li>
+</ul>
+</li>
+</ul>
+(4, 5, -3, +<span class="math-tex">\( \frac{1}{2} \)</span>)&nbsp;<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 4 (valid as it is a positive integer).</li>
+<li>ℓ = 5 (invalid as it is not within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = -3 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = +<span class="math-tex">\( \frac{1}{2} \)</span> (valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the value for ℓ.</li>
+</ul>
+</li>
+</ul>
+(3, 2, +3, -<span class="math-tex">\( \frac{1}{2} \)</span>)&nbsp;<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 3 (valid as it is a positive integer).</li>
+<li>ℓ = 2 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = +3 (invalid as it must be within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = -<span class="math-tex">\( \frac{1}{2} \)</span>(valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the value of m<sub>ℓ</sub> being outside the allowed range.</li>
+</ul>
+</li>
+</ul>
+(3, 1, -1, - 1)<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 3 (valid as it is a positive integer).</li>
+<li>ℓ = 1 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = -1 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = -1 (invalid as it must be either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the incorrect value for m<sub>s</sub>.</li>
+</ul>
+</li>
+</ul>
+<p>Based on the numerical relationships between the quantum numbers, only the set (3, 2, -2, -<span class="math-tex">\( \frac{1}{2} \)</span>) satisfies the required conditions and is therefore valid.</p></span></div><p></p></div><div class='question'><div class='stem'>8) Calculate the wavelength (in meters) of an electron (m = 9.11 × 10<sup>-31</sup> Kg) moving at 6.55 × 10<sup>6</sup> m/s.</div><div class='option'>A) 5.97x10<sup>-24</sup> m</div><div class='option'>B) 3.95x10<sup>-57</sup> m</div><div class='option'>C) 1.11x10<sup>-10</sup> m<span class='asterisk'>*</span></div><div class='option'>D) 1.39x10<sup>-37</sup> m</div><div class='solution'><span class='asterisk'><p>To calculate the wavelength of an electron, we can use the de Broglie wavelength equation:</p>
+<p>λ = h / (m * v)</p>
+<p>Where: λ is the wavelength h is Planck's constant (6.626 x 10<sup>-34</sup> J·s) m is the mass of the electron v is the velocity of the electron</p>
+<p>Let's substitute the given values into the equation:</p>
+<p>λ = (6.626 x 10<sup>-34</sup> J·s) / (9.11 × 10<sup>-31</sup> Kg * 6.55 × 10<sup>6</sup> m/s)<br><br>λ ≈ 1.11x10<sup>-10</sup> m</p></span></div><p></p></div><div class='question'><div class='stem'>9) How many orbitals are present in subshell f (l = 3)?</div><div class='option'>A) 3</div><div class='option'>B) 14</div><div class='option'>C) 7<span class='asterisk'>*</span></div><div class='option'>D) 6</div><div class='solution'><span class='asterisk'>The number of orbitals in each subshell can be determined using the following pattern:<br>
+<ul>
+<li>Subshell s (l = 0): 1 orbital</li>
+<li>Subshell p (l = 1): 3 orbitals</li>
+<li>Subshell d (l = 2): 5 orbitals</li>
+<li>Subshell f (l = 3): 7 orbitals</li>
+</ul></span></div><p></p></div><div class='question'><div class='stem'>10) Which wavelengths of the electromagnetic spectrum are the lowest energy?</div><div class='option'>A) gamma and x-ray</div><div class='option'>B) ultraviolet and infrared</div><div class='option'>C) infrared and gamma ray</div><div class='option'>D) radio and microwave<span class='asterisk'>*</span></div><div class='solution'><span class='asterisk'>Ultraviolet and infrared border visible light (they border violet and red).<br>X-rays and gamma rays are the highest energy, and can cause the most tissue damage.<br>Radio waves and microwaves are the lowest energy (longest wavelength) waves.</span></div><p></p></div><div class='question'><div class='stem'>11) Calculate the energy (in joules) of a photon that has a frequency of 7.39 x 10<sup>14</sup> Hz.</div><div class='option'>A) 8.97x10<sup>-49</sup> J</div><div class='option'>B) 8.97x10<sup>-21</sup> J</div><div class='option'>C) 1.12x10<sup>-20</sup> J</div><div class='option'>D) 4.90x10<sup>-19</sup> J<span class='asterisk'>*</span></div><div class='solution'><span class='asterisk'><p>The energy (E) of a photon can be calculated using the equation:</p>
+<p>E = h * ν</p>
+<p>where E is the energy, h is Planck's constant (approximately 6.626 x 10<sup>-34</sup> J·s), and ν is the frequency of the photon.</p>
+<p>Given the frequency:</p>
+<p>ν = 7.39 x 10<sup>14</sup> Hz</p>
+<p>We can calculate the energy using the equation:</p>
+<p>E = (6.626 x 10<sup>-34</sup> J·s) * ( 7.39 x 10<sup>14</sup> Hz)</p>
+<p>E = 4.90x10<sup>-19</sup> J</p></span></div><p></p></div><div class='question'><div class='stem'>12) Calculate the energy of a photon (in joules) with a wavelength of 427.8 nm.</div><div class='option'>A) 2.15x10<sup>18</sup> J</div><div class='option'>B) 4.65x10<sup>-37</sup> J</div><div class='option'>C) 4.65x10<sup>-19</sup> J<span class='asterisk'>*</span></div><div class='option'>D) 7.01x10<sup>14</sup> J</div><div class='solution'><span class='asterisk'><p>To calculate the energy of a photon using its wavelength, you can use the following equation:</p>
+<p>E = (h * c) / λ</p>
+<p>Where: E is the energy of the photon h is Planck's constant (6.626 x 10<sup>-34</sup> J·s) c is the speed of light in a vacuum (3.00 x 10<sup>8</sup> m/s) λ is the wavelength of the photon in meters</p>
+<p>First, we need to convert the given wavelength of 427.8 nm to meters:</p>
+<p>λ = 427.8 nm * <span class="math-tex">\( \frac{1 m}{10^9 nm} \)</span> = 4.28x10<sup>-7</sup> m</p>
+<p>Now we can calculate the energy:<br>E = &nbsp;(6.626 x 10^{-34} J·s * 3.00 x 10^8 m/s) / (4.28x10<sup>-7</sup>)<br>E ≈ 4.65x10<sup>-19</sup> J</p></span></div><p></p></div><div class='question'><div class='stem'>13) According to the Heisenberg Uncertainty Principle, which of the following is true?</div><div class='option'>A) It is not possible to accurately determine both the position and momentum of an electron at the same time.<span class='asterisk'>*</span></div><div class='option'>B) There are no electron shells above 4.</div><div class='option'>C) Two electrons cannot have the same spin.</div><div class='option'>D) It is impossible to determine the charge of a single electron.</div><div class='solution'><span class='asterisk'><p>It is not possible to accurately determine both the position and momentum of an electron at the same time.</p>
+<p>According to the Heisenberg Uncertainty Principle, there is a fundamental limit to the precision with which certain pairs of physical properties of a particle, such as position and momentum, can be known simultaneously. The principle states that the more precisely the position of a particle is known, the less precisely its momentum can be known, and vice versa. This principle applies to all particles, including electrons. Therefore, it is not possible to accurately determine both the position and momentum of an electron simultaneously.</p></span></div><p></p></div><div class='question'><div class='stem'>14) Calculate the wavelength (in nm) of light that has a frequency of 5.35 x 10<sup>14</sup> Hz.</div><div class='option'>A) 1.78x10<sup>13</sup> nm</div><div class='option'>B) 0.00178 nm</div><div class='option'>C) 5.61x10<sup>-7</sup> nm</div><div class='option'>D) 561 nm<span class='asterisk'>*</span></div><div class='solution'><span class='asterisk'><p>To calculate the wavelength (λ) of light, you can use the equation:</p>
+<p>λ = c / ν</p>
+<p>where λ is the wavelength, c is the speed of light in a vacuum (approximately 3.00 x 10<sup>8</sup> m/s), and ν is the frequency of the light.</p>
+<p>First, let's convert the frequency given in Hz to 1/s since Hz and 1/s&nbsp;mean the same thing</p>
+<p>Frequency (ν) = 5.35 x 10<sup>14</sup> Hz = 5.35 x 10<sup>14</sup> 1/s</p>
+<p>Now, we can calculate the wavelength using the equation:</p>
+<p>λ = c / ν = (3.00 x 108 m/s) / (5.35 x 10<sup>14</sup> 1/s)</p>
+<p>λ = 5.61x10<sup>-7</sup> m</p>
+<p>To convert this to nanometers (nm), we multiply by 10^9:</p>
+<p>λ = 5.61x10<sup>-7</sup> m x = <span class="math-tex">\( \frac{10^9 nm}{1 m} \)</span> 561 nm</p></span></div><p></p></div><div class='question'><div class='stem'>15) Describe the shape of an s orbital.</div><div class='option'>A) spherical<span class='asterisk'>*</span></div><div class='option'>B) four lobes</div><div class='option'>C) dumbbell shaped</div><div class='option'>D) three lobes</div><div class='solution'><span class='asterisk'><p>The shapes of the s, p, d, and f orbitals are as follows:</p>
+<ol>
+<li>
+<p>s Orbital: The s orbital is <strong>spherical </strong>in shape and symmetrical around the nucleus. It has a <strong>single lobe</strong> without any nodal planes.</p>
+</li>
+<li>
+<p>p Orbitals: The p orbitals have a <strong>dumbbell shape</strong>. There are three p orbitals, designated as px, py, and pz. Each p orbital has <strong>two lobes</strong> on opposite sides of the nucleus and is oriented along the x, y, and z axes, respectively.</p>
+</li>
+<li>
+<p>d Orbitals: The d orbitals have <strong>complex shapes</strong>. There are five d orbitals, designated as dxy, dxz, dyz, dx^2-y^2, and dz^2. They have a combination of different lobes and nodal planes, resulting in various shapes.&nbsp;&nbsp;</p>
+</li>
+<li>
+<p>f Orbitals: The f orbitals also have <strong>complex shapes</strong>. There are seven f orbitals, designated as fy3x^2-y^2, fxz^2, fz(x^2-y^2), fyz^2, fz(x^2-3y^2), fxyz, and fx(x^2-3y^2). These orbitals have even more intricate lobes, nodal surfaces, and orientations compared to the other orbitals.</p>
+</li>
+</ol>
+<p>It's important to note that these orbital shapes represent the probability distribution of finding an electron within a specific orbital, rather than the exact path of the electron.</p></span></div><p></p></div><div class='question'><div class='stem'>16) Calculate the frequency of a photon (in Hz) with a wavelength of 489.2 nm.</div><div class='option'>A) 1.63x10<sup>-15</sup> Hz</div><div class='option'>B) 6.13x10<sup>14</sup> Hz<span class='asterisk'>*</span></div><div class='option'>C) 0.000613 Hz</div><div class='option'>D) 4.06x10<sup>-19</sup> Hz</div><div class='solution'><span class='asterisk'><p>To calculate the frequency of a photon using its wavelength, you can use the following equation:</p>
+<p>c = λ * ν</p>
+<p>Where: c is the speed of light in a vacuum (3.00 x 10<sup>8</sup> m/s) λ is the wavelength of the photon in meters ν is the frequency of the photon in Hz</p>
+<p>First, we need to convert the given wavelength of 489.2 nm to meters:</p>
+<p>λ = 489.2 nm * <span class="math-tex">\( \frac{1 m}{10^9 nm} \)</span> = 4.89x10<sup>-7</sup> m</p>
+<p>Now we can rearrange the equation to solve for the frequency:</p>
+<p>ν = c / λ = (3.00 x 10<sup>8</sup> m/s) / (4.89x10<sup>-7</sup> m) <br><br>ν ≈ 6.13x10<sup>14</sup> Hz</p></span></div><p></p></div><div class='question'><div class='stem'>17) Determine the frequency of light associated with the transition from n=4 to n=1&nbsp; in the hydrogen atom.</div><div class='option'>A) 3.08x10<sup>15</sup> Hz<span class='asterisk'>*</span></div><div class='option'>B) 9.73x10<sup>-8</sup> Hz</div><div class='option'>C) 2.47x10<sup>15</sup> Hz</div><div class='option'>D) 2.04x10<sup>-18</sup> Hz</div><div class='solution'><span class='asterisk'><p>The energy (E) of a photon of light can be calculated from the frequency (v) with the following equation:<br>E = v * h, where <span style="font-size: 10.5pt;">h is Planck's constant (6.63 × 10<sup>-34</sup> J·s) </span>solving for frequency (v) gives us:<br>v = E/h<br><br>The energy (E) of a photon can be calculated using the following equation, where <span style="font-size: 10.5pt;">R<sub>H</sub> is the Rydberg constant for hydrogen (2.18*10<sup>-18</sup> J), n<sub>final</sub> is the final energy level, n<sub>initial</sub> is the initial energy level</span>:<br>E = - R<sub>H</sub> * <span class="math-tex">\( (\frac{1}{n_{final}} - \frac{1}{n_{initial}}) \)</span> = -2.18*10<sup>-18</sup> J * <span class="math-tex">\( (\frac{1}{n_{final}} - \frac{1}{n_{initial}}) \)</span><br>If we substitute in -2.18*10<sup>-18</sup> J * <span class="math-tex">\( (\frac{1}{n_{final}} - \frac{1}{n_{initial}}) \)</span> in for E in the equation v = E/h, then it gives the formula below:<br>v = -2.18*10<sup>-18</sup> J * <span class="math-tex">\( (\frac{1}{n_{final}} - \frac{1}{n_{initial}}) \)</span>/h<br>For the transition from n=4 to n=1, we can substitute the values into the formula:</p>
+<p>ν = &nbsp;&nbsp;-2.18*10<sup>-18</sup> J * <span class="math-tex">\( (\frac{1}{n_{final}} - \frac{1}{n_{initial}}) \)</span>/<span style="font-size: 10.5pt;">(6.63 × 10<sup>-34</sup> J·s)</span> ≈ 6.17 × 10<sup>14</sup> Hz</p>
+<p>Therefore, the frequency of light associated with the transition from n=4 to n=1 in the hydrogen atom is approximately 3.08x10<sup>15</sup> Hz.</p></span></div><p></p></div></body></html>

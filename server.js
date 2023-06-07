@@ -706,24 +706,19 @@ console.log('SF: '+SF);
         solution = solutionNum + 'x10' + '<sup>' + exp + '</sup>';
 		console.log('solution6: '+solution);
       } else if (Math.abs(solutionNum) < 0.00001 && Math.abs(solutionNum) !== 0) {
-		  if (Math.abs(solutionNum) <= Number.EPSILON) {
-  exp = 1;
-} else {
-  exp = Math.floor(Math.log10(Math.abs(solutionNum)));
-}
-  //exp = Math.floor(Math.log10(Math.abs(solutionNum))) - 1;
-  console.log('solutionNum: '+solutionNum)
+  // Handling small numbers
+  const absSolutionNum = Math.abs(solutionNum);
+  exp = Math.floor(Math.log10(absSolutionNum));
+  solutionNum = solutionNum / (10 ** exp);
+
   if (Math.abs(solutionNum / (10 ** exp) - 10) < 0.00001) {
     exp = exp + 1;
   }
-console.log('solutionNum: '+solutionNum)
-console.log('exp: '+exp)
-  solutionNum = solutionNum / (10 ** exp);
-  console.log('solutionNum: '+solutionNum)
-  console.log('is it here?');
-  solutionNum = solutionNum.setSigFigs(SF); //solutionNum = parseFloat(solutionNum).setSigFigs(SF);
+
+  solutionNum = solutionNum.setSigFigs(SF);
   solution = solutionNum + 'x10<sup>' + exp + '</sup>';
 }
+
  else {
 		  console.log('solution')
 		  console.log(solution)

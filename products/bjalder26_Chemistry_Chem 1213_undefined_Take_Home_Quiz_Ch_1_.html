@@ -1,0 +1,236 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Take Home Quiz Ch 1</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) What mass (in mg) does 6.75 moles of silver have?</div><div class='option'>A) 2.16x10<sup>5</sup> mg</div><div class='option'>B) 728 mg</div><div class='option'>C) 7.28x10<sup>5</sup> mg<span class='asterisk'>*</span></div><div class='option'>D) 62.6 mg</div><p></p></div><div class='question'><div class='stem'>2) A scientific law</div><div class='option'>A) is a brief statement that summarizes past observations and makes predictions<span class='asterisk'>*</span></div><div class='option'>B) cannot be modified</div><div class='option'>C) must have a mathematical formula</div><div class='option'>D) contains an explanation of observations</div><p></p></div><div class='question'><div class='stem'>3) Which of the following describes the characteristics of a gas</div><div class='option'>A) definite volume but no definite shape</div><div class='option'>B) no definite volume or shape<span class='asterisk'>*</span></div><div class='option'>C) definite volume and shape</div><div class='option'>D) no definite volume but a definite shape</div><p></p></div><div class='question'><div class='stem'>4) Which of the following statements are true?</div><div class='option'>A) Protons and neutrons have approximately the same mass (about 1 amu), whereas electrons have almost no mass.<span class='asterisk'>*</span></div><div class='option'>B) Electrons and neutrons have approximately the same mass (about 1 amu), whereas protons have almost no mass.</div><div class='option'>C) Protons and electrons have approximately the same mass (about 1 amu), whereas neutrons have almost no mass.</div><div class='option'>D)  None of the above.</div><div class='solution'><span class='asterisk'><p>The correct answer is:</p>
+<p><strong>Protons and neutrons have approximately the same mass (about 1 amu), whereas electrons have almost no mass.</strong></p>
+<p>Protons and neutrons, which are both found in the nucleus of an atom, have similar masses of approximately 1 atomic mass unit (amu). Electrons, on the other hand, have a much smaller mass compared to protons and neutrons. The mass of an electron is about 1/1836 times the mass of a proton or neutron, making it almost negligible in comparison.</p>
+<p>While protons and electrons have opposite charges and play crucial roles in determining the properties of atoms, they have significantly different masses. Protons are much more massive than electrons.</p>
+<p>Neutrons and electrons have significantly different masses. Neutrons have a mass similar to protons, while electrons have a much smaller mass.</p></span></div><p></p></div><div class='question'><div class='stem'>5) The atomic number (Z) is the number of ________ found in the nucleus of an atom.</div><div class='option'>A) Protons and neutrons</div><div class='option'>B) Electrons</div><div class='option'>C) Neutrons</div><div class='option'>D) Protons<span class='asterisk'>*</span></div><div class='solution'><span class='asterisk'>The atomic number (Z) is the number of protons found in the nucleus of an atom. The atomic number uniquely identifies an element and determines its position in the periodic table. In a neutral atom, the number of protons is equal to the number of electrons surrounding the nucleus.</span></div><p></p></div><div class='question'><div class='stem'>6) When a neutral atom loses an electron it becomes a(n) ____________, with a _____________ charge.</div><div class='option'>A) cation, positive<span class='asterisk'>*</span></div><div class='option'>B) anion, positive</div><div class='option'>C) cation, negative</div><div class='option'>D) anion, negative</div><div class='solution'><span class='asterisk'>When a neutral atom loses an electron, it becomes a positively charged ion called a cation. &nbsp;Cation have a net positive charge. The charge on the cation depends on the number of electrons lost. For each electron lost, the cation's charge changes by +1.</span></div><p></p></div><div class='question'><div class='stem'>7) What is the average atomic mass of Li?</div><div class='option'>A) 4 amu</div><div class='option'>B) 3 amu</div><div class='option'>C) 7 amu</div><div class='option'>D) 6.94 amu<span class='asterisk'>*</span></div><div class='solution'><span class='asterisk'>&nbsp;the average atomic mass of Li is 6.94 amu according to the periodic table.</span></div><p></p></div><div class='question'><div class='stem'>8) A new compound was recently discovered and found to have an average atomic mass of 350.04 amu. This element has two isotopes, the lighter of which has an atomic mass of 346.79&nbsp; amu and an abundance of 72.683%. What is the mass of the heavier isotope?</div><div class='option'>A) 358.69<span class='asterisk'>*</span></div><div class='option'>B) 345.57</div><div class='option'>C) 351.26</div><div class='option'>D)  None of the above.</div><div class='solution'><span class='asterisk'><p>To find the mass of the heavier isotope, we can use the information provided. Let's denote the mass of the heavier isotope as X amu.</p>
+<p>The average atomic weight of the compound is calculated by considering the masses and abundances of both isotopes. Using the given values, we can set up the following equation:</p>
+<p>(346.79 amu * 0.72683) + (X amu * abundance of heavier isotope) = 350.04 amu</p>
+<p>Simplifying the equation:</p>
+<p>252.06 amu + (X amu * abundance of heavier isotope * ) = 350.04 amu</p>
+<p>Subtracting 252.06 amu from both sides:</p>
+<p>abundance of heavier isotope * X amu = 97.983 amu</p>
+<p>Now, we can solve for the mass of the heavier isotope:</p>
+<p>X amu = 97.983 amu / abundance of heavier isotope</p>
+<p>Given that the abundance of the heavier isotope is 27.317% (100% - 72.683%), we can set up the following equation:</p>
+<p>X amu = 97.983 amu / 27.317%</p>
+<p>Converting the abundance to a decimal:</p>
+<p>X amu = 97.983 amu / 0.27317</p>
+<p>X amu ≈ 358.69 amu</p></span></div><p></p></div><div class='question'><div class='stem'>9) What is the charge, and approximate mass of protons, neutrons, and electrons?</div><div class='option'>A) protons: +1 charge &amp; 1 amu; neutron: -1 charge &amp; 0 amu; electron: no charge &amp; 1 amu</div><div class='option'>B) protons: -1 charge &amp; 0 amu; neutron: no charge &amp; 1 amu; electron: +1 charge &amp; 1 amu</div><div class='option'>C) protons: no charge &amp; 1 amu; neutron: -1 charge &amp; 0 amu; electron: +1 charge &amp; 1 amu</div><div class='option'>D) protons: +1 charge &amp; 1 amu; neutron: no charge &amp; 1 amu; electron: -1 charge &amp; 0 amu<span class='asterisk'>*</span></div><div class='solution'><span class='asterisk'><p>Protons: Protons carry a positive charge of +1 and are located in the nucleus of an atom. The approximate mass of a proton is 1.67 x 10^-27 kilograms or 1 atomic mass unit (amu).</p>
+<p>Neutrons: Neutrons are electrically neutral, meaning they have no charge. Like protons, they are located in the nucleus of an atom. The approximate mass of a neutron is also 1.67 x 10^-27 kilograms or 1 atomic mass unit (amu), which is very similar to the mass of a proton.</p>
+<p>Electrons: Electrons carry a negative charge of -1 and orbit around the nucleus of an atom in electron shells. The mass of an electron is much smaller compared to protons and neutrons. It is approximately 9.11 x 10^-31 kilograms or about 1/1836 amu.</p></span></div><p></p></div><div class='question'><div class='stem'>10) What is the name of the Ca isotope that has 23 neutrons?</div><div class='option'>A) Calcium-40.</div><div class='option'>B) Calcium-20.</div><div class='option'>C) Calcium-23</div><div class='option'>D) Calcium-43<span class='asterisk'>*</span></div><div class='solution'><span class='asterisk'><p>To determine an isotope given its chemical symbol and the number of neutrons, follow these steps:</p>
+<ol>
+<li>
+<p>Identify the chemical symbol: The chemical symbol represents the element. It is typically a one- or two-letter abbreviation, such as H for hydrogen, C for carbon, or Au for gold.</p>
+</li>
+<li>
+<p>Determine the atomic number: The atomic number of an element corresponds to the number of protons in the nucleus of its atoms. It is usually listed as a subscript to the left of the chemical symbol. You can find the atomic number on the periodic table.</p>
+</li>
+<li>
+<p>Calculate the mass number: The number of neutrons is given. Add this number to the atomic number to determine the mass number. The mass number represents the total number of protons and neutrons in the nucleus.</p>
+</li>
+<li>
+<p>Write the isotope: Once you know the atomic number and the number of neutrons, you can write the isotope by combining the chemical symbol, atomic number, and mass number. The atomic number is written as a subscript, and the mass number is written as a superscript.</p>
+</li>
+</ol>
+<p>In this problem:</p>
+<ol>
+<li>The chemical symbol is Ca.</li>
+<li>The atomic number of calcium is 20.</li>
+<li>Add the number of neutrons (23 neutrons) to the atomic number (20) to determine the mass number: 23 + 20 = 43.</li>
+<li>Write the isotope: Calcium-43</li>
+</ol></span></div><p></p></div><div class='question'><div class='stem'>11) In the following isotope symbol, the letters for the element have been replaced with an X.&nbsp; Determine the number of protons, neutrons and electrons?<br><span class="math-tex">\( ^{18}_{9}X^{2+} \)</span></div><div class='option'>A) protons: 7; neutrons: 9; electrons: 9</div><div class='option'>B) protons: 9; neutrons: 9; electrons: 10</div><div class='option'>C) protons: 9; neutrons: 18; electrons: 7</div><div class='option'>D) protons: 9; neutrons: 9; electrons: 7<span class='asterisk'>*</span></div><div class='solution'><span class='asterisk'><p>The isotope symbol <span class="math-tex">\( ^{18}_{9}X^{2+} \)</span> represents an isotope with a mass number of 18 and an atomic number of 9, along with a charge of 2+.</p>
+<ul>
+<li>
+<p>Number of protons (Z): The atomic number (9) represents the number of protons in the nucleus. Therefore, the isotope has 9 protons.</p>
+</li>
+<li>
+<p>Number of neutrons (N): The mass number (18) represents the total number of protons and neutrons in the nucleus. To determine the number of neutrons, we subtract the atomic number from the mass number: 18 - 9 = 9.00 neutrons.</p>
+</li>
+<li>
+<p>Number of electrons: In a neutral atom, the number of electrons is equal to the number of protons. However, the given isotope symbol (<span class="math-tex">\( ^{18}_{9}X^{2+} \)</span>) indicates a charge of +2. This means there is one more electrons than the number of protons. Therefore, in this case, there are &nbsp;9 - 2 = 7 electrons.</p>
+</li>
+</ul>
+<p>To summarize:</p>
+<ul>
+<li>Number of protons (Z): &nbsp;9</li>
+<li>Number of neutrons (N): 9</li>
+<li>Number of electrons: 7</li>
+</ul></span></div><p></p></div><div class='question'><div class='stem'>12) How are gases <strong>different </strong>from solids and liquids?</div><div class='option'>A) Gases have the highest density</div><div class='option'>B) Gases retain their shape</div><div class='option'>C) Gases retain their volume</div><div class='option'>D) Gas molecules have the lowest strength intermolecular bonds<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>13) Which of the following describes an atom?</div><div class='option'>A) two or more elements bonded to each other</div><div class='option'>B) two or more elements or compounds that are not covalently or ionically bonded and do <strong>not </strong>have a uniform composition</div><div class='option'>C) an individual unit of an element<span class='asterisk'>*</span></div><div class='option'>D) two or more elements that are not covalently or ionically bonded and have a uniform composition</div><div class='solution'><span class='asterisk'><p>An atom: A fundamental unit of matter that consists of a nucleus (containing protons and neutrons) and electrons orbiting the nucleus.</p>
+<p>A molecule: Two or more atoms covalently bonded together. It can be a compound or a diatomic molecule composed of the same type of atoms.</p>
+<p>A compound: Two or more different elements chemically bonded together. Compounds have a fixed ratio of elements and can be represented by a chemical formula.</p>
+<p>A heterogeneous mixture: Two or more elements or compounds that are not covalently or ionically bonded and do not have a uniform composition. In a heterogeneous mixture, the components are not evenly distributed, and their properties may vary within the mixture.</p>
+<p>A homogeneous mixture: Two or more elements or compounds that are not covalently or ionically bonded and have a uniform composition. In a homogeneous mixture, the components are evenly distributed throughout, and the mixture appears uniform at the macroscopic level.</p>
+<p>To summarize:</p>
+<ul>
+<li>Atom: Fundamental unit of matter.</li>
+<li>Molecule: Two or more atoms covalently bonded together.</li>
+<li>Compound: Two or more different elements chemically bonded together.</li>
+<li>Heterogeneous mixture: Components are not evenly distributed and do not have a uniform composition.</li>
+<li>Homogeneous mixture: Components are evenly distributed and have a uniform composition.</li>
+</ul></span></div><p></p></div><div class='question'><div class='stem'>14) Which of the following mixtures will <strong>NOT</strong> be homogeneous?</div><div class='option'>A) vinegar and water</div><div class='option'>B) salt and water</div><div class='option'>C) mud and water<span class='asterisk'>*</span></div><div class='option'>D) sugar and coffee</div><div class='solution'><span class='asterisk'><p>The correct answer is:<br><br>mud and water<br><br>Mud and water will not form a homogeneous mixture. When mud is added to water, it does not dissolve or mix uniformly. Instead, the mud particles will settle at the bottom, creating a heterogeneous mixture where the mud is not evenly distributed throughout the water.</p></span></div><p></p></div><div class='question'><div class='stem'>15) Calculate the atomic mass of element "X," if it has 2 naturally occurring isotopes with the following masses and natural abundances.<br>X-107 107.42659 amu 79.546%<br>X-=108 108.16930 amu 20.454%</div><div class='option'>A) 107.20 amu</div><div class='option'>B) 161.51 amu</div><div class='option'>C) 108.02 amu</div><div class='option'>D) 107.58 amu<span class='asterisk'>*</span></div><div class='solution'><span class='asterisk'><p>To calculate the atomic mass of element X, we need to consider the masses and natural abundances of its isotopes.</p>
+<p>The atomic mass is calculated by multiplying the mass of each isotope by its natural abundance, summing up the results, and rounding to the appropriate number of decimal places.</p>
+<p>Let's perform the calculation:</p>
+<p>Isotope X-107: Mass: 107.42659&nbsp; amu Abundance: 79.546%</p>
+<p>Isotope X-=108: Mass: 108.16930 amu Abundance: 20.454%</p>
+<p>Atomic mass = (107 amu * 0.79546) + (108.16930 amu * &nbsp;0.20454) = 106.97958967 107.58 amu</p></span></div><p></p></div><div class='question'><div class='stem'>16) How many moles of Mg are contained in 179 mg of Mg?</div><div class='option'>A) 0.000136 mol</div><div class='option'>B) 0.00736 mol<span class='asterisk'>*</span></div><div class='option'>C) 4.35 mol</div><div class='option'>D) 7.36 mol</div><div class='solution'><span class='asterisk'><p>To determine the number of moles, we need to divide the given mass of Mg by its molar mass.</p>
+<p>The molar mass of Mg is approximately 24.31 g/mol.</p>
+<p>First, let's convert the given mass from milligrams (mg) to grams (g): 179 mg x 1 g/1000 mg = 0.179 g</p>
+<p>Next, we can calculate the number of moles: moles = 0.179 g x <span class="math-tex">\( \frac{1 mol}{24.31 g} \)</span> = (0.179)/(24.31) mol ≈ 0.00736 mol</p></span></div><p></p></div><div class='question'><div class='stem'>17) Calculate the mass (in g) of 9.68 × 10<sup>23</sup> atoms of K.</div><div class='option'>A) 2280 g</div><div class='option'>B) 62.9 g<span class='asterisk'>*</span></div><div class='option'>C) 0.0159 g</div><div class='option'>D) 1.61 g</div><div class='solution'><span class='asterisk'><p>To calculate the mass of a given number of atoms, we need to multiply the moles of the element by the molar mass of the element.<br><br>The number of atoms in one mole is 6.022 x 10<sup>23</sup>.</p>
+<p>The molar mass of K is approximately 39.10 g/mol.</p>
+<p>First, let's calculate the moles of K using Avogadro's number: moles = number of atoms / Avogadro's number moles = 9.68 × 10<sup>23</sup> atoms × <span class="math-tex">\( \frac{1 mol}{6.022 x 10^{23} atoms} \)</span> ≈ 1.61 mol</p>
+<p>Next, we can calculate the mass: mass = moles × molar mass mass = 1.61 mol × 39.10 g/mol mass ≈ 62.9 g</p></span></div><p></p></div><div class='question'><div class='stem'>18) Which of the following statements about subatomic particles are true.</div><div class='option'>A) positively charted ions (cations) have more electrons than protons</div><div class='option'>B) mass number = protons + electrons</div><div class='option'>C) in a neutral element the number of protons and electrons are equal<span class='asterisk'>*</span></div><div class='option'>D) charge = protons - neutrons</div><p></p></div><div class='question'><div class='stem'>19) Which of the following is the elemental symbol for gold?</div><div class='option'>A) Au<span class='asterisk'>*</span></div><div class='option'>B) Ag</div><div class='option'>C) S</div><div class='option'>D) Na</div><p></p></div><div class='question'><div class='stem'>20) An element has three stable isotopes with masses of 27.452 amu, 29.535 amu, and 31.830 amu. The heavier two isotopes have an abundance of 16.2% (middle mass) and 3.47% (largest mass), respectively. What is the average atomic mass of the element?</div><div class='option'>A) 27.9 amu<span class='asterisk'>*</span></div><div class='option'>B) 29.6 amu</div><div class='option'>C) 28.2 amu</div><div class='option'>D) 31.3 amu</div><div class='solution'><span class='asterisk'>To calculate the average atomic mass of the element, we need to consider the masses of the isotopes and their respective abundances.<br>
+<p>Given: Mass of first isotope (lightest) = 27.452 amu <br>Mass of second isotope (middle) = 29.535 amu <br>Mass of third isotope (heaviest) = 31.830 amu <br>Abundance of second isotope = 16.2% <br>Abundance of third isotope = 3.47%</p>
+<p>To find the abundance of the lightest isotope, we subtract the abundances of the other two isotopes from 1: Abundance of lightest isotope = 1 - (abundance of second isotope + abundance of third isotope) = 1 - (0.162+ 0.0347) = 0.803</p>
+<p>Now, let's calculate the average atomic mass.<br>Average atomic mass = (mass of first isotope * abundance of first isotope) + (mass of second isotope * abundance of second isotope) + (mass of third isotope * abundance of third isotope)<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;= (27.452 amu x 0.803) + (29.535 amu x 0.162) + (31.830 amu x 0.0347)<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;= 22.052) amu + 4.7847 amu + 1.1045 amu<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;= 27.941 amu<br><br>Rounded to the appropriate number of significant figures, the average atomic mass of the element is approximately 27.9 amu.<br><br></p></span></div><p></p></div><div class='question'><div class='stem'>21) In the following isotope symbol, the letters for the element have been replaced with an X.&nbsp; What is the name of the isotope?<br><span class="math-tex">\( ^{19}_{9}X \)</span></div><div class='option'>A) Potassium-19</div><div class='option'>B) Fluorine-9</div><div class='option'>C) Fluorine-19<span class='asterisk'>*</span></div><div class='option'>D) Fluorine-9</div><div class='solution'><span class='asterisk'><p>The correct answer is Fluorine-19.</p>
+<p>In the isotope symbol <span class="math-tex">\( ^{19}_{9}X \)</span>, the superscript 19 represents the mass number, which is the sum of protons and neutrons in the nucleus. The subscript 9 represents the atomic number, which corresponds to the number of protons in the nucleus.</p>
+<p>Since the atomic number is 9, we can identify the element as fluorine because fluorine has 9 protons according to the periodic table. Therefore, the isotope is Fluorine-19, with a mass number of 19 and an atomic number of 9.</p></span></div><p></p></div><div class='question'><div class='stem'>22) Which of the following statements about isotopes is true?</div><div class='option'>A) isotopes have different chemical properties</div><div class='option'>B) isotopes have the same mass number</div><div class='option'>C) isotopes have different atomic masses<span class='asterisk'>*</span></div><div class='option'>D) isotopes have the same number of neutrons but different numbers of protons</div><p></p></div><div class='question'><div class='stem'>23) The statement "samples of a compound will always contain the same proportion of elements by mass" belongs to:</div><div class='option'>A) the Law of Multiple Proportions</div><div class='option'>B) the Law of Conservation of Mass</div><div class='option'>C) the Law of Definite Proportions<span class='asterisk'>*</span></div><div class='option'>D) Dalton's Atomic Theory</div><div class='solution'><span class='asterisk'><p>Dalton's Atomic Theory: Matter is composed of small indestructible particles.</p>
+<p>The Law of Conservation of Mass: In a chemical reaction, matter is neither created nor destroyed.</p>
+<p>The Law of Multiple Proportions: If two elements form more than one compound, the ratios of the masses of the second element that combine with a fixed mass of the first element will always be ratios of small whole numbers.</p>
+<p>The Law of Definite Proportions: Samples of a compound will always contain the same proportion of elements by mass.</p></span></div><p></p></div><div class='question'><div class='stem'>24) What element is defined by the following information?&nbsp;<br>p<sup>+</sup> = 15 n° = 16 e<sup>-</sup> = 15</div><div class='option'>A) Sodium</div><div class='option'>B) Phosphorous<span class='asterisk'>*</span></div><div class='option'>C) Magnesium</div><div class='option'>D) Sulfur</div><div class='solution'><span class='asterisk'>p<sup>+</sup> = 15 indicates that there are &nbsp;15 protons, and that the atomic number is &nbsp;15.<br>The atomic number is all that is needed to identify the element.&nbsp; Checking the periodic table shows that Phosphorous has an atomic number of 15.</span></div><p></p></div><div class='question'><div class='stem'>25) Which ion is represented by the following information?<br>p<sup>+</sup> = 15, e<sup>-</sup> = 11</div><div class='option'>A) Na<sup>4-</sup></div><div class='option'>B) P<sup>4+</sup><span class='asterisk'>*</span></div><div class='option'>C) Si<sup>4+</sup></div><div class='option'>D) P<sup>4-</sup></div><div class='solution'><span class='asterisk'>This ion has 15 protons, and 11 electrons.<br>Since it has 15 protons, we can determine the element is P by looking at the periodic table.<br>Charge = # protons - # electrons<br>Charge = 15 - 11 = 4+<br>Thus the ion can be represented with P<sup>4+</sup></span></div><p></p></div><div class='question'><div class='stem'>26) An element has an average atomic mass of 105.30 amu. The X-109 isotope (108.70 amu) has an abundance of 32.32%. What is the mass, in amu, of the other isotope?</div><div class='option'>A) 105 amu</div><div class='option'>B) 103 amu</div><div class='option'>C) 101.89 amu</div><div class='option'>D) 103.67 amu<span class='asterisk'>*</span></div><div class='solution'><span class='asterisk'><p>To find the mass of the other isotope, we need to subtract the contribution of the X-109 isotope from the average atomic mass.</p>
+<p>Mass of the X-109 isotope = 108.70 amu Abundance of the X-109 isotope = 32.32%</p>
+<p>Let's denote the mass of the other isotope as "X".</p>
+<p>Average atomic mass = (Mass of X-109 isotope * Abundance of X-109 isotope) + (Mass of X * Abundance of other isotope)</p>
+<p>105.30 amu = (108.70 amu * 32.32%) + (X * (100% - &nbsp;32.32%))</p>
+<p>105.30 amu = (108.70 amu * 0.32320) + (X * 0.67680)</p>
+<p>105.30 amu = 35.132 amu + 0.67680X<br><br>0.67680X = 70.164 amu<br><br>X = 103.67 amu</p></span></div><p></p></div><div class='question'><div class='stem'>27) How many atoms are present in 1.65 mg of Au?</div><div class='option'>A) 1.98x10<sup>-19</sup> atoms</div><div class='option'>B) 0.0504 atoms</div><div class='option'>C) 8.38x10<sup>17</sup> atoms</div><div class='option'>D) 5.04x10<sup>18</sup> atoms<span class='asterisk'>*</span></div><div class='solution'><span class='asterisk'><p>To calculate the number of atoms, we need to convert the mass of Au to moles and then use Avogadro's number to convert to atoms.<br><br>First we'll convert mg to g. &nbsp;1.65 mg x <span class="math-tex">\( \frac{1 g}{1000 mg} \)</span> = 0.00165 g</p>
+<p>Next, we'll calculate the number of moles of Mn: moles = 0.00165 g x <span class="math-tex">\( \frac{1 mol}{197 g} \)</span> = 8.38x10<sup>-6</sup> mol</p>
+<p>Next, we'll calculate the number of atoms: number of atoms = moles × Avogadro's number number of atoms = 8.38x10<sup>-6</sup> mol × <span class="math-tex">\( \frac{6.022 × 10^{23} atoms}{1 mol} \)</span></p>
+<p>Calculating the above expression, we get: number of atoms ≈ 5.04x10<sup>18</sup> atoms</p></span></div><p></p></div><div class='question'><div class='stem'>28) Which of the following describe an element?</div><div class='option'>A) A substance that can't be chemically broken down into simpler substances<span class='asterisk'>*</span></div><div class='option'>B) A substance composed of two or more elements in a fixed</div><div class='option'>C) Two or more substances in variable proportions</div><div class='option'>D) Two or more substances in variable proportions</div><div class='solution'><span class='asterisk'><p>An element: A substance that can't be chemically broken down into simpler substances. Elements are made up of only one type of atom.</p>
+<p>A compound: A substance composed of two or more elements in a fixed, definite proportion. Compounds are chemically bonded together and have a specific chemical formula.</p>
+<p>A homogeneous mixture: Two or more substances in variable proportions, where the composition is constant throughout. In a homogeneous mixture, the components are evenly distributed, and the mixture appears uniform at the macroscopic level.</p>
+<p>A heterogeneous mixture: Two or more substances in variable proportions, where the composition is variable throughout. In a heterogeneous mixture, the components are not evenly distributed, and the mixture may have visible variations or phases.</p>
+<p>To summarize:</p>
+<ul>
+<li>Element: Can't be chemically broken down into simpler substances.</li>
+<li>Compound: Composed of two or more elements in a fixed, definite proportion.</li>
+<li>Homogeneous mixture: Components are in variable proportions, but the composition is constant throughout. Appears uniform.</li>
+<li>Heterogeneous mixture: Components are in variable proportions, and the composition may vary throughout. Exhibits visible variations.</li>
+</ul></span></div><p></p></div></body></html>

@@ -1,0 +1,129 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Take Home Quiz Ch 3</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) How many core electrons does Mg have?</div><div class='option'>A) 12</div><div class='option'>B) 10<span class='asterisk'>*</span></div><div class='option'>C) 18</div><div class='option'>D) 2</div><p></p></div><div class='question'><div class='stem'>2) How many valence electrons does Ca have?</div><div class='option'>A) 18</div><div class='option'>B) 2<span class='asterisk'>*</span></div><div class='option'>C) 10</div><div class='option'>D) 20</div><p></p></div><div class='question'><div class='stem'>3) Which ground-state element has the following electron configuration?<br>1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>2</sup> 3p<sup>6</sup> 4s<sup>2</sup> 3d<sup>10</sup> 4p<sup>2</sup></div><div class='option'>A) titanium</div><div class='option'>B) silicon</div><div class='option'>C) tin</div><div class='option'>D) germanium<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>4) Which of the following has the most nonmetallic character; F, Cl, Br, or I?</div><div class='option'>A) I</div><div class='option'>B) Br</div><div class='option'>C) Cl</div><div class='option'>D) F<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>5) Give the noble gas ground state electron configuration for Ca</div><div class='option'>A) [Ar] 4s<sup>1</sup></div><div class='option'>B) [Ne] 3s<sup>2</sup></div><div class='option'>C) [Ne] 3s<sup>1</sup></div><div class='option'>D) [Ar] 4s<sup>2</sup><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>6) Predict the charge that sodium will take as an ion.</div><div class='option'>A) -1</div><div class='option'>B) +1<span class='asterisk'>*</span></div><div class='option'>C) -3</div><div class='option'>D) -2</div><p></p></div><div class='question'><div class='stem'>7) Which of the following is a property of metals?</div><div class='option'>A) poor conductor of electricity</div><div class='option'>B) brittle</div><div class='option'>C) dull</div><div class='option'>D) shiny<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>8) Which of the following has the most non-metallic character; Li, F, K, or Br?</div><div class='option'>A) K</div><div class='option'>B) Li</div><div class='option'>C) F<span class='asterisk'>*</span></div><div class='option'>D) Br</div><p></p></div><div class='question'><div class='stem'>9) Which of the following has the most nonmetallic character; Li, Be, O, or F?</div><div class='option'>A) F<span class='asterisk'>*</span></div><div class='option'>B) Be</div><div class='option'>C) Li</div><div class='option'>D) O</div><p></p></div><div class='question'><div class='stem'>10) Which rule states that it is not possible to know the exact position and velocity of an electron at the same time?</div><div class='option'>A) Aufbau principle</div><div class='option'>B) Heisenberg uncertainty principle<span class='asterisk'>*</span></div><div class='option'>C) Pauli exclusion principle</div><div class='option'>D) Hund's rule</div><p></p></div><div class='question'><div class='stem'>11) Give the ground state electron configuration for Se</div><div class='option'>A) 1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>2</sup> 3p<sup>4</sup></div><div class='option'>B) 1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>2</sup> 3p<sup>6</sup> 4s<sup>2</sup> 3d<sup>10</sup> 4p<sup>6</sup> 5s<sup>2</sup> 4d<sup>10</sup> 5p<sup>4</sup></div><div class='option'>C) 1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>2</sup> 3p<sup>6</sup> 4s<sup>2</sup> 3d<sup>10</sup> 3d<sup>10</sup> 4p<sup>4</sup></div><div class='option'>D) 1s<sup>2</sup> 2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>2</sup> 3p<sup>6</sup> 4s<sup>2</sup> 3d<sup>10</sup> 4p<sup>4</sup><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>12) Which of the following is a nonmetal?</div><div class='option'>A) silver</div><div class='option'>B) calcium</div><div class='option'>C) hydrogen<span class='asterisk'>*</span></div><div class='option'>D) caesium</div><p></p></div><div class='question'><div class='stem'>13) Which of the following has the smallest atomic radius; Na, Cl, Rb, or I?</div><div class='option'>A) Na</div><div class='option'>B) Rb</div><div class='option'>C) Cl<span class='asterisk'>*</span></div><div class='option'>D) I</div><p></p></div><div class='question'><div class='stem'>14) which of the following is a lanthanide?</div><div class='option'>A) germanium</div><div class='option'>B) calcium</div><div class='option'>C) nitrogen</div><div class='option'>D) neodymium<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>15) Which of the following has the smallest first ionization energy; Mg, Ca, Ca, or Sr?</div><div class='option'>A) Sr<span class='asterisk'>*</span></div><div class='option'>B) Mg</div><div class='option'>C) Ca</div><div class='option'>D) Ca</div><p></p></div><div class='question'><div class='stem'>16) Which of the following represents a nitrogen atom with excited electrons?</div><div class='option'>A) <img title="ee.png" src="../images/8.png" alt="" width="302" height="83"><span class='asterisk'>*</span></div><div class='option'>B) <img title="gs.png" src="../images/12.png" alt="" width="312" height="83"></div><div class='option'>C) <img title="pe.png" src="../images/16.png" alt="" width="312" height="83"></div><div class='option'>D) <img title="hr.png" src="../images/20.png" alt="" width="303" height="88"></div><p></p></div><div class='question'><div class='stem'>17) Which element has a ground state electronic configuration of [Ar] 4s<sup>2</sup> 3d<sup>5</sup>?</div><div class='option'>A) Tc</div><div class='option'>B) Co</div><div class='option'>C) Rh</div><div class='option'>D) Mn<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>18) Which of the following has the largest atomic radius; C, N, O, or F?</div><div class='option'>A) N</div><div class='option'>B) O</div><div class='option'>C) F</div><div class='option'>D) C<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>19) An orbital that penetrates into the region occupied by core electrons will be at a higher energy level.</div><div class='option'>A) True</div><div class='option'>B) False<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>20) Which of the following has the smallest atomic radius; C, N, O, or F?</div><div class='option'>A) N</div><div class='option'>B) C</div><div class='option'>C) O</div><div class='option'>D) F<span class='asterisk'>*</span></div><p></p></div></body></html>
