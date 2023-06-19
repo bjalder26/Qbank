@@ -1,0 +1,138 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Take Home Quiz Ch 7</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) What is the limiting reactant when 9.84 g of B<sub>2</sub>Br<sub>6</sub> react with 16.0 g of HNO<sub>3</sub>?
+<div style="text-align: center;">B<sub>2</sub>Br<sub>6</sub> + 6 HNO<sub>3</sub> ➞ 2 B(NO<sub>3</sub>)<sub>3</sub> + 6 HBr</div></div><div class='option'>A) B(NO<sub>3</sub>)<sub>3</sub></div><div class='option'>B) B<sub>2</sub>Br<sub>6</sub><span class='asterisk'>*</span></div><div class='option'>C) HBr</div><div class='option'>D) HNO<sub>3</sub></div><p></p></div><div class='question'><div class='stem'>2) Balance the following equation.<br><br>________ C<sub>8</sub>H<sub>20</sub> + ________ O<sub>2</sub> → ________ H<sub>2</sub>O + ________ CO<sub>2</sub></div><p></p></div><div class='question'><div class='stem'>3) How many moles of FeBr<sub>3</sub> can be formed from 2.85 moles of KBr? Assume an excess of Fe(OH)<sub>3</sub>.
+<div style="text-align: center;">3 KBr + Fe(OH)<sub>3</sub> ➞ 3 KOH + FeBr<sub>3</sub></div></div><div class='option'>A) 8.55 moles</div><div class='option'>B) 2.85 moles</div><div class='option'>C) 281 moles</div><div class='option'>D) 0.950 moles<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>4) How many grams of KNO<sub>3</sub> will react with 181 grams of H<sub>2</sub>CO<sub>3</sub>?
+<div style="text-align: center;">2 KNO<sub>3</sub> + H<sub>2</sub>CO<sub>3</sub> ➞ K<sub>2</sub>CO<sub>3</sub> + 2 HNO<sub>3</sub></div></div><div class='option'>A) 55.5 g</div><div class='option'>B) 590. g<span class='asterisk'>*</span></div><div class='option'>C) 55.5 g</div><div class='option'>D) 148 g</div><p></p></div><div class='question'><div class='stem'>5) <div>What is the percent yield of the reaction if 18.9 g of Fe are produced when 11.3g of Al&nbsp; react with excess Fe<sub>2</sub>O<sub>3</sub> according to the following reaction.</div>
+<div style="text-align: center;">Fe<sub>2</sub>O<sub>3</sub>(s) + 2 Al(s) → Al<sub>2</sub>O<sub>3</sub>(s) + 2 Fe(s)</div></div><div class='option'>A) 80.8 %<span class='asterisk'>*</span></div><div class='option'>B) 28.9 %</div><div class='option'>C) 167 %</div><div class='option'>D) 59.8 %</div><p></p></div><div class='question'><div class='stem'>6) How many molecules of water can be produced when 14.9 g of CH<sub>4</sub>&nbsp;reacts with excess oxygen?
+<div style="text-align: center;">CH<sub>4</sub> + 2 O<sub>2</sub> ➞ CO<sub>2</sub> + 2 H<sub>2</sub>O</div></div><div class='option'>A) 2.49x10<sup>23</sup> molecules</div><div class='option'>B) 33.5 molecules</div><div class='option'>C) 1.12x10<sup>24</sup> molecules<span class='asterisk'>*</span></div><div class='option'>D) 2.80x10<sup>23</sup> molecules</div><p></p></div><div class='question'><div class='stem'>7) What is the theoretical yield, in grams of CO<sub>2</sub>, from the reaction of 4.27 moles of C<sub>3</sub>H<sub>8</sub> with 34.3 moles of O<sub>2</sub>?
+<div style="text-align: center;">C<sub>3</sub>H<sub>8</sub> + 5 O<sub>2</sub> ➞ 3 CO<sub>2</sub> + 4 H<sub>2</sub>O</div></div><div class='option'>A) 564 g<span class='asterisk'>*</span></div><div class='option'>B) 12.8 g</div><div class='option'>C) 906 g</div><div class='option'>D) 62.6 g</div><p></p></div><div class='question'><div class='stem'>8) Which of the following is a physical change?</div><div class='option'>A) Shredding paper<span class='asterisk'>*</span></div><div class='option'>B) Reacting metal with acid</div><div class='option'>C) Combusting propane</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>9) What is the limiting reactant when 10.9 moles of ZnS react with 12.8 moles of AlP?
+<div style="text-align: center;">3 ZnS + 2 AlP ➞ Zn<sub>3</sub>P<sub>2</sub> + Al<sub>2</sub>S<sub>3</sub></div></div><div class='option'>A) ZnS&nbsp;<span class='asterisk'>*</span></div><div class='option'>B) AlP</div><div class='option'>C) Zn<sub>3</sub>P<sub>2</sub></div><div class='option'>D) Al<sub>2</sub>S<sub>3</sub></div><p></p></div><div class='question'><div class='stem'>10) What is the theoretical yield, in moles of CO<sub>2</sub>, from the reaction of 16.9 moles of C<sub>2</sub>H<sub>6</sub> with 10.9 moles of O<sub>2</sub>?
+<div style="text-align: center;">2 C<sub>2</sub>H<sub>6</sub> + 7 O<sub>2</sub> ➞ 4 CO<sub>2</sub> + 6 H<sub>2</sub>O</div></div><div class='option'>A) 6.23 moles<span class='asterisk'>*</span></div><div class='option'>B) 19.1 moles</div><div class='option'>C) 9.66 moles</div><div class='option'>D) 33.8 moles</div><p></p></div><div class='question'><div class='stem'>11) How many grams of LiF can be formed from 2.79 moles of BF<sub>3</sub>? Assume an excess of Li<sub>2</sub>SO<sub>3</sub>.
+<div style="text-align: center;">2 BF<sub>3</sub> + 3 Li<sub>2</sub>SO<sub>3</sub> ➞ B<sub>2</sub>(SO<sub>3</sub>)<sub>3</sub> + 6 LiF</div></div><div class='option'>A) 217 g<span class='asterisk'>*</span></div><div class='option'>B) 24.1 g</div><div class='option'>C) 0.323 g</div><div class='option'>D) 3.20 g</div><p></p></div><div class='question'><div class='stem'>12) Which orbitals overlap in the carbon-hydrogen bonds in C<sub>2</sub>H<sub>4</sub>?</div><div class='option'>A) sp<sup>2</sup> and s<span class='asterisk'>*</span></div><div class='option'>B) sp and s</div><div class='option'>C) sp<sup>3</sup> and s</div><div class='option'>D) Two p orbitals</div><p></p></div></body></html>

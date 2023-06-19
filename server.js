@@ -8,7 +8,6 @@ var fs = require('fs'); // file system
 const nodemailer = require('nodemailer'); // required to send passwords via email
 const sgMail = require('@sendgrid/mail');// required to send passwords via sendgrid
 
-
 const bcrypt = require('bcrypt'); // for hashing passwords
 const crypto = require('crypto'); // for generating random passwords for password recovery
 
@@ -25,20 +24,12 @@ const ln = x => Math.log(x);
 const log10 = x => Math.log10(x);
 const log = log10; // Use the same function name for log() as log10()
 
-
-//const ln = x => math.log(x, math.e); //const ln = math.log;
-//const log10 = math.log10;
-//const log = x => math.log(x, math.e);//const log = math.log10; // Use the same function name for log() as log10()
-// Add custom functions to math object
-//math.import({ ln, log10, log });
-
-
-
-app.use(express.urlencoded({ // increases the limit on what is sent via url - not sure if needed anymore
-  limit: '5mb',
-  extended: true // not sure about
+app.use(express.urlencoded({ // increases the limit on what is sent via url not sure if this is needed anymore
+  limit: '50mb',
+  extended: true, // not sure about
+  parameterLimit: 50000
 }));
-app.use(express.json());
+app.use(express.json({limit: '50mb'})); // increases the limit on what is sent
 
 // create product, images, and user directories if they don't exist
 if (!fs.existsSync(__dirname + '/products')){fs.mkdirSync(__dirname + '/products');}
@@ -94,6 +85,15 @@ function evaluateWithCustomFunctions(equation) {
   return math.evaluate(equation, scope);
 }
 
+function equationError(equation) {
+  const scope = {
+    ln,
+    log10,
+    log,
+  };
+  return `<font color="red">Equation Error: ${equation}</font>`;
+}
+
 const deepCopyFunction = (inObject) => {
   let outObject, value, key;
   if (typeof inObject !== "object" || inObject === null) {
@@ -112,6 +112,7 @@ const deepCopyFunction = (inObject) => {
 function elapsedTime(username) {
   let lastActivity = JSON.parse(fs.readFileSync(__dirname + "/users/lastactivity.txt", "utf8"));
   lastTime = lastActivity[username] ? lastActivity[username] : 0;
+  recordActivity(username);
   return Date.now() - lastTime;
 }
 
@@ -123,6 +124,32 @@ function getSigFigs(number) {
   } else {
     number = reverseString(number);
     return number.length - number.search(/[123456789]/);
+  }
+}
+
+function isValidQuestionObject(text) {
+  try {
+    const parsedObject = JSON.parse(text);
+
+    // Check if the parsed object has the required properties
+    if (
+      (parsedObject.group || parsedObject.group === '') &&
+      (parsedObject.stem || parsedObject.stem === '') &&
+      (parsedObject.solution || parsedObject.solution === '') &&
+      Array.isArray(parsedObject.choices) &&
+      Array.isArray(parsedObject.correct)
+    ) {
+      // Additional checks for other properties or conditions can be added here
+
+      return true;
+    } else {
+	  console.log(text);
+      return false;
+    }
+  } catch (error) {
+    // Catch any parsing errors and return false
+	console.log(error);
+    return false;
   }
 }
 
@@ -146,6 +173,74 @@ console.log('sigFigs minMaxType: '+sigFigs)
     console.error('minMaxType variable error: ' + variable + ' ; error: ' + err);
   }
 }
+
+// Function for parsing equations for html
+function parseEquations(question, html) {
+  console.log('question: '+question);
+  console.log('question stem1: '+question.stem);
+  let regex = new RegExp(/(?<==\[)(.*?)(?=\])/, 'g');
+  const equationsSFs = html.match(regex);
+
+  if (equationsSFs != null) {
+    for (let equationSF of Object.values(equationsSFs)) {
+      const equationSFArray = equationSF.split('; ');
+      const equation = equationSFArray[0];
+      const SF = equationSFArray[1] ? equationSFArray[1] : 3; // defaults to 3 significant figures in equations
+
+      let solution;
+      try {
+        solution = evaluateWithCustomFunctions(equation.replaceAll(/ \(\d+ sf\)/g, ''));
+      } catch (error) {
+        console.log(error + '\nEquation:' + equation + '\nQuestion Stem:' + question.stem);
+		 html = html.replaceAll('=[' + equationSF + ']', equationError(equation));
+		 return html;
+      }
+
+      let addOnSF = '';
+      try {
+        addOnSF = parseFloat(solution).setSigFigs(SF).match(/ \(\d+ sf\)/g) ? parseFloat(solution).setSigFigs(SF).match(/ \(\d+ sf\)/g) : '';
+        if (addOnSF != null) {
+          solution = parseFloat(solution).setSigFigs(SF).replace(/ \(\d+ sf\)/g, '');
+        }
+      } catch (err) {
+        console.error('error: ' + err + ' equation: ' + equation + 'solution: ' + solution);
+      }
+
+      let solutionNum = solution.replace(/\s\(.*\)/, '') * 1;
+      let exp = 0;
+
+      if (Math.abs(solutionNum) >= 10000) {
+        exp = Math.floor(Math.log10(Math.abs(solutionNum)));
+        if (Math.abs(solutionNum / (10 ** exp) - 10) < 0.00001) {
+          exp = exp + 1;
+        }
+        solutionNum = solutionNum / (10 ** exp);
+        solutionNum = solutionNum.setSigFigs(SF);
+        solution = solutionNum + 'x10' + '<sup>' + exp + '</sup>';
+      } else if (Math.abs(solutionNum) < 0.00001 && Math.abs(solutionNum) !== 0) {
+        const absSolutionNum = Math.abs(solutionNum);
+        exp = Math.floor(Math.log10(absSolutionNum));
+        solutionNum = solutionNum / (10 ** exp);
+        if (Math.abs(solutionNum / (10 ** exp) - 10) < 0.00001) {
+          exp = exp + 1;
+        }
+        solutionNum = solutionNum.setSigFigs(SF);
+        solution = solutionNum + 'x10<sup>' + exp + '</sup>';
+      } else {
+        solution = (solution * 1).setSigFigs(SF);
+        if (addOnSF != null) {
+          //solution = solution + addOnSF; // not sure if I need this at all
+        }
+      }
+
+      html = html.replaceAll('=[' + equationSF + ']', solution.toString());
+    }
+  } else {
+    console.log('null equations');
+  }
+  return html;
+}
+
 
 function percentType(variable) {
   try {
@@ -432,31 +527,40 @@ function copyQbank(qbanks, subject, course, qbankName) {
 
 function removeRandomQuestions(qbank) {
   let groupObj = {};
+  let indexesToDelete = [];
+
   for (let i = 0; i < qbank.length; i++) {
-    if (typeof qbank[i]['group'] !== 'undefined' && qbank[i]['group'] !== '') {
-      const groupName = qbank[i]['group'];
-      if (typeof groupObj[groupName] === 'undefined') {
-        groupObj[groupName] = [];
+    const groupName = qbank[i]['group'];
+
+    if (typeof groupName !== 'undefined' && groupName.trim() !== '') {
+      if (groupName.toLowerCase() === 'x') {
+        indexesToDelete.push(i);
+      } else {
+        if (typeof groupObj[groupName] === 'undefined') {
+          groupObj[groupName] = [];
+        }
+        groupObj[groupName].push(i);
       }
-      groupObj[groupName].push(i);
     }
   }
-  
-  let indexesToDelete = [];
+
   for (let group of Object.keys(groupObj)) {
     const keep = Math.floor(Math.random() * groupObj[group].length);
     groupObj[group].splice(keep, 1);
-    indexesToDelete = indexesToDelete.concat(groupObj[group]);
+    indexesToDelete.push(...groupObj[group]);  // Use push() to add individual indexes
   }
-  
-  for (let index of indexesToDelete.reverse()) {
+
+  indexesToDelete.sort((a, b) => b - a);  // Sort the indexes in descending order
+
+  for (let index of indexesToDelete) {
     qbank.splice(index, 1);
   }
-  // return indexesToDelete;
 }
 
 function generateQuestionHTML(questionNumber, question) { //Generates the HTML markup for a single question using the provided question data.
   let html = `<div class='question'><div class='stem'>${questionNumber}) ${question.stem}</div>`;
+  //todo: evaluate equations here
+  
   // Generate the HTML for the question's choices and other elements
   // ...
   //html += `<p></p></div>`;
@@ -490,73 +594,24 @@ function fixMathJaxAdjustments(html) {
 	
 function qbankToHtml(subject, course, qbankAndNumArray, userName, title, instructor, date) {
   let questionNumber = 1;
-  let html = generateHeadHTML(title, instructor, date);
-/*
-  let html = headFile.replace('${title}', `<h1>${title}</h1>`);
-  if(typeof instructor != 'undefined') {
-    html = html.replace('${instructor}', `<h4>${instructor}</h4>`); 
-  } else {
-    html = html.replace('${instructor}', '');
-  }
-  
-  if(typeof date != 'undefined') {
-    html = html.replace('${date}', `<h6>${date}</h6>`); 
-  } else {
-    html = html.replace('${date}', '');
-  }
-  */
-  let qbanks = readQbanksFile(userName);
-  /*
-  var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", "utf8");
-  var qbanks = JSON.parse(qbanksFile);
-  */
+  let html = generateHeadHTML(title, instructor, date); // generates head portion of HTML by replacing title, instructor, date
+
+  let qbanks = readQbanksFile(userName); // reads qbanks file and puts in qbanks variable
+ 
   for(let qbankAndNum of qbankAndNumArray) {
   let qNum = 1;
-  let qbank = copyQbank(qbanks, subject, course, qbankAndNum.qbankName);
-  /*
-  const shallowQbank = qbanks[subject][course][qbankAndNum.qbankName];
-  const number = qbankAndNum.number;   
-  let qbank = deepCopyFunction(shallowQbank);  
-  */
-
-  removeRandomQuestions(qbank); //let indexesToDelete = removeRandomQuestions(qbank);
-  /*
-  let groupObj = {};
-  for (let i = 0; i < qbank.length; i++) { 
-    if (typeof qbank[i]['group'] !== 'undefined' && qbank[i]['group'] !== '') {
-      const groupName = qbank[i]['group'];
-      if (typeof groupObj[groupName] === 'undefined') {
-        groupObj[groupName] = [];
-      }
-      groupObj[groupName].push(i);
-    }
-  }
-//console.log(JSON.stringify(groupObj));
-  let indexesToDelete = [];
-  for (let group of Object.keys(groupObj)) {
-    const keep = Math.floor(Math.random() * groupObj[group].length);
-    groupObj[group].splice(keep, 1);
-    indexesToDelete = indexesToDelete.concat(groupObj[group]);
-  }
+  let qbank = copyQbank(qbanks, subject, course, qbankAndNum.qbankName);// makes deep copy so qbanks won't be changed 
   
-  for (let index of indexesToDelete.reverse()) {
-	//console.log(indexesToDelete)
-    qbank.splice(index, 1);
-  }*/
-
+  removeRandomQuestions(qbank); // randomly removes all but 1 question from each group
+ 
   shuffleArray(qbank);
   for (let question of qbank) { 
-    if(qNum <= qbankAndNum.number) { // set limit here
+    if(qNum <= qbankAndNum.number) { // limits the number of questions from each qbank to number choosen by user
 	qNum++;
-	//qNum = qNum + 1;
-	
-	html += generateQuestionHTML(questionNumber, question);
+		
+	html += generateQuestionHTML(questionNumber, question);  // currently only generates the beginning
 	questionNumber++;
 	
-    //const stem = question.stem;
-    //html = html + `<div class='question'><div class='stem'>${questionNumber}) ${stem}</div>`; // removed br from end
-    //questionNumber = questionNumber + 1;
-    //const correct = question.correct;
     let choices = question.choices;
 	
     //let asterisk = '';
@@ -580,7 +635,7 @@ function qbankToHtml(subject, course, qbankAndNumArray, userName, title, instruc
     }
 
     for (let each of answerArray) { // adds answer choices to html
-      html = html + each;
+      html = html + each; // todo: evaluate formulas here and check for duplicate answers
     }
 
     // all of the above  
@@ -605,7 +660,7 @@ function qbankToHtml(subject, course, qbankAndNumArray, userName, title, instruc
 	
 	let solution = question.solution ? question.solution : "";
 	if (solution != '') {
-		html = html + `<div class='solution'><span class='asterisk'>${solution}</span></div>`
+		html = html + `<div class='solution'>${solution}</div>`
 	}
 
     html = html + `<p></p></div>`;
@@ -620,6 +675,8 @@ function qbankToHtml(subject, course, qbankAndNumArray, userName, title, instruc
     } catch (err) {
       console.error('replacevar: ' + err + '\nquestion: ' + question.stem);
     }
+	// Parse equations for this question
+	html = parseEquations(question, html);
   } else {break;}
   }
   
@@ -634,7 +691,7 @@ function qbankToHtml(subject, course, qbankAndNumArray, userName, title, instruc
   }
 
   // parse equations
-
+  /*
   let regex = new RegExp(/(?<==\[)(.*?)(?=\])/, 'g');
   const equationsSFs = html.match(regex);
 
@@ -653,7 +710,7 @@ function qbankToHtml(subject, course, qbankAndNumArray, userName, title, instruc
 		solution = evaluateWithCustomFunctions(equation.replaceAll(/ \(\d+ sf\)/g, ''));
 	  } catch(error) {
 		  console.log(error +'\nEquation:' + equation);
-		  return (error +'<p>Equation:' + equation);
+		  return (error +'<p>Equation:' + equation+'<p>Question Stem:'+question.stem);
 		  }
 		  //regex = new RegExp(/'.*'+equation/);
 		  //console.error(html.match(regex));
@@ -738,9 +795,10 @@ console.log('SF: '+SF);
   } else {
     console.log('null equations');
   }
+  */
   
   // other functions
-  // charges
+  // charges - this takes a calculated charge and ensures that a + or - is after it.
   
   regex = new RegExp(/(?<=charge\[)(.*?)(?=\])/, 'g');
   const charges = html.match(regex);
@@ -784,6 +842,63 @@ app.post("/import", (req, res) => {
 	  qbanks[subjectName] = data;	  
 	} else {console.error(`Subject ${subjectName} already exists`)}
   } else {console.error(`Subject undefined`)}
+
+  try {
+    fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
+      flag: 'w+'
+    });
+    console.log("File written successfully");
+  } catch (err) {
+    console.error('qbank write: ' + err);
+  }
+  
+  let passed = {};
+  passed.userName = userName;
+  passed = encodeURI(JSON.stringify(passed));
+  res.redirect(`/edit/${passed}`); // doesn't really control destination, but apparently a response is needed
+});
+
+app.post("/merge", (req, res) => {
+  const data = req.body.objFromFileLoaded;
+  const subjectName = req.body.subjectName;
+  const courseName = req.body.courseName;
+  const qbankName = req.body.qbankName;
+  const userName = req.body.userName;
+  const buttonPressed = req.body.buttonPressed;
+  console.log(data, subjectName, courseName, userName, buttonPressed);
+  var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", "utf8");
+  var qbanks = JSON.parse(qbanksFile);
+
+ if (buttonPressed == 'mergeQbank') {
+   if (typeof qbankName != 'undefined') {
+     if (typeof qbanks[subjectName][courseName][qbankName] == 'undefined') {
+       qbanks[subjectName][courseName][qbankName] = data;
+     } else {
+        const qbank = qbanks[subjectName][courseName][qbankName].concat(data);
+		qbanks[subjectName][courseName][qbankName] = qbank;
+     }
+   }
+ } else if (buttonPressed == 'mergeCourse') {
+   if (typeof courseName != 'undefined') {
+     if (typeof qbanks[subjectName][courseName] == 'undefined') {
+		 console.log('3');
+       qbanks[subjectName][courseName] = data;
+     } else {
+       const obj = Object.assign(qbanks[subjectName][courseName], data); // should probably adjust so it deals with duplicate subj
+     }
+   }
+
+ } else if (buttonPressed == 'mergeSubject') {
+   if (typeof subjectName != 'undefined') {
+     if (typeof qbanks[subjectName] == 'undefined') {
+       qbanks[subjectName] = data;
+     } else {
+       const obj = Object.assign(qbanks[subjectName], data); // should probably adjust so it deals with duplicate qbanks
+     }
+   }
+ } else {
+   console.error(`Merge error - button press not known`)
+ }
 
   try {
     fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
@@ -991,63 +1106,75 @@ app.post("/reorder", (req, res) => {
 
 // when form data needed, save, add, duplicate, delete
 app.post("/submit", (req, res) => {
-  const obj = JSON.parse(JSON.stringify(req.body)); // is this stringify/parse needed?
+  const obj = JSON.parse(JSON.stringify(req.body));
   let userName = obj.userName;
 
   var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", "utf8");
   var qbanks = JSON.parse(qbanksFile);
 
-  if (typeof obj.deleteQuestion === 'undefined') { // if not deleting question
-    if (typeof obj.addBlank === 'undefined') {  // if not adding blank question
-      //duplicating question
-      let newQuestion = {};
-      newQuestion.group = obj.group;
-
-      let numberOfImages = obj.question_stem.match('src="data:') ? obj.question_stem.match(/src="data:/g).length : 0;
-      newQuestion.stem = replaceImageSrc(removeMJX(obj.question_stem), numberOfImages);
-
-      let choiceArray = [];
-      let correctArray = [];
-
-      for (let i = 0; i < 21; i++) { // hard limit of 20 input choices
-        if (obj['choice_' + String.fromCharCode(parseInt(i) + 65)] !== undefined) {
-          let choice = obj['choice_' + String.fromCharCode(parseInt(i) + 65)];
-          numberOfImages = choice.match('src="data:') ? choice.match(/src="data:/g).length : 0;
-          choice = replaceImageSrc(removeMJX(choice), numberOfImages);
-          choiceArray.push(choice);
-
-          if (obj['checkbox_' + String.fromCharCode(parseInt(i) + 65)]) {
-            correctArray.push(obj['checkbox_' + String.fromCharCode(parseInt(i) + 65)]);
-          }
+  if (typeof obj.deleteQuestion === 'undefined') {
+    if (typeof obj.addBlank === 'undefined') {
+      if (obj.pasteFromLocalStorage) {
+		  console.log()
+		  const localStorageText = obj.localStorageText
+        if (localStorageText && isValidQuestionObject(localStorageText)) {
+          const parsedQuestion = JSON.parse(localStorageText);
+          qbanks = spliceQuestion(obj, parsedQuestion, qbanks);
         } else {
-          break;
+          // Handle case when localstorage does not contain a valid question object
+          console.log("Invalid local storage content or no content available.");
+        }
+      } else {
+        // Duplicating question
+        let newQuestion = {};
+        newQuestion.group = obj.group;
+
+        let numberOfImages = obj.question_stem.match('src="data:') ? obj.question_stem.match(/src="data:/g).length : 0;
+        newQuestion.stem = replaceImageSrc(removeMJX(obj.question_stem), numberOfImages);
+
+        let choiceArray = [];
+        let correctArray = [];
+
+        for (let i = 0; i < 21; i++) { // hard limit of 20 input choices
+          if (obj['choice_' + String.fromCharCode(parseInt(i) + 65)] !== undefined) {
+            let choice = obj['choice_' + String.fromCharCode(parseInt(i) + 65)];
+            numberOfImages = choice.match('src="data:') ? choice.match(/src="data:/g).length : 0;
+            choice = replaceImageSrc(removeMJX(choice), numberOfImages);
+            choiceArray.push(choice);
+
+            if (obj['checkbox_' + String.fromCharCode(parseInt(i) + 65)]) {
+              correctArray.push(obj['checkbox_' + String.fromCharCode(parseInt(i) + 65)]);
+            }
+          } else {
+            break;
+          }
+        }
+        newQuestion.choices = choiceArray;
+
+        newQuestion.correct = correctArray;
+
+        newQuestion.solution = obj.solution;
+
+        const aotacb = obj.all_of_the_above_cb;
+        const notacb = obj.none_of_the_above_cb;
+
+        if (obj.all_of_the_above) {
+          newQuestion.aota = aotacb == 'on';
+        }
+        if (obj.none_of_the_above) {
+          newQuestion.nota = notacb == 'on';
+        }
+        if (obj.retain_question_order) {
+          newQuestion.rqo = obj.retain_question_order == 'on';
+        }
+        if (obj.duplicateQuestion) {
+          qbanks = spliceQuestion(obj, newQuestion, qbanks);
+        } else {
+          qbanks[obj.subject][obj.course][obj.question_bank][obj.question_number - 1] = newQuestion;
         }
       }
-      newQuestion.choices = choiceArray; //needs if statement?
-
-      newQuestion.correct = correctArray;
-	  
-	  newQuestion.solution = obj.solution;
-
-      const aotacb = obj.all_of_the_above_cb;
-      const notacb = obj.none_of_the_above_cb;
-
-      if (obj.all_of_the_above) {
-        newQuestion.aota = aotacb == 'on';
-      }
-      if (obj.none_of_the_above) {
-        newQuestion.nota = notacb == 'on';
-      }
-      if (obj.retain_question_order) {
-        newQuestion.rqo = obj.retain_question_order == 'on';
-      }
-      if (obj.duplicateQuestion) {
-        qbanks = spliceQuestion(obj, newQuestion, qbanks);
-      } else {
-        qbanks[obj.subject][obj.course][obj.question_bank][obj.question_number - 1] = newQuestion;
-      }
     } else {
-      // blank question
+      // Blank question
       let newQuestion = {
         stem: "",
         choices: [""],
@@ -1057,7 +1184,7 @@ app.post("/submit", (req, res) => {
       qbanks = spliceQuestion(obj, newQuestion, qbanks);
     }
   } else {
-    // delete question
+    // Delete question
     qbanks = spliceQuestion(obj, null, qbanks, true);
   }
 
@@ -1074,7 +1201,6 @@ app.post("/submit", (req, res) => {
   passed.userName = userName; // may need to add more
   passed = encodeURI(JSON.stringify(passed));
   res.redirect(`/edit/${passed}`);
-
 });
 
 // gets

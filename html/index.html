@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
     <title>Chem Qbank</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />	
     <link rel="stylesheet" href="/css/index.css">
     <link rel="stylesheet" href="/css/overlay.css">
   </head>
@@ -14,7 +15,7 @@
     <script src="../js/index.js"></script>
     <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
     <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
-
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
 
     <script type="text/javascript">
       //PARAMS**GO**HERE 
@@ -22,9 +23,11 @@
     </script>
     <div id="content">
       <form id="mainform" action="/submit" method="post" target="_self">
-        <div style="display:inline-flex">Welcome&nbsp;</div>
-        <div id="username" style="display:inline-flex"></div>
-        <div id="logout" style="display:inline-flex">,&nbsp;<a href='javascript:void(0)' onclick='logout()'>logout</a></div>
+	   <div id="welcomeline">
+        <div>Welcome&nbsp;</div>
+        <div id="username"></div>
+        <div id="logout">,&nbsp;<a href='javascript:void(0)' onclick='logout()'>logout</a></div>
+	   </div>
         <div id="navigationmenu">
           <label for="subjectlabel">Subject: </label>
           <select name="subject" id="subject" onchange="populateDD(qbanks[this.value], 'course')"></select>
@@ -35,6 +38,9 @@
           <button type="button" title="Export Subject" id="export subject" class="small material-icons" onclick="exportSubject()">file_download</button>
           <input type="button" id="import subject button" value="file_upload" class="small material-icons" onclick="document.getElementById('import subject').click();" />
           <input type="file" id="import subject" name="import subject" title="Import Subject" accept=".sbj" style="display:none;">
+		  
+		  <input type="button" id="merge subject button" value="arrow_and_edge" class="small material-symbols-outlined" onclick="document.getElementById('merge subject').click();" />
+          <input type="file" id="merge subject" name="merge subject" title="Merge Subject" accept=".sbj" style="display:none;">
           <br>
 
           <label for="courselabel">Course: </label>
@@ -46,6 +52,9 @@
           <button type="button" title="Export Course" id="export course" class="small material-icons" onclick="exportCourse()">file_download</button>
           <input type="button" id="import course button" value="file_upload" class="small material-icons" onclick="document.getElementById('import course').click();" />
           <input type="file" id="import course" name="import course" title="Import Course" accept=".crs" style="display:none;">
+		  
+		  <input type="button" id="merge course button" value="arrow_and_edge" class="small material-symbols-outlined" onclick="document.getElementById('merge course').click();" />
+          <input type="file" id="merge course" name="merge course" title="Merge Course" accept=".crs" style="display:none;">
           <br>
 
           <label for="questionbanklabel">Question Bank: </label>
@@ -57,10 +66,19 @@
           <button type="button" title="Export Question Bank" id="export question bank" class="small material-icons" onclick="exportQbank()">file_download</button>
           <input type="button" id="import question bank button" value="file_upload" class="small material-icons" onclick="document.getElementById('import question bank').click();" />
           <input type="file" id="import question bank" name="import question bank" title="Import Question Bank" accept=".qbk" style="display:none;">
+		  
+		  <input type="button" id="merge question bank button" value="arrow_and_edge" class="small material-symbols-outlined" onclick="document.getElementById('merge question bank').click();" />
+          <input type="file" id="merge question bank" name="merge question bank" title="Merge question bank" accept=".qbk" style="display:none;">
           <br>
         </div>
         <div id="question">
-          <label for="question number">Question Number: </label><textarea id="question number" name="question_number" rows="1" cols="5" readonly></textarea>
+<div id="qncontainer">
+  <label for="question number">Question Number:</label>
+  <textarea id="question number" name="question_number" rows="1" readonly></textarea>
+  <label for="question number total">of</label>
+  <textarea id="question number total" name="question_number_total" rows="1" readonly></textarea>
+</div>
+
           <div id="arrowcontainer" class="flex"><button type="button" id="left arrow" onclick="loadQuestion(qbanks[$('subject').value][$('course').value][$('question bank').value], parseInt($('question number').innerHTML)-2)">🡄</button>
             <button type="button" id="right arrow" onclick="loadQuestion(qbanks[$('subject').value][$('course').value][$('question bank').value], parseInt($('question number').innerHTML))">🡆</button>
           </div>
@@ -117,11 +135,15 @@
         <input type="input" id="userName" name="userName" style="display:none">
         <input type="checkbox" id="addBlank" name="addBlank" style="display:none">
         <input type="checkbox" id="duplicateQuestion" name="duplicateQuestion" style="display:none">
+		<input type="checkbox" id="pasteFromLocalStorage" name="pasteFromLocalStorage" style="display:none">
         <input type="checkbox" id="deleteQuestion" name="deleteQuestion" style="display:none">
+		  <textarea id="localStorageText" name="localStorageText" style="display:none"></textarea>
         <div id="button_bar">
           <button type="submit" title="Update Question" class="large material-icons" id="submit" onclick="saveQuestion()">save</button>
           <button type="button" title="Insert Blank Question" class="large material-icons" onclick="incrementQuestionNumber(); addBlankQuestion()">add</button>
           <button type="button" title="Duplicate Question" class="large material-icons" onclick="incrementQuestionNumber(); duplicateThisQuestion();">content_copy</button>
+		  <button type="button" title="Copy To Local Storage" class="large material-symbols-outlined" onclick="copyQuestionToLocalStorage();">move_item</button>
+		  <button type="button" title="Paste From Local Storage" class="large material-symbols-outlined" onclick="pasteQuestionFromLocalStorage()">place_item</button>
           <button type="button" title="Delete Question" class="large material-icons" onclick="if(confirm('Delete this question?')){deleteThisQuestion();}">delete</button>
           <button type="button" title="Reorder Question" onclick="openNav()" class="large material-icons">reorder</button>
 
@@ -137,7 +159,7 @@
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <h1>Reorder Questions</h1>
 
-        <div id="scrollbar">
+        <div class="scrollbar" id="reorderquestions">
           <ul id="sortlist">
           </ul>
         </div>
@@ -153,7 +175,7 @@
         <a href="javascript:void(0)" class="closebtn" onclick="closeProductOverlay()">&times;</a>
         <h1>Advanced Quiz, Test, or Worksheet Creator</h1>
 
-        <div id="scrollbar">
+        <div class="scrollbar" id="advancedproductmaker">
           <div id="productlist">
           </div>
         </div>
@@ -161,7 +183,7 @@
         <div id="productbuttons">
           <div id="productdropdowndiv">
             <label for="questionbank">Question bank:&nbsp;</label>
-            <select name="productdropdown" id="product dropdown" onchange="setProductNum(qbanks[$('subject').value][$('course').value][this.value].length)"></select>
+            <select name="productdropdown" id="product dropdown" onchange="setProductNum(qbanks[$('subject').value][$('course').value][this.value])"></select>
             <label for="numberofquestions">&nbsp;Number of questions:&nbsp;</label>
             <input type="number" id="product number" name="product_number" min="0" max="0">&nbsp;
             <button type="button" title="Add Questions" id="add from dropdown" class="overlayButton material-icons" onclick="addfromdropdown()">add_box</button>
@@ -177,7 +199,7 @@
           </p>
           <button type="button" id="submit product" onclick="createAdvancedProduct()">Submit</button>
           <button type="button" id="cancel product" onclick="closeProductOverlay()">Cancel</button>
-
+		  <button type="button" id="reset product" onclick="openProductOverlay(true)">Reset</button>
         </div>
       </div>
     </div>

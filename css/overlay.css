@@ -112,3 +112,22 @@
   transition: 0.3s;
   cursor: pointer;
 }
+
+.scrollbar {
+	overflow: auto;
+}
+
+#advancedproductmaker {
+	display: flex;
+	justify-content: center;	
+}
+
+#productlist {
+	background-color: white;
+	border-radius: 5px;
+	min-width: 50%;
+	padding: 10px;
+	margin: 10px;
+	text-align: center;
+	min-height: 20px;
+}

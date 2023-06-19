@@ -1,0 +1,130 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = true;
+
+      function toggleAnswers() {
+        let asterisks = document.getElementsByClassName('asterisk');
+        for (let astrisk of asterisks) {
+          if (toggle) {
+            astrisk.style.display = 'none';
+          } else {
+            astrisk.style.display = null;
+          }
+        }
+        toggle = !toggle;
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleAnswers();
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Take Home Quiz Ch 5</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) What is the<strong> molecular shape </strong>of CHO?</div><div class='option'>A) Linear</div><div class='option'>B) bent<span class='asterisk'>*</span></div><div class='option'>C) Trigonal planar</div><div class='option'>D) Tetrahedral</div><p></p></div><div class='question'><div class='stem'>2) What is the<strong> molecular shape </strong>of XeF<sub>4</sub>?</div><div class='option'>A) Octahedral</div><div class='option'>B) Square pyramidal</div><div class='option'>C) See saw (saw horse)</div><div class='option'>D) Square planar<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>3) Place the following bonds in order of increasing dipole moment.<br>
+<p>Si-P&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Si-Cl&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Si-S</p></div><div class='option'>A) Si-P &lt; Si-S &lt; Si-Cl<span class='asterisk'>*</span></div><div class='option'>B) Si-Cl &lt; Si-P &lt; Si-S</div><div class='option'>C) Si-Cl &lt; Si-S &lt; Si-P</div><div class='option'>D) Si-P &lt; Si-Cl &lt; Si-S</div><p></p></div><div class='question'><div class='stem'>4) Which molecule has the smallest dipole moment in the gas phase?</div><div class='option'>A) HCl</div><div class='option'>B) Cl<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>C) CO</div><div class='option'>D) LiF</div><p></p></div><div class='question'><div class='stem'>5) What is the<strong> VSEPR shape (electron domain geometry) </strong>of CH<sub>4</sub>?</div><div class='option'>A) Trigonal planar</div><div class='option'>B) Linear</div><div class='option'>C) Tetrahedral<span class='asterisk'>*</span></div><div class='option'>D) Bent</div><p></p></div><div class='question'><div class='stem'>6) Which of the following shows the best Lewis structure for XeF<sub>2</sub>?</div><div class='option'>A) <img title="xef2-2.jpg" src="../images/68.jpeg" alt="" width="250" height="90"></div><div class='option'>B) <img title="xef2-1.jpg" src="../images/67.jpeg" alt="" width="250" height="90"><span class='asterisk'>*</span></div><div class='option'>C) <img title="xef2-4.jpg" src="../images/70.jpeg" alt="" width="250" height="90"></div><div class='option'>D) <img title="xef2-3.jpg" src="../images/69.jpeg" alt="" width="250" height="90"></div><p></p></div><div class='question'><div class='stem'>7) Which of the following bonds is least polar?</div><div class='option'>A) H-I<span class='asterisk'>*</span></div><div class='option'>B) H-F</div><div class='option'>C) HCl</div><div class='option'>D) HBr</div><p></p></div><div class='question'><div class='stem'>8) Is H<sub>2</sub>O&nbsp;polar or nonpolar?</div><div class='option'>A) Nonpolar</div><div class='option'>B) Polar<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>9) Which of the following elements is polar?</div><div class='option'>A) SO<sub>2</sub></div><div class='option'>B) SF<sub>6</sub></div><div class='option'>C) BH<sub>3</sub></div><div class='option'>D) H<sub>2</sub>O<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>10) Which of the following elements is nonpolar?</div><div class='option'>A) PH<sub>2</sub>F</div><div class='option'>B) SiS<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>C) NHO</div><div class='option'>D) IF<sub>5</sub></div><p></p></div><div class='question'><div class='stem'>11) What is the<strong> molecular shape </strong>of PF<sub>5</sub>?</div><div class='option'>A) Trigonal bipyramidal<span class='asterisk'>*</span></div><div class='option'>B) See saw (saw horse)</div><div class='option'>C) Bent</div><div class='option'>D) Octahedral</div><p></p></div><div class='question'><div class='stem'>12) Which of the following elements is the most electronegative.</div><div class='option'>A) Magnesium</div><div class='option'>B) Sodium</div><div class='option'>C) Sodium</div><div class='option'>D) Chlorine<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>13) What is the<strong> VSEPR shape (electron domain geometry) </strong>of SF<sub>6</sub>?</div><div class='option'>A) Tetrahedral</div><div class='option'>B) Trigonal planar</div><div class='option'>C) Octahedral<span class='asterisk'>*</span></div><div class='option'>D) Trigonal bipyramidal</div><p></p></div><div class='question'><div class='stem'>14) Which of the following shows the best Lewis structure for OCl<sub>2</sub>?</div><div class='option'>A) <img title="ocl2-4.jpg" src="../images/62.jpeg" alt="" width="146" height="60"></div><div class='option'>B) <img title="ocl2-3.jpg" src="../images/61.jpeg" alt="" width="146" height="60"></div><div class='option'>C) <img title="ocl2-2.jpg" src="../images/60.jpeg" alt="" width="146" height="60"></div><div class='option'>D) <img title="ocl2-1.jpg" src="../images/59.jpeg" alt="" width="146" height="60"><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>15) Identify the weakest bond.</div><div class='option'>A) Triple covalent bond</div><div class='option'>B) Double covalent bond</div><div class='option'>C) All bonds are the same&nbsp; strength</div><div class='option'>D) Single covalent bond<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>16) What is the<strong> VSEPR shape (electron domain geometry) </strong>of CO<sub>2</sub>?</div><div class='option'>A) Trigonal planar</div><div class='option'>B) Tetrahedral</div><div class='option'>C) Bent</div><div class='option'>D) Linear<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>17) Is AsF5 polar or nonpolar?</div><div class='option'>A) Nonpolar<span class='asterisk'>*</span></div><div class='option'>B) Polar</div><p></p></div><div class='question'><div class='stem'>18) What is the<strong> VSEPR shape (electron domain geometry) </strong>of BH<sub>3</sub>?</div><div class='option'>A) Linear</div><div class='option'>B) Trigonal planar<span class='asterisk'>*</span></div><div class='option'>C) Tetrahedral</div><div class='option'>D) Bent</div><p></p></div><div class='question'><div class='stem'>19) What is the<strong> molecular shape </strong>of SF<sub>6</sub>?</div><div class='option'>A) Octahedral<span class='asterisk'>*</span></div><div class='option'>B) Trigonal bipyramidal</div><div class='option'>C) Trigonal planar</div><div class='option'>D) Tetrahedral</div><p></p></div><div class='question'><div class='stem'>20) What is the<strong> molecular shape </strong>of CF<sub>4</sub>?</div><div class='option'>A) bent</div><div class='option'>B) Trigonal planar</div><div class='option'>C) Linear</div><div class='option'>D) Tetrahedral<span class='asterisk'>*</span></div><p></p></div></body></html>

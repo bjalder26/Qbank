@@ -35,33 +35,6 @@ function sortObj(obj) {
   }, {});
 }
 
-
-/*
-function sortObj(obj) {
-  return Object.keys(obj).sort(function (a, b) { return a.toLowerCase().localeCompare(b.toLowerCase());}).reduce(function (result, key) {
-    result[key] = obj[key];
-    return result;
-  }, {});
-}
-*/
-
-/*function sortObj(obj) {
-if(obj){
-  let keyArray = [];
-  for(let key of Object.keys(obj)) {
-	key = key.replaceAll(' ', '_');
-	keyArray.push(key);
-  }
-  keyArray.sort(function (a, b) { return a.toLowerCase().localeCompare(b.toLowerCase());}); // case insensitive sort
-  let sortedKeyArray = [];
-  for(let key of keyArray) {
-	key = key.replaceAll('_', ' ')
-	sortedKeyArray.push(key);  
-  }
-  return sortedKeyArray
-}
-}*/
-
 function $(x) {
   return document.getElementById(x);
 }
@@ -154,7 +127,7 @@ function deleteCourse() {
 }
 
 function deleteQbank() {
-  const toDelete = prompt(`Type "delete ${$('question bank').value}" to delete this question bank.`);
+  let toDelete = prompt(`Type "delete ${$('question bank').value}" to delete this question bank.`);
   if (toDelete == `delete ${$('question bank').value}`) {
     setCookie('subjectName', $('subject').value, 2);
     setCookie('courseName', $('course').value, 2);
@@ -175,7 +148,7 @@ function deleteQbank() {
 }
 
 function deleteSubject() {
-  const toDelete = prompt(`Type "delete ${$('subject').value}" to delete this subject.`);
+  let toDelete = prompt(`Type "delete ${$('subject').value}" to delete this subject.`);
   if (toDelete == `delete ${$('subject').value}`) {
     setCookie('subjectName', 'select subject', 0);
     setCookie('courseName', '', 0);
@@ -201,6 +174,32 @@ function deleteThisQuestion() {
   $('userName').value = user;
   $('submit').click();
   $('deleteQuestion').checked = false;
+}
+
+function pasteQuestionFromLocalStorage() {
+  // Retrieve the data from local storage
+  const data = localStorage.getItem('copiedData');
+
+  if (data) {
+	const textarea = $('localStorageText');
+  textarea.style.display = 'block';
+  textarea.value = data;
+   $('pasteFromLocalStorage').checked = true;
+  $('userName').value = user;
+  incrementQuestionNumber();
+  $('submit').click();
+  // hide the textarea
+  textarea.value = '';
+  textarea.style.display = 'none';
+  $('pasteFromLocalStorage').checked = false;
+  }
+}
+
+function copyQuestionToLocalStorage() {
+  const data = JSON.stringify(qbanks[$('subject').value][$('course').value][$('question bank').value][parseInt($('question number').innerHTML) - 1]);
+  
+  // Store the data in local storage
+  localStorage.setItem('copiedData', data);
 }
 
 function duplicateThisQuestion() {
@@ -262,6 +261,27 @@ function importCourse() {
   }
 }
 
+function mergeCourse() {
+  const fileList = this.files; /* now you can work with the file list */
+  for (let file of fileList) {
+    const reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+    reader.onload = function(fileLoadedEvent) {
+      const objFromFileLoaded = JSON.parse(fileLoadedEvent.target.result);
+      const fileNameArray = file.name.split('.')
+      const fileName = fileNameArray[0];
+	  const subjectName = $('subject').value;
+      const courseName = $('course').value;
+      if (typeof qbanks[subjectName][courseName] == 'undefined') {
+        importQbanks(objFromFileLoaded, user, subjectName, courseName);
+      } else {
+		mergeQbanks('mergeCourse', objFromFileLoaded, user, subjectName, courseName);
+      }
+	  $('import course').value = null;
+    };
+  }
+}
+
 function importQbank() {
   const fileList = this.files; /* now you can work with the file list */
   for (let file of fileList) {
@@ -279,6 +299,28 @@ function importQbank() {
       } else {
 		$('import question bank').value = null;
         alert('Question bank already exists, please delete question bank first to replace it, or rename new question bank.');
+      }
+    };
+  }
+}
+
+function mergeQbank() {
+  const fileList = this.files; /* now you can work with the file list */
+  for (let file of fileList) {
+    const reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+    reader.onload = function(fileLoadedEvent) {
+      const objFromFileLoaded = JSON.parse(fileLoadedEvent.target.result);
+      const fileNameArray = file.name.split('.')
+      const fileName = fileNameArray[0];
+      const subjectName = $('subject').value;
+      const courseName = $('course').value;
+	  const qbankName = $('question bank').value;
+      if (typeof qbanks[subjectName][courseName][qbankName] == 'undefined') {
+        importQbanks(objFromFileLoaded, user, subjectName, courseName, qbankName);
+      } else {
+		$('import question bank').value = null;
+        mergeQbanks('mergeQbank', objFromFileLoaded, user, subjectName, courseName, qbankName);
       }
     };
   }
@@ -313,6 +355,36 @@ function importQbanks(objFromFileLoaded, userName, subjectName, courseName, qban
   xhr.send(JSON.stringify(toSend));
 }
 
+function mergeQbanks(buttonPressed, objFromFileLoaded, userName, subjectName, courseName, qbankName) {
+  var xhr = new XMLHttpRequest();
+  if(subjectName) {setCookie('subjectName', subjectName, 2);}
+  if(courseName) {setCookie('courseName', courseName, 2);}
+  if(qbankName) {
+	setCookie('qbankName', qbankName, 2);
+	setCookie('questionnumber', 0, 2)
+  }
+  
+  xhr.open('POST', '/merge', true);
+  xhr.setRequestHeader('Content-type', 'application/json;charset=UTF-8'); 
+  
+  xhr.onload = function() {
+	let passed = {};
+    passed.userName = userName; 
+    passed = encodeURI(JSON.stringify(passed));
+    document.location = `${passed}`;
+  };
+  
+  const toSend = {
+	userName: userName,
+	subjectName: subjectName,
+	courseName: courseName,
+	qbankName: qbankName,
+	buttonPressed: buttonPressed
+  };
+  toSend.objFromFileLoaded = objFromFileLoaded;
+  xhr.send(JSON.stringify(toSend));
+}
+
 function importSubject() {
   const fileList = this.files; /* now you can work with the file list */
   for (let file of fileList) {
@@ -333,6 +405,26 @@ function importSubject() {
   }
 }
 
+function mergeSubject() {
+  const fileList = this.files; /* now you can work with the file list */
+  for (let file of fileList) {
+    const reader = new FileReader();
+    reader.readAsText(file, "UTF-8");
+    reader.onload = function(fileLoadedEvent) {
+      const objFromFileLoaded = JSON.parse(fileLoadedEvent.target.result);
+      const fileNameArray = file.name.split('.')
+      const fileName = fileNameArray[0];
+      const subjectName = $('subject').value ? $('subject').value : prompt('No subject selected\nSubject title: ', fileName);
+      if (typeof qbanks[subjectName] == 'undefined') {
+        importQbanks(objFromFileLoaded, user, subjectName);
+      } else {
+		mergeQbanks('mergeSubject', objFromFileLoaded, user, subjectName);
+      }
+	  $('merge subject').value = null;
+    };
+  }
+}
+
 function incrementQuestionNumber() {
   let numb = parseInt($('question number').innerHTML);
   setCookie('increment', numb, 2);
@@ -345,6 +437,9 @@ function loading(qbanks) {
   $('import subject').addEventListener("change", importSubject, false);
   $('import course').addEventListener("change", importCourse, false);
   $('import question bank').addEventListener("change", importQbank, false);
+  $('merge subject').addEventListener("change", mergeSubject, false);
+  $('merge course').addEventListener("change", mergeCourse, false);
+  $('merge question bank').addEventListener("change", mergeQbank, false);
 }
 
 function loadQuestion(qbank, numb) {
@@ -354,8 +449,12 @@ function loadQuestion(qbank, numb) {
     } else if (numb < 0) { // limits question loaded to positive number ### should this be 1? - probably not
       loadQuestion(qbank, 0);
     } else {
-      const buttons = document.getElementsByClassName('large material-icons'); // selects all large buttons
+      const buttons = document.getElementsByClassName('large material-icons'); // selects some large buttons
       for (let button of buttons) { //enables all large buttons
+        button.disabled = false;
+      }
+	  const buttons2 = document.getElementsByClassName('large material-symbols-outlined'); // selects rest of large buttons
+      for (let button of buttons2) { //enables all large buttons
         button.disabled = false;
       }
       $('rename question bank').disabled = false;
@@ -366,6 +465,7 @@ function loadQuestion(qbank, numb) {
 		  setCookie('subjectName', $('subject').value, 2);
 	      setCookie('qbankName', $('question bank').value, 2);
         $('question number').innerHTML = numb + 1;
+		$('question number total').innerHTML = qbank.length;
         setCookie('questionnumber', numb + 1, 2);
         const question = qbank[numb];
         const stem = question ? question.stem : '';
@@ -414,6 +514,7 @@ function loadQuestion(qbank, numb) {
 
       } else { // this is IF no question bank
         $('question number').innerHTML = '';
+		$('question number total').innerHTML = '';
         $('question stem').innerHTML = null;
         clearAnswerBoxes();
         clearBoxes();
@@ -537,9 +638,15 @@ function populateDD(obj, dropDown) {
   for (let button of buttons) {
     button.disabled = true;
   }
+  const buttons2 = document.getElementsByClassName('material-symbols-outlined');
+
+  for (let button of buttons2) {
+    button.disabled = true;
+  }
 
   $('new subject').disabled = false;
   $('import subject button').disabled = false;
+  $('merge subject button').disabled = false;
   if ($('subject').value != 'select subject') {
     $('question bank').value = 'select question bank'; // not sure if needed
     $('rename subject').disabled = false;
@@ -547,6 +654,7 @@ function populateDD(obj, dropDown) {
     $('export subject').disabled = false;
     $('new course').disabled = false;
     $('import course button').disabled = false;
+	$('merge course button').disabled = false;
     if ($('course').value != 'select course') {
       $('question bank').value = 'select question bank';
       $('rename course').disabled = false;
@@ -554,6 +662,8 @@ function populateDD(obj, dropDown) {
       $('export course').disabled = false;
       $('new question bank').disabled = false;
       $('import question bank button').disabled = false;
+	  $('merge question bank button').disabled = false;
+	  document.querySelector('[title="Advanced Create a Quiz, Test, or Worksheet Creator"]').disabled = false; 
       if ($('question bank').value != 'select question bank') {
         $('rename question bank').disabled = false;
         $('delete question bank').disabled = false;
@@ -767,9 +877,20 @@ function reorder() {
   closeNav();
 }
 
-function setProductNum(num) {
-	$('product number').value = num;
-	$('product number').max = num;
+function setProductNum(qbank) {
+	let numOfQuestionTypes = 0;
+	let groupArray = [];
+	for (question of qbank) {
+	const groupName = question['group'];
+		if (typeof groupName == 'undefined' || groupName.trim() == '') {
+			numOfQuestionTypes++
+		} else if (!groupArray.includes(groupName) && groupName.toLowerCase() != 'x' ) {
+			groupArray.push(groupName)
+			numOfQuestionTypes++
+		}
+	}
+	$('product number').value = numOfQuestionTypes;
+	$('product number').max = numOfQuestionTypes;
 	$('add from dropdown').disabled = false;
 }
 
@@ -797,7 +918,7 @@ function addfromdropdown() {
   const order = document.getElementsByClassName('qbankandnum') ? document.getElementsByClassName('qbankandnum').length : 0; //counts elements present
   const qbankName = $('product dropdown').value;
   const number = $('product number').value;
-
+  if (qbankName != 'select question bank' && number > 0) {
   const qbankAndNum = document.createElement('div');
     qbankAndNum.innerHTML = `${qbankName}: ${number}`;
     qbankAndNum.setAttribute('qbankName', qbankName);
@@ -805,6 +926,7 @@ function addfromdropdown() {
 	qbankAndNum.setAttribute('class', 'qbankandnum');
 	qbankAndNum.setAttribute('order', order);
     $('productlist').appendChild(qbankAndNum);
+  }
 }
 
 function createAdvancedProduct() {
@@ -848,8 +970,8 @@ function hideOverlays() {
   }
 }
 
-function openProductOverlay() {
-  const alreadyOpen = productoverlay.style.display == "flex";
+function openProductOverlay(reset) {
+  const alreadyOpen = reset ? false : productoverlay.style.display == "flex";
   hideOverlays();
   $('productlist').innerHTML = null;
   const productOverlay = document.getElementById("productoverlay")
@@ -952,38 +1074,183 @@ function initTinyMce() {
       editor.ui.registry.addIcon('list', '<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>');
 
       editor.ui.registry.addIcon('calculate', '<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><g><rect fill="none" height="24" width="24"/></g><g><path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M13.03,7.06L14.09,6l1.41,1.41 L16.91,6l1.06,1.06l-1.41,1.41l1.41,1.41l-1.06,1.06L15.5,9.54l-1.41,1.41l-1.06-1.06l1.41-1.41L13.03,7.06z M6.25,7.72h5v1.5h-5 V7.72z M11.5,16h-2v2H8v-2H6v-1.5h2v-2h1.5v2h2V16z M18,17.25h-5v-1.5h5V17.25z M18,14.75h-5v-1.5h5V14.75z"/></g></svg>');
+	  
+	  editor.ui.registry.addIcon('tableButton', '<svg width="24px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#000" d="M1.36363636,5.13837546 L1.36363636,17.1578947 L18.6363636,17.1578947 L18.6363636,5.13837546 L1.36363636,5.13837546 Z M0.909090909,1.5 L19.0909091,1.5 C19.5929861,1.5 20,1.90058733 20,2.39473684 L20,17.6052632 C20,18.0994127 19.5929861,18.5 19.0909091,18.5 L0.909090909,18.5 C0.407013864,18.5 0,18.0994127 0,17.6052632 L0,2.39473684 C0,1.90058733 0.407013864,1.5 0.909090909,1.5 Z M6.13636364,3.25901769 C6.13636364,2.88840555 6.44162403,2.58796506 6.81818182,2.58796506 C7.1947396,2.58796506 7.5,2.88840555 7.5,3.25901769 L7.5,17.1578947 C7.5,17.5285069 7.1947396,17.8289474 6.81818182,17.8289474 C6.44162403,17.8289474 6.13636364,17.5285069 6.13636364,17.1578947 L6.13636364,3.25901769 Z M13.0964653,2.61842105 C13.4730231,2.61842105 13.7782835,2.91886155 13.7782835,3.28947368 L13.778,8.284 L18.6888172,8.28485783 C19.065375,8.28485783 19.3706354,8.58529833 19.3706354,8.95591046 C19.3706354,9.3265226 19.065375,9.62696309 18.6888172,9.62696309 L13.778,9.626 L13.778,12.688 L18.7804789,12.6882017 C19.1570367,12.6882017 19.4622971,12.9886422 19.4622971,13.3592543 C19.4622971,13.7298664 19.1570367,14.0303069 18.7804789,14.0303069 L13.778,14.03 L13.7782835,17.1883507 C13.7782835,17.5589629 13.4730231,17.8594034 13.0964653,17.8594034 C12.7199075,17.8594034 12.4146471,17.5589629 12.4146471,17.1883507 L12.414,14.03 L1.00075266,14.0303069 C0.624194872,14.0303069 0.318934474,13.7298664 0.318934474,13.3592543 C0.318934474,12.9886422 0.624194872,12.6882017 1.00075266,12.6882017 L12.414,12.688 L12.414,9.626 L0.909090909,9.62696309 C0.532533125,9.62696309 0.227272727,9.3265226 0.227272727,8.95591046 C0.227272727,8.58529833 0.532533125,8.28485783 0.909090909,8.28485783 L12.414,8.284 L12.4146471,3.28947368 C12.4146471,2.91886155 12.7199075,2.61842105 13.0964653,2.61842105 Z"/></svg>');
 
-      editor.ui.registry.addButton('${}', {
-        text: '${}',
-        tooltip: 'Empty Variable Brackets',
-        onAction: () => editor.insertContent('${}')
-      });
+editor.ui.registry.addButton('tableButton', {
+  icon: 'tableButton',
+  tooltip: 'Add Table',
+  onAction: function () {
+    editor.execCommand('mceInsertTable');
+  }
+});
 
-      editor.ui.registry.addButton('RangeVar', {
-        icon: 'expand',
-        tooltip: 'Range Variable',
-        onAction: () => editor.insertContent('${a 10.0 20.0 3}')
-      });
-      editor.ui.registry.addButton('PercentVar', {
-        icon: 'percent',
-        tooltip: 'Percent Variable',
-        onAction: () => editor.insertContent('${a 15.0 20% 3}')
-      });
-      editor.ui.registry.addButton('ListVar', {
-        icon: 'list',
-        tooltip: 'List Variable',
-        onAction: () => editor.insertContent('${option 1, option 2}')
-      });
-      editor.ui.registry.addButton('Calculate', {
-        icon: 'calculate',
-        tooltip: 'Calculate',
-        onAction: () => editor.insertContent('=[4/2]')
-      });
-    },
+editor.ui.registry.addButton('${}', {
+  text: '${}',
+  tooltip: 'Empty Variable Brackets',
+  onAction: () => {
+    /*
+	const selectedText = editor.selection.getContent({ format: 'text' });
+
+    if (selectedText) {
+      const placeholderText = '<em class="placeholder">${' + selectedText + '}</em>';
+      editor.selection.setContent(placeholderText);
+      const range = editor.selection.getRng();
+      const placeholderNode = editor.dom.select('.placeholder')[0];
+      range.selectNodeContents(placeholderNode);
+      editor.selection.setRng(range);
+    } else {
+      const cursorText = '<em class="placeholder">${}</em>';
+      editor.selection.setContent(cursorText);
+      const placeholderNode = editor.dom.select('.placeholder')[0];
+      const range = editor.dom.createRng();
+      range.setStart(placeholderNode.firstChild, 2);
+      range.setEnd(placeholderNode.firstChild, 2);
+      editor.selection.setRng(range);
+    }
+	*/
+	
+	const selectedText = editor.selection.getContent({ format: 'text' });
+
+    if (selectedText) {
+      const placeholderText = '<em class="placeholder">${' + selectedText + '}</em>';
+      editor.selection.setContent(placeholderText);
+      const range = editor.selection.getRng();
+      const placeholderNode = editor.dom.select('.placeholder')[0];
+      range.selectNodeContents(placeholderNode);
+      editor.selection.setRng(range);
+    } else {
+      const cursorText = '<em class="placeholder">${}</em>';
+      editor.selection.setContent(cursorText);
+      const placeholderNode = editor.dom.select('.placeholder')[0];
+      const range = editor.dom.createRng();
+      range.selectNodeContents(placeholderNode);
+      editor.selection.setRng(range);
+    }
+	    // Toggle <em> tags using execCommand
+    editor.execCommand('italic');
+	
+	
+// Get the currently selected text range
+var selection2 = editor.selection.getRng();
+
+// Calculate the adjusted start and end offsets
+var adjustedStart = selection2.startOffset + 2;
+var adjustedEnd = selection2.endOffset - 1;
+
+// Set the adjusted selection range
+editor.selection2.setRng({
+  startContainer: selection2.startContainer,
+  startOffset: adjustedStart,
+  endContainer: selection2.endContainer,
+  endOffset: adjustedEnd
+});
+
+/*
+    // Narrow the selection
+    const range = editor.selection.getRng();
+    range.setStart(range.startContainer, range.startOffset + 2);
+    range.setEnd(range.endContainer, range.endOffset - 1);
+    editor.selection.setRng(range);
+	*/
+	
+  }
+});
+
+
+
+
+
+
+
+
+editor.ui.registry.addButton('RangeVar', {
+  icon: 'expand',
+  tooltip: 'Range Variable',
+  onAction: () => {
+    const placeholderText = 'XXXREPLACEMEXXX';
+    const replacementText = 'a';
+    const inputText = '${' + placeholderText + ' 10.0, 20.0, 3}';
+	editor.insertContent(inputText);
+	const content = editor.getContent();
+    const startIndex = content.indexOf(placeholderText);
+    const endIndex = startIndex + replacementText.length;
+	editor.setContent(content.replace(placeholderText, replacementText));	
+	editor.focus();
+    editor.selection.select(editor.getBody(), true);
+    const range = editor.selection.getRng();
+    range.setStart(range.startContainer, startIndex);
+    range.setEnd(range.startContainer, endIndex);
+    editor.selection.setRng(range);
+  }
+});
+
+editor.ui.registry.addButton('PercentVar', {
+  icon: 'percent',
+  tooltip: 'Percent Variable',
+  onAction: () => {
+    const placeholderText = 'XXXREPLACEMEXXX';
+    const replacementText = 'a';
+    const inputText = '${' + placeholderText + ' 15.0 20% 3}';
+	editor.insertContent(inputText);
+	const content = editor.getContent();
+    const startIndex = content.indexOf(placeholderText);
+    const endIndex = startIndex + replacementText.length;
+	editor.setContent(content.replace(placeholderText, replacementText));	
+	editor.focus();
+    editor.selection.select(editor.getBody(), true);
+    const range = editor.selection.getRng();
+    range.setStart(range.startContainer, startIndex);
+    range.setEnd(range.startContainer, endIndex);
+    editor.selection.setRng(range);
+  }
+});
+
+editor.ui.registry.addButton('ListVar', {
+  icon: 'list',
+  tooltip: 'List Variable',
+  onAction: () => {
+    const placeholderText = 'XXXREPLACEMEXXX';
+    const replacementText = 'option 1, option 2';
+    const inputText = '${' + placeholderText + '}';
+    editor.insertContent(inputText);
+    const content = editor.getContent();
+    const startIndex = content.indexOf(placeholderText);
+    const endIndex = startIndex + replacementText.length;
+    editor.setContent(content.replace(placeholderText, replacementText));
+    editor.focus();
+    const range = editor.selection.getRng();
+    range.setStart(range.startContainer, startIndex);
+    range.setEnd(range.startContainer, endIndex);
+    editor.selection.setRng(range);
+  }
+});
+
+editor.ui.registry.addButton('Calculate', {
+  icon: 'calculate',
+  tooltip: 'Calculate',
+  onAction: () => {
+    const placeholderText = 'XXXREPLACEMEXXX';
+    const replacementText = '4/2';
+    const inputText = '=[' + placeholderText + ']';
+    editor.insertContent(inputText);
+    const content = editor.getContent();
+    const startIndex = content.indexOf(placeholderText);
+    const endIndex = startIndex + replacementText.length;
+    editor.setContent(content.replace(placeholderText, replacementText));
+    editor.focus();
+    const range = editor.selection.getRng();
+    range.setStart(range.startContainer, startIndex);
+    range.setEnd(range.startContainer, endIndex);
+    editor.selection.setRng(range);
+  }
+});
+},
 
     // mathjax 
 	plugins: [
-      'advlist autolink lists link image charmap print preview anchor',
+	  'spellchecker',
+      'advlist autolink lists image charmap print preview anchor',
       'searchreplace visualblocks code fullscreen',
       'insertdatetime media table paste code help wordcount',
 	  'mathjax' // not sure if needed
@@ -1006,7 +1273,7 @@ function initTinyMce() {
 
     toolbar: 'undo redo | ' +
       'bold italic superscript subscript forecolor backcolor | image | mathjax | ${} RangeVar PercentVar ListVar Calculate | alignleft aligncenter ' + //mathjax
-      'alignright alignjustify | formatselect | fontsizeselect |  bullist numlist outdent indent | ' +
+      'alignright alignjustify | formatselect | fontsizeselect |  bullist numlist outdent indent | tableButton | link |' +
       'removeformat | help',
     image_title: true,
     automatic_uploads: true,
