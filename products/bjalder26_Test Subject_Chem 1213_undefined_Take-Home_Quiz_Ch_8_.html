@@ -1,0 +1,169 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers & Ctrl-x to toggle the solutions.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = null;
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Take-Home Quiz Ch 8</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) What is the name of the acid H<sub>2</sub>SO<sub>3</sub>?</div><div class='option'>A) Sulfuric acid</div><div class='option'>B) Sulfurous acid<span class='asterisk'>*</span></div><div class='option'>C) Hydrosulfuric acid</div><div class='option'>D) Hydrosulfurous acid</div><div class='solution'>H<sub>2</sub>SO<sub>3</sub> is an oxyacid, so it does not receive a hydro- beginning.&nbsp; The name of the anion (sulafite) will receive an -out ending (ate =&gt; ic, ite =&gt; ous).&nbsp; Thus the name is sulfurous acid.</div><p></p></div><div class='question'><div class='stem'>2) According to the following reaction, how many grams of KCl solution is required to react exactly with 39.7 mL of 0.212 M Zn(ClO<sub>3</sub>)<sub>2</sub> solution?
+<div style="text-align: center;">2 KCl(aq) + Zn(ClO<sub>3</sub>)<sub>2</sub>(aq) → ZnCl<sub>2</sub>(s) + 2 KClO<sub>3</sub>(aq)</div></div><div class='option'>A) 0.226 g</div><div class='option'>B) 0.627 g</div><div class='option'>C) 1.25 g<span class='asterisk'>*</span></div><div class='option'>D) 0.0168 g</div><div class='solution'><p>To determine the amount of KCl solution required to react with a given volume of Zn(ClO<sub>3</sub>)<sub>2</sub> solution, we need to use the stoichiometry of the balanced chemical equation.<br>Given: <br>Volume of Zn(ClO<sub>3</sub>)<sub>2</sub> solution = 39.7 mL <br>Molarity of Zn(ClO<sub>3</sub>)<sub>2</sub> solution = <span class="placeholder">0.212</span> M <br>Molar mass of KCl = 74.55 g/mol</p>
+<p>From the balanced chemical equation: 2 KCl(aq) + Zn(ClO<sub>3</sub>)<sub>2</sub>(aq) → ZnCl<sub>2</sub>(s) + 2 KClO<sub>3</sub>(aq)</p>
+<p>First, calculate the number of moles of Zn(ClO<sub>3</sub>)<sub>2</sub> in the given solution: <br>Moles of Zn(ClO<sub>3</sub>)<sub>2</sub> = Volume (in liters) × Molarity<br>Volume of Zn(ClO<sub>3</sub>)<sub>2</sub> solution = 39.7 mL × (1 L / 1000 mL) = 0.0397 L of Zn(ClO<sub>3</sub>)<sub>2</sub> <br>Moles of Zn(ClO<sub>3</sub>)<sub>2</sub> = 0.0397 L × 0.212 M = 0.00842 moles</p>
+<p>Since the stoichiometric ratio is 1:2 between Zn(ClO<sub>3</sub>)<sub>2</sub> and KCl, we need twice the number of moles of KCl to react completely. <br>Moles of KCl = 0.00842 Moles Zn(ClO<sub>3</sub>)<sub>2</sub> × (2 mol KCl / 1 mol Zn(ClO<sub>3</sub>)<sub>2</sub>) = 0.0168 moles</p>
+<p>Finally, we can calculate the mass of KCl: <br>Mass of KCl = Moles of KCl × Molar mass of KCl <br>Mass of KCl = 0.0168 moles × 74.55 g/mol = 1.25 grams</p></div><p></p></div><div class='question'><div class='stem'>3) What <strong>element </strong>is undergoing reduction (if any) in the following reaction?
+<div style="text-align: center;">Cd(s) + 2 AgNO<sub>3</sub>(aq) → Cd(NO<sub>3</sub>)<sub>2</sub>(aq) + 2 Ag(s)</div></div><div class='option'>A) Ag<span class='asterisk'>*</span></div><div class='option'>B) Cd(NO<sub>3</sub>)<sub>2</sub></div><div class='option'>C) Cd</div><div class='option'>D) AgNO<sub>3</sub></div><div class='solution'><p>In the given reaction:</p>
+<p>Cd(s) + 2 AgNO<sub>3</sub>(aq) → Cd(NO<sub>3</sub>)<sub>2</sub>(aq) + 2 Ag(s)</p>
+<p>The element undergoing <span class="placeholder">reduction </span>is silver (Ag). <span class="placeholder">Reduction</span> is defined as the gain of electrons, and in this reaction, silver ions (Ag<sup>+</sup>) from silver nitrate (AgNO<sub>3</sub>) are being reduced to elemental silver (Ag), which is being formed as a solid.</p>
+<ul>
+<li>Silver (Ag) is being reduced from Ag<sup>+</sup> to Ag.</li>
+<li>Cadmium (Cd) is being oxidized from Cd to Cd<sup>2+</sup>.</li>
+</ul></div><p></p></div><div class='question'><div class='stem'>4) All of the following compounds are soluble except which one?</div><div class='option'>A) BaSO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>B) BaI<sub>2</sub></div><div class='option'>C) FeSO<sub>4</sub></div><div class='option'>D) <span style="font-size: 14px;">Li</span><sub>2</sub>CO<sub>3</sub></div><div class='solution'>To answer this question, reference your solubility rules.<br>Sulfides are generally soluble, however Sr<sup>2+</sup>, Ba<sup>2+</sup>, &nbsp;Hg<sub>2</sub><sup>2+</sup>, and Pb<sup>2+</sup> &nbsp;sulfides are insoluble.</div><p></p></div><div class='question'><div class='stem'>5) What is the oxidation state of S in SO<sub>4</sub><sup>2-</sup>?</div><div class='option'>A) +6<span class='asterisk'>*</span></div><div class='option'>B) +4</div><div class='option'>C) +8</div><div class='option'>D) +2</div><div class='solution'><p>To determine the oxidation state of sulfur in SO<sub>4</sub><sup>2-</sup>, we consider the overall charge of the ion and the known oxidation states of other elements involved.</p>
+<p>In the sulfate ion (SO<sub>4</sub><sup>2-</sup>), the oxygen atoms have a known oxidation state of -2. The overall charge of the ion is -2 as well. Since the sum of the oxidation states in an ion must equal the overall charge, we can calculate the oxidation state of sulfur.</p>
+<p>Let's assume the oxidation state of sulfur as x. We have four oxygen atoms, each with an oxidation state of -2. Therefore:</p>
+<p>(x) + 4(-2) = -2</p>
+<p>Simplifying the equation:</p>
+<p>x - 8 = -2</p>
+<p>x = +6</p></div><p></p></div><div class='question'><div class='stem'>6) What would be the molarity of a solution formed by dissolving 22.6 g of KBr in enough water to yield 200.0 mL of solution?</div><div class='option'>A) <font color="red">Equation Error: 22.6/{119, 58.44}/20/10</font> M</div><div class='option'>B) <font color="red">Equation Error: 20*100/22.6*{119, 58.44}</font> M</div><div class='option'>C) 0.950 M<span class='asterisk'>*</span></div><div class='option'>D) <font color="red">Equation Error: 20/22.6/10*{119, 58.44}</font> M</div><div class='solution'><p>To calculate the molarity of a solution, we need to determine the number of moles of solute (KBr) and then divide it by the volume of the solution in liters.</p>
+<p>First, let's calculate the number of moles of KBr: <br>Molar mass of KBr = 39.10 g/mol (atomic mass of K) + 79.90 g/mol (atomic mass of Br) = 119.00 g/mol <br>Moles of KBr = Mass of KBr / Molar mass of KBr = 22.6 g / 119.00 g/mol = =[22.6/119; 3] moles</p>
+<p>Next, we convert the volume of the solution from milliliters to liters: Volume of solution = 200.0 mL x (1 L / 1000 mL) = =[20/100; 3] L</p>
+<p>Finally, we calculate the molarity using the formula: Molarity (M) = Moles of solute / Volume of solution (in liters) Molarity = =[22.6/119; 3] moles / =[20/100; 3] L = 0.950 M</p></div><p></p></div><div class='question'><div class='stem'>7) How many grams of sucrose (C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>, molar mass = 342.30 g/mol) are contained 400 mL of a 0.347 M glucose solution?</div><div class='option'>A) =[4/10*0.347*342.30] g<span class='asterisk'>*</span></div><div class='option'>B) =[0.347/10/4*342.30] g</div><div class='option'>C) =[4/10*0.347*6.022*10^23] g</div><div class='option'>D) =[4/10*0.347/342.30] g</div><div class='solution'><p>To calculate the mass of sucrose in a given solution, we need to know the volume of the solution and the molarity of the glucose solution.</p>
+<p>Given: <br>Volume of solution = 400 mL <br>Molarity of glucose solution = 0.347 M</p>
+<p>First, we need to convert the volume from milliliters to liters: Volume of solution = &nbsp;400 mL x (1L / 1000 mL) = =[0.347/10] L</p>
+<p>Next, we can calculate the number of moles of glucose using the formula: Moles of glucose = Liters of solution × Molarity</p>
+<p>Moles of glucose = =[0.347/10] L × 0.347 M = =[4/10*0.347] moles</p>
+<p>Now, we can use the molar mass of sucrose (342.30 g/mol) to calculate the mass of sucrose: Mass of sucrose = Moles of glucose × Molar mass of sucrose</p>
+<p>Mass of sucrose = =[4/10*0.347] moles × 342.30 g/mol = =[4/10*0.347*342.30] grams</p></div><p></p></div><div class='question'><div class='stem'>8) How many molecules of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>, molar mass = 180.16 g/mol) are contained 800 mL of a 0.286 M glucose solution?</div><div class='option'>A) =[8/10*0.286*180.16] molecules</div><div class='option'>B) =[8/10*0.286*6.022] molecules</div><div class='option'>C) =[8/10/0.286*6.022*10^23] molecules</div><div class='option'>D) =[8/10*0.286*6.022*10^23] molecules<span class='asterisk'>*</span></div><div class='solution'><p>To calculate the number of molecules of glucose in a given solution, we need to know the volume of the solution and the molarity of the glucose solution.</p>
+<p>Given: Volume of solution = 800 mL<br>Molarity of glucose solution = $[b] M</p>
+<p>First, we need to convert the volume from milliliters to liters: <br>Volume of solution = 800 mL x (1L / 1000 m)L =&nbsp;&nbsp;</p>
+<p>Next, we can calculate the number of moles of glucose using the formula: Moles of glucose = Liters of solution × Molarity&nbsp;&nbsp;</p>
+<p>Moles of glucose = =[8/10] L × $[b] M = =[8/10*0.286] moles</p>
+<p>Now, we can use Avogadro's number (6.022 × 10<sup>23</sup>) to convert moles to molecules: Number of molecules of glucose = Moles of glucose × Avogadro's number</p>
+<p>Number of molecules of glucose = =[8/10*0.286] moles × (6.022 × 10<sup>23</sup> molecules/mol) = =[8/10*0.286*6.022*10^23] molecules</p></div><p></p></div></body></html>

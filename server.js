@@ -11,13 +11,15 @@ const sgMail = require('@sendgrid/mail');// required to send passwords via sendg
 const bcrypt = require('bcrypt'); // for hashing passwords
 const crypto = require('crypto'); // for generating random passwords for password recovery
 
-const path = require("path"); // not sure if this is needed
+const path = require("path"); 
 const app = express();
 const threeHours = 10800000;
 const server = http.createServer(app); // not sure if this is important
 
 const math = require('mathjs'); // for =[] calculations
-
+const moment = require('moment'); // for dates for backup
+const cron = require('node-cron'); // required for backup to be at a set time each day
+const backupFolder = path.join(__dirname, 'qbanks', 'backup');
 
 // Define custom functions
 const ln = x => Math.log(x);
@@ -74,7 +76,62 @@ const listener = server.listen(3000, () => {
   console.log("Your server is listening on port " + listener.address().port);
 });
 
+// Schedule the backup to run once a day at 4AM
+cron.schedule('0 4 * * *', () => {
+  createBackup();
+});
+
 // functions
+
+// Function to create a backup daily
+function createBackup() {
+  const currentDate = moment().format('YYYY-MM-DD');
+  const dayOfWeek = moment().format('dddd');
+  const month = moment().format('MMMM');
+  
+  const sourceFolder = path.join(__dirname, 'qbanks');
+  const backupFilename = getBackupFilename(dayOfWeek, month);
+
+  // Create backup directory if it doesn't exist
+  if (!fs.existsSync(backupFolder)) {
+    fs.mkdirSync(backupFolder);
+  }
+
+  // Copy the files to the backup directory
+  copyFiles(sourceFolder, backupFolder);
+
+  // Rename the backup file with the appropriate name
+  fs.renameSync(
+    path.join(backupFolder, 'backup'),
+    path.join(backupFolder, backupFilename)
+  );
+  
+  console.log('Backup created:', backupFilename);
+}
+
+// Function to get the backup filename based on the current day and month
+function getBackupFilename(dayOfWeek, month) {
+  if (dayOfWeek === 'Sunday') {
+    if (moment().date() === 1) {
+      return `${month}.zip`;
+    } else {
+      return 'Week.zip';
+    }
+  } else {
+    return `${dayOfWeek}.zip`;
+  }
+}
+
+// Function to copy files from source folder to destination folder
+function copyFiles(sourceFolder, destinationFolder) {
+  const files = fs.readdirSync(sourceFolder);
+  
+  files.forEach((file) => {
+    const sourcePath = path.join(sourceFolder, file);
+    const destinationPath = path.join(destinationFolder, file);
+    fs.copyFileSync(sourcePath, destinationPath);
+  });
+}
 
 function evaluateWithCustomFunctions(equation) {
   const scope = {
@@ -422,6 +479,9 @@ Number.prototype.setSigFigs = function(sf) {
     n = (parseFloat(n) * 10 ** parseInt(exp)).toPrecision(sf).toString();
   }
   console.log('n6: '+n)
+  if (n == '0.') {
+	  n = '0';
+  }
   return n;
 };
 
@@ -475,8 +535,11 @@ Number.prototype.setSigFigs = function(sf) {
   return n;
 }; */
 
-function shuffleArray(arr) {
-  arr.sort(() => Math.random() - 0.5);
+function shuffleArray(arr) { //  Fisher-Yates shuffle
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
 }
 
 // splices in new questions, or deletes questions

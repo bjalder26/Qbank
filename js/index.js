@@ -86,17 +86,17 @@ function createProduct() {
   let title = prompt("Title: ", "Worksheet");
   if (title) {
 	
-    const subject = $('subject').value;
-    const course = $('course').value;
-    const qbank = $('question bank').value;  
+    const subjectName = $('subject').value;
+    const courseName = $('course').value;
+    const qbankName = $('question bank').value;  
 	  
-	const qbankAndNumArray = [{qbankName: qbank, number: qbanks[subject][course][qbank].length.toString()}];
+	const qbankAndNumArray = [{qbankName: qbankName, number: countNumQuestionTypes(qbanks[subjectName][courseName][qbankName])}];
 	title = title.replaceAll(' ', '_');
     passed.title = title;
 	passed.instructorName = "";
 	passed.date = "";
-    passed.subject = subject;
-    passed.course = course;
+    passed.subject = subjectName;
+    passed.course = courseName;
 	passed.qbankAndNumArray = qbankAndNumArray;
     passed.userName = user;
     passed = JSON.stringify(passed);
@@ -877,7 +877,7 @@ function reorder() {
   closeNav();
 }
 
-function setProductNum(qbank) {
+function countNumQuestionTypes(qbank){
 	let numOfQuestionTypes = 0;
 	let groupArray = [];
 	for (question of qbank) {
@@ -889,6 +889,11 @@ function setProductNum(qbank) {
 			numOfQuestionTypes++
 		}
 	}
+	return numOfQuestionTypes;
+}
+
+function setProductNum(qbank) {
+	const numOfQuestionTypes = countNumQuestionTypes(qbank);
 	$('product number').value = numOfQuestionTypes;
 	$('product number').max = numOfQuestionTypes;
 	$('add from dropdown').disabled = false;
@@ -1064,6 +1069,7 @@ function initTinyMce() {
     browser_spellcheck: true,
     height: 160,
     menubar: false,
+	contextmenu: false,
     fontsize_formats: "8pt 10pt 10.5pt 11pt 12pt 14pt 18pt 24pt 36pt",
 
     setup: (editor) => {
@@ -1089,76 +1095,54 @@ editor.ui.registry.addButton('${}', {
   text: '${}',
   tooltip: 'Empty Variable Brackets',
   onAction: () => {
-    /*
-	const selectedText = editor.selection.getContent({ format: 'text' });
+    // Gets selected text
+    const selectedText = editor.selection.getContent({ format: 'text' });
+    // Gets range
+    const selection = editor.selection.getRng();
 
-    if (selectedText) {
-      const placeholderText = '<em class="placeholder">${' + selectedText + '}</em>';
-      editor.selection.setContent(placeholderText);
-      const range = editor.selection.getRng();
-      const placeholderNode = editor.dom.select('.placeholder')[0];
-      range.selectNodeContents(placeholderNode);
-      editor.selection.setRng(range);
+    let adjustedStart = selection.startOffset;
+    let adjustedEnd = selection.endOffset;
+	
+	const currentOffset = selection.endOffset;
+    const lineLength = selection.endContainer.length;
+
+    // Places ${} around selected text or sets cursor position
+    if (selectedText !== '') {
+	  // Adjusts for '${'
+      adjustedStart = adjustedStart + 2;
+      adjustedEnd = adjustedEnd + 2;
+	  
+      const wrappedText = '${' + selectedText + '}';
+      editor.selection.setContent(wrappedText);
+      // Sets wrapped text or cursor position in editor
+      selection.setStart(selection.startContainer, adjustedStart);
+      selection.setEnd(selection.endContainer, adjustedEnd);
+      editor.selection.setRng(selection);
+    } else if (currentOffset !== lineLength) {
+      const emptyVariable = '${}';
+      editor.selection.setContent(emptyVariable);
+      editor.focus();
+	  //Brings the cursor back 1 from end of '${}'
+      adjustedStart = selection.startOffset - 1;
+      adjustedEnd = selection.endOffset - 1;
+      selection.setStart(selection.startContainer, adjustedStart);
+      selection.setEnd(selection.endContainer, adjustedEnd);
+      editor.selection.setRng(selection);
     } else {
-      const cursorText = '<em class="placeholder">${}</em>';
-      editor.selection.setContent(cursorText);
-      const placeholderNode = editor.dom.select('.placeholder')[0];
-      const range = editor.dom.createRng();
-      range.setStart(placeholderNode.firstChild, 2);
-      range.setEnd(placeholderNode.firstChild, 2);
-      editor.selection.setRng(range);
+	  // Adjusts for end of line scenario
+	  editor.insertContent('${}');
+	  // Gets range
+    const selection = editor.selection.getRng();
+	adjustedStart = selection.endOffset - 1;
+      adjustedEnd = selection.endOffset - 1;
+	  selection.setStart(selection.startContainer, adjustedStart);
+      selection.setEnd(selection.endContainer, adjustedEnd);
+    // Sets the selection range and focuses the editor
+    editor.selection.setRng(selection);
+	  
     }
-	*/
-	
-	const selectedText = editor.selection.getContent({ format: 'text' });
-
-    if (selectedText) {
-      const placeholderText = '<em class="placeholder">${' + selectedText + '}</em>';
-      editor.selection.setContent(placeholderText);
-      const range = editor.selection.getRng();
-      const placeholderNode = editor.dom.select('.placeholder')[0];
-      range.selectNodeContents(placeholderNode);
-      editor.selection.setRng(range);
-    } else {
-      const cursorText = '<em class="placeholder">${}</em>';
-      editor.selection.setContent(cursorText);
-      const placeholderNode = editor.dom.select('.placeholder')[0];
-      const range = editor.dom.createRng();
-      range.selectNodeContents(placeholderNode);
-      editor.selection.setRng(range);
-    }
-	    // Toggle <em> tags using execCommand
-    editor.execCommand('italic');
-	
-	
-// Get the currently selected text range
-var selection2 = editor.selection.getRng();
-
-// Calculate the adjusted start and end offsets
-var adjustedStart = selection2.startOffset + 2;
-var adjustedEnd = selection2.endOffset - 1;
-
-// Set the adjusted selection range
-editor.selection2.setRng({
-  startContainer: selection2.startContainer,
-  startOffset: adjustedStart,
-  endContainer: selection2.endContainer,
-  endOffset: adjustedEnd
-});
-
-/*
-    // Narrow the selection
-    const range = editor.selection.getRng();
-    range.setStart(range.startContainer, range.startOffset + 2);
-    range.setEnd(range.endContainer, range.endOffset - 1);
-    editor.selection.setRng(range);
-	*/
-	
   }
 });
-
-
-
 
 
 
@@ -1168,16 +1152,19 @@ editor.ui.registry.addButton('RangeVar', {
   icon: 'expand',
   tooltip: 'Range Variable',
   onAction: () => {
-    const placeholderText = 'XXXREPLACEMEXXX';
-    const replacementText = 'a';
-    const inputText = '${' + placeholderText + ' 10.0, 20.0, 3}';
+    let letter = 'a';
+    const content2 = editor.getContent();
+    for (let i = 1; i <= 25; i++) {
+      if (content2.indexOf('${' + letter) === -1) {
+        break;
+      }
+      letter = String.fromCharCode(letter.charCodeAt(0) + 1);
+    }
+    const inputText = '${' + letter + ' 10.0, 20.0, 3}';
 	editor.insertContent(inputText);
 	const content = editor.getContent();
-    const startIndex = content.indexOf(placeholderText);
-    const endIndex = startIndex + replacementText.length;
-	editor.setContent(content.replace(placeholderText, replacementText));	
-	editor.focus();
-    editor.selection.select(editor.getBody(), true);
+    const startIndex = content.indexOf('${'+letter)+2;
+    const endIndex = startIndex + 1;
     const range = editor.selection.getRng();
     range.setStart(range.startContainer, startIndex);
     range.setEnd(range.startContainer, endIndex);
@@ -1189,16 +1176,19 @@ editor.ui.registry.addButton('PercentVar', {
   icon: 'percent',
   tooltip: 'Percent Variable',
   onAction: () => {
-    const placeholderText = 'XXXREPLACEMEXXX';
-    const replacementText = 'a';
-    const inputText = '${' + placeholderText + ' 15.0 20% 3}';
+    let letter = 'a';
+    const content2 = editor.getContent();
+    for (let i = 1; i <= 25; i++) {
+      if (content2.indexOf('${' + letter) === -1) {
+        break;
+      }
+      letter = String.fromCharCode(letter.charCodeAt(0) + 1);
+    }
+    const inputText = '${' + letter + ' 15.0, 20%, 3}';
 	editor.insertContent(inputText);
 	const content = editor.getContent();
-    const startIndex = content.indexOf(placeholderText);
-    const endIndex = startIndex + replacementText.length;
-	editor.setContent(content.replace(placeholderText, replacementText));	
-	editor.focus();
-    editor.selection.select(editor.getBody(), true);
+    const startIndex = content.indexOf('${'+letter)+2;
+    const endIndex = startIndex + 1;
     const range = editor.selection.getRng();
     range.setStart(range.startContainer, startIndex);
     range.setEnd(range.startContainer, endIndex);
@@ -1210,15 +1200,11 @@ editor.ui.registry.addButton('ListVar', {
   icon: 'list',
   tooltip: 'List Variable',
   onAction: () => {
-    const placeholderText = 'XXXREPLACEMEXXX';
-    const replacementText = 'option 1, option 2';
-    const inputText = '${' + placeholderText + '}';
-    editor.insertContent(inputText);
-    const content = editor.getContent();
-    const startIndex = content.indexOf(placeholderText);
-    const endIndex = startIndex + replacementText.length;
-    editor.setContent(content.replace(placeholderText, replacementText));
-    editor.focus();
+    const inputText = '${option 1, option 2}';
+	editor.insertContent(inputText);
+	const content = editor.getContent();
+    const startIndex = content.indexOf(inputText)+2;
+    const endIndex = startIndex + 18;
     const range = editor.selection.getRng();
     range.setStart(range.startContainer, startIndex);
     range.setEnd(range.startContainer, endIndex);
@@ -1230,15 +1216,11 @@ editor.ui.registry.addButton('Calculate', {
   icon: 'calculate',
   tooltip: 'Calculate',
   onAction: () => {
-    const placeholderText = 'XXXREPLACEMEXXX';
-    const replacementText = '4/2';
-    const inputText = '=[' + placeholderText + ']';
-    editor.insertContent(inputText);
-    const content = editor.getContent();
-    const startIndex = content.indexOf(placeholderText);
-    const endIndex = startIndex + replacementText.length;
-    editor.setContent(content.replace(placeholderText, replacementText));
-    editor.focus();
+    const inputText = '=[4/2]';
+	editor.insertContent(inputText);
+	const content = editor.getContent();
+    const startIndex = content.indexOf(inputText)+2;
+    const endIndex = startIndex + 5;
     const range = editor.selection.getRng();
     range.setStart(range.startContainer, startIndex);
     range.setEnd(range.startContainer, endIndex);
@@ -1253,6 +1235,7 @@ editor.ui.registry.addButton('Calculate', {
       'advlist autolink lists image charmap print preview anchor',
       'searchreplace visualblocks code fullscreen',
       'insertdatetime media table paste code help wordcount',
+	  'link',
 	  'mathjax' // not sure if needed
     ],
 	
@@ -1273,7 +1256,7 @@ editor.ui.registry.addButton('Calculate', {
 
     toolbar: 'undo redo | ' +
       'bold italic superscript subscript forecolor backcolor | image | mathjax | ${} RangeVar PercentVar ListVar Calculate | alignleft aligncenter ' + //mathjax
-      'alignright alignjustify | formatselect | fontsizeselect |  bullist numlist outdent indent | tableButton | link |' +
+      'alignright alignjustify | formatselect | fontsizeselect |  bullist numlist outdent indent | tableButton | link unlink |' +
       'removeformat | help',
     image_title: true,
     automatic_uploads: true,

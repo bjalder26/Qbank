@@ -1,0 +1,137 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers & Ctrl-x to toggle the solutions.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = null;
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Take-Home Quiz Chapter 9</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) A 3.56 g sample of aniline (C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub>, molar mass = 93.13 g/mol) was combusted in a coffee cup (constant pressure) calorimeter with a heat capacity of 4.14 kJ/°C. If the temperature rose from 23.1°C to 62.6°C, determine the value of ΔH°<sub>combustion</sub> for aniline (for this problem the water is considered part of the calorimeter, so consider all the heat produced as being absorbed by the calorimeter).</div><div class='option'>A) -6780 kJ/mol</div><div class='option'>B) 6780 kJ/mol</div><div class='option'>C) 4280 kJ/mol</div><div class='option'>D) -4280 kJ/mol<span class='asterisk'>*</span></div><div class='solution'>The heat (enthalpy) of combustion is equal to the heat given off per mol.<br>ΔH°<sub>combustion</sub> = q<sub>rxn</sub>/n<br>The heat given off is equal, but opposite to the heat absorbed by the calorimeter (remember the water is considered part of the calorimeter in this problem).<br>q<sub>rxn</sub> = -qcal&nbsp;<br>q<sub>cal</sub> = CΔT<br><br>Lets solve for the heat absorbed by the calorimeter.<br>q<sub>cal</sub> = CΔT = 4.14 kJ/°C x (62.6°C - 23.1°C) = 164 Kj<br><br>Now the heat given off by the reaction.<br>&nbsp;q<sub>rxn</sub> = -qcal = -164 kJ<br><br>Next lets solve for the moles of reactant (n).<br>3.56 g x (1 mol / 93.13 g) = 0.0382 mol&nbsp;<br><br>Finally the heat (enthalpy) of combustion.<br>ΔH°<sub>combustion</sub> = q<sub>rxn</sub>/n =&nbsp; -164 kJ / 0.0382 mol = -4280 kJ/mol</div><p></p></div><div class='question'><div class='stem'>2) Which of the following would have the highest lattice energy?</div><div class='option'>A) MgO<span class='asterisk'>*</span></div><div class='option'>B) Na<sub>2</sub>O</div><div class='option'>C) Li<sub>2</sub>O</div><div class='option'>D) Li<sub>2</sub>O</div><div class='solution'>There are two parts that are involved in lattice energy.&nbsp; One is the charge on the ions (this is the bigger priority), and the other is the distance between the ions.&nbsp; This is only testing on knowing that the larger the charge on the ions, the larger the lattice energy.&nbsp; Since Mg has the highest charge, MgO will have the highest lattice energy.</div><p></p></div><div class='question'><div class='stem'>3) What is the final temperature of a aluminum sample (mass = 349 g) that has a starting temperature of 420 K but loses 4.51 kJ of heat. The specific heat capacity of aluminum is 0.900 J/g°C.</div><div class='option'>A) 406 K<span class='asterisk'>*</span></div><div class='option'>B) 434 K</div><div class='option'>C) 419 K</div><div class='option'>D) 421 K</div><div class='solution'>The specific heat formula is q = mc<sub>s</sub>ΔT, (heat = mass x specific heat capacity x change in temperature), or q = mc<sub>s</sub>(T<sub>f</sub> - T<sub>i</sub>).<br>In this case we're solving for final temperature.&nbsp; Dividing both sides by mc<sub>s</sub> gives:<br>q/(mc<sub>s</sub>) = T<sub>f</sub> - T<sub>i</sub>, adding T<sub>i</sub> to both sides gives:<br>T<sub>i</sub> + q/(mc<sub>s</sub>) = T<sub>f</sub><br>Given:<br>q = -4.51 Kj, converted to J: -4.51 kJ x (1000 J / 1 kJ ) = -4510 J<br>mass = 349 g<br>c<sub>s</sub> = 0.900 J/g°C<br>T<sub>i</sub> = 420 K<br>T<sub>f</sub> = T<sub>i</sub> + q/(mc<sub>s</sub>) = 420 K + (-4510 J)/(349 x &nbsp;0.900 J/g°C) = 406 K</div><p></p></div><div class='question'><div class='stem'>4) Which of the following is an endothermic process?</div><div class='option'>A) Water boiling<span class='asterisk'>*</span></div><div class='option'>B) You mix an acid and a base and the solution becomes hot</div><div class='option'>C) Rain freezing and becoming snow</div><div class='option'>D) Water vapor condensing</div><div class='solution'>Water boiling requires an input of energy, thus it is an endothermic process.</div><p></p></div><div class='question'><div class='stem'>5) How much energy is <strong>required</strong> to decompose 668 g of PCl<sub>3</sub>, according to the reaction below? The molar mass of PCl<sub>3</sub> is 137.32 g/mol and may be useful.
+<p style="text-align: center;">4 PCl<sub>3</sub>(g) → P<sub>4</sub>(s) + 6 Cl<sub>2</sub>(g), ΔH°<sub>rxn</sub> = +1207 kJ</p></div><div class='option'>A) 2.02x10<sup>5</sup> kJ</div><div class='option'>B) 5870 kJ</div><div class='option'>C) 1470 kJ<span class='asterisk'>*</span></div><div class='option'>D) 4.14x10<sup>4</sup> kJ</div><div class='solution'>The chemical equation tells us +1207 kJ are required to decompose 4 moles of PCl<sub>3</sub>.&nbsp; So once we have the moles, we can use that as a conversion factor to calculate the kJ required.<br>668 g PCl<sub>3</sub> x (1 mol PCl<sub>3</sub> / 137.32 g PCl<sub>3</sub>) x (1207 kJ / 4 mol PCl<sub>3</sub>) = 1470 kJ</div><p></p></div></body></html>

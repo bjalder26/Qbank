@@ -1,0 +1,249 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers & Ctrl-x to toggle the solutions.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = null;
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Exam 3 (Ch 6 & 7)</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Jun 20, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Use the molecular orbital diagram shown below to determine which of the following are the <strong>MOST</strong> stable.<br><img title="molecular orbital diagram.png" src="../images/41.png" alt="" width="207" height="352"></div><div class='option'>A) F<sub>2</sub><sup>-</sup></div><div class='option'>B) OF<sup>-</sup></div><div class='option'>C) OF</div><div class='option'>D) O<sub>2</sub><span class='asterisk'>*</span></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>O<sub>2</sub>: 12 valence electrons<br>OF: 13 valence electrons<br>OF<sup>-</sup>: 14 valence electrons<br>F<sub>2</sub><sup>-</sup>: 15 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine the bond order.&nbsp; Since after 10 valence electrons, the rest go into anti-bonding orbitals, the lowest number of electrons will have the highest bond order.<br>Bond order = (electrons in bonding orbitals - electrons in antibonding orbitals)/2<br>Bond order for O<sub>2</sub>: (8-4)/2 = 2<br>Bond order for OF: (8-5)/2 = 1.5<br>Bond order for OF<sup>-</sup>: (8-6)/2 = 1<br>Bond order for F<sub>2</sub><sup>-</sup>: (8-7)/2 = 0.5<br>Since O<sub>2</sub> has the highest bond order, it will be the <strong>MOST</strong> stable.</div><p></p></div><div class='question'><div class='stem'>2) Identify the number of electron groups (electron domains) around a molecule with sp<sup>3</sup> hybridization.</div><div class='option'>A) 2</div><div class='option'>B) 6</div><div class='option'>C) 5</div><div class='option'>D) 4<span class='asterisk'>*</span></div><div class='solution'><table style="border-collapse: collapse; width: 13.8266%; border-color: #34495E;" border="1">
+<tbody>
+<tr>
+<td style="width: 46.9569%;"># Electron domains</td>
+<td style="width: 53.0431%;">Hybridization</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">2</td>
+<td style="width: 53.0431%;">sp</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">3</td>
+<td style="width: 53.0431%;">sp<sup>2</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">4</td>
+<td style="width: 53.0431%;">sp<sup>3</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">5</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">6</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d<sup>2</sup></td>
+</tr>
+</tbody>
+</table></div><p></p></div><div class='question'><div class='stem'>3) What is the hybridization on the central atom for XeF<sub>4</sub>?</div><div class='option'>A) sp<sup>3</sup>d<sup>2</sup><span class='asterisk'>*</span></div><div class='option'>B) sp<sup>3</sup></div><div class='option'>C) sp</div><div class='option'>D) sp<sup>2</sup></div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to &nbsp;Xe.<br>You should get 6 electron domains.<br>6 electron domains corresponds to sp<sup>3</sup>d<sup>2</sup> hybridization.<br>
+<table style="border-collapse: collapse; width: 13.8266%; border-color: #34495E;" border="1">
+<tbody>
+<tr>
+<td style="width: 46.9569%;"># Electron domains</td>
+<td style="width: 53.0431%;">Hybridization</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">2</td>
+<td style="width: 53.0431%;">sp</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">3</td>
+<td style="width: 53.0431%;">sp<sup>2</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">4</td>
+<td style="width: 53.0431%;">sp<sup>3</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">5</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">6</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d<sup>2</sup></td>
+</tr>
+</tbody>
+</table></div><p></p></div><div class='question'><div class='stem'>4) Give the electron domain geometry for KrF<sub>4</sub></div><div class='option'>A) Octahedral<span class='asterisk'>*</span></div><div class='option'>B) Linear</div><div class='option'>C) Tetrahedral</div><div class='option'>D) Square pyramidal</div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to Kr.<br>You should get 6 electron domains.<br>6 electron domains corresponds to an octahedral electron domain geometry.</div><p></p></div><div class='question'><div class='stem'>5) Give the molecular shape for XeF<sub>6</sub></div><div class='option'>A) Trigonal planar</div><div class='option'>B) Octahedral<span class='asterisk'>*</span></div><div class='option'>C) Square planar</div><div class='option'>D) Trigonal bipyramid</div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to Xe.<br>You should get 6 electron domains, of which &nbsp;0 are lone pairs.<br>6 electron domains and 0 are lone pairs corresponds to an octahedral molecular shape.</div><p></p></div><div class='question'><div class='stem'>6) Use the molecular orbital diagram shown below to determine which of the following are the paramagnetic (<strong>there may be more than one answer</strong>).<br><br><img title="molecular orbital diagram 1.png" src="../images/42.png" alt="" width="207" height="352"></div><div class='option'>A) C<sub>2</sub><sup>+</sup><span class='asterisk'>*</span></div><div class='option'>B) NC<sup>-</sup></div><div class='option'>C) NC<span class='asterisk'>*</span></div><div class='option'>D) C<sub>2</sub></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>C<sub>2</sub><sup>+</sup>: 7 valence electrons<br>C<sub>2</sub>: 8 valence electrons<br>NC: 9 valence electrons<br>NC<sup>-</sup>: 10 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine if there are any unpaired electrons in the molecular orbital diagram.<br>C<sub>2</sub><sup>+</sup>: 7 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>C<sub>2</sub>: 8 valence electrons, the pi 2p orbitals get filled, leaving no unpaired electrons = diamagnetic<br>NC: 9 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic&nbsp;&nbsp;<br>NC<sup>-</sup>: 10 valence electrons, the last 2 electrons go into sigma 2p orbital filling it, which means there are no unpaired electrons = diamagnetic</div><p></p></div><div class='question'><div class='stem'>7) Use the molecular orbital diagram shown below to determine which of the following are the <strong>diamagnetic </strong>(<strong>there may be more than one answer</strong>).<br><img title="molecular orbital diagram.png" src="../images/41.png" alt="" width="207" height="352"></div><div class='option'>A) O<sub>2</sub><sup>-</sup></div><div class='option'>B) F<sub>2</sub><sup>2+</sup></div><div class='option'>C) NeF<sup>+</sup><span class='asterisk'>*</span></div><div class='option'>D) OF<sup>2-</sup></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>F<sub>2</sub><sup>2+</sup>: 12 valence electrons<br>O<sub>2</sub><sup>-</sup>: 13 valence electrons<br>NeF<sup>+</sup>: 14 valence electrons<br>OF<sup>2-</sup>: 15 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine if there are any unpaired electrons in the molecular orbital diagram.<br>F<sub>2</sub><sup>2+</sup>: 12 valence electrons, the last 2 electrons go into pi 2p orbitals, which means there are 2 unpaired electrons = paramagnetic<br>O<sub>2</sub><sup>-</sup>: 13 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic<br>NeF<sup>+</sup>: 14 valence electrons, the pi 2p orbitals get filled, leaving no unpaired electrons = diamagnetic<br>OF<sup>2-</sup>: 15 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic</div><p></p></div><div class='question'><div class='stem'>8) Use the molecular orbital diagram shown below to determine which of the following are the <strong>MOST</strong> stable.<br><br><img title="molecular orbital diagram 1.png" src="../images/42.png" alt="" width="207" height="352"></div><div class='option'>A) NC<sup>-</sup><span class='asterisk'>*</span></div><div class='option'>B) C<sub>2</sub></div><div class='option'>C) NC</div><div class='option'>D) C<sub>2</sub><sup>+</sup></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>C<sub>2</sub><sup>+</sup>: 7 valence electrons<br>C<sub>2</sub>: 8 valence electrons<br>NC: 9 valence electrons<br>NC<sup>-</sup>: 10 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine the bond order.&nbsp; Since after 4 valence electrons, the rest go into bonding orbitals, the highest number of electrons will have the highest bond order.<br>Bond order = (electrons in bonding orbitals - electrons in antibonding orbitals)/2<br>Bond order for C<sub>2</sub><sup>+</sup>: (5-2)/2 = 1.5<br>Bond order for C<sub>2</sub>: (6-2)/2 = 2<br>Bond order for NC: (7-2)/2 = 2.5<br>Bond order for NC<sup>-</sup>: (8-2)/2 = 3<br>Since NC<sup>-</sup>&nbsp;has the highest bond order, it will be the <strong>MOST</strong> stable.</div><p></p></div><div class='question'><div class='stem'>9) What is the theoretical yield, in moles of CO<sub>2</sub>, from the reaction of 14.2 moles of C<sub>2</sub>H<sub>6</sub> with 28.5 moles of O<sub>2</sub>?
+<div style="text-align: center;">2 C<sub>2</sub>H<sub>6</sub> + 7 O<sub>2</sub> ➞ 4 CO<sub>2</sub> + 6 H<sub>2</sub>O</div></div><div class='option'>A) 8.11 moles</div><div class='option'>B) 28.4 moles</div><div class='option'>C) 49.9 moles</div><div class='option'>D) 16.3 moles<span class='asterisk'>*</span></div><div class='solution'><p>To determine the theoretical yield of CO<sub>2</sub>, we need to compare the moles of C<sub>2</sub>H<sub>6</sub> and O<sub>2</sub> and their respective stoichiometric coefficients in the balanced equation. The reactant that produces the least amount of CO<sub>2</sub> based on the stoichiometry will limit the amount of CO<sub>2</sub> produced.</p>
+<p>From the balanced equation: 2 C<sub>2</sub>H<sub>6</sub> + 7 O<sub>2</sub> ➞ 4 CO<sub>2</sub> + 6 H<sub>2</sub>O</p>
+<p>Moles of C<sub>2</sub>H<sub>6</sub> = 14.2 moles <br>Moles of O<sub>2</sub> = 28.5 moles</p>
+<p>To determine the limiting reactant, we compare the the amounts of product we can produce from each reactant.</p>
+<p>The stoichiometric ratio between C<sub>2</sub>H<sub>6</sub> and CO<sub>2</sub> is 2:4. This means that 2 moles of C<sub>2</sub>H<sub>6</sub>&nbsp;react to produce 4 moles of CO<sub>2</sub>.</p>
+<p>The theoretical yield of CO<sub>2</sub> based on the C<sub>2</sub>H<sub>6</sub> being the limiting reagent: Moles of limiting reactant (C<sub>2</sub>H<sub>6</sub>) × Stoichiometric coefficient of CO<sub>2</sub> = 14.2 moles × (4 mol CO<sub>2</sub> / 2 mol C<sub>2</sub>H<sub>6</sub>) = 28.4 moles CO<sub>2<br></sub><br>The stoichiometric ratio between O<sub>2</sub> and CO<sub>2</sub> is 7:4. This means that 7 moles of O<sub>2</sub>&nbsp;react to produce 4 moles of CO<sub>2</sub>.</p>
+<p>The theoretical yield of CO<sub>2</sub> based on the O<sub>2</sub> being the limiting reagent: Moles of limiting reactant (O<sub>2</sub>) × Stoichiometric coefficient of CO<sub>2</sub> = 28.5 moles × (4 mol CO<sub>2</sub> / 7 mol O<sub>2</sub>) = 16.3 moles CO<sub>2</sub></p>
+<p>Since assuming O<sub>2</sub> is the limiting reagent produces a lower yield, O<sub>2</sub> is actually our limiting reactant.&nbsp;&nbsp;<br><br>Therefore, the theoretical yield of CO<sub>2</sub> from the given reaction is approximately 16.3 moles CO<sub>2</sub>.</p></div><p></p></div><div class='question'><div class='stem'>10) What is the limiting reactant when 13.5 moles of ZnS react with 16.2 moles of AlP?
+<div style="text-align: center;">3 ZnS + 2 AlP ➞ Zn<sub>3</sub>P<sub>2</sub> + Al<sub>2</sub>S<sub>3</sub></div></div><div class='option'>A) ZnS<span class='asterisk'>*</span></div><div class='option'>B) AlP</div><div class='option'>C) Zn<sub>3</sub>P<sub>2</sub></div><div class='option'>D) Al<sub>2</sub>S<sub>3</sub></div><div class='solution'><p>To determine the limiting reactant, we need to compare the moles of each product we could produce from the moles of each reactant, assuming the other reactant is in excess.&nbsp; The reactant that produces fewer moles of product will be the limiting reactant.</p>
+<p>From the balanced equation: 3 ZnS + 2 AlP ➞ Zn<sub>3</sub>P<sub>2</sub> + Al<sub>2</sub>S<sub>3</sub></p>
+<p>The stoichiometric ratio between ZnS and AlP is 3:2. This means that 3 moles of ZnS react with 2 moles of AlP.</p>
+<p>Moles of ZnS = 13.5 moles <br>Moles of AlP = 16.2 moles</p>
+<p>To determine the limiting reactant, we compare the moles of product we could produce from each reactant.<br>Mols of Zn<sub>3</sub>P<sub>2</sub> assuming ZnS is our limiting reactant (assuming AlP is in excess):<br>Moles of ZnS x (1 mol Zn<sub>3</sub>P<sub>2</sub> / 3 mol ZnS)&nbsp; = 13.5 moles x (1 / 3) = 4.50 Moles of Zn<sub>3</sub>P<sub>2</sub>&nbsp;<br><br>Mols of Zn<sub>3</sub>P<sub>2</sub> assuming AlP is our limiting reactant (assuming ZnS is in excess):<br>Moles of AlP x (1 mol Zn<sub>3</sub>P<sub>2</sub> / 2 mol ZnS)&nbsp; = 16.2 moles x (1 / 2) = 8.10 Moles of Zn<sub>3</sub>P<sub>2</sub>&nbsp;</p>
+<p>Since assuming ZnS was our limiting reactant produced fewer moles of product, ZnS is the limiting reactant.</p></div><p></p></div><div class='question'><div class='stem'>11) What is the theoretical yield, in grams of CO<sub>2</sub>, from the reaction of 5.39 moles of C<sub>3</sub>H<sub>8</sub> with 32.9 moles of O<sub>2</sub>?
+<div style="text-align: center;">C<sub>3</sub>H<sub>8</sub> + 5 O<sub>2</sub> ➞ 3 CO<sub>2</sub> + 4 H<sub>2</sub>O</div></div><div class='option'>A) 16.2 g</div><div class='option'>B) 79.1 g</div><div class='option'>C) 712 g<span class='asterisk'>*</span></div><div class='option'>D) 869 g</div><div class='solution'><p>To determine the theoretical yield of CO<sub>2</sub> in grams, we need to calculate the stoichiometric ratio between C<sub>3</sub>H<sub>2</sub> and CO<sub>2</sub> in the balanced chemical equation. The stoichiometric ratio is the ratio of moles of reactants and products involved in the reaction.</p>
+<p>From the balanced equation: 1 mole of C<sub>3</sub>H<sub>8</sub> reacts to produce 3 moles of CO<sub>2</sub>.</p>
+<p>Given: <br>Number of moles of C<sub>3</sub>H<sub>8</sub> = 5.39 mol<br>Number of moles of O2 = 32.9 mol</p>
+<p>We will use the stoichiometry to determine the maximum number of grams of CO<sub>2</sub> we could produce assuming each reactant was the limiting reactant:</p>
+<p>Assuming C<sub>3</sub>H<sub>8</sub> is the limiting reactant:<br>Number of grams of CO<sub>2</sub> = (5.39 mol C<sub>3</sub>H<sub>8</sub>) × (3 mol CO<sub>2</sub> / 1 mol C<sub>3</sub>H<sub>8</sub>) x (44.01 g CO<sub>2</sub> / 1 mol CO<sub>2</sub>) = 712 g CO<sub>2</sub>&nbsp;<br><br>Assuming O<sub>2</sub> is the limiting reactant:<br>Number of grams of CO<sub>2</sub> = (32.9 mol O<sub>2</sub>) × (3 mol CO<sub>2</sub> / 5 mol C<sub>3</sub>H<sub>8</sub>) x (44.01 g CO<sub>2</sub> / 1 mol CO<sub>2</sub>) = 869 g CO<sub>2</sub>&nbsp;<br><br>Since C<sub>3</sub>H<sub>8</sub> produces fewer grams of our reactant, the theoretical yield is 712 g CO<sub>2</sub></p></div><p></p></div><div class='question'><div class='stem'>12) <span style="font-size: 10.5pt;">What is the percent yield of the reaction if 19.4 g of Fe are produced when 14.6g of Al&nbsp; react with excess Fe</span><sub>2</sub><span style="font-size: 10.5pt;">O</span><sub>3</sub><span style="font-size: 10.5pt;"> according to the following reaction.</span>
+<div style="text-align: center;">Fe<sub>2</sub>O<sub>3</sub>(s) + 2 Al(s) → Al<sub>2</sub>O<sub>3</sub>(s) + 2 Fe(s)</div></div><div class='option'>A) 36.4 %</div><div class='option'>B) 64.2 %<span class='asterisk'>*</span></div><div class='option'>C) 75.3 %</div><div class='option'>D) 133 %</div><div class='solution'><p>To calculate the percent yield, we need to compare the actual yield to the theoretical yield and express it as a percentage.</p>
+<p>Given: <br>Mass of Fe produced = <span class="placeholder">19.4</span> g <br>Mass of Al used = <span class="placeholder">14.6</span> g</p>
+<p>First, we need to determine the theoretical yield of Fe based on the stoichiometry of the balanced chemical equation. From the balanced equation, we can see that the stoichiometric ratio between Fe<sub>2</sub>O<sub>3</sub> and Fe is 1:2. Therefore, for every 1 mole of Fe<sub>2</sub>O<sub>3</sub>, we expect to produce 2 moles of Fe.</p>
+<p>Molar mass of Fe = 55.85 g/mol <br>Molar mass of Al = 26.98 g/mol</p>
+<p>Theoretical yield of Fe = 14.6 g Al *&nbsp; (1 mol Al / 26.98 g Al) × (2 mol Fe / 2 mol Al) x (55.85 g Fe / 1 mol Fe) = 30.2 g Fe</p>
+<p>Now, we can calculate the percent yield using the formula:</p>
+<p>Percent yield = (Actual yield / Theoretical yield) × 100 Percent = (19.4 g / 30.2 g) × 100 = 64.2 %</p></div><p></p></div><div class='question'><div class='stem'>13) What is the limiting reactant when 8.49 g of B<sub>2</sub>Br<sub>6</sub> react with 20.0 g of HNO<sub>3</sub>?
+<div style="text-align: center;">B<sub>2</sub>Br<sub>6</sub> + 6 HNO<sub>3</sub> ➞ 2 B(NO<sub>3</sub>)<sub>3</sub> + 6 HBr</div></div><div class='option'>A) HBr</div><div class='option'>B) HNO<sub>3</sub></div><div class='option'>C) B<sub>2</sub>Br<sub>6</sub><span class='asterisk'>*</span></div><div class='option'>D) B(NO<sub>3</sub>)<sub>3</sub></div><div class='solution'><p>To determine the limiting reactant, we need to compare the amount of product that can be formed from each reactant.</p>
+<p>First, let's calculate the moles of each reactant: Molar mass of B<sub>2</sub>Br<sub>6</sub> = 2 * (10.81 g/mol of B) + 6 * (79.90 g/mol of Br) = 370.48 g/mol <br>Moles of B<sub>2</sub>Br<sub>6</sub> = 8.49 g / 370.48 g/mol = 0.0229 mol</p>
+<p>Molar mass of HNO<sub>3</sub> = 1 * (1.01 g/mol of H) + 1 * (14.01 g/mol of N) + 3 * (16.00 g/mol of O) = 63.02 g/mol <br>Moles of HNO<sub>3</sub> = 20.0 g / 63.02 g/mol = 0.317 mol</p>
+<p>Next, we need to compare the mole ratios between B<sub>2</sub>Br<sub>6</sub> and HNO<sub>3</sub> in the balanced equation: From the equation, we see that the mole ratio between B(NO<sub>3</sub>)<sub>3</sub> and B<sub>2</sub>Br<sub>6</sub> and is 2:1. <br>The mole ratio between B(NO<sub>3</sub>)<sub>3</sub> and HNO<sub>3</sub> is 2:6.</p>
+<p>So, using the mole ratios, we can determine the amount of B(NO<sub>3</sub>)<sub>3</sub> that can be formed: <br><br>Moles of B(NO<sub>3</sub>)<sub>3</sub> formed assuming B<sub>2</sub>Br<sub>6</sub> is the limiting reactant = 0.0229 mol B<sub>2</sub>Br<sub>6</sub> * (2 mol B(NO<sub>3</sub>)<sub>3</sub> / 1 mol B<sub>2</sub>Br<sub>6</sub>) = 0.0532 mol B(NO<sub>3</sub>)<sub>3</sub></p>
+<p>Moles of B(NO<sub>3</sub>)<sub>3</sub> formed assuming HNO<sub>3</sub> is the limiting reactant = 0.317 mol HNO<sub>3</sub> * (2 mol B(NO<sub>3</sub>)<sub>3</sub> / 6 mol HNO<sub>3</sub>) = 0.0847 mol B(NO<sub>3</sub>)<sub>3</sub></p>
+<p>Based on the mole ratios, we can see that B<sub>2</sub>Br<sub>6</sub> is the limiting reactant because it forms less moles of B(NO<sub>3</sub>)<sub>3</sub> compared to the moles formed by HNO<sub>3</sub>.</p></div><p></p></div><div class='question'><div class='stem'>14) Which of the following is a physical change?</div><div class='option'>A) Leaving a wrench outside until it changes color</div><div class='option'>B) Lighting a stove</div><div class='option'>C) Boiling water<span class='asterisk'>*</span></div><div class='option'>D)  None of the above.</div><div class='solution'>Boiling water does not change the substance chemically, therefore it is a physical change.&nbsp; State changes such as melting, freezing, boiling, condensing, and dissolving are physical changes.&nbsp; Deforming or breaking an object is a physical change.&nbsp;<br><br>Lighting a stove, and leaving a wrench outside until it changes color involve creating new substances, so they are chemical changes.&nbsp; "Burning", "lighting", "cooking", "baking", and "reacting" are all key words that indicate a chemical change.</div><p></p></div><div class='question'><div class='stem'>15) Which orbitals overlap in the carbon-hydrogen bonds in C<sub>2</sub>H<sub>4</sub>?</div><div class='option'>A) Two p orbitals</div><div class='option'>B) sp<sup>2</sup> and s<span class='asterisk'>*</span></div><div class='option'>C) sp<sup>3</sup> and s</div><div class='option'>D) sp and s</div><div class='solution'>Step 1) Draw the Lewis structure for C<sub>2</sub>H<sub>4</sub>.<br>Step 2) Count the number of electron domains on one of the carbons.&nbsp; There are 3 electron domains on each carbon.<br>Step 3) Determine the hybridization of one of the carbons.&nbsp; Since there 3 are electron domains, it is sp<sup>2</sup> hybridized.<br>Step 4) Since the hydrogens only have an s orbital, the bond is between a sp<sup>2</sup> hybridized orbital and an s orbital, thus (sp<sup>2</sup> and s) is the answer.</div><p></p></div><div class='question'><div class='stem'>16) How many moles of FeBr<sub>3</sub> can be formed from 2.80 moles of KBr? Assume an excess of Fe(OH)<sub>3</sub>.
+<div style="text-align: center;">3 KBr + Fe(OH)<sub>3</sub> ➞ 3 KOH + FeBr<sub>3</sub></div></div><div class='option'>A) 276 moles</div><div class='option'>B) 0.933 moles<span class='asterisk'>*</span></div><div class='option'>C) 8.40 moles</div><div class='option'>D) 2.80 moles</div><div class='solution'><p>From the balanced chemical equation: 3 KBr + Fe(OH)<sub>3</sub> ➞ 3 KOH + FeBr<sub>3</sub></p>
+<p>We can see that the stoichiometric ratio between KBr and FeBr3 is 3:1. This means that for every 3 moles of KBr, we can expect 1 mole of FeBr<sub>3</sub> to be formed.</p>
+<p>Given that we have 2.80 moles of KBr, we can calculate the moles of FeBr<sub>3</sub> using the stoichiometric ratio:</p>
+<p>Moles of FeBr3 = (2.80 moles of KBr) / (3 moles of KBr per 1 mole of FeBr<sub>3</sub>) Moles of FeBr3 = 2.80 moles / 3 Moles of FeBr3 = 0.933 moles</p></div><p></p></div><div class='question'><div class='stem'>17) How many grams of LiF can be formed from 2.27 moles of BF<sub>3</sub>? Assume an excess of Li<sub>2</sub>SO<sub>3</sub>.
+<div style="text-align: center;">2 BF<sub>3</sub> + 3 Li<sub>2</sub>SO<sub>3</sub> ➞ B<sub>2</sub>(SO<sub>3</sub>)<sub>3</sub> + 6 LiF</div></div><div class='option'>A) 2.60 g</div><div class='option'>B) 0.263 g</div><div class='option'>C) 177 g<span class='asterisk'>*</span></div><div class='option'>D) 19.6 g</div><div class='solution'><p>To determine the grams of LiF formed from 2.27 moles of BF<sub>3</sub>, we need to use the balanced equation and the molar masses of the compounds involved.</p>
+<p>From the balanced equation: 2 BF<sub>3</sub> + 3 Li<sub>2</sub>SO<sub>3</sub> ➞ B<sub>2</sub>(SO<sub>3</sub>)<sub>3</sub> + 6 LiF</p>
+<p>Using the stoichiometric ratio between BF<sub>3</sub> and LiF (from the balanced equation), we find: 2 moles of BF<sub>3</sub> produce 6 moles of LiF.</p>
+<p>Moles of LiF = Moles of BF<sub>3</sub> × (6 moles LiF / 2 moles BF<sub>3</sub>) = 2.27 × (6/2) = 6.81 moles</p>
+<p>Now, we can calculate the mass of LiF: Molar mass of LiF: Li: 6.941 g/mol F: 18.998 g/mol (one F atom) Total molar mass of LiF: 6.941 + 18.998 = 25.939 g/mol</p>
+<p>Mass of LiF = Moles of LiF × Molar mass of LiF = 6.81 moles × 25.939 g/mol = 177 g</p></div><p></p></div><div class='question'><div class='stem'>18) Balance the following equation.<br><br>________ C<sub>5</sub>H<sub>10</sub> + ________ O<sub>2</sub> → ________ H<sub>2</sub>O + ________ CO<sub>2</sub></div><div class='solution'>Step 1) First balance the hydrogen on each sides by finding the least common multiple of<sub> </sub>10 and 2.<br>Step 2) Next balance the carbon on each side.<br>Step 3) Finally balance the oxygen last (because it exists in its elemental form unbound to other atoms).&nbsp; If needed, first double all the other coefficients.</div><p></p></div><div class='question'><div class='stem'>19) How many grams of KNO<sub>3</sub> will react with 113 grams of H<sub>2</sub>CO<sub>3</sub>?
+<div style="text-align: center;">2 KNO<sub>3</sub> + H<sub>2</sub>CO<sub>3</sub> ➞ K<sub>2</sub>CO<sub>3</sub> + 2 HNO<sub>3</sub></div></div><div class='option'>A) 34.7 g</div><div class='option'>B) 368 g<span class='asterisk'>*</span></div><div class='option'>C) 34.7 g</div><div class='option'>D) 92.1 g</div><div class='solution'><p>To determine the grams of KNO<sub>3</sub> that will react with 113 grams of H<sub>2</sub>CO<sub>3</sub>, we need to convert the given mass of H<sub>2</sub>CO<sub>3</sub> to moles and then use the balanced chemical equation to determine the stoichiometric ratio.</p>
+<p>First, we calculate the moles of H<sub>2</sub>CO<sub>3</sub>: <br>Molar mass of H<sub>2</sub>CO<sub>3</sub> = 2(1.01 g/mol of H) + 12.01 g/mol of C + 3(16.00 g/mol of O) = 62.03 g/mol <br>Moles of H<sub>2</sub>CO<sub>3</sub> = Mass of H<sub>2</sub>CO<sub>3</sub> / Molar mass of H<sub>2</sub>CO<sub>3</sub> Moles of H<sub>2</sub>CO<sub>3</sub> = 113 g / 62.03 g/mol Moles of H<sub>2</sub>CO<sub>3</sub> ≈ 1.82 moles</p>
+<p>From the balanced chemical equation: 2 KNO<sub>3</sub> + H<sub>2</sub>CO<sub>3</sub> ➞ K<sub>2</sub>CO<sub>3</sub> + 2 HNO<sub>3</sub></p>
+<p>The stoichiometric ratio between H<sub>2</sub>CO<sub>3</sub> and KNO<sub>3</sub> is 1:2. This means that 1 mole of H<sub>2</sub>CO<sub>3</sub> will react with 2 moles of KNO<sub>3</sub>.</p>
+<p>Therefore, the moles of KNO<sub>3</sub> that will react with 113 moles of H<sub>2</sub>CO<sub>3</sub> is:</p>
+<p>Moles of KNO<sub>3</sub> = 2 × Moles of H<sub>2</sub>CO<sub>3</sub></p>
+<p>Moles of KNO<sub>3</sub> = 2 × 1.82 moles Moles of KNO<sub>3</sub> ≈ 3.64 moles</p>
+<p>Finally, we calculate the grams of KNO<sub>3</sub> using its molar mass: Molar mass of KNO<sub>3</sub> = 39.10 g/mol + 14.01 g/mol + 3(16.00 g/mol) = 101.10 g/mol <br>Grams of KNO<sub>3</sub> = Moles of KNO<sub>3</sub> × Molar mass of KNO<sub>3</sub> <br>Grams of KNO<sub>3</sub> = 3.64 moles × 101.10 g/mol <br>Grams of KNO3 ≈ 368 g</p></div><p></p></div><div class='question'><div class='stem'>20) How many molecules of water can be produced when 19.1 g of CH<sub>4</sub>&nbsp;reacts with excess oxygen?
+<div style="text-align: center;">CH<sub>4</sub> + 2 O<sub>2</sub> ➞ CO<sub>2</sub> + 2 H<sub>2</sub>O</div></div><div class='option'>A) 3.19x10<sup>23</sup> molecules</div><div class='option'>B) 1.43x10<sup>24</sup> molecules<span class='asterisk'>*</span></div><div class='option'>C) 42.9 molecules</div><div class='option'>D) 3.58x10<sup>23</sup> molecules</div><div class='solution'><p>First, calculate the moles of CH<sub>4</sub> using its molar mass: <br>Molar mass of CH<sub>4</sub> = 12.01 g/mol + 4(1.01 g/mol) = 16.05 g/mol</p>
+<p>Moles of CH<sub>4</sub> = Mass of CH<sub>4</sub> / Molar mass of CH<sub>4</sub> <br>Moles of CH4 = 19.1 g / 16.05 g/mol Moles of CH4 ≈ 1.19 moles</p>
+<p>From the balanced equation: CH<sub>4</sub> + 2 O<sub>2</sub> ➞ CO<sub>2</sub> + 2 H<sub>2</sub>O</p>
+<p>The stoichiometric ratio between CH<sub>4</sub> and H<sub>2</sub>O is 1:2. This means that 1 mole of CH<sub>4</sub> will produce 2 moles of H<sub>2</sub>O.</p>
+<p>Moles of H<sub>2</sub>O = 2 × Moles of CH<sub>4</sub> <br>Moles of H<sub>2</sub>O = 2 × 1.19 moles <br>Moles of H<sub>2</sub>O ≈ 2.38 moles</p>
+<p>Finally, convert the moles of water to molecules using Avogadro's number (6.022 × 10<sup>23</sup> molecules/mol):</p>
+<p>Number of water molecules = Moles of H<sub>2</sub>O × Avogadro's number Number of water molecules <br>= 2.38 moles × (6.022 × 10<sup>23</sup> molecules/mol) <br>Number of water molecules ≈ 1.43x10<sup>24</sup> molecules</p></div><p></p></div></body></html>

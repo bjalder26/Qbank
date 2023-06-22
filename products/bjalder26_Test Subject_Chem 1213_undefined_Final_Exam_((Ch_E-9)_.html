@@ -1,0 +1,356 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint {
+          display: none;
+        }
+      }
+
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+    }
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers & Ctrl-x to toggle the solutions.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = null;
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+
+    </script>
+    <h1>Final Exam ((Ch E-9)</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Jun 22, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Determine the density of an item that has a mass of 174.3 g and displaces 14.7 mL of fluid when submersed in a beaker.</div><div class='option'>A) 2560 g/mL</div><div class='option'>B) 160. g/mL</div><div class='option'>C) 11.9 g/mL<span class='asterisk'>*</span></div><div class='option'>D) 0.0843 g/mL</div><div class='solution'><p>To determine the density of an &nbsp;item, we can use the formula:<br>Density = mass / volume<br><br>Given: Mass = 174.3 g Volume = &nbsp;14.7 mL<br>*note that the volume of the item is equal to the volume of the&nbsp; fluid it displaces<br><br>Now, we can substitute the values into the density formula:<br>Density = 174.3 g / &nbsp;14.7 mL<br><br>Let's perform the calculation:<br>Density ≈ 11.9 g/mL</p></div><p></p></div><div class='question'><div class='stem'>2) How many significant figures are in the measurement, 4900.0 g?</div><div class='option'>A) 4</div><div class='option'>B) 5<span class='asterisk'>*</span></div><div class='option'>C) 3</div><div class='option'>D) 2</div><div class='option'>E)  None of the above.</div><div class='solution'><p>The measurement 4900.0 g has five significant figures. Significant figures are the digits in a number that contribute to its precision. When determining the number of significant figures, we consider the following:</p>
+<ol>
+<li>Non-zero digits (4 and 9) are always significant.</li>
+<li>Leading zeros are never significant.&nbsp; There are no leading zeros in this problem.</li>
+<li>Captured zeros, which are zeros between non-zero digits (1 and 0), are also significant.&nbsp; There are no captured zeros in this case.</li>
+<li>Trailing zeros (the final zeros) are significant only if they are after a decimal point. In this case, since there is a decimal point, the three trailing zeros are considered significant.</li>
+</ol>
+<p>To summarize, captured zeros and non-zero digits are significant, leading zeros (zeros before the non-zero digits) are not significant, and trailing zeros (zeros after the non-zero digits) are significant if there is a decimal.&nbsp; Therefore, the measurement 4900.0 g &nbsp;has four significant figures.</p></div><p></p></div><div class='question'><div class='stem'>3) Divide the following numbers and indicate the answer with correct number of significant figures. <br><span class="math-tex">\( \frac{187.7}{3.05} \)</span></div><div class='option'>A) 572</div><div class='option'>B) 61.5<span class='asterisk'>*</span></div><div class='option'>C) 61.54</div><div class='option'>D) 62</div><div class='solution'><p>To divide the numbers 187.7 and 3.05, we perform the division as follows:<br>187.7 / 3.05<br>The result is 61.54.<br><br>Now, let's determine the correct number of significant figures in the answer.<br>187.7 has four significant figures, and 3.05 has three significant figures. When we divide numbers, the result should be rounded to the same number of significant figures as the number with the least number of significant figures, which is 3.05 in this case. Therefore, the quotient, 61.54, should be rounded to three significant figures.<br>Rounding 61.54 to three significant figures gives 61.5.</p></div><p></p></div><div class='question'><div class='stem'>4) Add the following numbers and indicate the correct number of significant figures.<br>
+<div style="text-align: center;">820.2 + 397.3</div></div><div class='option'>A) 1217.5<span class='asterisk'>*</span></div><div class='option'>B) 422.9</div><div class='option'>C) 1220</div><div class='option'>D) 1218</div><div class='solution'><p>When you punch this into your calculator, the result is 1217.5.</p>
+<p>Now, let's determine the correct number of significant figures.</p>
+<p>820.2 has four significant figures, and 397.3 has four significant figures as well. When we add or subtract numbers, the result should have the same number of decimal places as the number with the <strong>least number of decimal places</strong>.&nbsp; Both &nbsp;820.2 and 397.3 have 1 decimal place in this case. Therefore, the sum, 1217.5, should have 1 significant decimal place.</p>
+<p>After rounding to 1 decimal place, the answer is: 1218</p></div><p></p></div><div class='question'><div class='stem'>5) Which of the following describes the characteristics of a liquid</div><div class='option'>A) definite volume but no definite shape<span class='asterisk'>*</span></div><div class='option'>B) no definite volume or shape</div><div class='option'>C) no definite volume but a definite shape</div><div class='option'>D) definite volume and shape</div><p></p></div><div class='question'><div class='stem'>6) Calculate the atomic mass of element "X," if it has 2 naturally occurring isotopes with the following masses and natural abundances.<br>X-107 107.47773 amu 71.253%<br>X-108 108.01034 amu 28.747%</div><div class='option'>A) 107.86 amu</div><div class='option'>B) 107.63 amu<span class='asterisk'>*</span></div><div class='option'>C) 161.48 amu</div><div class='option'>D) 107.29 amu</div><div class='solution'><p>To calculate the atomic mass of element X, we need to consider the masses and natural abundances of its isotopes.</p>
+<p>The atomic mass is calculated by multiplying the mass of each isotope by its natural abundance, summing up the results, and rounding to the appropriate number of decimal places.</p>
+<p>Let's perform the calculation:</p>
+<p>Isotope X-[107; 3]: Mass: 107.47773&nbsp; amu Abundance: 71.253%</p>
+<p>Isotope X-108: Mass: 108.01034 amu Abundance: 28.747%</p>
+<p>Atomic mass = (107 amu * 0.71253) + (108.01034 amu * &nbsp;0.28747) = 106.97958967 107.63 amu</p></div><p></p></div><div class='question'><div class='stem'>7) Which of the following describes a compound?</div><div class='option'>A) two or more atoms covalently bonded together</div><div class='option'>B) two or more elements bonded to each other<span class='asterisk'>*</span></div><div class='option'>C) two or more elements that are not covalently or ionically bonded and have a uniform composition</div><div class='option'>D) an individual unit of an element</div><div class='solution'><p>An atom: A fundamental unit of matter that consists of a nucleus (containing protons and neutrons) and electrons orbiting the nucleus.</p>
+<p>A molecule: Two or more atoms covalently bonded together. It can be a compound or a diatomic molecule composed of the same type of atoms.</p>
+<p>A compound: Two or more different elements chemically bonded together. Compounds have a fixed ratio of elements and can be represented by a chemical formula.</p>
+<p>A heterogeneous mixture: Two or more elements or compounds that are not covalently or ionically bonded and do not have a uniform composition. In a heterogeneous mixture, the components are not evenly distributed, and their properties may vary within the mixture.</p>
+<p>A homogeneous mixture: Two or more elements or compounds that are not covalently or ionically bonded and have a uniform composition. In a homogeneous mixture, the components are evenly distributed throughout, and the mixture appears uniform at the macroscopic level.</p>
+<p>To summarize:</p>
+<ul>
+<li>Atom: Fundamental unit of matter.</li>
+<li>Molecule: Two or more atoms covalently bonded together.</li>
+<li>Compound: Two or more different elements chemically bonded together.</li>
+<li>Heterogeneous mixture: Components are not evenly distributed and do not have a uniform composition.</li>
+<li>Homogeneous mixture: Components are evenly distributed and have a uniform composition.</li>
+</ul></div><p></p></div><div class='question'><div class='stem'>8) Which ion is represented by the following information?<br>p<sup>+</sup> = 11, e<sup>-</sup> = 14</div><div class='option'>A) Na<sup>3-</sup><span class='asterisk'>*</span></div><div class='option'>B) P<sup>3-</sup></div><div class='option'>C) Mg<sup>3+</sup></div><div class='option'>D) Na<sup>3+</sup></div><div class='solution'>This ion has 11 protons, and 14 electrons.<br>Since it has 11 protons, we can determine the element is Na by looking at the periodic table.<br>Charge = # protons - # electrons<br>Charge = 11 - 14 = 3-<br>Thus the ion can be represented with Na<sup>3-</sup></div><p></p></div><div class='question'><div class='stem'>9) Which of the following statements about subatomic particles are true.</div><div class='option'>A) charge = protons - neutrons</div><div class='option'>B) negatively charged ions have more protons than electrons</div><div class='option'>C) charge = protons - electrons<span class='asterisk'>*</span></div><div class='option'>D) positively charted ions (cations) have more electrons than protons</div><p></p></div><div class='question'><div class='stem'>10) An element has three stable isotopes with masses of 27.253 amu, 29.254 amu, and 31.394 amu. The heavier two isotopes have an abundance of 17.1% (middle mass) and 3.00% (largest mass), respectively. What is the average atomic mass of the element?</div><div class='option'>A) 28.0 amu</div><div class='option'>B) 30.9 amu</div><div class='option'>C) 29.3 amu</div><div class='option'>D) 27.7 amu<span class='asterisk'>*</span></div><div class='solution'>To calculate the average atomic mass of the element, we need to consider the masses of the isotopes and their respective abundances.<br>
+<p>Given: Mass of first isotope (lightest) = 27.253 amu <br>Mass of second isotope (middle) = 29.254 amu <br>Mass of third isotope (heaviest) = 31.394 amu <br>Abundance of second isotope = 17.1% <br>Abundance of third isotope = 3.00%</p>
+<p>To find the abundance of the lightest isotope, we subtract the abundances of the other two isotopes from 1: Abundance of lightest isotope = 1 - (abundance of second isotope + abundance of third isotope) = 1 - (0.171+ 0.0300) = 0.799</p>
+<p>Now, let's calculate the average atomic mass.<br>Average atomic mass = (mass of first isotope * abundance of first isotope) + (mass of second isotope * abundance of second isotope) + (mass of third isotope * abundance of third isotope)<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;= (27.253 amu x 0.799) + (29.254 amu x 0.171) + (31.394 amu x 0.0300)<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;= 21.775) amu + 5.0024 amu + 0.94182 amu<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;= 27.719 amu<br><br>Rounded to the appropriate number of significant figures, the average atomic mass of the element is approximately 27.7 amu.<br><br></p></div><p></p></div><div class='question'><div class='stem'>11) Calculate the frequency of a photon (in Hz) with a wavelength of 428.4 nm.</div><div class='option'>A) 7.00x10<sup>14</sup> Hz<span class='asterisk'>*</span></div><div class='option'>B) 1.43x10<sup>-15</sup> Hz</div><div class='option'>C) 0.000700 Hz</div><div class='option'>D) 4.64x10<sup>-19</sup> Hz</div><div class='solution'><p>To calculate the frequency of a photon using its wavelength, you can use the following equation:</p>
+<p>c = λ * ν</p>
+<p>Where: c is the speed of light in a vacuum (3.00 x 10<sup>8</sup> m/s) λ is the wavelength of the photon in meters ν is the frequency of the photon in Hz</p>
+<p>First, we need to convert the given wavelength of 428.4 nm to meters:</p>
+<p>λ = 428.4 nm * <span class="math-tex">\( \frac{1 m}{10^9 nm} \)</span> = 4.28x10<sup>-7</sup> m</p>
+<p>Now we can rearrange the equation to solve for the frequency:</p>
+<p>ν = c / λ = (3.00 x 10<sup>8</sup> m/s) / (4.28x10<sup>-7</sup> m) <br><br>ν ≈ 7.00x10<sup>14</sup> Hz</p></div><p></p></div><div class='question'><div class='stem'>12) For n = 2 (the 2nd electron shell), what are the possible subshells?</div><div class='option'>A) s‚ p and d</div><div class='option'>B) s</div><div class='option'>C) s and p<span class='asterisk'>*</span></div><div class='option'>D) s‚ p‚ d and f</div><div class='solution'><p>For the principal quantum number (n) values of 1, 2, 3, and 4, the possible subshells are as follows:</p>
+<p>n = 1: Only one subshell is possible, which is the s subshell.</p>
+<p>n = 2: Two subshells are possible, which are the s and p subshells.</p>
+<p>n = 3: Three subshells are possible, which are the s, p, and d subshells.</p>
+<p>n = 4: Four subshells are possible, which are the s, p, d, and f subshells.</p>
+<p>The subshells are named after the azimuthal quantum numbers (s, p, d, f) that represent the shape of the electron orbitals within each subshell.</p></div><p></p></div><div class='question'><div class='stem'>13) Determine the energy change associated with the transition from n=5 to n=3 in the hydrogen atom.</div><div class='option'>A) -1.55x10<sup>-19</sup> J<span class='asterisk'>*</span></div><div class='option'>B) 2.91x10<sup>-19</sup> J</div><div class='option'>C) 1.55x10<sup>-19</sup> J</div><div class='option'>D) -2.91x10<sup>-19</sup> J</div><div class='solution'><p>The energy change associated with the transition between energy levels in a hydrogen atom can be calculated using the formula:</p>
+<p>ΔE = - R<sub>H</sub> * <span class="math-tex">\( (\frac{1}{n_{final}^2} - \frac{1}{n_{initial}^2}) \)</span></p>
+<p>where R<sub>H</sub> is the Rydberg constant for hydrogen (2.18 × 10<sup>-18</sup> J), n<sub>final</sub> is the final energy level, and n<sub>initial</sub> is the initial energy level.</p>
+<p>For this specific transition from n=3 to n=5, we can substitute the values into the formula:</p>
+<p>ΔE = - R<sub>H</sub> * <span class="math-tex">\( (\frac{1}{3^2} - \frac{1}{5^2}) \)</span> = -(2.18 × 10<sup>-18</sup> J) * <span class="math-tex">\( (\frac{1}{3^2} - \frac{1}{5^2}) \)</span> ≈ -1.55x10<sup>-19</sup> J</p></div><p></p></div><div class='question'><div class='stem'>14) How many orbitals are present in subshell d (l = 2)?</div><div class='option'>A) 5<span class='asterisk'>*</span></div><div class='option'>B) 4</div><div class='option'>C) 10</div><div class='option'>D) 2</div><div class='solution'>The number of orbitals in each subshell can be determined using the following pattern:<br>
+<ul>
+<li>Subshell s (l = 0): 1 orbital</li>
+<li>Subshell p (l = 1): 3 orbitals</li>
+<li>Subshell d (l = 2): 5 orbitals</li>
+<li>Subshell f (l = 3): 7 orbitals</li>
+</ul></div><p></p></div><div class='question'><div class='stem'>15) Which of the following sets of quantum numbers is possible?</div><div class='option'>A) (3, 3, +3, -<span class="math-tex">\( \frac{1}{2} \)</span>)</div><div class='option'>B) (3, 2, +2, +<span class="math-tex">\( \frac{1}{2} \)</span>)<span class='asterisk'>*</span></div><div class='option'>C) (5, 4, -5, +<span class="math-tex">\( \frac{1}{2} \)</span>)</div><div class='option'>D) (3, 1, +1, +1)</div><div class='solution'><p>For a set of quantum numbers to be valid, the following relationships must be satisfied:</p>
+<ol>
+<li>The principal quantum number (n) must be a positive integer (1, 2, 3, ...).</li>
+<li>The azimuthal quantum number (ℓ) must be an integer ranging from 0 to (n-1).</li>
+<li>The magnetic quantum number (m<sub>ℓ</sub>) must be an integer ranging from -ℓ to +ℓ.</li>
+<li>The spin quantum number (m<sub>s</sub>) must be either +1/2 or -1/2.</li>
+</ol>
+<p>Let's evaluate the given sets of quantum numbers:</p>
+<p>(3, 2, +2, +<span class="math-tex">\( \frac{1}{2} \)</span>)</p>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 3 (valid as it is a positive integer).</li>
+<li>ℓ = 2 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = +2 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = +<span class="math-tex">\( \frac{1}{2} \)</span> (valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>valid</strong>.</li>
+</ul>
+</li>
+</ul>
+(3, 3, +3, -<span class="math-tex">\( \frac{1}{2} \)</span>)&nbsp;<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 3 (valid as it is a positive integer).</li>
+<li>ℓ = 3 (invalid as it is not within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = +3 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = -<span class="math-tex">\( \frac{1}{2} \)</span> (valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the value for ℓ.</li>
+</ul>
+</li>
+</ul>
+(5, 4, -5, +<span class="math-tex">\( \frac{1}{2} \)</span>)&nbsp;<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 5 (valid as it is a positive integer).</li>
+<li>ℓ = 4 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = -5 (invalid as it must be within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = +<span class="math-tex">\( \frac{1}{2} \)</span>(valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the value of m<sub>ℓ</sub> being outside the allowed range.</li>
+</ul>
+</li>
+</ul>
+(3, 1, +1, + 1)<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 3 (valid as it is a positive integer).</li>
+<li>ℓ = 1 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = +1 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = +1 (invalid as it must be either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the incorrect value for m<sub>s</sub>.</li>
+</ul>
+</li>
+</ul>
+<p>Based on the numerical relationships between the quantum numbers, only the set (3, 2, +2, +<span class="math-tex">\( \frac{1}{2} \)</span>) satisfies the required conditions and is therefore valid.</p></div><p></p></div><div class='question'><div class='stem'>16) Which atom or ion has the electron configuration below?<br>[Ne] 3s<sup>2</sup> 3p<sup>6</sup></div><div class='option'>A) K<sup>2+</sup></div><div class='option'>B) In<sup>-</sup></div><div class='option'>C) Rb<sup>+</sup></div><div class='option'>D) K<sup>+</sup><span class='asterisk'>*</span></div><div class='solution'>K<sup>+</sup> has the electron configuration of [Ne] 3s<sup>2</sup> 3p<sup>6</sup>.&nbsp; The easiest way to arrive at this answer is by counting electrons.&nbsp; Neon has 10 electrons and 3s<sup>2</sup> 3p<sup>6</sup> adds another 8 electrons.&nbsp; So the answer is K<sup>+</sup> because K<sup>+</sup> has 18 electrons.</div><p></p></div><div class='question'><div class='stem'>17) Which of the following has the largest atomic radius; Ar, Kr, Xe, or Rn?</div><div class='option'>A) Rn<span class='asterisk'>*</span></div><div class='option'>B) Xe</div><div class='option'>C) Kr</div><div class='option'>D) Ar</div><div class='solution'>Rn has the largest atomic radius.&nbsp; The major trend for atomic radius is that atomic radius increases as you go down and to the left on the periodic table.</div><p></p></div><div class='question'><div class='stem'>18) How many valence electrons does Cr have?</div><div class='option'>A) 24</div><div class='option'>B) 2<span class='asterisk'>*</span></div><div class='option'>C) 6</div><div class='option'>D) 18</div><div class='solution'>Cr has 2 valence electrons.&nbsp; You can tell because Cr <strong>only has 2 electrons in its outer shell</strong>.</div><p></p></div><div class='question'><div class='stem'>19) Predict the charge that fluorine will take as an ion.</div><div class='option'>A) -2</div><div class='option'>B) +3</div><div class='option'>C) -1<span class='asterisk'>*</span></div><div class='option'>D) -3</div><div class='solution'><p>The charges that elements can form as ions depend on their position in the periodic table and their tendency to gain or lose electrons to achieve a stable electron configuration.</p>
+<p>Sodium (Na) tends to lose one electron to achieve a stable electron configuration, forming a +1 ion (Na<sup>+</sup>). Magnesium (Mg) tends to lose two electrons, forming a +2 ion (Mg<sup>2+</sup>). Aluminum (Al) also tends to lose three electrons, forming a +3 ion (A<sup>l3+</sup>). Nitrogen (N) tends to gain three electrons to achieve a stable electron configuration, forming a -3 ion (N<sup>3-</sup>). Oxygen (O) tends to gain two electrons, forming a -2 ion (O<sup>2-</sup>). Fluorine (F) tends to gain one electron, forming a -1 ion (F<sup>-</sup>).</p>
+<p>So, the predicted charges for these elements as ions are: Sodium: +1 Magnesium: +2 Aluminum: +3 Nitrogen: -3 Oxygen: -2 Fluorine: -1</p></div><p></p></div><div class='question'><div class='stem'>20) Which of the following represents a violation of the Pauli exclusion principle?</div><div class='option'>A) <img title="ee.png" src="../images/14.png" alt="" width="302" height="83"></div><div class='option'>B) <img title="hr.png" src="../images/10.png" alt="" width="303" height="88"></div><div class='option'>C) <img title="gs.png" src="../images/18.png" alt="" width="312" height="83"></div><div class='option'>D) <img title="pe.png" src="../images/6.png" alt="" width="312" height="83"><span class='asterisk'>*</span></div><div class='solution'><p>Ground state: <img title="gs.png" src="../images/5.png" alt="" width="312" height="83"><br>Violation of the Pauli exclusion principle: <img title="pe.png" src="../images/6.png" alt="" width="312" height="83"><br>Violation of Hund's rule:<img title="hr.png" src="../images/7.png" alt="" width="303" height="88">&nbsp;<br>Excited state: <img title="ee.png" src="../images/8.png" alt="" width="302" height="83"><br><br></p>
+<ul>
+<li>
+<p>Ground State: The ground state refers to the lowest energy state of an atom or a molecule. In the ground state, electrons occupy the available orbitals starting from the lowest energy level (n = 1) and follow the rules of the Pauli Exclusion Principle and Hund's Rule.</p>
+</li>
+<li>
+<p>Violation of the Pauli Exclusion Principle: The Pauli Exclusion Principle states that no two electrons in an atom can have the same set of quantum numbers. If there is a violation of this principle, it means that two or more electrons in an atom or a system have the same quantum numbers, which is not allowed.</p>
+</li>
+<li>
+<p>Violation of Hund's Rule: Hund's Rule states that when electrons occupy degenerate orbitals (orbitals with the same energy), they tend to occupy separate orbitals with parallel spins before pairing up with opposite spins. A violation of Hund's Rule occurs when electrons in degenerate orbitals pair up with opposite spins before all the orbitals are singly occupied.</p>
+</li>
+<li>
+<p>Excited State: An excited state refers to any energy state of an atom or a molecule that is higher in energy than the ground state. In an excited state, one or more electrons have absorbed energy and moved to higher energy levels or different orbitals. Electrons in excited states have configurations that deviate from the ground state electron configuration. Excited states are temporary and unstable, and electrons tend to return to lower energy levels or the ground state by releasing energy in the form of photons.</p>
+</li>
+</ul></div><p></p></div><div class='question'><div class='stem'>21) Calculate the formula mass for Sn(ClO<sub>3</sub>)<sub>4</sub>.</div><div class='option'>A) 452.5 amu<span class='asterisk'>*</span></div><div class='option'>B) 808.6 amu</div><div class='option'>C) 324.5 amu</div><div class='option'>D) 202.2 amu</div><div class='solution'>To calculate the formula mass for Sn(ClO<sub>3</sub>)<sub>4</sub>, take the number of each element from the periodic table and multiply it by the &nbsp;formula mass of the element, then sum all the formula masses from each element.<br>Sn: 118.71 amu x 1 = 118.71 amu<br>Cl: 35.45 amu x 4 = 141.8 amu<br>O: 16.00 amu x 10 = 200 amu<br>Total: 452.5 amu</div><p></p></div><div class='question'><div class='stem'>22) What is the empirical formula for Hg<sub>2</sub>(NO<sub>3</sub>)<sub>2</sub>?</div><div class='option'>A) Hg<sub>2</sub>(NO<sub>3</sub>)<sub>2</sub></div><div class='option'>B) HgNO<sub>3</sub><span class='asterisk'>*</span></div><div class='option'>C) Hg(NO)<sub>3</sub></div><div class='option'>D) Hg<sub>2</sub>NO<sub>6</sub></div><div class='solution'>An empirical formula represents the simplest ratio of elements present in a compound. It shows the relative number of atoms of each element in a compound without specifying the actual number of atoms.&nbsp; To get the empirical formula you need to divide the subscripts in the equation (Hg<sub>2</sub>(NO<sub>3</sub>)<sub>2</sub>) by their greatest common divisor.&nbsp; In this case 2 and 2‚ 6‚ 12 and 6 are divisible by 2, which gives HgNO<sub>3</sub> as the empirical formula.</div><p></p></div><div class='question'><div class='stem'>23) Give the formula for Nickel (III) oxide</div><div class='option'>A) N<sub>2</sub>O<sub>3</sub></div><div class='option'>B) Ni<sub>3</sub>O<sub>2</sub></div><div class='option'>C) NiO</div><div class='option'>D) Ni<sub>2</sub>O<sub>3</sub><span class='asterisk'>*</span></div><div class='solution'><p>The Roman numeral (III) tells us that the charge on Nickel is +3.&nbsp; From the periodic table we can know that the charge on oxide is -2.&nbsp; The lowest common multiple of 3 and 2 is 6, so the number of Nickel ions will need to be 2, and the number of oxide ions will need to be 3.&nbsp; This will give us a formula of Ni<sub>2</sub>O<sub>3</sub>.</p></div><p></p></div><div class='question'><div class='stem'>24) An unknown compound contains only carbon and hydrogen. When it undergoes combustion analysis, it produces 50.424 g of CO<sub>2</sub> and 27.532 g of H<sub>2</sub>O. Given that it has a molar mass of 44.1 g/mol, what is the molecular formula?</div><div class='option'>A) C<sub>3</sub>H<sub>8</sub><span class='asterisk'>*</span></div><div class='option'>B) C<sub>3</sub>H<sub>10</sub></div><div class='option'>C) C<sub>3</sub>H<sub>6</sub></div><div class='option'>D) C<sub>2</sub>H<sub>4</sub></div><div class='solution'>Step 1: Convert the grams of CO<sub>2</sub> and H<sub>2</sub>O to moles of C and O.<br>&nbsp;50.4 g CO<sub>2</sub> x <span class="math-tex">\( \frac{1 mol CO_2}{44.01 g CO_2} \)</span>x <span class="math-tex">\( \frac{1 mol C}{1 mol CO_2} \)</span> = &nbsp;1.15 mol C<br>27.5 g H<sub>2</sub>O x <span class="math-tex">\( \frac{1 mol H_2O}{18.016 g H_2O} \)</span> x <span class="math-tex">\( \frac{2 mol H}{1 mol H_2O} \)</span> = 3.06 mol H<br><br>Step 2: Divide both mole amounts by the lower of the two numbers.<br>1.15 mol C/1.15 = 1.00 mol C<br>3.06 mol H/1.15 = 2.67 mol H<br><br>Step 3: Get the smallest whole number ratio of each mole amount to get the empirical formula.<br><br>Step 4: Calculate the molar mass of the empirical and dived the molar mass of the compound by the molar mass of the empirical formula.&nbsp; This number will tell you what you need to multiply the subscripts in the empirical formula by to get the molecular formula.<br><br>Thus the molecular formula is: C<sub>3</sub>H<sub>8<br></sub></div><p></p></div><div class='question'><div class='stem'>25) Determine the name for FePO<sub>4</sub><strong>·</strong>4H<sub>2</sub>O</span></div><div class='option'>A) Iron (III) phosphate quadhydrate</div><div class='option'>B) Iron phosphate tetrahydrate</div><div class='option'>C) Iron (III) phosphate tetrahydrate<span class='asterisk'>*</span></div><div class='option'>D) Iron (III) phosphate trihydrate</div><div class='solution'>FePO<sub>4</sub><strong>·</strong>4H<sub>2</sub>O is an ionic compound and a hydrate.&nbsp; To name the ionic compound portion give the name of the cation followed by the name of the anion.&nbsp; In this case that would be iron (III) phosphate.  The hydrate portion of the formula is named based on the number of water molecules.&nbsp; Since this hydrate has 4 water molecules in its formula the prefix 'tetra-' is used before the word 'hydrate'.&nbsp; Thus the correct name is iron (III) phosphate tetrahydrate.</span></div><p></p></div><div class='question'><div class='stem'>26) Which compound has the <strong>smallest</strong> ionic character in the gas phase?</div><div class='option'>A) Cl<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>B) HCl</div><div class='option'>C) LiF</div><div class='option'>D) CO</div><div class='solution'>The compound with the smallest ionic character will be the one with the smallest dipole.<br><br>The smallest dipole moment will be between the two elements that have the smallest difference in electronegativity. Generally speaking the elements with the smallest difference in electronegativity will be closest on the periodic table.&nbsp; However, you should remember that hydrogen has an electronegativity that is around that of metalloids.&nbsp; In other words, it is low for a nonmetal.</div><p></p></div><div class='question'><div class='stem'>27) Which of the following compounds is nonpolar?</div><div class='option'>A) H<sub>2</sub>O</div><div class='option'>B) SiF<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>C) CHF<sub>3</sub></div><div class='option'>D) NH<sub>3</sub></div><div class='solution'>SiF<sub>4</sub> is tetrahedral shaped, which is a symmetrical shape.&nbsp; That means the fluorines electronegativities will balance out and SiF<sub>4</sub> will be nonpolar.</div><p></p></div><div class='question'><div class='stem'>28) Which of the following shows the best Lewis structure for XeF<sub>2</sub>?</div><div class='option'>A) <img title="xef2-1.jpg" src="../images/67.jpeg" alt="" width="250" height="90"><span class='asterisk'>*</span></div><div class='option'>B) <img title="xef2-3.jpg" src="../images/69.jpeg" alt="" width="250" height="90"></div><div class='option'>C) <img title="xef2-4.jpg" src="../images/70.jpeg" alt="" width="250" height="90"></div><div class='option'>D) <img title="xef2-2.jpg" src="../images/68.jpeg" alt="" width="250" height="90"></div><div class='solution'>Xe has 8 valence electrons and F has 7 valence electrons.&nbsp; Xe (being below the 2nd period) can get more than an octet, but F needs an octet.&nbsp; The formal charges need to be as close to zero as possible. &nbsp;<img title="xef2-1.jpg" src="../images/67.jpeg" alt="" width="250" height="90"> is the only structure with the correct number of electrons (8 + 7 + 7 = 22) where the formal charges on all elements is zero.</div><p></p></div><div class='question'><div class='stem'>29) What is the<strong> molecular shape </strong>of H<sub>2</sub>O?</div><div class='option'>A) Trigonal pyramidal</div><div class='option'>B) Bent<span class='asterisk'>*</span></div><div class='option'>C) Trigonal planar</div><div class='option'>D) Tetrahedral</div><div class='solution'>Since the Lewis structure<strong>&nbsp;</strong>of H<sub>2</sub>O has 4 electron domains, 2 of which are lone pairs, the<strong data-mce-fragment="1"> molecular shape </strong>of H<sub data-mce-fragment="1">2</sub>O is bent.</div><p></p></div><div class='question'><div class='stem'>30) What is the<strong> VSEPR shape (electron domain geometry) </strong>of SF<sub>4</sub>?</div><div class='option'>A) Tetrahedral</div><div class='option'>B) Trigonal planar</div><div class='option'>C) Octahedral</div><div class='option'>D) Trigonal bipyramidal<span class='asterisk'>*</span></div><div class='solution'>Since the Lewis structure of SF<sub>4</sub> has 5 electron domains, the<strong> VSEPR shape (electron domain geometry) </strong>of SF<sub>4</sub> is trigonal bipyramidal.</div><p></p></div><div class='question'><div class='stem'>31) Use the molecular orbital diagram shown below to determine which of the following are the paramagnetic (<strong>there may be more than one answer</strong>).<br><br><img title="molecular orbital diagram 1.png" src="../images/42.png" alt="" width="207" height="352"></div><div class='option'>A) NC<span class='asterisk'>*</span></div><div class='option'>B) C<sub>2</sub><sup>+</sup><span class='asterisk'>*</span></div><div class='option'>C) NC<sup>-</sup></div><div class='option'>D) C<sub>2</sub></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>C<sub>2</sub><sup>+</sup>: 7 valence electrons<br>C<sub>2</sub>: 8 valence electrons<br>NC: 9 valence electrons<br>NC<sup>-</sup>: 10 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine if there are any unpaired electrons in the molecular orbital diagram.<br>C<sub>2</sub><sup>+</sup>: 7 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>C<sub>2</sub>: 8 valence electrons, the pi 2p orbitals get filled, leaving no unpaired electrons = diamagnetic<br>NC: 9 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic&nbsp;&nbsp;<br>NC<sup>-</sup>: 10 valence electrons, the last 2 electrons go into sigma 2p orbital filling it, which means there are no unpaired electrons = diamagnetic</div><p></p></div><div class='question'><div class='stem'>32) Use the molecular orbital diagram shown below to determine which of the following are the <strong>diamagnetic </strong>(<strong>there may be more than one answer</strong>).<br><img title="molecular orbital diagram.png" src="../images/41.png" alt="" width="207" height="352"></div><div class='option'>A) OF<sup>-</sup><span class='asterisk'>*</span></div><div class='option'>B) O<sub>2</sub></div><div class='option'>C) F<sub>2</sub><sup>-</sup></div><div class='option'>D) OF</div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>O<sub>2</sub>: 12 valence electrons<br>OF: 13 valence electrons<br>OF<sup>-</sup>: 14 valence electrons<br>F<sub>2</sub><sup>-</sup>: 15 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine if there are any unpaired electrons in the molecular orbital diagram.<br>O<sub>2</sub>: 12 valence electrons, the last 2 electrons go into pi 2p orbitals, which means there are 2 unpaired electrons = paramagnetic<br>OF: 13 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic<br>OF<sup>-</sup>: 14 valence electrons, the pi 2p orbitals get filled, leaving no unpaired electrons = diamagnetic<br>F<sub>2</sub><sup>-</sup>: 15 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic</div><p></p></div><div class='question'><div class='stem'>33) Identify the number of electron groups (electron domains) around a molecule with sp<sup>3</sup> hybridization.</div><div class='option'>A) 5</div><div class='option'>B) 2</div><div class='option'>C) 4<span class='asterisk'>*</span></div><div class='option'>D) 6</div><div class='solution'><table style="border-collapse: collapse; width: 13.8266%; border-color: #34495E;" border="1">
+<tbody>
+<tr>
+<td style="width: 46.9569%;"># Electron domains</td>
+<td style="width: 53.0431%;">Hybridization</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">2</td>
+<td style="width: 53.0431%;">sp</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">3</td>
+<td style="width: 53.0431%;">sp<sup>2</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">4</td>
+<td style="width: 53.0431%;">sp<sup>3</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">5</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">6</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d<sup>2</sup></td>
+</tr>
+</tbody>
+</table></div><p></p></div><div class='question'><div class='stem'>34) What is the hybridization on the central atom for HSiN?</div><div class='option'>A) sp<sup>2</sup></div><div class='option'>B) sp<sup>3</sup>d</div><div class='option'>C) sp<span class='asterisk'>*</span></div><div class='option'>D) sp<sup>3</sup></div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to &nbsp;Si.<br>You should get 2 electron domains.<br>2 electron domains corresponds to sp hybridization.<br>
+<table style="border-collapse: collapse; width: 13.8266%; border-color: #34495E;" border="1">
+<tbody>
+<tr>
+<td style="width: 46.9569%;"># Electron domains</td>
+<td style="width: 53.0431%;">Hybridization</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">2</td>
+<td style="width: 53.0431%;">sp</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">3</td>
+<td style="width: 53.0431%;">sp<sup>2</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">4</td>
+<td style="width: 53.0431%;">sp<sup>3</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">5</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">6</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d<sup>2</sup></td>
+</tr>
+</tbody>
+</table></div><p></p></div><div class='question'><div class='stem'>35) Give the electron domain geometry for PF<sub>5</sub></div><div class='option'>A) Octahedral</div><div class='option'>B) T-shape</div><div class='option'>C) Trigonal bipyramid<span class='asterisk'>*</span></div><div class='option'>D) Trigonal planar</div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to P.<br>You should get 5 electron domains.<br>5 electron domains corresponds to a trigonal bipyramid electron domain geometry.</div><p></p></div><div class='question'><div class='stem'>36) Which of the following is a physical change?</div><div class='option'>A) Ice melting<span class='asterisk'>*</span></div><div class='option'>B) Metal rusting</div><div class='option'>C) Lighting a match</div><div class='option'>D)  None of the above.</div><div class='solution'>Ice melting does not change the substance chemically, therefore it is a physical change.&nbsp; State changes such as melting, freezing, boiling, condensing, and dissolving are physical changes.&nbsp; Deforming or breaking an object is a physical change.&nbsp;<br><br>Lighting a match, and metal rusting involve creating new substances, so they are chemical changes.&nbsp; "Burning", "lighting", "cooking", "baking", and "reacting" are all key words that indicate a chemical change.</div><p></p></div><div class='question'><div class='stem'>37) How many moles of FeBr<sub>3</sub> can be formed from 2.69 moles of KBr? Assume an excess of Fe(OH)<sub>3</sub>.
+<div style="text-align: center;">3 KBr + Fe(OH)<sub>3</sub> ➞ 3 KOH + FeBr<sub>3</sub></div></div><div class='option'>A) 0.897 moles<span class='asterisk'>*</span></div><div class='option'>B) 8.07 moles</div><div class='option'>C) 265 moles</div><div class='option'>D) 2.69 moles</div><div class='solution'><p>From the balanced chemical equation: 3 KBr + Fe(OH)<sub>3</sub> ➞ 3 KOH + FeBr<sub>3</sub></p>
+<p>We can see that the stoichiometric ratio between KBr and FeBr3 is 3:1. This means that for every 3 moles of KBr, we can expect 1 mole of FeBr<sub>3</sub> to be formed.</p>
+<p>Given that we have 2.69 moles of KBr, we can calculate the moles of FeBr<sub>3</sub> using the stoichiometric ratio:</p>
+<p>Moles of FeBr3 = (2.69 moles of KBr) / (3 moles of KBr per 1 mole of FeBr<sub>3</sub>) Moles of FeBr3 = 2.69 moles / 3 Moles of FeBr3 = 0.897 moles</p></div><p></p></div><div class='question'><div class='stem'>38) How many molecules of water can be produced when 18.7 g of CH<sub>4</sub>&nbsp;reacts with excess oxygen?
+<div style="text-align: center;">CH<sub>4</sub> + 2 O<sub>2</sub> ➞ CO<sub>2</sub> + 2 H<sub>2</sub>O</div></div><div class='option'>A) 3.12x10<sup>23</sup> molecules</div><div class='option'>B) 42.0 molecules</div><div class='option'>C) 3.51x10<sup>23</sup> molecules</div><div class='option'>D) 1.40x10<sup>24</sup> molecules<span class='asterisk'>*</span></div><div class='solution'><p>First, calculate the moles of CH<sub>4</sub> using its molar mass: <br>Molar mass of CH<sub>4</sub> = 12.01 g/mol + 4(1.01 g/mol) = 16.05 g/mol</p>
+<p>Moles of CH<sub>4</sub> = Mass of CH<sub>4</sub> / Molar mass of CH<sub>4</sub> <br>Moles of CH4 = 18.7 g / 16.05 g/mol Moles of CH4 ≈ 1.17 moles</p>
+<p>From the balanced equation: CH<sub>4</sub> + 2 O<sub>2</sub> ➞ CO<sub>2</sub> + 2 H<sub>2</sub>O</p>
+<p>The stoichiometric ratio between CH<sub>4</sub> and H<sub>2</sub>O is 1:2. This means that 1 mole of CH<sub>4</sub> will produce 2 moles of H<sub>2</sub>O.</p>
+<p>Moles of H<sub>2</sub>O = 2 × Moles of CH<sub>4</sub> <br>Moles of H<sub>2</sub>O = 2 × 1.17 moles <br>Moles of H<sub>2</sub>O ≈ 2.33 moles</p>
+<p>Finally, convert the moles of water to molecules using Avogadro's number (6.022 × 10<sup>23</sup> molecules/mol):</p>
+<p>Number of water molecules = Moles of H<sub>2</sub>O × Avogadro's number Number of water molecules <br>= 2.33 moles × (6.022 × 10<sup>23</sup> molecules/mol) <br>Number of water molecules ≈ 1.40x10<sup>24</sup> molecules</p></div><p></p></div><div class='question'><div class='stem'>39) What is the theoretical yield, in moles of CO<sub>2</sub>, from the reaction of 15.8 moles of C<sub>2</sub>H<sub>6</sub> with 30.6 moles of O<sub>2</sub>?
+<div style="text-align: center;">2 C<sub>2</sub>H<sub>6</sub> + 7 O<sub>2</sub> ➞ 4 CO<sub>2</sub> + 6 H<sub>2</sub>O</div></div><div class='option'>A) 53.6 moles</div><div class='option'>B) 17.5 moles<span class='asterisk'>*</span></div><div class='option'>C) 31.6 moles</div><div class='option'>D) 9.03 moles</div><div class='solution'><p>To determine the theoretical yield of CO<sub>2</sub>, we need to compare the moles of C<sub>2</sub>H<sub>6</sub> and O<sub>2</sub> and their respective stoichiometric coefficients in the balanced equation. The reactant that produces the least amount of CO<sub>2</sub> based on the stoichiometry will limit the amount of CO<sub>2</sub> produced.</p>
+<p>From the balanced equation: 2 C<sub>2</sub>H<sub>6</sub> + 7 O<sub>2</sub> ➞ 4 CO<sub>2</sub> + 6 H<sub>2</sub>O</p>
+<p>Moles of C<sub>2</sub>H<sub>6</sub> = 15.8 moles <br>Moles of O<sub>2</sub> = 30.6 moles</p>
+<p>To determine the limiting reactant, we compare the the amounts of product we can produce from each reactant.</p>
+<p>The stoichiometric ratio between C<sub>2</sub>H<sub>6</sub> and CO<sub>2</sub> is 2:4. This means that 2 moles of C<sub>2</sub>H<sub>6</sub>&nbsp;react to produce 4 moles of CO<sub>2</sub>.</p>
+<p>The theoretical yield of CO<sub>2</sub> based on the C<sub>2</sub>H<sub>6</sub> being the limiting reagent: Moles of limiting reactant (C<sub>2</sub>H<sub>6</sub>) × Stoichiometric coefficient of CO<sub>2</sub> = 15.8 moles × (4 mol CO<sub>2</sub> / 2 mol C<sub>2</sub>H<sub>6</sub>) = 31.6 moles CO<sub>2<br></sub><br>The stoichiometric ratio between O<sub>2</sub> and CO<sub>2</sub> is 7:4. This means that 7 moles of O<sub>2</sub>&nbsp;react to produce 4 moles of CO<sub>2</sub>.</p>
+<p>The theoretical yield of CO<sub>2</sub> based on the O<sub>2</sub> being the limiting reagent: Moles of limiting reactant (O<sub>2</sub>) × Stoichiometric coefficient of CO<sub>2</sub> = 30.6 moles × (4 mol CO<sub>2</sub> / 7 mol O<sub>2</sub>) = 17.5 moles CO<sub>2</sub></p>
+<p>Since assuming O<sub>2</sub> is the limiting reagent produces a lower yield, O<sub>2</sub> is actually our limiting reactant.&nbsp;&nbsp;<br><br>Therefore, the theoretical yield of CO<sub>2</sub> from the given reaction is approximately 17.5 moles CO<sub>2</sub>.</p></div><p></p></div><div class='question'><div class='stem'>40) Balance the following equation.<br><br>________ C<sub>7</sub>H<sub>20</sub> + ________ O<sub>2</sub> → ________ H<sub>2</sub>O + ________ CO<sub>2</sub></div><div class='solution'>Step 1) First balance the hydrogen on each sides by finding the least common multiple of<sub> </sub>20 and 2.<br>Step 2) Next balance the carbon on each side.<br>Step 3) Finally balance the oxygen last (because it exists in its elemental form unbound to other atoms).&nbsp; If needed, first double all the other coefficients.</div><p></p></div><div class='question'><div class='stem'>41) How many grams of sucrose (C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>, molar mass = 342.30 g/mol) are contained 400 mL of a 0.344 M glucose solution?</div><div class='option'>A) 47.1 g<span class='asterisk'>*</span></div><div class='option'>B) 2.94 g</div><div class='option'>C) 0.000402 g</div><div class='option'>D) 8.29x10<sup>22</sup> g</div><div class='solution'><p>To calculate the mass of sucrose in a given solution, we need to know the volume of the solution and the molarity of the glucose solution.</p>
+<p>Given: <br>Volume of solution = 400 mL <br>Molarity of glucose solution = 0.344 M</p>
+<p>First, we need to convert the volume from milliliters to liters: Volume of solution = &nbsp;400 mL x (1L / 1000 mL) = 0.0344 L</p>
+<p>Next, we can calculate the number of moles of glucose using the formula: Moles of glucose = Liters of solution × Molarity</p>
+<p>Moles of glucose = 0.0344 L × 0.344 M = 0.138 moles</p>
+<p>Now, we can use the molar mass of sucrose (342.30 g/mol) to calculate the mass of sucrose: Mass of sucrose = Moles of glucose × Molar mass of sucrose</p>
+<p>Mass of sucrose = 0.138 moles × 342.30 g/mol = 47.1 grams</p></div><p></p></div><div class='question'><div class='stem'>42) What is the oxidation state of P in PO<sub>4</sub><sup>2-</sup>?</div><div class='option'>A) +2</div><div class='option'>B) +4</div><div class='option'>C) +8</div><div class='option'>D) +6<span class='asterisk'>*</span></div><div class='solution'><p>To determine the oxidation state of phosphorus in PO<sub>4</sub><sup>2-</sup>, we consider the overall charge of the ion and the known oxidation states of other elements involved.</p>
+<p>In the phosphate ion (PO<sub>4</sub><sup>2-</sup>), the oxygen atoms have a known oxidation state of -2. The overall charge of the ion is -2 as well. Since the sum of the oxidation states in an ion must equal the overall charge, we can calculate the oxidation state of phosphorous.</p>
+<p>Let's assume the oxidation state of phosphorous as x. We have four oxygen atoms, each with an oxidation state of -2. Therefore:</p>
+<p>(x) + 4(-2) = -2</p>
+<p>Simplifying the equation:</p>
+<p>x - 8 = -2</p>
+<p>x = +6</p></div><p></p></div><div class='question'><div class='stem'>43) All of the following compounds are soluble except which one?</div><div class='option'>A) FeSO<sub>4</sub></div><div class='option'>B) BaI<sub>2</sub></div><div class='option'>C) <span style="font-size: 14px;">Li</span><sub>2</sub>CO<sub>3</sub></div><div class='option'>D) BaSO<sub>4</sub><span class='asterisk'>*</span></div><div class='solution'>To answer this question, reference your solubility rules.<br>Sulfides are generally soluble, however Sr<sup>2+</sup>, Ba<sup>2+</sup>, &nbsp;Hg<sub>2</sub><sup>2+</sup>, and Pb<sup>2+</sup> &nbsp;sulfides are insoluble.</div><p></p></div><div class='question'><div class='stem'>44) How many molecules of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>, molar mass = 180.16 g/mol) are contained 800 mL of a 0.308 M glucose solution?</div><div class='option'>A) 1.48x10<sup>23</sup> molecules<span class='asterisk'>*</span></div><div class='option'>B) 1.56x10<sup>24</sup> molecules</div><div class='option'>C) 1.48 molecules</div><div class='option'>D) 44.4 molecules</div><div class='solution'><p>To calculate the number of molecules of glucose in a given solution, we need to know the volume of the solution and the molarity of the glucose solution.</p>
+<p>Given: Volume of solution = 800 mL<br>Molarity of glucose solution = 0.308 M</p>
+<p>First, we need to convert the volume from milliliters to liters: <br>Volume of solution = 800 mL x (1L / 1000 m)L =&nbsp;&nbsp;</p>
+<p>Next, we can calculate the number of moles of glucose using the formula: Moles of glucose = Liters of solution × Molarity&nbsp;&nbsp;</p>
+<p>Moles of glucose = 0.800 L × 0.308 M = 0.246 moles</p>
+<p>Now, we can use Avogadro's number (6.022 × 10<sup>23</sup>) to convert moles to molecules: Number of molecules of glucose = Moles of glucose × Avogadro's number</p>
+<p>Number of molecules of glucose = 0.246 moles × (6.022 × 10<sup>23</sup> molecules/mol) = 1.48x10<sup>23</sup> molecules</p></div><p></p></div><div class='question'><div class='stem'>45) What would be the molarity of a solution formed by dissolving 24.6 g of KBr in enough water to yield 300.0 mL of solution?</div><div class='option'>A) 0.000689 M</div><div class='option'>B) 1.45x10<sup>4</sup> M</div><div class='option'>C) 14.5 M</div><div class='option'>D) 0.689 M<span class='asterisk'>*</span></div><div class='solution'><p>To calculate the molarity of a solution, we need to determine the number of moles of solute (KBr) and then divide it by the volume of the solution in liters.</p>
+<p>First, let's calculate the number of moles of KBr: <br>Molar mass of KBr = 39.10 g/mol (atomic mass of K) + 79.90 g/mol (atomic mass of Br) = 119.00 g/mol <br>Moles of KBr = Mass of KBr / Molar mass of KBr = 24.6 g / 119.00 g/mol = 0.207 moles</p>
+<p>Next, we convert the volume of the solution from milliliters to liters: Volume of solution = 300.0 mL x (1 L / 1000 mL) = 0.300 L</p>
+<p>Finally, we calculate the molarity using the formula: Molarity (M) = Moles of solute / Volume of solution (in liters) Molarity = 0.207 moles / 0.300 L = 0.689 M</p></div><p></p></div><div class='question'><div class='stem'>46) What is the final temperature of a copper sample (mass = 340. g) that has a starting temperature of 390 K but loses 3.75 kJ of heat. The specific heat capacity of copper is 0.385 J/g°C.</div><div class='option'>A) 361 K<span class='asterisk'>*</span></div><div class='option'>B) 393 K</div><div class='option'>C) 419 K</div><div class='option'>D) 387 K</div><div class='solution'>The specific heat formula is q = mc<sub>s</sub>ΔT, (heat = mass x specific heat capacity x change in temperature), or q = mc<sub>s</sub>(T<sub>f</sub> - T<sub>i</sub>).<br>In this case we're solving for final temperature.&nbsp; Dividing both sides by mc<sub>s</sub> gives:<br>q/(mc<sub>s</sub>) = T<sub>f</sub> - T<sub>i</sub>, adding T<sub>i</sub> to both sides gives:<br>T<sub>i</sub> + q/(mc<sub>s</sub>) = T<sub>f</sub><br>Given:<br>q = -3.75 Kj, converted to J: -3.75 kJ x (1000 J / 1 kJ ) = -3750 J<br>mass = 340. g<br>c<sub>s</sub> = 0.385 J/g°C<br>T<sub>i</sub> = 390 K<br>T<sub>f</sub> = T<sub>i</sub> + q/(mc<sub>s</sub>) = 390 K + (-3750 J)/(340. x &nbsp;0.385 J/g°C) = 361 K</div><p></p></div><div class='question'><div class='stem'>47) How much energy is <strong>required</strong> to decompose 766 g of PCl<sub>3</sub>, according to the reaction below? The molar mass of PCl<sub>3</sub> is 137.32 g/mol and may be useful.
+<p style="text-align: center;">4 PCl<sub>3</sub>(g) → P<sub>4</sub>(s) + 6 Cl<sub>2</sub>(g), ΔH°<sub>rxn</sub> = +1207 kJ</p></div><div class='option'>A) 2.31x10<sup>5</sup> kJ</div><div class='option'>B) 1680 kJ<span class='asterisk'>*</span></div><div class='option'>C) 6730 kJ</div><div class='option'>D) 4.14x10<sup>4</sup> kJ</div><div class='solution'>The chemical equation tells us +1207 kJ are required to decompose 4 moles of PCl<sub>3</sub>.&nbsp; So once we have the moles, we can use that as a conversion factor to calculate the kJ required.<br>766 g PCl<sub>3</sub> x (1 mol PCl<sub>3</sub> / 137.32 g PCl<sub>3</sub>) x (1207 kJ / 4 mol PCl<sub>3</sub>) = 1680 kJ</div><p></p></div><div class='question'><div class='stem'>48) Which of the following is an endothermic process?</div><div class='option'>A) You mix an acid and a base and the solution becomes hot</div><div class='option'>B) Rain freezing and becoming snow</div><div class='option'>C) Water boiling<span class='asterisk'>*</span></div><div class='option'>D) Water vapor condensing</div><div class='solution'>Water boiling requires an input of energy, thus it is an endothermic process.</div><p></p></div><div class='question'><div class='stem'>49) A 3.86 g sample of aniline (C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub>, molar mass = 93.13 g/mol) was combusted in a coffee cup (constant pressure) calorimeter with a heat capacity of 5.20 kJ/°C. If the temperature rose from 21.5°C to 70.6°C, determine the value of ΔH°<sub>combustion</sub> for aniline (for this problem the water is considered part of the calorimeter, so consider all the heat produced as being absorbed by the calorimeter).</div><div class='option'>A) 6160 kJ/mol</div><div class='option'>B) 8860 kJ/mol</div><div class='option'>C) -6160 kJ/mol<span class='asterisk'>*</span></div><div class='option'>D) -8860 kJ/mol</div><div class='solution'>The heat (enthalpy) of combustion is equal to the heat given off per mol.<br>ΔH°<sub>combustion</sub> = q<sub>rxn</sub>/n<br>The heat given off is equal, but opposite to the heat absorbed by the calorimeter (remember the water is considered part of the calorimeter in this problem).<br>q<sub>rxn</sub> = -qcal&nbsp;<br>q<sub>cal</sub> = CΔT<br><br>Lets solve for the heat absorbed by the calorimeter.<br>q<sub>cal</sub> = CΔT = 5.20 kJ/°C x (70.6°C - 21.5°C) = 255 Kj<br><br>Now the heat given off by the reaction.<br>&nbsp;q<sub>rxn</sub> = -qcal = -255 kJ<br><br>Next lets solve for the moles of reactant (n).<br>3.86 g x (1 mol / 93.13 g) = 0.0414 mol&nbsp;<br><br>Finally the heat (enthalpy) of combustion.<br>ΔH°<sub>combustion</sub> = q<sub>rxn</sub>/n =&nbsp; -255 kJ / 0.0414 mol = -6160 kJ/mol</div><p></p></div><div class='question'><div class='stem'>50) Which of the following would have the lowest lattice energy?</div><div class='option'>A) Na<sub>2</sub>O<span class='asterisk'>*</span></div><div class='option'>B) BeO</div><div class='option'>C) CaO</div><div class='option'>D) MgO</div><div class='solution'>There are two parts that are involved in lattice energy.&nbsp; One is the charge on the ions (this is the bigger priority), and the other is the distance between the ions.&nbsp; This is only testing on knowing that the larger the charge on the ions, the larger the lattice energy.&nbsp; Since Na has the lowest charge, Na<sub>2</sub>O will have the lowest lattice energy.</div><p></p></div></body></html>
