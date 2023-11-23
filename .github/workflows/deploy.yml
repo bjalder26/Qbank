@@ -1,0 +1,19 @@
+name: FTP Deployment
+
+on:
+  push:
+    branches:
+      - main # Change this to your branch name
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Deploy via FTP
+        run: |
+          # Replace the placeholders with your FTP server credentials and paths
+          lftp -c "open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_SERVER && mirror -R -e -x .gitignore -x .github -x .git -x .gitattributes / /"
