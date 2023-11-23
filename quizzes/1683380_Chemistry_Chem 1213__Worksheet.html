@@ -1,0 +1,392 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+	  .selected {
+  border: 2px solid blue;
+  font-weight: bold;
+}
+
+.correct {
+  border: 2px solid green;
+  font-weight: bold;
+}
+
+.incorrect {
+  border: 2px solid red;
+}
+
+.missed {
+  border: 2px solid yellow;
+  font-weight: bold;
+}
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	let questionsObject = {};
+	
+	
+					questionsObject = {"1":[2],"2":[0],"3":[2],"4":[0],"5":[0],"6":[1],"7":[1],"8":[0],"9":[2],"10":[2],"11":[2],"12":[0]}; 
+				 
+	
+	
+	
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	  //###replace me###
+	  
+	 
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let markCoordinates = [];
+	  
+function getSelected() {
+// Initialize an object to store the question number and selected options
+var selectedOptions = {};
+
+// Select all questions
+var questions = document.querySelectorAll('.question');
+
+// Iterate through each question
+questions.forEach(function(question, index) {
+  // Find all the options in the current question
+  var options = question.querySelectorAll('.option');
+
+  // Initialize an array to store the selected option indices
+  var selectedIndices = [];
+
+  // Iterate through the options and check if they have the "selected" class
+  options.forEach(function(option, optionIndex) {
+    if (option.classList.contains('selected')) {
+      selectedIndices.push(optionIndex);
+    }
+  });
+
+  // Store the selected indices in the object with the question number as the key
+  selectedOptions[(index + 1).toString()] = selectedIndices;
+});
+
+// The selectedOptions object now contains the desired data
+console.log(selectedOptions);
+return selectedOptions;
+}
+	  
+function submitQuiz() {
+  let passed = {};
+  passed.selected = getSelected();
+  passed.fileName = fileName;
+  passed.sessionId = sessionId ? sessionId : "nope";
+  passed = encodeURIComponent(JSON.stringify(passed))
+    var path = '/submitQuiz/' + passed;
+    window.open(path, '_blank');  // this is probably what opens it in a new window
+} 
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  if(canvas) {
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+  }
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Worksheet</h1>
+	<h4>bjalder26</h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) How are gases <strong>different </strong>from solids and liquids?</div><div class='option'>A) Only gases take the shape of their container</div><div class='option'>B) Gases retain their volume</div><div class='option'>C) Gases are compressible<span class='asterisk'>*</span></div><div class='option'>D) Gases are always diatomic</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) Multiply the following numbers and indicate the answer with correct number of significant figures.<br>
+<div style="text-align: center;">623.82 x 14</div></div><div class='option'>A) 8700<span class='asterisk'>*</span></div><div class='option'>B) 8730</div><div class='option'>C) 8733.5</div><div class='option'>D) 8733</div><div class='solution'><p>To multiply the numbers 623.82 and 14, we perform the multiplication as follows:<br>623.82 x 14<br><br>The result is 8733.5.<br><br>Now, let's determine the correct number of significant figures in the answer.<br>623.82 has five significant figures, and 14 has two significant figures. When we multiply numbers, the result should have the same number of significant figures as the number with the least number of significant figures, which is 14 in this case. Therefore, the product, The result is 8733.5, should be rounded to two significant figures.<br><br>Rounding 8733.5 to two significant figures gives 8700.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) Which of the following describes a compound?</div><div class='option'>A) an individual unit of an element</div><div class='option'>B) two or more atoms covalently bonded together</div><div class='option'>C) two or more elements bonded to each other<span class='asterisk'>*</span></div><div class='option'>D) two or more elements that are not covalently or ionically bonded and have a uniform composition</div><div class='solution'><p>An atom: A fundamental unit of matter that consists of a nucleus (containing protons and neutrons) and electrons orbiting the nucleus.</p>
+<p>A molecule: Two or more atoms covalently bonded together. It can be a compound or a diatomic molecule composed of the same type of atoms.</p>
+<p>A compound: Two or more different elements chemically bonded together. Compounds have a fixed ratio of elements and can be represented by a chemical formula.</p>
+<p>A heterogeneous mixture: Two or more elements or compounds that are not covalently or ionically bonded and do not have a uniform composition. In a heterogeneous mixture, the components are not evenly distributed, and their properties may vary within the mixture.</p>
+<p>A homogeneous mixture: Two or more elements or compounds that are not covalently or ionically bonded and have a uniform composition. In a homogeneous mixture, the components are evenly distributed throughout, and the mixture appears uniform at the macroscopic level.</p>
+<p>To summarize:</p>
+<ul>
+<li>Atom: Fundamental unit of matter.</li>
+<li>Molecule: Two or more atoms covalently bonded together.</li>
+<li>Compound: Two or more different elements chemically bonded together.</li>
+<li>Heterogeneous mixture: Components are not evenly distributed and do not have a uniform composition.</li>
+<li>Homogeneous mixture: Components are evenly distributed and have a uniform composition.</li>
+</ul></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) Which of the following is an accurate description of random error?</div><div class='option'>A) Error that has equal probability of being too high or too low<span class='asterisk'>*</span></div><div class='option'>B) Error that is always in the same direction</div><div class='option'>C) Error that tends to be too high or tends to be too low</div><div class='option'>D) Error where it is impossible to determine the source</div><div class='solution'><p>The accurate description of random error is:</p>
+<p><strong>Error that has equal probability of being too high or too low.</strong></p>
+<p>Random error refers to unpredictable variations in measured values that can occur in any direction. It does not consistently bias measurements in one specific direction (such as always too high or too low). Random errors are typically caused by factors that introduce variability into the measurement process</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) Which of the following mixtures will <strong>NOT</strong> be homogeneous?</div><div class='option'>A) mud and water<span class='asterisk'>*</span></div><div class='option'>B) vinegar and water</div><div class='option'>C) salt and water</div><div class='option'>D) sugar and coffee</div><div class='solution'><p>The correct answer is:<br><br>mud and water<br><br>Mud and water will not form a homogeneous mixture. When mud is added to water, it does not dissolve or mix uniformly. Instead, the mud particles will settle at the bottom, creating a heterogeneous mixture where the mud is not evenly distributed throughout the water.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) How many significant figures are in the measurement, 8500 kg?</div><div class='option'>A) 3</div><div class='option'>B) 2<span class='asterisk'>*</span></div><div class='option'>C) 5</div><div class='option'>D) 4</div><div class='option'>E)  None of the above.</div><div class='solution'><p>The measurement 8500 kg has two significant figures. Significant figures are the digits in a number that contribute to its precision. When determining the number of significant figures, we consider the following:</p>
+<ol>
+<li>Non-zero digits (8 and 5) are always significant.</li>
+<li>Leading zeros are never significant.&nbsp; There are no leading zeros in this problem.</li>
+<li>Captured zeros, which are zeros between non-zero digits (1 and 0), are also significant.&nbsp; There are no captured zeros in this case.</li>
+<li>Trailing zeros (the final zeros) are significant only if they are after a decimal point. In this case, since there is not a decimal point, the two trailing zeros are not considered significant.</li>
+</ol>
+<p>To summarize, captured zeros and non-zero digits are significant, leading zeros (zeros before the non-zero digits) are not significant, and trailing zeros (zeros after the non-zero digits) are significant if there is a decimal.&nbsp; Therefore, the measurement 8500 kg has two significant figures.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Determine the volume of an object that has a mass of 472.4 g and a density of 18.6 g/cm<sup>3</sup>.</div><div class='option'>A) 0.0394 cm<sup>3</sup></div><div class='option'>B) 25.4 cm<sup>3</sup><span class='asterisk'>*</span></div><div class='option'>C) 8790 cm<sup>3</sup></div><div class='option'>D) 454 cm<sup>3</sup></div><div class='solution'><p>To determine the volume of an object, we can use the formula:</p>
+<p>Volume = mass / density</p>
+<p>Given: Mass = 472.4 g Density = 18.6 g/cm<sup>3</sup></p>
+<p>Substituting the values into the formula:</p>
+<p>Volume = 472.4 mg / 18.6 g/cm<sup>3</sup></p>
+<p>Now, let's perform the calculation:</p>
+<p>Volume = 25.4 cm<sup>3</sup></p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) An experiment to determine the density of a glucose solution garners the following results: 1.11 g/mL, 1.13 g/mL, 1.14 g/mL, 1.12 g/mL. If the known value for the density of the glucose solution is 1.11 g/mL, which statement below best describes her results?</div><div class='option'>A) The results are accurate and precise.<span class='asterisk'>*</span></div><div class='option'>B) The results are precise but not accurate..</div><div class='option'>C) The results are accurate but not precise.</div><div class='option'>D) The results are neither accurate nor precise.</div><div class='solution'><p>To analyze the results, we need to understand the concepts of accuracy and precision. Accuracy refers to how close the measured values are to the true or known value, while precision refers to how close the measured values are to each other.</p>
+<p>Given the known value for the density of the &nbsp;glucose solution is &nbsp;1.11 g/mL, let's assess the results:</p>
+<p>1.11 g/mL, 1.13 g/mL, 1.14 g/mL, 1.12 g/mL</p>
+<p>Looking at the values, we can see that the average is very close to the known value. This indicates a high level of accuracy, as the average of the measured values closely aligns with the known value.</p>
+<p>The measured values are also quite close to each other, indicating a high level of precision.</p>
+<p>Based on this analysis, the best statement that describes the results is:</p>
+<p><strong>The results are accurate and precise.</strong></p>
+<p>The measured values are precise because they are close to each other, and they are accurate because their average is close to the the known value.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) Read the water level (shown in mL) with the correct number of significant figures.&nbsp;<br><br><img title="graduated cylindar 3.jpg" src="../images/1.jpeg" alt="" width="151" height="262"></div><div class='option'>A) 2.75 mL</div><div class='option'>B) 2.6 mL</div><div class='option'>C) 2.65 mL<span class='asterisk'>*</span></div><div class='option'>D) 2.7 mL</div><div class='solution'><ol>
+<li>
+<p>Start by identifying the main intervals or markings on the graduated cylinder. For example, if the cylinder has markings every 1 mL, those are the main intervals.</p>
+</li>
+<li>
+<p>Observe the position of the meniscus (the curved surface of the liquid) within the main interval. Determine if the meniscus is closer to the lower or upper marking of the interval.&nbsp; In this case the meniscus appears to be a bit above the 2.6 mL mark.</p>
+</li>
+<li>
+<p>Next, mentally divide the main interval into smaller divisions. Estimate the position of the meniscus within these smaller divisions. For example, if you are estimating to one decimal place, divide the main interval into 10 equal parts.</p>
+</li>
+<li>
+<p>Based on your judgment, determine the fraction or proportion of the interval that the meniscus appears to be closer to. Estimate this fraction as accurately as possible.&nbsp; In this case, it might be reasonable to estimate another 0.05 (exactly in the middle of the 2.6 and 2.7 mL marks) or 0.06 mL (just above &nbsp;the middle of the 2.6 and 2.7 mL marks).</p>
+</li>
+<li>Add the estimated fraction to the main interval reading. This will give you an estimate of the measurement with an extra significant figure.&nbsp; Reasonable estimates could include 2.65 mL or 2.66 mL, however only 2.65 is an option choice.</li>
+</ol>
+The main concept being tested on is that you need to estimate one additional place value past what the main intervals show.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) Which of the following describes the characteristics of a gas</div><div class='option'>A) no definite volume but a definite shape</div><div class='option'>B) definite volume but no definite shape</div><div class='option'>C) no definite volume or shape<span class='asterisk'>*</span></div><div class='option'>D) definite volume and shape</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) Subtract the following numbers and indicate the correct number of significant figures.<br>
+<div style="text-align: center;">952.9 - 167.93</div></div><div class='option'>A) 780</div><div class='option'>B) 785</div><div class='option'>C) 785.0<span class='asterisk'>*</span></div><div class='option'>D) 784.97</div><div class='solution'><p>When you punch this into your calculator, the result is 784.97.</p>
+<p>Now, let's determine the correct number of significant figures.</p>
+<p>952.9 has four significant figures, and 167.93 has five significant figures. When we add or subtract numbers, the result should have the same number of decimal places as the number with the <strong>least number of decimal places</strong>.&nbsp; Since&nbsp; 952.9 has 1 decimal place, the sum, 784.97, should have 1 significant decimal place.</p>
+<p>After rounding to 1 decimal place, the answer is: 785.0</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) Which of the following is a physical change?</div><div class='option'>A) Shredding paper<span class='asterisk'>*</span></div><div class='option'>B) Combusting propane</div><div class='option'>C) Reacting metal with acid</div><div class='option'>D)  None of the above.</div><div class='solution'>Shredding paper does not change the substance chemically, therefore it is a physical change.&nbsp; State changes such as melting, freezing, boiling, condensing, and dissolving are physical changes.&nbsp; Deforming or breaking an object is a physical change.&nbsp;<br><br>Reacting metal with acid, and Combusting propane involve creating new substances, so they are chemical changes.&nbsp; "Burning", "lighting", "cooking", "baking", and "reacting" are all key words that indicate a chemical change.</div><p></p></div><div id="scantrondiv" class="scantrondiv">Worksheet<br><canvas id="scantron" class="scantron"></div></body></html>
