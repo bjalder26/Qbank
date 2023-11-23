@@ -18,7 +18,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install lftp -y
 
-      - name: Deploy via FTP
+      - name: Deploy via FTP (using hardcoded credentials)
         run: |
-          # Use secrets for FTP credentials
-          lftp -c "set ftp:passive-mode true; open -u ${{ secrets.FTP_USERNAME }},${{ secrets.FTP_PASSWORD }} $FTP_SERVER && mirror -R -e -x .gitignore -x .github -x .git -x .gitattributes / /home/qbankcis/domains/qbank.c1.is"
+          # Replace with your hardcoded FTP credentials for testing purposes
+          HARDCODED_FTP_USERNAME="GitHubQbank@qbank.c1.is"
+          HARDCODED_FTP_PASSWORD="Bja26@gmail"
+
+          # Use hardcoded credentials to test deployment
+          lftp -c "set ftp:passive-mode true; open -u $HARDCODED_FTP_USERNAME,$HARDCODED_FTP_PASSWORD $FTP_SERVER && mirror -R -e -x .gitignore -x .github -x .git -x .gitattributes / /home/qbankcis/domains/qbank.c1.is"
