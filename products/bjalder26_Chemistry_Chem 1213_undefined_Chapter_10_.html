@@ -18,7 +18,7 @@
 
       .tooltiptext {
         visibility: hidden;
-        width: 120px;
+        width: 210px;
         background-color: black;
         color: #fff;
         text-align: center;
@@ -46,9 +46,8 @@
       }
 	  
 	  div.stem {
-	    padding-left: 15px ;
-        text-indent: -15px ;
-		display: block;
+	    padding-left: 5px;
+		display: inline;
       }
 
       div.option {
@@ -69,42 +68,186 @@
         display: inline-block;
 		margin: 8px 0px 8px -22px;
       }
-
+	  .solution {
+	    margin-left: 40px;
+	  }
       @media print {
-        .noPrint {
+        .noPrint, .x{
           display: none;
         }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
       }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
 
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
     </style>
     <link rel="stylesheet" href="/css/custom.css">
     <script>
+	
+					var questionsObjectText = {"1":[2],"2":[1],"3":[2],"4":[2],"5":[2],"6":[2],"7":[2],"8":[2],"9":[3],"10":[1],"11":[1],"12":[1],"13":[1],"14":[1],"15":[1],"16":[3],"17":[2],"18":[3]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
     function loading() {
       const mts = document.getElementsByClassName('math-tex');
       for(let mt of mts) {
         const questionOrOption = mt.parentElement;
         questionOrOption.classList.add("svg");
       }
-    }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
     </script>
   </head>
 
-  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-Z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
     <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
     <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
     <script>
-      let toggle = true;
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
 
-      function toggleAnswers() {
-        let asterisks = document.getElementsByClassName('asterisk');
-        for (let astrisk of asterisks) {
-          if (toggle) {
-            astrisk.style.display = 'none';
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
           } else {
-            astrisk.style.display = null;
+            aClass.style.display = 'revert';
           }
         }
-        toggle = !toggle;
+        toggle[thisClass] = !toggle[thisClass];
       }
 
       let keysPressed = {};
@@ -112,22 +255,27 @@
         keysPressed[event.key] = true;
 
         if (keysPressed['Control'] && event.key == 'z') {
-          toggleAnswers();
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
         }
       });
 
       document.addEventListener('keyup', (event) => {
         delete keysPressed[event.key];
       });
-
     </script>
     <h1>Chapter 10</h1>
 	<h4></h4>
 	<h6></h6>
     <div class='rightjustify'>name: ______________________________________</div>
     <p></p>
-<div class='question'><div class='stem'>1) What volume (in mL) will a sample of F<sub>2</sub> gas occupy in a syringe at 7.88 atm, if the F<sub>2</sub> has a volume of 22.3 mL at 1.70 atm?</div><div class='option'>A) 4.81 mL<span class='asterisk'>*</span></div><div class='option'>B) 6.18 mL</div><div class='option'>C) 9.58 mL</div><div class='option'>D) 103 mL</div><p></p></div><div class='question'><div class='stem'>2) To what temperature must a balloon, initially at 29.9°C and 2.00 L, be heated in order to have a volume of 5.00 L?</div><div class='option'>A) 484°C<span class='asterisk'>*</span></div><div class='option'>B) 758°C</div><div class='option'>C) -152°C</div><div class='option'>D) 74.8°C</div><p></p></div><div class='question'><div class='stem'>3) What is the volume (in mL) of 1.82g of F<sub>2</sub> at 1705 mm Hg and 166°C?</div><div class='option'>A) 291 mL</div><div class='option'>B) 769 mL<span class='asterisk'>*</span></div><div class='option'>C) 2.92x10<sup>4</sup> mL</div><div class='option'>D) 0.769 mL</div><p></p></div><div class='question'><div class='stem'>4) A large balloon is initially filled to a volume of 22.3 L at 297 K and a pressure of 2950 mm Hg. What volume of gas will the balloon contain at 1.20 atm and 156 K?</div><div class='option'>A) 137 L</div><div class='option'>B) 37.9 L<span class='asterisk'>*</span></div><div class='option'>C) 1.04x10<sup>5</sup> L</div><div class='option'>D) 13.1 L</div><p></p></div><div class='question'><div class='stem'>5) A 0.904 g sample of an unknown halogen occupies 149 mL at 396 K and 2.78 atm. What is the identity of the halogen?</div><div class='option'>A) <sub> </sub>Br<sub>2</sub></div><div class='option'>B) Cl<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>C) F<sub>2</sub></div><div class='option'>D) I<sub>2</sub></div><p></p></div><div class='question'><div class='stem'>6) If a sample of 0.405 moles of Ne occupies 6.91 L under certain conditions, what volume (in L) will 0.784 moles occupy under the same conditions?</div><div class='option'>A) 13.4 L<span class='asterisk'>*</span></div><div class='option'>B) 1.19 L</div><div class='option'>C) 0.379 L</div><div class='option'>D) 3.57 L</div><p></p></div><div class='question'><div class='stem'>7) A 0.128 g sample of an unknown gas occupies 203 mL at 344 K and 2.22 atm. What is the molar mass of the unknown gas?</div><div class='option'>A) 0.0160 g/mol</div><div class='option'>B) 62.6 g/mol</div><div class='option'>C) 8.02 g/mol<span class='asterisk'>*</span></div><div class='option'>D) 0.00802 g/mol</div><p></p></div><div class='question'><div class='stem'>8) The rate of effusion of nitrogen to an unknown gas is 1.194. What is the other gas?</div><div class='option'>A) Ne</div><div class='option'>B) Kr</div><div class='option'>C) Ar<span class='asterisk'>*</span></div><div class='option'>D) Xe</div><p></p></div><div class='question'><div class='stem'>9) What is the density of CO<sub>2</sub> gas at STP.</div><div class='option'>A) 4.24 g/L</div><div class='option'>B) 44.01 g/L</div><div class='option'>C) 1.96 g/L<span class='asterisk'>*</span></div><div class='option'>D) 0.0446 g/L</div><p></p></div><div class='question'><div class='stem'>10) A gas mixture consists of CO<sub>2</sub>, Ar, and O<sub>2</sub>, where the mole fraction of CO<sub>2</sub> is 0.206 and the mole fraction of O<sub>2</sub> is 0.181. If the mixture is at STP in a 2.00 L container, how many moles of Ar are present?</div><div class='option'>A) 0.0346 mol</div><div class='option'>B) 0.0184 mol</div><div class='option'>C) 0.0547 mol<span class='asterisk'>*</span></div><div class='option'>D) 0.0162 mol</div><p></p></div><div class='question'><div class='stem'>11) Magnesium is dissolved in hydrochloric acid producing hydrogen gas. If 2.08 L of gas is collected at 30.0°C and has a total pressure of 761 mm Hg, what mass of hydrogen is produced? A possibly useful table of water vapor pressures is provided below.
-<p style="text-align: center;">Mg(s) + 2 HCl(aq) → MgCl<sub>2</sub>(aq) + H<sub>2</sub>(g)<br><br><img title="water vapor pressure table.jpg" src="../images/43.jpeg" alt="" width="174" height="151"></p></div><div class='option'>A) 0.162 g<span class='asterisk'>*</span></div><div class='option'>B) 0.169 g</div><div class='option'>C) 0.176 g</div><div class='option'>D) 0.0802 g</div><p></p></div><div class='question'><div class='stem'>12) What mass of water (in grams) is formed when 11.8 L NH<sub>3</sub> (at 260. K and 1.96 atm) is reacted with an excess of O<sub>2</sub>.
-<p style="text-align: center;">4 NH<sub>3</sub>(g) + 5 O<sub>2</sub>(g) → 4 NO(g) + 6 H<sub>2</sub>O(g)</p></div><div class='option'>A) 1.08 g</div><div class='option'>B) 1.63 g</div><div class='option'>C) 19.5 g</div><div class='option'>D) 29.3 g<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>13) What pressure (in atm) will 19.7 g of H<sub>2</sub> exert in a 2.7 L container at 78°C?</div><div class='option'>A) 46.7 atm</div><div class='option'>B) 210. atm</div><div class='option'>C) 23.2 atm</div><div class='option'>D) 104 atm<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>14) Determine the volume of O<sub>2</sub> (at STP) formed when 33.1 g of KClO<sub>3</sub> decomposes according to the following reaction. The molar mass for KClO<sub>3</sub> is 122.55 g/mol.
-<p style="text-align: center;">2 KClO<sub>3</sub>(s) → 2 KCl(s) + 3 O<sub>2</sub>(g)</p></div><div class='option'>A) 22.1 L</div><div class='option'>B) 9.08 L<span class='asterisk'>*</span></div><div class='option'>C) 6.05 L</div><div class='option'>D) 4.03 L</div><p></p></div><div class='question'><div class='stem'>15) A mixture of 6.50 g of Ar and 13.4 g CO<sub>2</sub> Ne have a total pressure of 1.29 atm. What is the partial pressure of Ar?</div><div class='option'>A) 0.689 atm</div><div class='option'>B) 0.449 atm<span class='asterisk'>*</span></div><div class='option'>C) 0.421 atm</div><div class='option'>D) 0.394 atm</div><p></p></div><div class='question'><div class='stem'>16) Determine the volume of H<sub>2</sub>S (at 303 K and 1.84 atm) needed to produce 40.2 g of S. Assume that there is excess SO<sub>2</sub> present (molar mass of S is 32.06 g/mol).
-<p style="text-align: center;">2 H<sub>2</sub>S(g) + SO<sub>2</sub>(g) → 3 S(s) + 2 H<sub>2</sub>O(g)</p></div><div class='option'>A) 11.3 L<span class='asterisk'>*</span></div><div class='option'>B) 16.9 L</div><div class='option'>C) 362 L</div><div class='option'>D) 543 L</div><p></p></div><div class='question'><div class='stem'>17) Under what circumstances is a gas <strong>most</strong><strong> </strong>likely to behave like an ideal gas?</div><div class='option'>A) High temperature and high pressure</div><div class='option'>B) High temperature and low pressure<span class='asterisk'>*</span></div><div class='option'>C) Low temperature and high pressure</div><div class='option'>D) Low temperature and low pressure</div><p></p></div><div class='question'><div class='stem'>18) Calculate the root mean square velocity of nitrogen gas molecules at 25°C.</div><div class='option'>A) 515 m/s<span class='asterisk'>*</span></div><div class='option'>B) 729 m/s</div><div class='option'>C) 51.2 m/s</div><div class='option'>D) 149 m/s</div><p></p></div></body></html>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) Calculate the root mean square velocity of oxygen gas molecules at 25°C.</div><div class='option'>A) 682 m/s</div><div class='option'>B) 47.9 m/s</div><div class='option'>C) 482 m/s<span class='asterisk'>*</span></div><div class='option'>D) 140. m/s</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) What mass of water (in grams) is formed when 11.4 L NH<sub>3</sub> (at 274 K and 1.32 atm) is reacted with an excess of O<sub>2</sub>.
+<p style="text-align: center;">4 NH<sub>3</sub>(g) + 5 O<sub>2</sub>(g) → 4 NO(g) + 6 H<sub>2</sub>O(g)</p></div><div class='option'>A) 12.1 g</div><div class='option'>B) 18.1 g<span class='asterisk'>*</span></div><div class='option'>C) 0.669 g</div><div class='option'>D) 1.00 g</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) Determine the volume of O<sub>2</sub> (at STP) formed when 66.6 g of KClO<sub>3</sub> decomposes according to the following reaction. The molar mass for KClO<sub>3</sub> is 122.55 g/mol.
+<p style="text-align: center;">2 KClO<sub>3</sub>(s) → 2 KCl(s) + 3 O<sub>2</sub>(g)</p></div><div class='option'>A) 44.4 L</div><div class='option'>B) 8.12 L</div><div class='option'>C) 18.3 L<span class='asterisk'>*</span></div><div class='option'>D) 12.2 L</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) To what temperature must a balloon, initially at 29.2°C and 2.00 L, be heated in order to have a volume of 7.00 L?</div><div class='option'>A) -187°C</div><div class='option'>B) 102°C</div><div class='option'>C) 785°C<span class='asterisk'>*</span></div><div class='option'>D) 1060°C</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) A gas mixture consists of Ar, O<sub>2</sub>, and CO<sub>2</sub>, where the mole fraction of Ar is 0.167 and the mole fraction of CO<sub>2</sub> is 0.220. If the mixture is at STP in a 2.00 L container, how many moles of O<sub>2</sub> are present?</div><div class='option'>A) 0.0346 mol</div><div class='option'>B) 0.0149 mol</div><div class='option'>C) 0.0547 mol<span class='asterisk'>*</span></div><div class='option'>D) 0.0196 mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) What is the volume (in mL) of 1.23g of F<sub>2</sub> at 2778 mm Hg and 55.4°C?</div><div class='option'>A) 9070 mL</div><div class='option'>B) 0.239 mL</div><div class='option'>C) 239 mL<span class='asterisk'>*</span></div><div class='option'>D) 40.3 mL</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) A 1.77 g sample of an unknown halogen occupies 195 mL at 447 K and 2.08 atm. What is the identity of the halogen?</div><div class='option'>A) F<sub>2</sub></div><div class='option'>B) Cl<sub>2</sub></div><div class='option'>C) Br<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>D) I<sub>2</sub></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) What is the density of CO<sub>2</sub> gas at STP.</div><div class='option'>A) 44.01 g/L</div><div class='option'>B) 4.06 g/L</div><div class='option'>C) 1.96 g/L<span class='asterisk'>*</span></div><div class='option'>D) 0.0446 g/L</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) If a sample of 0.417 moles of Ne occupies 3.12 L under certain conditions, what volume (in L) will 0.725 moles occupy under the same conditions?</div><div class='option'>A) 1.79 L</div><div class='option'>B) 1.14 L</div><div class='option'>C) 0.308 L</div><div class='option'>D) 5.42 L<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) Under what circumstances is a gas <strong>least</strong><strong> </strong>likely to behave like an ideal gas?</div><div class='option'>A) High temperature and low pressure</div><div class='option'>B) Low temperature and high pressure<span class='asterisk'>*</span></div><div class='option'>C) Low temperature and low pressure</div><div class='option'>D) High temperature and high pressure</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) The rate of effusion of fluorine to an unknown gas is 1.859. What is the other gas?</div><div class='option'>A) Ar</div><div class='option'>B) Xe<span class='asterisk'>*</span></div><div class='option'>C) Kr</div><div class='option'>D) Ne</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) What volume (in mL) will a sample of F<sub>2</sub> gas occupy in a syringe at 3.19 atm, if the F<sub>2</sub> has a volume of 28.5 mL at 1.19 atm?</div><div class='option'>A) 2.00 mL</div><div class='option'>B) 10.6 mL<span class='asterisk'>*</span></div><div class='option'>C) 76.4 mL</div><div class='option'>D) 4.38 mL</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) Magnesium is dissolved in hydrochloric acid producing hydrogen gas. If 2.40 L of gas is collected at 20.0°C and has a total pressure of 741 mm Hg, what mass of hydrogen is produced? A possibly useful table of water vapor pressures is provided below.
+<p style="text-align: center;">Mg(s) + 2 HCl(aq) → MgCl<sub>2</sub>(aq) + H<sub>2</sub>(g)<br><br><img title="water vapor pressure table.jpg" src="../images/43.jpeg" alt="" width="174" height="151"></p></div><div class='option'>A) 0.0950 g</div><div class='option'>B) 0.191 g<span class='asterisk'>*</span></div><div class='option'>C) 0.201 g</div><div class='option'>D) 0.196 g</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) A large balloon is initially filled to a volume of 21.0 L at 270. K and a pressure of 2070 mm Hg. What volume of gas will the balloon contain at 1.20 atm and 130. K?</div><div class='option'>A) 19.2 L</div><div class='option'>B) 22.9 L<span class='asterisk'>*</span></div><div class='option'>C) 99.0 L</div><div class='option'>D) 7.52x10<sup>4</sup> L</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) What pressure (in atm) will 16.1 g of CO<sub>2</sub> exert in a 3.1 L container at 66°C?</div><div class='option'>A) 0.639 atm</div><div class='option'>B) 3.28 atm<span class='asterisk'>*</span></div><div class='option'>C) 145 atm</div><div class='option'>D) 28.1 atm</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) A mixture of 7.01 g of Ne and 7.15 g Ar have a total pressure of 2.58 atm. What is the partial pressure of Ne?</div><div class='option'>A) 5.01 atm</div><div class='option'>B) 1.28 atm</div><div class='option'>C) 0.855 atm</div><div class='option'>D) 1.70 atm<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) A 0.568 g sample of an unknown gas occupies 236 mL at 341 K and 1.75 atm. What is the molar mass of the unknown gas?</div><div class='option'>A) 0.0385 g/mol</div><div class='option'>B) 67.8 g/mol</div><div class='option'>C) 38.5 g/mol<span class='asterisk'>*</span></div><div class='option'>D) 0.0148 g/mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) Determine the volume of H<sub>2</sub>S (at 270. K and 1.01 atm) needed to produce 48.2 g of S. Assume that there is excess SO<sub>2</sub> present (molar mass of S is 32.06 g/mol).
+<p style="text-align: center;">2 H<sub>2</sub>S(g) + SO<sub>2</sub>(g) → 3 S(s) + 2 H<sub>2</sub>O(g)</p></div><div class='option'>A) 705 L</div><div class='option'>B) 33.0 L</div><div class='option'>C) 1060 L</div><div class='option'>D) 22.0 L<span class='asterisk'>*</span></div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 10<br><canvas id="scantron" class="scantron"></div></body></html>

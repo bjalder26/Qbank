@@ -18,7 +18,7 @@
 
       .tooltiptext {
         visibility: hidden;
-        width: 120px;
+        width: 210px;
         background-color: black;
         color: #fff;
         text-align: center;
@@ -46,9 +46,8 @@
       }
 	  
 	  div.stem {
-	    padding-left: 15px ;
-        text-indent: -15px ;
-		display: block;
+	    padding-left: 5px;
+		display: inline;
       }
 
       div.option {
@@ -69,42 +68,186 @@
         display: inline-block;
 		margin: 8px 0px 8px -22px;
       }
-
+	  .solution {
+	    margin-left: 40px;
+	  }
       @media print {
-        .noPrint {
+        .noPrint, .x{
           display: none;
         }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
       }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
 
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
     </style>
     <link rel="stylesheet" href="/css/custom.css">
     <script>
+	
+					var questionsObjectText = {"1":[2],"2":[2],"3":[0],"4":[1],"5":[],"6":[3],"7":[3],"8":[2],"9":[3],"10":[2],"11":[3]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
     function loading() {
       const mts = document.getElementsByClassName('math-tex');
       for(let mt of mts) {
         const questionOrOption = mt.parentElement;
         questionOrOption.classList.add("svg");
       }
-    }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
     </script>
   </head>
 
-  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-Z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
     <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
     <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
     <script>
-      let toggle = true;
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
 
-      function toggleAnswers() {
-        let asterisks = document.getElementsByClassName('asterisk');
-        for (let astrisk of asterisks) {
-          if (toggle) {
-            astrisk.style.display = 'none';
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
           } else {
-            astrisk.style.display = null;
+            aClass.style.display = 'revert';
           }
         }
-        toggle = !toggle;
+        toggle[thisClass] = !toggle[thisClass];
       }
 
       let keysPressed = {};
@@ -112,21 +255,57 @@
         keysPressed[event.key] = true;
 
         if (keysPressed['Control'] && event.key == 'z') {
-          toggleAnswers();
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
         }
       });
 
       document.addEventListener('keyup', (event) => {
         delete keysPressed[event.key];
       });
-
     </script>
     <h1>Chapter 8</h1>
 	<h4></h4>
 	<h6></h6>
     <div class='rightjustify'>name: ______________________________________</div>
     <p></p>
-<div class='question'><div class='stem'>1) What is the oxidation state of S in SO<sub>4</sub><sup>2-</sup>?</div><div class='option'>A) +2</div><div class='option'>B) +4</div><div class='option'>C) +8</div><div class='option'>D) +6<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>2) According to the following reaction, what volume (in&nbsp; mL) of 0.110 M NaCl solution is required to react exactly with 20.6 mL of 0.123 M Cu(NO<sub>3</sub>)<sub>2</sub> solution?
-<div style="text-align: center;">2 NaCl(aq) + Cu(NO<sub>3</sub>)<sub>2</sub>(aq) → CuCl<sub>2</sub>(s) + 2 NaNO<sub>3</sub>(aq)</div></div><div class='option'>A) 46.1 mL<span class='asterisk'>*</span></div><div class='option'>B) 0.0461 mL</div><div class='option'>C) 36.8 mL</div><div class='option'>D) 11.5 mL</div><p></p></div><div class='question'><div class='stem'>3) How many grams of sucrose (C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>, molar mass = 342.30 g/mol) are contained 300 mL of a 0.469 M glucose solution?</div><div class='option'>A) 0.000411 g</div><div class='option'>B) 5.35 g</div><div class='option'>C) 48.2 g<span class='asterisk'>*</span></div><div class='option'>D) 8.47x10<sup>22</sup> g</div><p></p></div><div class='question'><div class='stem'>4) According to the following reaction, how many grams of KCl solution is required to react exactly with 37.4 mL of 0.230 M Zn(ClO<sub>3</sub>)<sub>2</sub> solution?
-<div style="text-align: center;">2 KCl(aq) + Zn(ClO<sub>3</sub>)<sub>2</sub>(aq) → ZnCl<sub>2</sub>(s) + 2 KClO<sub>3</sub>(aq)</div></div><div class='option'>A) 0.641 g</div><div class='option'>B) 0.0172 g</div><div class='option'>C) 0.231 g</div><div class='option'>D) 1.28 g<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>5) How many molecules of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>, molar mass = 180.16 g/mol) are contained 100 mL of a 0.222 M glucose solution?</div><div class='option'>A) 2.71x10<sup>23</sup> molecules</div><div class='option'>B) 4.00 molecules</div><div class='option'>C) 0.134 molecules</div><div class='option'>D) 1.34x10<sup>22</sup> molecules<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>6) What would be the molarity of a solution formed by dissolving 20.6 g of KBr in enough water to yield 400.0 mL of solution?</div><div class='option'>A) 23.1 M</div><div class='option'>B) 2.31x10<sup>4</sup> M</div><div class='option'>C) 0.433 M<span class='asterisk'>*</span></div><div class='option'>D) 0.000433 M</div><p></p></div><div class='question'><div class='stem'>7) Write the <strong>net</strong> ionic equation for following the reaction that occurs when aqueous solutions of Na<sub>2</sub>S and Cu(NO<sub>3</sub>)<sub>2</sub> are mixed.&nbsp; If no reaction occurs write "NR" or "no reaction".<br><span style="color: #ecf0f1;">.</span><br><span style="color: #ecf0f1;">.</span><br><span style="color: #ecf0f1;">.</span><br></div><p></p></div><div class='question'><div class='stem'>8) What would be the molarity of a solution formed by dissolving 0.133 mol of NaBr in enough water to yield 900.0 mL of solution?</div><div class='option'>A) 0.148 M<span class='asterisk'>*</span></div><div class='option'>B) 805 M</div><div class='option'>C) 8.05x10<sup>5</sup> M</div><div class='option'>D) 1.48 M</div><p></p></div><div class='question'><div class='stem'>9) What <strong>element </strong>is undergoing reduction (if any) in the following reaction?
-<div style="text-align: center;">Cd(s) + 2 AgNO<sub>3</sub>(aq) → Cd(NO<sub>3</sub>)<sub>2</sub>(aq) + 2 Ag(s)</div></div><div class='option'>A) Ag<span class='asterisk'>*</span></div><div class='option'>B) Cd(NO<sub>3</sub>)<sub>2</sub></div><div class='option'>C) AgNO<sub>3</sub></div><div class='option'>D) Cd</div><p></p></div><div class='question'><div class='stem'>10) What is the name of the acid H<sub>3</sub>PO<sub>4</sub>?</div><div class='option'>A) Hydrophosphorous acid</div><div class='option'>B) Phosphorous acid</div><div class='option'>C) Hydrophosphoric acid</div><div class='option'>D) Phosphoric acid<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>11) All of the following compounds are soluble except which one?</div><div class='option'>A) (NH<sub>3</sub>)<sub>2</sub>CO<sub>3</sub></div><div class='option'>B) BeI</div><div class='option'>C) PbCl<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>D) MgSO<sub>4</sub></div><p></p></div><div class='question'><div class='stem'>12) What type of reaction is the following reaction?<br>2 HCl (aq) + Ca(OH)<sub>2</sub> (aq) → 2 H<sub>2</sub>O (l) + CaCl<sub>2</sub> (aq)</div><div class='option'>A) An acid-base reaction<span class='asterisk'>*</span></div><div class='option'>B) A combustion reaction</div><div class='option'>C) A redox reaction</div><div class='option'>D) A precipitation reaction</div><p></p></div></body></html>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) How many molecules of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>, molar mass = 180.16 g/mol) are contained 400 mL of a 0.242 M glucose solution?</div><div class='option'>A) 9.95x10<sup>23</sup> molecules</div><div class='option'>B) 0.583 molecules</div><div class='option'>C) 5.83x10<sup>22</sup> molecules<span class='asterisk'>*</span></div><div class='option'>D) 17.4 molecules</div><div class='solution'><p>To calculate the number of molecules of glucose in a given solution, we need to know the volume of the solution and the molarity of the glucose solution.</p>
+<p>Given: Volume of solution = 400 mL<br>Molarity of glucose solution = $[b] M</p>
+<p>First, we need to convert the volume from milliliters to liters: <br>Volume of solution = 400 mL x (1L / 1000 m)L =&nbsp;&nbsp;</p>
+<p>Next, we can calculate the number of moles of glucose using the formula: Moles of glucose = Liters of solution × Molarity&nbsp;&nbsp;</p>
+<p>Moles of glucose = 0.400 L × $[b] M = 0.0968 moles</p>
+<p>Now, we can use Avogadro's number (6.022 × 10<sup>23</sup>) to convert moles to molecules: Number of molecules of glucose = Moles of glucose × Avogadro's number</p>
+<p>Number of molecules of glucose = 0.0968 moles × (6.022 × 10<sup>23</sup> molecules/mol) = 5.83x10<sup>22</sup> molecules</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) What is the oxidation state of C in CO<sub>3</sub><sup>2-</sup>?</div><div class='option'>A) +8</div><div class='option'>B) +2</div><div class='option'>C) +4<span class='asterisk'>*</span></div><div class='option'>D) +6</div><div class='solution'><p>To determine the oxidation state of carbon in CO<sub>4</sub><sup>2-</sup>, we consider the overall charge of the ion and the known oxidation states of other elements involved.</p>
+<p>In the carbonate ion (CO<sub>4</sub><sup>2-</sup>), the oxygen atoms have a known oxidation state of -2. The overall charge of the ion is -2 as well. Since the sum of the oxidation states in an ion must equal the overall charge, we can calculate the oxidation state of carbon.</p>
+<p>Let's assume the oxidation state of carbon as x. We have four oxygen atoms, each with an oxidation state of -2. Therefore:</p>
+<p>(x) + 3(-2) = -2</p>
+<p>Simplifying the equation:</p>
+<p>x - 6 = -2</p>
+<p>x = +4</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) According to the following reaction, how many grams of KCl solution is required to react exactly with 39.0 mL of 0.414 M Zn(ClO<sub>3</sub>)<sub>2</sub> solution?
+<div style="text-align: center;">2 KCl(aq) + Zn(ClO<sub>3</sub>)<sub>2</sub>(aq) → ZnCl<sub>2</sub>(s) + 2 KClO<sub>3</sub>(aq)</div></div><div class='option'>A) 2.41 g<span class='asterisk'>*</span></div><div class='option'>B) 0.0323 g</div><div class='option'>C) 1.20 g</div><div class='option'>D) 0.433 g</div><div class='solution'><p>To determine the amount of KCl solution required to react with a given volume of Zn(ClO<sub>3</sub>)<sub>2</sub> solution, we need to use the stoichiometry of the balanced chemical equation.<br>Given: <br>Volume of Zn(ClO<sub>3</sub>)<sub>2</sub> solution = 39.0 mL <br>Molarity of Zn(ClO<sub>3</sub>)<sub>2</sub> solution = <span class="placeholder">0.414</span> M <br>Molar mass of KCl = 74.55 g/mol</p>
+<p>From the balanced chemical equation: 2 KCl(aq) + Zn(ClO<sub>3</sub>)<sub>2</sub>(aq) → ZnCl<sub>2</sub>(s) + 2 KClO<sub>3</sub>(aq)</p>
+<p>First, calculate the number of moles of Zn(ClO<sub>3</sub>)<sub>2</sub> in the given solution: <br>Moles of Zn(ClO<sub>3</sub>)<sub>2</sub> = Volume (in liters) × Molarity<br>Volume of Zn(ClO<sub>3</sub>)<sub>2</sub> solution = 39.0 mL × (1 L / 1000 mL) = 0.0390 L of Zn(ClO<sub>3</sub>)<sub>2</sub> <br>Moles of Zn(ClO<sub>3</sub>)<sub>2</sub> = 0.0390 L × 0.414 M = 0.0161 moles</p>
+<p>Since the stoichiometric ratio is 1:2 between Zn(ClO<sub>3</sub>)<sub>2</sub> and KCl, we need twice the number of moles of KCl to react completely. <br>Moles of KCl = 0.0161 Moles Zn(ClO<sub>3</sub>)<sub>2</sub> × (2 mol KCl / 1 mol Zn(ClO<sub>3</sub>)<sub>2</sub>) = 0.0323 moles</p>
+<p>Finally, we can calculate the mass of KCl: <br>Mass of KCl = Moles of KCl × Molar mass of KCl <br>Mass of KCl = 0.0323 moles × 74.55 g/mol = 2.41 grams</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) What is the name of the acid H<sub>3</sub>PO<sub>4</sub>?</div><div class='option'>A) Hydrophosphorous acid</div><div class='option'>B) Phosphoric acid<span class='asterisk'>*</span></div><div class='option'>C) Phosphorous acid</div><div class='option'>D) Hydrophosphoric acid</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) Write the <strong>net</strong> ionic equation for following the reaction that occurs when aqueous solutions of Na<sub>2</sub>S and Cu(NO<sub>3</sub>)<sub>2</sub> are mixed.&nbsp; If no reaction occurs write "NR" or "no reaction".<br><span style="color: #ecf0f1;">.</span><br><span style="color: #ecf0f1;">.</span><br><span style="color: #ecf0f1;">.</span><br></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) What <strong>element </strong>is undergoing oxidation (if any) in the following reaction?
+<div style="text-align: center;">2 Al(s) + 3 Cu(NO<sub>3</sub>)<sub>2</sub>(aq) → 2 Al(NO<sub>3</sub>)<sub>3</sub>(aq) + 3 Cu(s)</div></div><div class='option'>A) Cu</div><div class='option'>B) Al(NO<sub>3</sub>)<sub>3</sub></div><div class='option'>C) Cu(NO<sub>3</sub>)<sub>2</sub></div><div class='option'>D) Al<span class='asterisk'>*</span></div><div class='solution'><p>In the given reaction:</p>
+<p>Cd(s) + 2 AgNO<sub>3</sub>(aq) → Cd(NO<sub>3</sub>)<sub>2</sub>(aq) + 2 Ag(s)</p>
+<p>The element undergoing <span class="placeholder">oxidation </span>is cadmium (Cd). <span class="placeholder">Oxidation</span> is defined as the loss of electrons, and in this reaction, solid elemental cadmium is being oxidized to cadmium ions (Cd<sup>2+</sup>), which will then be aqueous.</p>
+<ul>
+<li>Silver (Ag) is being reduced from Ag<sup>+</sup> to Ag.</li>
+<li>Cadmium (Cd) is being oxidized from Cd to Cd<sup>2+</sup>.</li>
+</ul></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) What type of reaction is the following reaction?<br>2 HCl (aq) + Ca(OH)<sub>2</sub> (aq) → 2 H<sub>2</sub>O (l) + CaCl<sub>2</sub> (aq)</div><div class='option'>A) A redox reaction</div><div class='option'>B) A precipitation reaction</div><div class='option'>C) A combustion reaction</div><div class='option'>D) An acid-base reaction<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) All of the following compounds are soluble except which one?</div><div class='option'>A) <span style="font-size: 14px;">Li</span><sub>2</sub>CO<sub>3</sub></div><div class='option'>B) FeSO<sub>4</sub></div><div class='option'>C) BaSO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>D) BaI<sub>2</sub></div><div class='solution'>To answer this question, reference your solubility rules.<br>Sulfides are generally soluble, however Sr<sup>2+</sup>, Ba<sup>2+</sup>, &nbsp;Hg<sub>2</sub><sup>2+</sup>, and Pb<sup>2+</sup> &nbsp;sulfides are insoluble.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) How many grams of sucrose (C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>, molar mass = 342.30 g/mol) are contained 400 mL of a 0.415 M glucose solution?</div><div class='option'>A) 3.55 g</div><div class='option'>B) 0.000485 g</div><div class='option'>C) 1.00x10<sup>23</sup> g</div><div class='option'>D) 56.8 g<span class='asterisk'>*</span></div><div class='solution'><p>To calculate the mass of sucrose in a given solution, we need to know the volume of the solution and the molarity of the glucose solution.</p>
+<p>Given: <br>Volume of solution = 400 mL <br>Molarity of glucose solution = 0.415 M</p>
+<p>First, we need to convert the volume from milliliters to liters: Volume of solution = &nbsp;400 mL x (1L / 1000 mL) = 0.0415 L</p>
+<p>Next, we can calculate the number of moles of glucose using the formula: Moles of glucose = Liters of solution × Molarity</p>
+<p>Moles of glucose = 0.0415 L × 0.415 M = 0.166 moles</p>
+<p>Now, we can use the molar mass of sucrose (342.30 g/mol) to calculate the mass of sucrose: Mass of sucrose = Moles of glucose × Molar mass of sucrose</p>
+<p>Mass of sucrose = 0.166 moles × 342.30 g/mol = 56.8 grams</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) What would be the molarity of a solution formed by dissolving 23.9 g of KBr in enough water to yield 100.0 mL of solution?</div><div class='option'>A) 0.00201 M</div><div class='option'>B) 4.98 M</div><div class='option'>C) 2.01 M<span class='asterisk'>*</span></div><div class='option'>D) 4980 M</div><div class='solution'><p>To calculate the molarity of a solution, we need to determine the number of moles of solute (KBr) and then divide it by the volume of the solution in liters.</p>
+<p>First, let's calculate the number of moles of KBr: <br>Molar mass of KBr = 39.10 g/mol (atomic mass of K) + 79.90 g/mol (atomic mass of Br) = 119.00 g/mol <br>Moles of KBr = Mass of KBr / Molar mass of KBr = 23.9 g / 119.00 g/mol = 0.201 moles</p>
+<p>Next, we convert the volume of the solution from milliliters to liters: Volume of solution = 100.0 mL x (1 L / 1000 mL) = 0.100 L</p>
+<p>Finally, we calculate the molarity using the formula: Molarity (M) = Moles of solute / Volume of solution (in liters) Molarity = 0.201 moles / 0.100 L = 2.01 M</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) According to the following reaction, what volume (in&nbsp; mL) of 0.656 M NaCl solution is required to react exactly with 52.0 mL of 0.485 M Cu(NO<sub>3</sub>)<sub>2</sub> solution?
+<div style="text-align: center;">2 NaCl(aq) + Cu(NO<sub>3</sub>)<sub>2</sub>(aq) → CuCl<sub>2</sub>(s) + 2 NaNO<sub>3</sub>(aq)</div></div><div class='option'>A) 19.2 mL</div><div class='option'>B) 141 mL</div><div class='option'>C) 0.0769 mL</div><div class='option'>D) 76.9 mL<span class='asterisk'>*</span></div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 8<br><canvas id="scantron" class="scantron"></div></body></html>

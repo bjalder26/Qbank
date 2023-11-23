@@ -1,0 +1,342 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+	  .selected {
+  border: 2px solid blue;
+  font-weight: bold;
+}
+
+.correct {
+  border: 2px solid green;
+  font-weight: bold;
+}
+
+.incorrect {
+  border: 2px solid red;
+}
+
+.missed {
+  border: 2px solid yellow;
+  font-weight: bold;
+}
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	let questionsObject = {};
+	
+	
+					questionsObject = {"1":[1],"2":[0],"3":[2],"4":[3],"5":[2],"6":[1],"7":[2],"8":[3],"9":[3],"10":[0],"11":[2],"12":[3],"13":[2],"14":[1],"15":[0],"16":[1],"17":[0],"18":[0]}; 
+				 
+	
+	
+	
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	  //###replace me###
+	  
+	 
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let markCoordinates = [];
+	  
+function getSelected() {
+// Initialize an object to store the question number and selected options
+var selectedOptions = {};
+
+// Select all questions
+var questions = document.querySelectorAll('.question');
+
+// Iterate through each question
+questions.forEach(function(question, index) {
+  // Find all the options in the current question
+  var options = question.querySelectorAll('.option');
+
+  // Initialize an array to store the selected option indices
+  var selectedIndices = [];
+
+  // Iterate through the options and check if they have the "selected" class
+  options.forEach(function(option, optionIndex) {
+    if (option.classList.contains('selected')) {
+      selectedIndices.push(optionIndex);
+    }
+  });
+
+  // Store the selected indices in the object with the question number as the key
+  selectedOptions[(index + 1).toString()] = selectedIndices;
+});
+
+// The selectedOptions object now contains the desired data
+console.log(selectedOptions);
+return selectedOptions;
+}
+	  
+function submitQuiz() {
+  let passed = {};
+  passed.selected = getSelected();
+  passed.fileName = fileName;
+  passed.sessionId = sessionId ? sessionId : "nope";
+  passed = encodeURIComponent(JSON.stringify(passed))
+    var path = '/submitQuiz/' + passed;
+    window.open(path, '_blank');  // this is probably what opens it in a new window
+} 
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  if(canvas) {
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+  }
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter 11 Take-home Quiz</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) Under what circumstances is a gas <strong>most</strong><strong> </strong>likely to behave like an ideal gas?</div><div class='option'>A) High temperature and high pressure</div><div class='option'>B) High temperature and low pressure<span class='asterisk'>*</span></div><div class='option'>C) Low temperature and low pressure</div><div class='option'>D) Low temperature and high pressure</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) If a sample of 0.203 moles of Kr occupies 3.70 L under certain conditions, what volume (in L) will 0.789 moles occupy under the same conditions?</div><div class='option'>A) 14.4 L<span class='asterisk'>*</span></div><div class='option'>B) 0.952 L</div><div class='option'>C) 0.992 L</div><div class='option'>D) 0.586 L</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) To what temperature must a balloon, initially at 31.0°C and 2.00 L, be heated in order to have a volume of 8.00 L?</div><div class='option'>A) 1220°C</div><div class='option'>B) -197°C</div><div class='option'>C) 943°C<span class='asterisk'>*</span></div><div class='option'>D) 124°C</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) A mixture of 12.4 g of Ne and 10.2 g Ar have a total pressure of 2.73 atm. What is the partial pressure of Ne?</div><div class='option'>A) 1.04 atm</div><div class='option'>B) 6.57 atm</div><div class='option'>C) 1.50 atm</div><div class='option'>D) 1.93 atm<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) Calculate the root mean square velocity of oxygen gas molecules at 25°C.</div><div class='option'>A) 47.9 m/s</div><div class='option'>B) 682 m/s</div><div class='option'>C) 482 m/s<span class='asterisk'>*</span></div><div class='option'>D) 140. m/s</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) What mass of water (in grams) is formed when 10.6 L NH<sub>3</sub> (at 296 K and 1.92 atm) is reacted with an excess of O<sub>2</sub>.
+<p style="text-align: center;">4 NH<sub>3</sub>(g) + 5 O<sub>2</sub>(g) → 4 NO(g) + 6 H<sub>2</sub>O(g)</p></div><div class='option'>A) 15.1 g</div><div class='option'>B) 22.6 g<span class='asterisk'>*</span></div><div class='option'>C) 1.26 g</div><div class='option'>D) 0.838 g</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) What pressure (in atm) will 14.2 g of CO<sub>2</sub> exert in a 3.1 L container at 63°C?</div><div class='option'>A) 126 atm</div><div class='option'>B) 0.538 atm</div><div class='option'>C) 2.87 atm<span class='asterisk'>*</span></div><div class='option'>D) 23.7 atm</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) A 0.100 g sample of an unknown gas occupies 278 mL at 273 K and 1.17 atm. What is the molar mass of the unknown gas?</div><div class='option'>A) 68.9 g/mol</div><div class='option'>B) 0.0145 g/mol</div><div class='option'>C) 0.00689 g/mol</div><div class='option'>D) 6.89 g/mol<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) Magnesium is dissolved in hydrochloric acid producing hydrogen gas. If 2.15 L of gas is collected at 20.0°C and has a total pressure of 744 mm Hg, what mass of hydrogen is produced? A possibly useful table of water vapor pressures is provided below.
+<p style="text-align: center;">Mg(s) + 2 HCl(aq) → MgCl<sub>2</sub>(aq) + H<sub>2</sub>(g)<br><br><img title="water vapor pressure table.jpg" src="../images/43.jpeg" alt="" width="174" height="151"></p></div><div class='option'>A) 0.181 g</div><div class='option'>B) 0.176 g</div><div class='option'>C) 0.0854 g</div><div class='option'>D) 0.172 g<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) The rate of effusion of fluorine to an unknown gas is 1.859. What is the other gas?</div><div class='option'>A) Xe<span class='asterisk'>*</span></div><div class='option'>B) Ar</div><div class='option'>C) Kr</div><div class='option'>D) Ne</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) What is the volume (in mL) of 2.80g of N<sub>2</sub> at 2635 mm Hg and 9.48°C?</div><div class='option'>A) 22.4 mL</div><div class='option'>B) 1.87x10<sup>4</sup> mL</div><div class='option'>C) 669 mL<span class='asterisk'>*</span></div><div class='option'>D) 0.669 mL</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) A 1.78 g sample of an unknown halogen occupies 152 mL at 405 K and 2.43 atm. What is the identity of the halogen?</div><div class='option'>A) I<sub>2</sub></div><div class='option'>B) F<sub>2</sub></div><div class='option'>C) Cl<sub>2</sub></div><div class='option'>D) Br<sub>2</sub><span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) Determine the volume of H<sub>2</sub>S (at 343 K and 1.15 atm) needed to produce 59.0 g of S. Assume that there is excess SO<sub>2</sub> present (molar mass of S is 32.06 g/mol).
+<p style="text-align: center;">2 H<sub>2</sub>S(g) + SO<sub>2</sub>(g) → 3 S(s) + 2 H<sub>2</sub>O(g)</p></div><div class='option'>A) 1440 L</div><div class='option'>B) 963 L</div><div class='option'>C) 30.0 L<span class='asterisk'>*</span></div><div class='option'>D) 45.0 L</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) What volume (in mL) will a sample of N<sub>2</sub> gas occupy in a syringe at 5.39 atm, if the N<sub>2</sub> has a volume of 25.4 mL at 1.52 atm?</div><div class='option'>A) 3.87 mL</div><div class='option'>B) 7.16 mL<span class='asterisk'>*</span></div><div class='option'>C) 6.91 mL</div><div class='option'>D) 90.1 mL</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) A gas mixture consists of CO<sub>2</sub>, Ar, and O<sub>2</sub>, where the mole fraction of CO<sub>2</sub> is 0.185 and the mole fraction of O<sub>2</sub> is 0.176. If the mixture is at STP in a 2.00 L container, how many moles of Ar are present?</div><div class='option'>A) 0.0571 mol<span class='asterisk'>*</span></div><div class='option'>B) 0.0157 mol</div><div class='option'>C) 0.0165 mol</div><div class='option'>D) 0.0322 mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) Determine the volume of O<sub>2</sub> (at STP) formed when 67.7 g of KClO<sub>3</sub> decomposes according to the following reaction. The molar mass for KClO<sub>3</sub> is 122.55 g/mol.
+<p style="text-align: center;">2 KClO<sub>3</sub>(s) → 2 KCl(s) + 3 O<sub>2</sub>(g)</p></div><div class='option'>A) 45.1 L</div><div class='option'>B) 18.6 L<span class='asterisk'>*</span></div><div class='option'>C) 8.25 L</div><div class='option'>D) 12.4 L</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) A large balloon is initially filled to a volume of 26.2 L at 300. K and a pressure of 2240 mm Hg. What volume of gas will the balloon contain at 1.26 atm and 131 K?</div><div class='option'>A) 26.8 L<span class='asterisk'>*</span></div><div class='option'>B) 1.07x10<sup>5</sup> L</div><div class='option'>C) 25.6 L</div><div class='option'>D) 140. L</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) What is the density of O<sub>2</sub> gas at STP.</div><div class='option'>A) 1.43 g/L<span class='asterisk'>*</span></div><div class='option'>B) 4.42 g/L</div><div class='option'>C) 0.0446 g/L</div><div class='option'>D) 32 g/L</div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 11 Take-home Quiz<br><canvas id="scantron" class="scantron"></div></body></html>

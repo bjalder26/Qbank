@@ -1,0 +1,338 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[2],"2":[0],"3":[2],"4":[2],"5":[1],"6":[2],"7":[0],"8":[0],"9":[3],"10":[2],"11":[3],"12":[0],"13":[1],"14":[3],"15":[2],"16":[3],"17":[0],"18":[0],"19":[2],"20":[2],"21":[1],"22":[2],"23":[0],"24":[3],"25":[0],"26":[3],"27":[3],"28":[1],"29":[0],"30":[1],"31":[2],"32":[0],"33":[2],"34":[2],"35":[2],"36":[1],"37":[0],"38":[0],"39":[1],"40":[1]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Exam 1 Study Guide</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Sep 6, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) How much energy is required to vaporize 45.6 g of acetone (C<sub>3</sub>H<sub>6</sub>O) (58.08&nbsp; g/mol) at its boiling point, if its ΔH<sub>vap</sub> is 29.10 kJ/mol?</div><div class='option'>A) 0.0270&nbsp; kJ</div><div class='option'>B) 0.785 kJ</div><div class='option'>C) 22.8 kJ<span class='asterisk'>*</span></div><div class='option'>D) 91.0 kJ</div><div class='solution'>45.6 g x 1mol/58.08g x 29.10 kJ/mol = 22.8 kJ</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) What is the strongest type of intermolecular force present in CH<sub>2</sub>O?</div><div class='option'>A) Dipole-dipole forces<span class='asterisk'>*</span></div><div class='option'>B) Ion-dipole forces</div><div class='option'>C) Hydrogen bonding</div><div class='option'>D) London dispersion forces</div><div class='option'>E)  None of the above.</div><div class='solution'>The strongest type of intermolecular force present in CH<sub>2</sub>O is dipole-dipole forces, because CH<sub>2</sub>O is polar but cannot hydrogen bond.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) Choose the substance with the <strong>highest </strong>vapor pressure at a given temperature.</div><div class='option'>A) KF</div><div class='option'>B) OF<sub>2</sub></div><div class='option'>C) CH<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>D) NH<sub>3</sub></div><div class='solution'>The chemical with the lowest intermolecular forces will have the highest vapor pressure.&nbsp; Since CH<sub>4</sub> only has London dispersion forces, it will have the lowest intermolecular forces, and the highest vapor pressure.<br>KF is an ionic compound with ionic bonds.<br>OF<sub>2</sub> is a polar molecule (dipole-dipole forces).<br>NH<sub>3</sub> can hydrogen bond.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) In which of the following figures is the cohesive force greater than the cohesive force?<br><img title="capaction.jpg" src="../images/80.jpeg" alt="" width="203" height="135"></div><div class='option'>A) The image labeled A</div><div class='option'>B) The image labeled B</div><div class='option'>C) The image labeled C<span class='asterisk'>*</span></div><div class='option'>D)  None of the above.</div><div class='solution'>When cohesive force is greater than the adhesive force the fluid will have a weaker attraction to the side of the tube as it does other molecules in the fluid, so it will cause the meniscus to curve downwards on the side, thus image C is the answer.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) Which of the following 3 alkane isomers would you expect to have the <strong>highest</strong> boiling point?<br><img title="alkanes.jpg" src="../images/75.jpeg" alt="" width="397" height="178"></div><div class='option'>A) Since they are isomers, they will have the same boiling point.</div><div class='option'>B) Pentane<span class='asterisk'>*</span></div><div class='option'>C) Isopentane</div><div class='option'>D) Neopentane</div><div class='solution'>Pentane is the least branched alkane, so it will have the most surface area interacting for London dispersion forces.&nbsp; Thus it will have the highest intermolecular forces and the highest boiling point.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) <span style="font-size: 10.5pt;">How much energy is required to heat 37.5 g H<sub>2</sub>O from a liquid at 61.8°C to a gas at 120°C?<br>ΔH<sub>vap</sub> = 40.7 kJ/mol<br>C<sub>liquid</sub>&nbsp;= 4.184 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;<br>C<sub>gas</sub> = 2.01 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;&nbsp;<br>C<sub>solid</sub> = 2.09 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;<br>T<sub>melting</sub> = 0°C&nbsp;<br>T<sub>boiling</sub> = 100°C<br></span></div><div class='option'>A) 1530 kJ</div><div class='option'>B) 103 kJ</div><div class='option'>C) 92.2 kJ<span class='asterisk'>*</span></div><div class='option'>D) 7590 kJ</div><div class='solution'><p>To calculate the energy required to heat water from a liquid at 61.8°C to a gas at 120°C, we need to consider the following steps:</p>
+<ol>
+<li>Heating the liquid water from its initial temperature to its boiling point.</li>
+<li>Vaporizing the liquid water at its boiling point to gas.</li>
+<li>Heating the water vapor from it's boiling point to 120°C.</li>
+</ol>
+<p>Step 1: Heating the liquid water First, we calculate the energy required to heat the liquid water from 61.8°C to its boiling point at 100°C.</p>
+<p>q<sub>1</sub> = m x C<sub>liquid</sub> x ΔT<sub>1</sub></p>
+<p>where: q<sub>1</sub> = energy required (in joules) m = mass of water (in grams) <br>C<sub>liquid</sub> = specific heat capacity of liquid water (in J/g-°C) <br>ΔT<sub>1</sub> = change in temperature (final temperature - initial temperature)<br>C<sub>gas</sub> = specific heat capacity of liquid water (in J/g-°C)</p>
+<p>Given: m = 37.5 g <br>C<sub>liquid</sub> = 4.184 J/g-°C <br>ΔT<sub>1</sub> = 100°C - 61.8°C = 38.2°C</p>
+<p>q<sub>1</sub> = (37.5 g) x (4.184 J/g-°C) x (38.2°C) <br>q<sub>1</sub> ≈ 5990 J x <span class="math-tex">\( \frac{1 kJ}{1000 J} \)</span> = 5.99 kJ</p>
+<p>Step 2: Vaporizing the liquid water Next, we calculate the energy required to vaporize the liquid water at its boiling point.</p>
+<p>q<sub>2</sub> = n x ΔH<sub>vap</sub></p>
+<p>where: q<sub>2</sub> = energy required (in joules) <br>n = number of moles of water <br>ΔH<sub>vap</sub> = enthalpy of vaporization (in J/mol)</p>
+<p>To calculate the number of moles of water, we use the molar mass of water (H<sub>2</sub>O), which is approximately 18.02 g/mol.</p>
+<p>mol = 37.5 x <span class="math-tex">\( \frac{1 mol H_2O}{18.02 g H_2O} \)</span> ≈ 2.08 mol</p>
+<p>Given: ΔH<sub>vap</sub> = 40.7 kJ/mol&nbsp;</p>
+<p>q<sub>2</sub> = (2.08 mol) * (40.7 kJ/mol) ≈ 84.7 kJ<br><br>Step 3: Heating the water vapor, we calculate the energy required to heat the water vapor from 100°C to 120°C.</p>
+<p>q<sub>3</sub> = m x C<sub>liquid</sub> x ΔT<sub>2<br></sub></p>
+<p>where: q<sub>3</sub> = energy required (in J) m = mass of water (in grams) <br>C<sub>gas</sub> = specific heat capacity of liquid water (in J/g-°C) <br>ΔT<sub>1</sub> = change in temperature (final temperature - initial temperature)</p>
+<p>Given: m = 37.5 g <br>C<sub>liquid</sub> = 2.01 J/g-°C <br>ΔT<sub>1</sub> = 120°C - 100°C = 20.0°C</p>
+<p>q<sub>3</sub> = (37.5 g) x (2.01 J/g-°C) x (20.0°C) <br>q<sub>3</sub> ≈ 1510 J x <span class="math-tex">\( \frac{1 kJ}{1000 J} \)</span> = 1.51 kJ</p>
+<p>Total energy required: The total energy required is the sum of q<sub>1</sub>, q<sub>2</sub> and q<sub>3</sub>.</p>
+<p>Total energy = q<sub>1</sub> + q<sub>2</sub> + q<sub>3</sub> ≈ 5.99 kJ + 84.7 kJ + 1.51 kJ</p>
+<p>Total energy ≈ 92.2 kJ</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Determine the normal boiling point (at 760 mm Hg) of a substance whose vapor pressure is 46.1 mm Hg at 35.8°C and has a ΔH<sub>vap</sub> of 24.0 kJ/mol.</div><div class='option'>A) 441 K<span class='asterisk'>*</span></div><div class='option'>B) 37.1 K</div><div class='option'>C) 310. K</div><div class='option'>D) 238 K</div><div class='solution'><p>To determine the normal boiling point of a substance, we need to find the temperature at which its vapor pressure is equal to the atmospheric pressure at 760 mm Hg.</p>
+<p>Given: <br>T<sub>1</sub>: 35.8°C<br>T<sub>2</sub>: ?<br>P<sub>1</sub>: 46.1 mm Hg<br>P<sub>2</sub> = 760 mm Hg (normal pressure)&nbsp;<br>ΔH<sub>vap</sub> = 24.0 kJ/mol<br>R = gas constant (8.3145 J/mol·K)</p>
+<p>To calculate the normal boiling point, we can use the Clausius-Clapeyron equation:</p>
+<p>ln(P<sub>2</sub>/P<sub>1</sub>) = -(ΔH<sub>vap</sub>/R) * (1/T<sub>2</sub> - 1/T<sub>1</sub>)</p>
+<p>Converting the given values to K and J:<br>T<sub>1</sub>: 35.8°C + 273.15 = 309 K<br>ΔH<sub>vap</sub> = 24.0 kJ/mol = 24.0 × 1000J/1 kJ = 2.40x10<sup>4</sup> J/mol</p>
+<p>ln(P2/P1) = -(ΔH<sub>vap</sub>/R) * (1/T<sub>2</sub> - 1/T<sub>1</sub>) <br>ln(760 mm Hg/ 46.1 mm Hg) = -(2.40x10<sup>4</sup> J/mol / 8.3145 J/mol·K) * (1/T<sub>2</sub> - 1/309 K)</p>
+<p>Simplifying: ln(16.5) = -2890 K * (1/T<sub>2</sub> - 1/309 K)</p>
+<p>Now, let's solve for T2:<br>&nbsp;-0.000971 K = (1/T<sub>2</sub> - 1/309 K)<br>&nbsp;-0.000971 1/K = 1/T<sub>2</sub> - 1/309 K<br>&nbsp;-0.000971 1/K + 1/309 1/K = 1/T<sub>2</sub>&nbsp;<br>0.00227 1/K = 1/T<sub>2</sub></p>
+<p>Taking the inverse of both sides:<br>441 K = T<sub>2</sub></p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) Identify the place which has the <strong>lowest </strong>boiling point of water.</div><div class='option'>A) Mt. Everest, 29,035 feet<span class='asterisk'>*</span></div><div class='option'>B) Death Valley, 282 feet below sea level</div><div class='option'>C) New Orleans, sea level</div><div class='option'>D) Denver, Colorado, 5280 feet</div><div class='solution'>The <strong>lowest </strong>boiling point will be where the atmospheric pressure is the lowest.&nbsp; Atmospheric pressure will be the lowest at the highest elevation.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) Which of the following <strong>increases </strong>the rate of vaporization?</div><div class='option'>A) Decreasing the surface area</div><div class='option'>B) Decreasing temperature</div><div class='option'>C) Strong intermolecular bonds</div><div class='option'>D) Weak intermolecular bonds<span class='asterisk'>*</span></div><div class='solution'>Increasing the surface area, weak intermolecular bonds, or increasing the temperature will lead to an increased rate of vaporization.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) What is the main reason why the boiling point of HF is much higher than that of HCl?</div><div class='option'>A) HCl&nbsp;can hydrogen bond whereas HF&nbsp;cannot</div><div class='option'>B) HF has stronger London dispersion forces than HCl</div><div class='option'>C) HF can hydrogen bond whereas HCl cannot<span class='asterisk'>*</span></div><div class='option'>D) HF has dipole-dipole forces whereas HCl does not</div><div class='solution'>HF has a hydrogen attached to a N, O, or F, so it can hydrogen bond whereas HCl does not, so it cannot hydrogen bone.&nbsp; Hydrogen bonding gives HF a higher boiling point.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) Which of the following statements is TRUE?</div><div class='option'>A) Intermolecular forces are generally stronger than bonding forces</div><div class='option'>B) Energy is given off when the attraction between two molecules is broken</div><div class='option'>C) Increasing the pressure on a solid usually causes it to become a liquid</div><div class='option'>D) The potential energy of two distant oppositely charged molecules decrease as they get closer to one another<span class='asterisk'>*</span></div><div class='solution'>It is true that the potential energy of molecules decrease as they get closer to one another.<br>Ionic and covalent bonds are stronger than intermolecular forces.<br>Energy is required to break bonds, energy is not released when bonds are broken.<br>Generally speaking, increasing pressure will cause a chemical to go from gas to liquid to solid (the exception being chemicals where the solid has a lower density than the liquid).&nbsp; Increasing temperature will cause a chemical to go from gas to liquid to solid.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) Which of the following has the <strong>lowest </strong>viscosity?</div><div class='option'>A) <img title="c1.jpg" src="../images/47.jpeg" alt="" width="150" height="124"><span class='asterisk'>*</span></div><div class='option'>B) <img title="c2.jpg" src="../images/48.jpeg" alt="" width="150" height="124"></div><div class='option'>C) <img title="c3.jpg" src="../images/49.jpeg" alt="" width="150" height="124"></div><div class='option'>D) <img title="c4.jpg" src="../images/50.jpeg" alt="" width="150" height="124"></div><div class='solution'><img title="c1.jpg" src="../images/47.jpeg" alt="" width="105" height="87"> will have the lowest viscosity, because it has the fewest iodines, which means it has the lowest molar mass, and the lowest London dispersion forces.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) Choose the substance with the <strong>lowest </strong>ΔH<sub>vap</sub>.</div><div class='option'>A) OF<sub>2</sub></div><div class='option'>B) CH<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>C) KF</div><div class='option'>D) NH<sub>3</sub></div><div class='solution'>KF is an ionic compound.&nbsp; Ionic bonds are stronger than intermolecular bonds, so it will have the highest ΔH<sub>vap</sub>.<br>NH<sub>3</sub> can hydrogen bond, thus would have the second highest ΔH<sub>vap</sub>.<br>OF<sub>2</sub> is polar (dipole-dipole forces), thus would have the third highest ΔH<sub>vap</sub>.<br>CH<sub>4</sub> is non-polar (only London dispersion forces), thus would have the lowest ΔH<sub>vap</sub>.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) If three capillary tubes are dipped into water, which of the following images would most accurately represent the relative heights of the water level in the three capillary tubes?</div><div class='option'>A) <img title="cap2.jpg" src="../images/77.jpeg" alt="" width="82" height="120"></div><div class='option'>B) <img title="cap4.jpg" src="../images/79.jpeg" alt="" width="82" height="120"></div><div class='option'>C) <img title="cap1.jpg" src="../images/76.jpeg" alt="" width="82" height="120"></div><div class='option'>D) <img title="cap3.jpg" src="../images/78.jpeg" alt="" width="82" height="120"><span class='asterisk'>*</span></div><div class='solution'><img title="cap3.jpg" src="../images/78.jpeg" alt="" width="82" height="120"> shows the thinnest tube with the highest height of liquid, and the widest tube with the lowest height of liquid, so it is the correct answer.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) Which of the following would you expect to have the <strong>highest </strong>surface tension?</div><div class='option'>A) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub></div><div class='option'>B) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub></div><div class='option'>C) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub><span class='asterisk'>*</span></div><div class='option'>D) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub></div><div class='solution'>The longest carbon chain will have the largest London dispersion forces, thus the highest surface tension.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) Place the following substances in order of <strong>decreasing </strong>boiling point.&nbsp;<br>H<sub>2</sub>O&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; N<sub>2</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; CO</div><div class='option'>A) CO &gt; N<sub>2</sub> &gt; H<sub>2</sub>O</div><div class='option'>B) CO &gt; H<sub>2</sub>O &gt; N<sub>2</sub></div><div class='option'>C) N<sub>2</sub> &gt; CO &gt; H<sub>2</sub>O</div><div class='option'>D) H<sub>2</sub>O &gt; CO &gt; N<sub>2</sub><span class='asterisk'>*</span></div><div class='solution'>N<sub>2</sub> only has London dispersion forces, so it has the lowest boiling point.<br>CO is polar, so it has dipole-dipole forces<br>H<sub>2</sub>O can hydrogen bond, so it will have the highest boiling point.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) Using the phase diagram below, what phase transition would occur if H<sub>2</sub>O was cooled from 44°C to -57°C at 0.005 atm?<br><img title="phase diagram water.jpg" src="../images/51.jpeg" alt="" width="299" height="245"></div><div class='option'>A) Deposition<span class='asterisk'>*</span></div><div class='option'>B) Condensation</div><div class='option'>C) Sublimation</div><div class='option'>D) Freezing</div><div class='solution'>At 0.005 atm and 44°C the water would be a gas, but at 0.005 atm and -57°C it would be a solid.&nbsp; So the phase transition is deposition.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) Which substance has the <strong>lowest </strong>intermolecular forces?</div><div class='option'>A) H<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>B) CH<sub>4</sub></div><div class='option'>C) CH<sub>2</sub>O</div><div class='option'>D) CH<sub>3</sub>OH</div><div class='solution'>CH<sub>3</sub>OH has the <strong>lowest </strong>intermolecular forces because it can hydrogen bond.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) (SLO 1.2) In methane CH<sub>4</sub>, which intermolecular forces are present?</div><div class='option'>A) Only dipole-dipole and ion-dipole forces are present</div><div class='option'>B) London dispersion and dipole-dipole</div><div class='option'>C) Only London dispersion<span class='asterisk'>*</span></div><div class='option'>D) London dispersion and hydrogen bonding</div><div class='solution'>methane CH<sub>4</sub> is nonpolar thus only London dispersion forces are present.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">20</span>) (SLO 1.5) List the compounds below in <strong>decreasing </strong>boiling point order.<br>CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; He&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>OH</div><div class='option'>A) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt; He &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>OH</div><div class='option'>B) &nbsp; He &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>OH &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub></div><div class='option'>C) &nbsp;CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>OH &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt;&nbsp;He<span class='asterisk'>*</span></div><div class='option'>D) CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> &gt; CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>OH &gt; He</div><div class='solution'>&nbsp;CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>OH can hydrogen bond, so it will have the boiling point.&nbsp;<br>CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>3</sub> is a large nonpolar molecule, so it will have high London dispersion forces.<br>&nbsp;He is small and nonpolar, so it will have a low amount of London dispersion forces, and have the lowest boiling point.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">21</span>) What is the mol fraction of ethanol, C<sub>2</sub>H<sub>5</sub>OH (46.07 g/mol), in a solution of 63.2 g of ethanol and 400 g of water (18.02 g/mol)?</div><div class='option'>A) 0.942</div><div class='option'>B) 0.0582<span class='asterisk'>*</span></div><div class='option'>C) 16.2</div><div class='option'>D) 0.0618</div><div class='solution'>63.2 g ethanol x (1 mol ethanol / 46.07 g ethanol) = 1.37 mol ethanol<br>400 g water x (1 mol water / 18.02 g water) = 22.2 mol water<br>Total moles solution =&nbsp; 1.37 mol ethanol + 22.2 mol water = 23.6 mol<br>mole fraction of ethanol = 1.37 mol ethanol / 23.6 mol = 0.0582</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">22</span>) A sealed container contains 0.427 L of water with an atmosphere of oxygen gas. What is the concentration of O<sub>2</sub> in the water if the external pressure is 7.17 atm given that k<sub>H</sub> for O<sub>2</sub> is 1.66 × 10<sup>-6</sup> M/mm Hg at this temperature (1 atm = 760 mm Hg)?</div><div class='option'>A) 0.0000119 M</div><div class='option'>B) 1.57x10<sup>-8</sup> M</div><div class='option'>C) 0.00905 M<span class='asterisk'>*</span></div><div class='option'>D) 5680 M</div><div class='solution'><p>Step 1: Convert the external pressure from atm to mm Hg: 7.17 atm x 760 mmHg / 1atm ≈ 5449.2 mm Hg</p>
+<p>Step 2: Calculate the concentration of O<sub>2</sub> in water using Henry's law: <br>Concentration of O<sub>2</sub> = k<sub>H</sub> * Partial pressure of O<sub>2</sub> <br>Partial pressure of O<sub>2</sub> = External pressure</p>
+<p>Concentration of O<sub>2</sub> = 1.66 × 10<sup>-6</sup> M/mm Hg x &nbsp;5449.2 mm Hg&nbsp;<br>Concentration of O<sub>2</sub> ≈ 0.00905 M</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">23</span>) A 7.19 L sample of an aqueous solution contains 0.195 g of sodium ions.&nbsp; Determine the concentration of sodium ions in ppm if the density of the solution is 1.08 g/mL.</div><div class='option'>A) 25.1 ppm<span class='asterisk'>*</span></div><div class='option'>B) 27.9 ppm</div><div class='option'>C) 2.51x10<sup>4</sup> ppm</div><div class='option'>D) 0.0000251 ppm</div><div class='solution'>7.19 L solution x (1000 mL / 1 L) x (1.08 g / 1 mL) = 7770 g solution<br><br>7770 g solution - 0.195 g of sodium ions = 7770 g water<br><br>PPM = mass of sodium ions/mass of solution x 10<sub>6</sub> = 0.195 g of sodium ions / 7770 g solution x 10<sup>6</sup> = 25.1 ppm</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">24</span>) What is the major intermolecular force between CH<sub>4</sub> and CH<sub>2</sub>CH<sub>2</sub>?</div><div class='option'>A) Ion-dipole forces</div><div class='option'>B) Dipole-dipole forces</div><div class='option'>C) Hydrogen bonding</div><div class='option'>D) London dispersion forces<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">25</span>) Which of the following have a great impact on the solubility of a gas in a liquid?</div><div class='option'>A) Temperature and partial pressure of the gas<span class='asterisk'>*</span></div><div class='option'>B) Temperature only</div><div class='option'>C) Atmospheric pressure only</div><div class='option'>D)  None of the above.</div><div class='solution'>Only temperature has any significant impact on the solubility of a solid (increasing the temperature increases the solid's solubility).&nbsp;&nbsp;<br>Both temperature and partial pressure of the gas would have a significant impact on the solubility of a gas (increasing the temperature decreases the solubility of a gas, and increasing the partial pressure of the gas increases the solubility of a gas).</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">26</span>) How many moles of KBr are contained in 333 g of water in a 0.239 m KBr solution?</div><div class='option'>A) 79.6 mol</div><div class='option'>B) 9.47 mol</div><div class='option'>C) 0.829 mol</div><div class='option'>D) 0.0796 mol<span class='asterisk'>*</span></div><div class='solution'>333 g water x (1 Kg / 1000 g)= 0.333 Kg<br>0.333 Kg of water X (0.239 mol KBr / 1 Kg water) = 0.0796 mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">27</span>) Which of the following would result in an exothermic reaction?</div><div class='option'>A) The products have weaker bonds than the reactants</div><div class='option'>B) The products and reactants have equal strength bonds</div><div class='option'>C) The products are at a higher potential energy than the reactants</div><div class='option'>D) The products have stronger bonds than the reactants<span class='asterisk'>*</span></div><div class='solution'>Exothermic:<br>Products have stronger bonds/reactants have weaker bonds<br>The product is at a lower potential energy<br><br>Endothermic:<br>Products have weaker bonds/reactants have stronger bonds<br>The product is at a higher potential energy</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">28</span>) Calculate the mass of oxygen (in mg) dissolved in a 2.00 L bucket of water exposed to a pressure of 1.12 atm of <strong>air</strong>. Assume the mole fraction of O<sub>2</sub> in air to be 0.21 given that k<sub>H</sub> for O<sub>2</sub> is 1.3 × 10<sup>-3</sup> M/atm at this temperature.</div><div class='option'>A) 93.2 mg</div><div class='option'>B) 19.6 mg<span class='asterisk'>*</span></div><div class='option'>C) 9.78 mg</div><div class='option'>D) 0.0196 mg</div><div class='solution'>P<sub>O2</sub> = X<sub>O2</sub> x P<sub>air</sub><br>P<sub>O2</sub> = 0.21 x 1.12 atm<br><br>S (M) =&nbsp; K<sub>H</sub> * P<sub>O2</sub> = 1.3 × 10<sup>-3</sup> M/atm x 0.235 atm = 0.000306 M<br><br>0.000306 M x&nbsp; 2.00 L = 0.000612 mol x (32.00 g O<sub>2</sub> / 1 mol O<sub>2</sub>) x (1000 mL / 1L) = 19.6 mg</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">29</span>) Determine the Henry's law constant for an unknown gas in water at 25°C if the unknown gas at a pressure of 0.0498 atm produces a solution with a concentration of 1.43 M.</div><div class='option'>A) 28.7 M/atm<span class='asterisk'>*</span></div><div class='option'>B) 0.0712 M/atm</div><div class='option'>C) 0.0348 M/atm</div><div class='option'>D) 1.78 M/atm</div><div class='solution'>S = K<sub>h</sub> * p<br>K<sub>h</sub> = S/p<br>K<sub>h</sub> = 1.43 m/0.0498 atm = 28.7 M/atm</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">30</span>) Determine the vapor pressure of a solution at 25°C that contains 70.2 g of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>) (180.2 g/mol) in 300 mL of water (18.02 g/mol).&nbsp; The vapor pressure of pure water at 25°C is 23.8 torr, and the density of water is 1.00 g/mL.</div><div class='option'>A) 1020 torr</div><div class='option'>B) 23.3 torr<span class='asterisk'>*</span></div><div class='option'>C) 0.544 torr</div><div class='option'>D) 0.557 torr</div><div class='solution'>70.2 g of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>) x (1 mol glucose / 180.2 g glucose) = 0.390 mol glucose <br>300 mL water x (1.00 g water/ 1 mL water) x (1 mol water / 18.02 g water) = 16.6 mol water<br>Total moles solution = 0.390 mol glucose + 16.6 mol water = 17.0 mol<br>Xwater = 16.6 mol water / 17.0 mol = 0.977<br>P<sub>solution</sub> = X<sub>water</sub> x P<sub>pure water</sub> = 0.977 x 23.8 torr = 23.3 torr</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">31</span>) Which of the following describes how you would prepare a 2.0 <strong>m (molality)</strong> solution of KI?</div><div class='option'>A) Measure out 1.0 moles of KI, then add 2 Kg of water.</div><div class='option'>B) Measure out 1.0 moles of KI, then put it in a volumetric flask and add enough water to produce 2 L of solution.</div><div class='option'>C) Measure out 2.0 moles of KI, then add 1 Kg of water.<span class='asterisk'>*</span></div><div class='option'>D) Measure out 2.0 moles of KI, then put it in a volumetric flask and add enough water to produce 1 L of solution.</div><div class='solution'>Measure out 2.0 moles of KI, then add 1 Kg of water.&nbsp;<br>It is important to remember that molality is moles of solute over kilograms of solvent.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">32</span>) What is the parts per million (ppm) of a 0.00500 m (molality) aqueous NaCl (molar mass 58.44 g/mol) solution?</div><div class='option'>A) 292 ppm<span class='asterisk'>*</span></div><div class='option'>B) 0.000292 ppm</div><div class='option'>C) 3420 ppm</div><div class='option'>D) 5.00 ppm</div><div class='solution'>1 kg H<sub>2</sub>O x 1000 g/1 kg = 1000 g H<sub>2</sub>O<br>Total grams of solution = 0.292 g + 1000 g = 1000. g<br>ppm =&nbsp; (0.292 g&nbsp; NaCl)/(1000. g solution) x 10<sup>6</sup> = 292 ppm</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">33</span>) Which of the following compounds will be most soluble in methanol (CH<sub>3</sub>OH)?</div><div class='option'>A) Trimethylamine <img title="tma.jpg" src="../images/52.jpeg" alt="" width="112" height="107"></div><div class='option'>B) Acetone <img title="acetone.png" src="../images/53.png" alt="" width="155" height="92"></div><div class='option'>C) Ethandiol <img title="ethandiol.jpg" src="../images/54.jpeg" alt="" width="87" height="107"><span class='asterisk'>*</span></div><div class='option'>D) Hexane<img title="hexane.jpg" src="../images/55.jpeg" alt="" width="155" height="57"></div><div class='option'>E)  None of the above.</div><div class='solution'>The compounds will be most soluble in methanol (CH<sub>3</sub>OH) will be a compound that can also hydrogen bond.&nbsp; Of the choices, only Ethandiol <img title="ethandiol.jpg" src="../images/54.jpeg" alt="" width="87" height="107"> can hydrogen bond, so Ethandiol <img title="ethandiol.jpg" src="../images/54.jpeg" alt="" width="87" height="107"> is the answer.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">34</span>) The enthalpy of solution for a compound is -43 kJ/mol, and the enthalpy of hydration for the compound's ion X- is -480 kJ/mol. Calculate the lattice energy (in kJ/mol) of the compound.</div><div class='option'>A) -437 kJ/mol</div><div class='option'>B) -523 kJ/mol</div><div class='option'>C) 437 kJ/mol<span class='asterisk'>*</span></div><div class='option'>D) 523 kJ/mol</div><div class='solution'><p>To solve this problem, we can use the following equation:</p>
+<p>ΔH<sub>solution</sub> = ΔH<sub>lattice</sub> + ΔH<sub>hydration</sub></p>
+<p>Where: ΔH<sub>solution</sub> = Enthalpy of solution <br>ΔH<sub>lattice</sub> = Lattice energy <br>ΔH<sub>hydration</sub> = Enthalpy of hydration</p>
+<p>We are given: ΔH<sub>solution</sub> = -43 kJ/mol <br>ΔH<sub>hydration</sub> = -480 kJ/mol</p>
+<p>Rearranging the equation, we can solve for ΔH<sub>lattice</sub>:</p>
+<p>ΔH<sub>lattice</sub> = ΔH<sub>solution</sub> - ΔH<sub>hydration</sub></p>
+<p>Plugging in the given values:</p>
+<p>ΔH<sub>lattice</sub> = -43 kJ/mol - (-480 kJ/mol) = -43 kJ/mol + 43.0 kJ/mol = 437 kJ/mol</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">35</span>) What mass (in g) of NH<sub>3</sub> (17.03 g/mol) must be dissolved in 600. g of methanol (32.04 g/mol) to make a 1.09 m solution?</div><div class='option'>A) 0.655 g</div><div class='option'>B) 21.0 g</div><div class='option'>C) 11.2 g<span class='asterisk'>*</span></div><div class='option'>D) 0.348 g</div><div class='solution'>What mass (in g) of NH<sub>3</sub> (17.03 g/mol) must be dissolved in 600. g of methanol (32.04 g/mol) to make a 1.09 m solution?<br>0.600 Kg solution x (1.09 mol<sub>solute</sub> / 1 Kg <sub>solvent</sub>)&nbsp; &nbsp;X (17.03 g solute / 1 mol solute) = 11.2 g</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">36</span>) (SLO 1.1) The osmotic pressure of a solution formed by dissolving 33.3 mg of Aspirin (C<sub>9</sub>H<sub>8</sub>O<sub>4</sub>) (180.16 g/mol) in enough water to make 0.284 L of solution at 20°C is _____ atm.</div><div class='option'>A) 0.00107</div><div class='option'>B) 0.0157<span class='asterisk'>*</span></div><div class='option'>C) 15.7</div><div class='option'>D) 0.00445</div><div class='solution'><p>Given: Mass of Aspirin = 33.3 mg x 1 g/1000 mg= 0.0333 g <br>Molar mass of Aspirin (C<sub>9</sub>H<sub>8</sub>O<sub>4</sub>) = 180.16 g/mol <br>Volume of solution (V) = 0.284 L</p>
+<p>First, calculate the number of moles of Aspirin:</p>
+<p>moles of Aspirin = 0.0236 g x (1mol Aspirin)/(180.16 g Aspirin) ≈ 0.000185 mol</p>
+<p>Next, calculate the molarity (M) of the solution:</p>
+<p>Molarity (M) = moles of solute / volume of solution Molarity (M) = 0.0000185 mol / 0.284 L <br>Molarity (M) ≈ &nbsp;0.000651 M</p>
+<p>Now we can calculate the osmotic pressure:</p>
+<p>π = MRT</p>
+<p>where: M is the molarity of the solution R is the ideal gas constant (0.0821 L·atm/(mol·K)) T is the temperature in Kelvin (K)</p>
+<p>Given: Temperature (T) = 20°C +273.15 = 293.15 K</p>
+<p>π = (0.000651) * (0.08206 L·atm/(mol·K)) * (293.15 K) π ≈ 0.0157 atm</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">37</span>) (SLO 1.3) The Henry’s law constant for hydrogen gas in water at 20ºC is 8.1 x 10<sup>-4</sup> M/atm. When the partial pressure of hydrogen above a sample of water is 0.512 atm, the concentration of hydrogen in the water is ______ M.</div><div class='option'>A) 0.000415<span class='asterisk'>*</span></div><div class='option'>B) 632</div><div class='option'>C) 4.15</div><div class='option'>D) 0.00158</div><div class='solution'><p>Henry's law relates the concentration of a gas in a liquid to its partial pressure above the liquid. The equation for Henry's law is:</p>
+<p>C = k * P</p>
+<p>where: C is the concentration of the gas in the liquid (in Molarity, M) k is the Henry's law constant for the specific gas-solvent system (in M/atm) P is the partial pressure of the gas above the liquid (in atm)</p>
+<p>Given: Henry's law constant (k) for hydrogen gas in water = 8.1 x 10<sup>-4</sup> M/atm <br>Partial pressure of hydrogen (P) = 0.512 atm</p>
+<p>Using Henry's law, we can calculate the concentration of nitrogen gas in the water (C):</p>
+<p>C = (8.1 x 10<sup>-4</sup> M/atm) * (0.512 atm) C ≈ 0.000415 M</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">38</span>) (SLO 1.7) What is a solution containing more than the maximum equilibrium amount of solute at a given temperature called?</div><div class='option'>A) A supersaturated solution<span class='asterisk'>*</span></div><div class='option'>B) A saturated solution</div><div class='option'>C) An unsaturated solution</div><div class='option'>D) A dilute solution</div><div class='option'>E)  None of the above.</div><div class='solution'>An unsaturated solution contains less than the maximum amount of solute at a given temperature<br>A supersaturated solution contains more than the maximum amount of solute at a given temperature<br>A saturated solution contains the maximum equilibrium amount of solute at a given temperature</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">39</span>) (SLO 1.6) What is the <strong>change </strong>in boiling point of a solution of 34.3 g KCl (74.55 g/mol) in 758 g of water? K<sub>b</sub> for water is 0.512°C/m.&nbsp; Assume ideal behavior.</div><div class='option'>A) 0.000311°C</div><div class='option'>B) 0.622°C<span class='asterisk'>*</span></div><div class='option'>C) 0.311°C</div><div class='option'>D) 23.2°C</div><div class='solution'><p>To calculate the change in boiling point of a solution, we can use the equation:</p>
+<p>ΔTb = i x Kb x m</p>
+<p>where: i = van't Hoff factor<br>ΔTb = change in boiling point <br>Kb = boiling point elevation constant (0.512 °C/m for water) <br>m = molality of the solution (moles of solute per kilogram of solvent)</p>
+<p>First, we need to calculate the molality of the solution, which is the number of moles of solute per kilogram of solvent.</p>
+<p>&nbsp;34.3 g KCl x (1 mol KCl)/(74.55 g KCl) = 0.460 mol KCl<br><br>Step 2: Calculate the molality of the solution: Molality = moles of solute / mass of solvent (in kg) Mass of solvent (water) = 758 g x 1 kg/1000 g = 0.758 kg&nbsp;</p>
+<p>Molality =0.460 mol KCl mol / 0.758 kg ≈ 0.607&nbsp; M<br><br>Step 3: van't Hoff factor<br>The van't Hoff factor for KCl will be estimated at 2 because&nbsp; KCl contains 2 ions.</p>
+<p>Step 3: Calculate the change in boiling point: ΔTb = i x Kb x m ΔTb = 2 x 0.512 °C/m * 0.607&nbsp; M ≈ 0.622&nbsp; M °C</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">40</span>) (SLO 1.4) An aqueous solution is 0.526 <strong>m (molality) </strong>LiF (25.94 g/mol). &nbsp;What is the <strong>molarity (M)</strong> of the solution if the density of the aqueous solution is 1.08 g/mL?</div><div class='option'>A) 0.568 M</div><div class='option'>B) 0.560 M<span class='asterisk'>*</span></div><div class='option'>C) 0.0388 M</div><div class='option'>D) 0.519 M</div><div class='solution'>A solution is 0.526 m LiF (25.94 g/mol). &nbsp;What is the <strong>molarity (M) </strong>of the solution if the density of the solution is 1.08 g/mL?<br>0.526 mol LiF x (25.94 g&nbsp; LiF)/(1 mol LiF) = 13.6 g LiF<br>1 kg water x 1000 g/1 kg = 1000 g water<br>1000 g water + 13.6 g LiF = 1010 g solution<br>1010 g solution x 1 mL/1.08 g = 939 mL<br>939 mL x 1 L/1000 mL = 0.939 L<br>molarity (M) = 0.526 mol LiF/ 0.939 L = 0.560 M</div><p></p></div><div id="scantrondiv" class="scantrondiv">Exam 1 Study Guide<br><canvas id="scantron" class="scantron"></div></body></html>

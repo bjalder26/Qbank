@@ -18,7 +18,7 @@
 
       .tooltiptext {
         visibility: hidden;
-        width: 120px;
+        width: 210px;
         background-color: black;
         color: #fff;
         text-align: center;
@@ -46,9 +46,8 @@
       }
 	  
 	  div.stem {
-	    padding-left: 15px ;
-        text-indent: -15px ;
-		display: block;
+	    padding-left: 5px;
+		display: inline;
       }
 
       div.option {
@@ -69,42 +68,186 @@
         display: inline-block;
 		margin: 8px 0px 8px -22px;
       }
-
+	  .solution {
+	    margin-left: 40px;
+	  }
       @media print {
-        .noPrint {
+        .noPrint, .x{
           display: none;
         }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
       }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
 
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
     </style>
     <link rel="stylesheet" href="/css/custom.css">
     <script>
+	
+					var questionsObjectText = {"1":[0],"2":[1],"3":[2],"4":[3],"5":[3]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
     function loading() {
       const mts = document.getElementsByClassName('math-tex');
       for(let mt of mts) {
         const questionOrOption = mt.parentElement;
         questionOrOption.classList.add("svg");
       }
-    }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
     </script>
   </head>
 
-  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
     <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
     <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
     <script>
-      let toggle = true;
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
 
-      function toggleAnswers() {
-        let asterisks = document.getElementsByClassName('asterisk');
-        for (let astrisk of asterisks) {
-          if (toggle) {
-            astrisk.style.display = 'none';
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
           } else {
-            astrisk.style.display = null;
+            aClass.style.display = 'revert';
           }
         }
-        toggle = !toggle;
+        toggle[thisClass] = !toggle[thisClass];
       }
 
       let keysPressed = {};
@@ -112,18 +255,23 @@
         keysPressed[event.key] = true;
 
         if (keysPressed['Control'] && event.key == 'z') {
-          toggleAnswers();
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
         }
       });
 
       document.addEventListener('keyup', (event) => {
         delete keysPressed[event.key];
       });
-
     </script>
     <h1>Worksheet</h1>
 	<h4></h4>
 	<h6></h6>
     <div class='rightjustify'>name: ______________________________________</div>
     <p></p>
-<div class='question'><div class='stem'>1) Which of the following is a positron?</div><div class='option'>A) <span class="math-tex">\( _2^4He \)</span></div><div class='option'>B) <span class="math-tex">\( _{-1}^{  0}e \)</span></div><div class='option'>C) <span class="math-tex">\( _0^0γ \)</span></div><div class='option'>D) <span class="math-tex">\( _{+1}^{  0}e \)</span><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>2) Which particle has the highest penetrating power?</div><div class='option'>A) gamma particle<span class='asterisk'>*</span></div><div class='option'>B) beta particle</div><div class='option'>C) alpha particle</div><p></p></div><div class='question'><div class='stem'>3) If <span class="math-tex">\( _{95}^{241}Am \)</span> undergoes alpha decay, what is the resulting daughter nuclide?</div><div class='option'>A) <span class="math-tex">\( _{93}^{237}Np \)</span><span class='asterisk'>*</span></div><div class='option'>B) <span class="math-tex">\( _{97}^{245}Bk \)</span></div><div class='option'>C) <span class="math-tex">\( _{96}^{241}Cm \)</span></div><div class='option'>D) <span class="math-tex">\( _{94}^{241}Pu \)</span></div><p></p></div><div class='question'><div class='stem'>4) Fluorine-18 has a half-life of 110 minutes.&nbsp; If a patient is injected with a 254 mg dose of Fluorine-18 for a PET scan, then how many mg would remain after 4.0 hours?</div><div class='option'>A) 56.0 mg<span class='asterisk'>*</span></div><div class='option'>B) 248 mg</div><div class='option'>C) 127 mg</div><div class='option'>D) 63.5 mg</div><p></p></div><div class='question'><div class='stem'>5) What is the unknown particle emitted, which is represented by <span class="math-tex">\( _{?}^{?}X \)</span>?<br><span class="math-tex">\( _{95}^{241}Am \)</span> ➞ <span class="math-tex">\( _{?}^{?}X \)</span> + <span class="math-tex">\( _{93}^{237}Np \)</span></div><div class='option'>A) A positron</div><div class='option'>B) A gamma particle</div><div class='option'>C) A beta particle</div><div class='option'>D) An alpha particle<span class='asterisk'>*</span></div><p></p></div></body></html>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) (SLO 4.3) Identify the strongest acid.</div><div class='option'>A) HClO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>B) HClO</div><div class='option'>C) HClO<sub>2</sub></div><div class='option'>D) HClO<sub>3</sub></div><div class='solution'>The oxyacid with the most oxygens will be the strongest acid, because it's conjugate base will be the most stable due to resonance.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) (SLO 4.4) Calculate the pOH of a solution that contains 8.75x10<sup>-4</sup>&nbsp;M H<sub>3</sub>O<sup>+</sup> at 25°C</div><div class='option'>A) 3.06</div><div class='option'>B) 10.9<span class='asterisk'>*</span></div><div class='option'>C) 1.14x10<sup>-11</sup></div><div class='option'>D) 4.00</div><div class='solution'>pH = -log[H<sup>+</sup>]<br>pH = -log(8.75x10<sup>-4</sup><br>pH = 3.06<br>pOH = 14 - 3.06<br>pOH = 10.9</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) (SLO 4.2) Which of the following is a Arrhenius base?</div><div class='option'>A) H<sub>2</sub></div><div class='option'>B) CH<sub>2</sub>CH<sub>2</sub></div><div class='option'>C) Be(OH)<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>D) HCl</div><div class='option'>E)  None of the above.</div><div class='solution'>HCl is an acid.<br>H<sub>2</sub> will not dissociate in water, and is not an acid or a base.<br>CH<sub>2</sub>CH<sub>2</sub> does not have an acidic hydrogen (the C-H bonds won't break), and is not an acid or a base.<br>Be(OH)<sub>2</sub> is the only base.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) (SLO 4.5) Calculate the percent ionization of a monoprotic weak acid (HA) in a solution that is 0.299 M, if the acid dissociation constant (K<sub>a</sub>) is 2.91x10<sup>-7</sup>.&nbsp;<br>HA ➞ H<sup>+</sup> + A<sup>-</sup></div><div class='option'>A) 0.000983 %</div><div class='option'>B) 0.0891 %</div><div class='option'>C) 0.0000291 %</div><div class='option'>D) 0.0987 %<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) (SLO 4.1) Which of the following is a Brønsted–Lowry acid?</div><div class='option'>A) CHCH</div><div class='option'>B) LiOH</div><div class='option'>C) NH<sub>3</sub></div><div class='option'>D) HClO<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>E)  All of the above.</div><div class='solution'>You can tell HClO<sub>2</sub> is a Brønsted–Lowry acid, by the H in the front of the formula.<br>NH<sub>3</sub> is a base.<br>CHCH does not have an acidic hydrogen (the C-H bonds won't break).<br>LiOH is a base.</div><p></p></div><div id="scantrondiv" class="scantrondiv">Worksheet<br><canvas id="scantron" class="scantron"></div></body></html>

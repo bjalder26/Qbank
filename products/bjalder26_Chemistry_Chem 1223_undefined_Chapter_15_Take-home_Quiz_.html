@@ -1,0 +1,378 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[1],"2":[1],"3":[3],"4":[1],"5":[0],"6":[1],"7":[0],"8":[2],"9":[1],"10":[0],"11":[0],"12":[3],"13":[0],"14":[0],"15":[0],"16":[1],"17":[3]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter 15 Take-home Quiz</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Sep 25, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) If Q (the reactant quotient) is less than the equilibrium constant, then which way will the reaction proceed more quickly?</div><div class='option'>A) In the reverse direction</div><div class='option'>B) In the forward direction<span class='asterisk'>*</span></div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>If Q (the reactant quotient) is less than the equilibrium constant, then it means we have too little product (numerator) and too much reactant (denominator) to be at equilibrium.&nbsp; Since reversible reactions will always proceed to equilibrium, the reaction will have to proceed in the forward direction to produce more product, and use up some of the reactant.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) For the following reaction, if a reaction container holds 2.15 M I<sub>2</sub> and 2.47 M Br<sub>2</sub>. After a reaction takes place, what would be the equilibrium concentration of IBr?<br>I<sub>2</sub> (g) + Br<sub>2</sub> (g) ⇌ 2 IBr (g)&nbsp; &nbsp; &nbsp;K<sub>c</sub> = 7.43</div><div class='option'>A) 1.32 M</div><div class='option'>B) 2.65 M<span class='asterisk'>*</span></div><div class='option'>C) 1.92 M</div><div class='option'>D) 2.38 M</div><div class='solution'><table style="border-collapse: collapse; width: 39.8223%;" border="1">
+<tbody>
+<tr>
+<td style="width: 4.70415%;">R</td>
+<td style="width: 25.4808%;">I<sub>2</sub>&nbsp;(g)</td>
+<td style="width: 30.5536%;">+ Br<sub>2</sub>&nbsp;(g)</td>
+<td style="width: 39.2246%;">&nbsp;&nbsp;⇌ 2 IBr (g)&nbsp;</td>
+</tr>
+<tr>
+<td style="width: 4.70415%;">I</td>
+<td style="width: 25.4808%;">2.15 M</td>
+<td style="width: 30.5536%;">2.47 M</td>
+<td style="width: 39.2246%;">0</td>
+</tr>
+<tr>
+<td style="width: 4.70415%;">C</td>
+<td style="width: 25.4808%;">-x M</td>
+<td style="width: 30.5536%;">-x M</td>
+<td style="width: 39.2246%;">+2x M</td>
+</tr>
+<tr>
+<td style="width: 4.70415%;">E</td>
+<td style="width: 25.4808%;">2.15 -x M</td>
+<td style="width: 30.5536%;">2.47 -x M</td>
+<td style="width: 39.2246%;">2x M</td>
+</tr>
+</tbody>
+</table>
+<br>&nbsp;K<sub>c</sub> = 7.43 = <span class="math-tex">\( \frac{[IBr]^2}{[I_2][Br_2]} \)</span> =&nbsp;
+<table style="border-collapse: collapse; width: 19.8117%; height: 39.2px;" border="1">
+<tbody>
+<tr style="height: 19.6px;">
+<td style="width: 100%; height: 19.6px; text-align: center;">(2x)<sup>2</sup></td>
+</tr>
+<tr style="height: 19.6px;">
+<td style="width: 100%; height: 19.6px; text-align: center;">-----------------------</td>
+</tr>
+<tr>
+<td style="width: 100%; text-align: center;">(2.15 -x )(2.47 -x)</td>
+</tr>
+</tbody>
+</table>
+7.43(2.15 -x )(2.47 -x) = (2x)<sup>2</sup><br>7.43(5.31 - 4.62x + x<sup>2</sup>) = 4x<sup>2</sup><br>39.5 - 34.3x + 7.43x<sup>2</sup> = 4x<sup>2</sup><br>3.43x<sup>2</sup> - 34.3 + 39.5 = 0<br>x =&nbsp;<br>
+<table style="border-collapse: collapse; width: 39.8768%;" border="1">
+<tbody>
+<tr>
+<td style="width: 100%; text-align: center;">34.3 ± √[(- 34.3)<sup>2</sup> - 4([7.43-4])( 39.5)]</td>
+</tr>
+<tr>
+<td style="width: 100%; text-align: center;">--------------------------------------------------------------------</td>
+</tr>
+<tr>
+<td style="width: 100%; text-align: center;">2 x 3.43</td>
+</tr>
+</tbody>
+</table>
+<br>x = 1.32 M, or 8.68 M<br>8.68 M can be rejected because it will give a negative equilibrium concentration for I<sub>2</sub> and Br<sub>2</sub>.<br>Thus [IBr] = 2 x 1.32 M&nbsp;<br>[IBr] =&nbsp; 2.65 M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) The reaction below has a K<sub>p</sub> value of 7.25x10<sup>-6</sup>. What is the value of K<sub>c</sub> for this reaction at 640 K?<br>4 A (g) + 3 B (g) ⇌ A<sub>4</sub>B<sub>3</sub> (g)</div><div class='option'>A) 3.46x10<sup>-16</sup></div><div class='option'>B) 2.21x10<sup>-12</sup></div><div class='option'>C) 3.46x10<sup>-16</sup></div><div class='option'>D) 1.52x10<sup>5</sup><span class='asterisk'>*</span></div><div class='solution'>K<sub>p</sub> = K<sub>c</sub>(RT)<sup>Δn</sup>, solving for K<sub>c</sub>:<br>&nbsp;K<sub>c</sub> = K<sub>p</sub>/(RT)<sup>Δn</sup><sub> =&nbsp; </sub>7.25x10<sup>-6</sup>/(0.08206 L-atm/mol-K x 640 K)<sup>-6<br></sup>K<sub>c</sub> = [7.25*10^-6/((0.08206*640)^(1-4-3))]</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) Is the following reaction reactant or product favored?<br>AgCl (s) ⇌ Ag<sup>+</sup> (aq) + Cl<sup>-</sup> (aq)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 1.8x10<sup>-10</sup></div><div class='option'>A) Product favored</div><div class='option'>B) Reactant favored<span class='asterisk'>*</span></div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>When K<sub>c</sub> is greater than 1, it is product favored, when K<sub>c</sub> is less than 1 it is reactant favored.&nbsp; This is because K<sub>c</sub> is essentially products over reactants.&nbsp; So a number greater than 1 indicates more products than reactants, whereas a number lower than 1 indicates more reactants than products.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) In the reaction below, at equilibrium, the concentration of N<sub>2</sub> is 0.424 M, and the concentration of H<sub>2</sub> is 0.370 M. Determine the equilibrium concentration of NH<sub>3</sub>&nbsp;(g).<br>2 N<sub>2</sub> (g) + 6 H<sub>2</sub> (g) ⇌ 4 NH<sub>3</sub> (g) &nbsp; &nbsp; &nbsp; K<sub>c</sub> = 3.75x10<sup>2</sup></div><div class='option'>A) 0.645 M<span class='asterisk'>*</span></div><div class='option'>B) 58.8 M</div><div class='option'>C) 0.173 M</div><div class='option'>D) 2.77 M</div><div class='solution'>K<sub>c</sub> = <span class="math-tex">\( \frac{[NH_3]^4}{[N_2]^2[H_2]^6} \)</span> = ([NH<sub>3</sub>]<sup>4</sup>)/(0.424<sup>2</sup> x 0.370<sup>6</sup>) =&nbsp; 3.75x10<sup>2</sup><br>[NH<sub>3</sub>]<sup>4</sup> = (0.424<sup>2</sup> x 0.370<sup>6</sup>) x 3.75x10<sup>2</sup><br>[NH<sub>3</sub>]<sup>4</sup> = 0.173 M<sup>4</sup><br>[NH<sub>3</sub>] = 0.645 M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) Once this reaction has reached equilibrium, which of the following changes would shift the equilibrium to the left?<br>N<sub>2</sub>O<sub>4</sub> (g) ⇌ 2 NO<sub>2</sub> (g),&nbsp; &nbsp; &nbsp; ΔH = +57 kJ</div><div class='option'>A) A decrease in pressure</div><div class='option'>B) A decrease in temperature<span class='asterisk'>*</span></div><div class='option'>C) Removing product</div><div class='option'>D) An increase in volume</div><div class='solution'>Since there are more moles of gas on the right side of the equation, a decrease in volume (increase in pressure) will shift the equilibrium to the left.&nbsp; <br>Since the reaction is endothermic, a decrease in temperature will shift the reaction to the left.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Once this reaction has reached equilibrium, which of the following changes would shift the equilibrium to the left?<br>2 SO<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 SO<sub>3</sub> (g),&nbsp; &nbsp; &nbsp; ΔH = -197.7 kJ</div><div class='option'>A) Adding SO<sub>3</sub><span class='asterisk'>*</span></div><div class='option'>B) An increase in pressure</div><div class='option'>C) Removing SO<sub>3</sub></div><div class='option'>D) A decrease in temperature</div><div class='solution'>Removing reactants or adding products will shift a reaction to the left.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) At equilibrium, which of the following are true?</div><div class='option'>A) The rate constant of the forward reaction is equal to the equilibrium constant</div><div class='option'>B) The concentration of the reactants and products are equal</div><div class='option'>C) The concentration of the reactants and products are stable<span class='asterisk'>*</span></div><div class='option'>D) The reaction stops</div><div class='solution'>The rate of the forward reaction is equal to the rate of the reverse reaction, which means that the concentration of the reactants and products will remain stable.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) What is Δn for the following equation in relating K<sub>c</sub> to K<sub>p</sub>?<br>4 NH<sub>3 </sub>(g) + 3 O<sub>2</sub> (g) ⇌ 2 N<sub>2</sub> (g) + 6 H<sub>2</sub>O (g)</div><div class='option'>A) -2</div><div class='option'>B) 1<span class='asterisk'>*</span></div><div class='option'>C) 3</div><div class='option'>D) 0</div><div class='solution'>A change is always final minus initial, so take the moles <strong>of gas</strong> in the product 2 N<sub>2</sub> (g) + 6 H<sub>2</sub>O (g), and subtract the moles of gas on the reactant side 4 NH<sub>3 </sub>(g) + 3 O<sub>2</sub> (g).<br>8 - 7 = 1</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) Is the following reaction reactant or product favored?<br>HBr (s) + H<sub>2</sub>O (l) ⇌ H<sub>3</sub>O<sup>+</sup> (aq) + Br<sup>-</sup> (aq)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 1.0x10<sup>9</sup></div><div class='option'>A) Product favored<span class='asterisk'>*</span></div><div class='option'>B) Reactant favored</div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>When K<sub>c</sub> is greater than 1, it is product favored, when K<sub>c</sub> is less than 1 it is reactant favored.&nbsp; This is because K<sub>c</sub> is essentially products over reactants.&nbsp; So a number greater than 1 indicates more products than reactants, whereas a number lower than 1 indicates more reactants than products.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) (SLO 3.3) The K<sub>p</sub> for the reaction below is 9.22 x 10<sup>-6</sup> at 160<em>°</em>C.<br>2 NO (g) + Cl<sub>2</sub> (g) ⇌ 2 NOCl (g)<br><br>In an <strong>equilibrium mixture</strong> of the three gases, P<sub>NO</sub> = P<sub>Cl<span style="font-size: 10.5pt;">₂</span></sub>&nbsp;= 8.95 x 10<sup>-2</sup> atm.&nbsp; The partial pressure of the product, nitrosyl chloride (NOCl<sub>2</sub>), is __________ atm.</div><div class='option'>A) 0.0000813 atm<span class='asterisk'>*</span></div><div class='option'>B) 6.61x10<sup>-9</sup> atm</div><div class='option'>C) 81.3 atm</div><div class='option'>D) 0.000272 atm</div><div class='solution'>Notice that these are already equilibrium values.<br>
+<table style="border-collapse: collapse; width: 41.4224%; height: 72.5px;" border="1">
+<tbody>
+<tr style="height: 27.125px;">
+<td style="width: 3.09324%; height: 27.125px;">&nbsp;</td>
+<td style="width: 22.2784%; height: 27.125px;">2 NO (g)&nbsp;</td>
+<td style="width: 31.9822%; height: 27.125px;">+ Cl<sub>2</sub>&nbsp;(g)&nbsp;</td>
+<td style="width: 42.6609%; height: 27.125px;">⇌ 2 NOCl (g)</td>
+</tr>
+<tr style="height: 25.7812px;">
+<td style="width: 3.09324%; height: 25.7812px;">E</td>
+<td style="width: 22.2784%; height: 25.7812px;">8.95 x 10<sup>-2</sup><sub>&nbsp;</sub></td>
+<td style="width: 31.9822%; height: 25.7812px;">8.95 x 10<sup>-2</sup><sub>&nbsp;</sub></td>
+<td style="width: 42.6609%; height: 25.7812px;">x</td>
+</tr>
+</tbody>
+</table>
+<br>K = <span class="math-tex">\( \frac{P_{NOCl_2}^2}{P_{NO}^2 x P_{Cl_2}} \)</span>= x<sup>2</sup>/(8.95 x 10<sup>-2</sup>)<sup>3</sup> = 9.22 x 10<sup>-6</sup><sub><br></sub>x<sup>2</sup> = (9.22*10<sup>-6</sup>) x (8.95 x 10<sup>-2</sup>)<sup>3</sup><br>x<sup>2</sup> = 6.61x10<sup>-9</sup><br>x = 0.0000813<br>[COCl<sub>2</sub>]<sub>eq</sub> = 0.0000813 atm</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) (SLO 3.6) In a reaction mixture containing <strong>only </strong>reactants, what is the value of Q<sub>c</sub>?</div><div class='option'>A) -1</div><div class='option'>B) 1</div><div class='option'>C) ꝏ (infinity)</div><div class='option'>D) 0<span class='asterisk'>*</span></div><div class='solution'>"<strong>Only </strong>reactants" would mean that the numerator in the Q<sub>c</sub> equation is zero.&nbsp; Thus the answer is 0.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) (SLO 3.1) What is the equilibrium constant equation for the following reaction?<br>2 N<sub>2</sub> (g) + 6 H<sub>2</sub> (g) ⇌ 4 NH<sub>3</sub> (g)</div><div class='option'>A) K = <span class="math-tex">\( \frac{[NH_3]^4}{[N_2]^2[H_2]^6} \)</span><span class='asterisk'>*</span></div><div class='option'>B) K = <span class="math-tex">\( \frac{[N_2]^2[H_2]^6}{[NH_3]^4} \)</span></div><div class='option'>C) K = <span class="math-tex">\( \frac{[NH_3]}{[N_2][H_2]} \)</span></div><div class='option'>D) K = <span class="math-tex">\( \frac{[N_2][H_2]}{[NH_3]} \)</span></div><div class='solution'>The equilibrium constant expression is concentration of products (raised to their coefficients) over concentration of reactants (raised to their coefficients).<br>K = <span class="math-tex">\( \frac{[NH_3]^4}{[N_2]^2[H_2]^6} \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) (SLO 3.2) The equilibrium constant is given for one of the reactions below.&nbsp; Determine the value of the missing equilibrium constant (K<sub>c2</sub>).<br>H<sub>2</sub> (g) + I<sub>2</sub> (g) ⇌ 2 HI&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;K<sub>c1</sub> = 54.4<br>3 H<sub>2</sub> (g) + 3 I<sub>2</sub> (g) ⇌ 6 HI&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;K<sub>c2</sub> = ?</div><div class='option'>A) 1.61x10<sup>5</sup><span class='asterisk'>*</span></div><div class='option'>B) 163</div><div class='option'>C) 9.02x10<sup>25</sup></div><div class='option'>D) 2.59x10<sup>10</sup></div><div class='solution'>Because the coefficients in the second equation are 3 times the coefficients in the first equation, K<sub>c2</sub> will be K<sub>c1</sub> raised to the 3 power.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) (SLO 3.4) The following reaction is endothermic.&nbsp; Which change will shift the equilibrium to the left?<br>N<sub>2</sub>O<sub>4</sub> ⇌ 2 NO<sub>2</sub></div><div class='option'>A) Lowering the temperature<span class='asterisk'>*</span></div><div class='option'>B) Raising the temperature</div><div class='option'>C) Adding a catalyst</div><div class='option'>D)  All of the above.</div><div class='option'>E)  None of the above.</div><div class='solution'>In an endothermic reaction, you can treat heat as if it is a reactant, thus lowering the temperature will shift the equilibrium to the left.<br>Adding a catalyst does not affect equilibrium.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) (SLO 3.5) Identify the change that will always shift the equilibrium to the left.</div><div class='option'>A) Increasing temperature</div><div class='option'>B) Adding product<span class='asterisk'>*</span></div><div class='option'>C) Decreasing pressure</div><div class='option'>D) Adding reactant</div><div class='solution'>Adding reactant will always shift the equilibrium to the right<br>Removing reactant will always shift the equilibrium to the left<br>Adding product will always shift the equilibrium to the left<br>Removing product will always shift the equilibrium to the right<br>Increasing pressure or decreasing volume will always shift the equilibrium to the side with lower moles of gas<br>Decreasing pressure ore increasing volume will always shift the equilibrium to the side with higher moles of gas<br>Increasing temperature will shift the equilibrium to the right in an endothermic reaction, but to the left in an exothermic reaction<br>Decreasing temperature will shift the equilibrium to the left in an endothermic reaction, but to the right in an endothermic reaction<br><br></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) (SLO 3.7) Consider the following reaction.<br>Xe (g) + 2 F<sub>2</sub> (g) ⇌ XeF<sub>4</sub> (g)<br><br>A <strong>reaction mixture</strong> contains 5.91 atm of Xe, 7.23 atm F<sub>2</sub>.&nbsp; Once the reaction reaches equilibrium, the pressure of Xe is 4.18 atm.&nbsp; What is the equilibrium constant (K<sub>p</sub>) for the reaction?</div><div class='option'>A) 0.0137</div><div class='option'>B) 0.110</div><div class='option'>C) 0.0199</div><div class='option'>D) 0.0291<span class='asterisk'>*</span></div><div class='solution'><table style="border-collapse: collapse; width: 49.5039%;" border="1">
+<tbody>
+<tr>
+<td style="width: 6.20568%;">R</td>
+<td style="width: 26.6614%;">Xe (g)&nbsp;</td>
+<td style="width: 27.3481%;">+ 2 F<sub>2</sub>&nbsp;(g)&nbsp;</td>
+<td style="width: 39.7652%;">⇌ XeF<sub>4</sub>&nbsp;(g)</td>
+</tr>
+<tr>
+<td style="width: 6.20568%;">I</td>
+<td style="width: 26.6614%;">5.91</td>
+<td style="width: 27.3481%;">7.23</td>
+<td style="width: 39.7652%;">0</td>
+</tr>
+<tr>
+<td style="width: 6.20568%;">C&nbsp;</td>
+<td style="width: 26.6614%;">-x</td>
+<td style="width: 27.3481%;">-2x</td>
+<td style="width: 39.7652%;">+x</td>
+</tr>
+<tr>
+<td style="width: 6.20568%;">E</td>
+<td style="width: 26.6614%;">4.18</td>
+<td style="width: 27.3481%;">7.23-2x</td>
+<td style="width: 39.7652%;">x</td>
+</tr>
+</tbody>
+</table>
+5.91 -&nbsp; x = 4.18<br>5.91 - 4.18 = x<br>2 x 1.73 = 2x<br>3.46 = 2x<br>P<sub>XeF4</sub> = 1.73<br>P<sub>F2</sub> = 7.23 - 2x = 3.77<br>K<sub>p</sub> = (1.73)/(4.18 x 3.77<sup>2</sup>)<br>K<sub>p</sub> = 0.0291</div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 15 Take-home Quiz<br><canvas id="scantron" class="scantron"></div></body></html>

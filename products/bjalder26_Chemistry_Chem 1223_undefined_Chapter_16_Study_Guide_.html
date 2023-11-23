@@ -1,0 +1,372 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint {
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in; <!--9.969325in; -->
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[3],"2":[3],"3":[0],"4":[3],"5":[3],"6":[3],"7":[3],"8":[1],"9":[2],"10":[3],"11":[2],"12":[1],"13":[2],"14":[1],"15":[0],"16":[2],"17":[2],"18":[0],"19":[1],"20":[0],"21":[0],"22":[1],"23":[2],"24":[1],"25":[2],"26":[0],"27":[2],"28":[3],"29":[1]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 let questionsObject = JSON.parse(questionsObjectText);
+	let markCoordinates = [];
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+    //markCoordinates.push({x: 61.5+23.73*value, y: 74+12.06*key});
+  }
+}
+} else {alert('no questionsObject')}
+
+// Function to draw the dark marks on the canvas
+function drawMarks() {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  //canvas.width = 100;
+  //canvas.height = 100;
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  //ctx.scale(2, 2);
+
+
+ 
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+
+// Call the drawMarks function to draw the dark marks on the canvas
+
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers & Ctrl-x to toggle the solutions.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter 16 Study Guide</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Jul 24, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Which of the following K<sub>a</sub> values would correspond to the strongest acid?</div><div class='option'>A) K<sub>a</sub> = 1.25 x 10<sup>-4</sup></div><div class='option'>B) K<sub>a</sub> = 6.34 x 10<sup>-8</sup></div><div class='option'>C) K<sub>a</sub> = 8.09 x 10<sup>-5</sup></div><div class='option'>D) K<sub>a</sub> = 1.38 x 10<sup>-2</sup><span class='asterisk'>*</span></div><div class='solution'>Since K<sub>a</sub> is essentially products over reactants, the highest K<sub>a</sub> corresponds with the strongest acid.</div><p></p></div><div class='question'><div class='stem'>2) Which of the following is the strongest Lewis acid (best at giving up H<sup>+</sup> or binding OH<sup>-</sup>)?</div><div class='option'>A) Li<sup>+</sup></div><div class='option'>B) K<sup>+</sup></div><div class='option'>C) Na<sup>+</sup></div><div class='option'>D) HF<span class='asterisk'>*</span></div><div class='solution'>The strongest acid, will have the weakest conjugate base.&nbsp; The conjugate bases of Na<sup>+</sup>, Li<sup>+</sup>, and K<sup>+</sup> are all strong bases (NaOH, LiOH, and KOH).&nbsp; Thus the answer is HF.</div><p></p></div><div class='question'><div class='stem'>3) Which of the following has the strongest conjugate base?</div><div class='option'>A) HCN<span class='asterisk'>*</span></div><div class='option'>B) HI</div><div class='option'>C) HCl</div><div class='option'>D) HBr</div><div class='solution'>The weakest acid will have the strongest conjugate base.&nbsp; Out of all the choices, only HCN is a weak acid.</div><p></p></div><div class='question'><div class='stem'>4) If a solution has a hydroxide ion concentration of 4.10x10<sup>-4</sup> M, then what is the pH of the solution at 25°C?</div><div class='option'>A) -3.45</div><div class='option'>B) 2.44x10<sup>-11</sup></div><div class='option'>C) 3.39</div><div class='option'>D) 10.6<span class='asterisk'>*</span></div><div class='solution'>pOH = -log[OH<sup>-</sup>]<br>pOH = -log(4.10x10<sup>-4</sup>)<br>pOH = 3.39<br>pH = 14 - pOH<br>pH = 14 - 3.39<br>pH = 10.6</div><p></p></div><div class='question'><div class='stem'>5) If a solution has a pOH of 4.22, then what is the hydroxide ion concentration at 25°C?</div><div class='option'>A) -0.625 M</div><div class='option'>B) 1.66x10<sup>4</sup> M</div><div class='option'>C) 9.78 M</div><div class='option'>D) 0.0000603 M<span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><div class='solution'>[OH<sup>-</sup>] = 10<sup>-pOH</sup><br>[OH<sup>-</sup>] = 10<sup>-4.22</sup>&nbsp;<br>[OH<sup>-</sup>] = 0.0000603 M</div><p></p></div><div class='question'><div class='stem'>6) Which of the following pK<sub>a</sub> values would correspond to the strongest acid?</div><div class='option'>A) pK<sub>a</sub> = 9.64</div><div class='option'>B) pK<sub>a</sub> = 5.79</div><div class='option'>C) pK<sub>a</sub> = 3.79</div><div class='option'>D) pK<sub>a</sub> = 1.51<span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><div class='solution'>The lowest pK<sub>a</sub> corresponds to the strongest acid.&nbsp; Possibly the easiest way to remember this is that at the half-equivalence point pH = pK<sub>a</sub>.&nbsp; The strongest acid would have the lowest pH, thus the lowest pK<sub>a</sub>.</div><p></p></div><div class='question'><div class='stem'>7) Determine the pH of a 0.0000812 M HCl&nbsp; solution.</div><div class='option'>A) 4.50</div><div class='option'>B) 9.91</div><div class='option'>C) 1.23x10<sup>-10</sup></div><div class='option'>D) 4.09<span class='asterisk'>*</span></div><div class='solution'>Since HCl is a strong acid, assume the concentration of HCl is the hydrogen ion concentration.<br>pH = -log([H<sup>+</sup>])<br>pH = -log(0.0000812 M)<br>pH = 4.09</div><p></p></div><div class='question'><div class='stem'>8) Determine the pH in a 0.541 M CH<sub>3</sub>NH<sub>2</sub>&nbsp;solution. The K<sub>b</sub> of CH<sub>3</sub>NH<sub>2</sub><span style="font-size: 10.5pt;"> is 4.38x10<sup>-4</sup></span><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 1.81</div><div class='option'>B) 12.2<span class='asterisk'>*</span></div><div class='option'>C) 10.4</div><div class='option'>D) 3.63</div><div class='option'>E)  None of the above.</div><div class='solution'>Determine the pH in a 0.541 M CH<sub>3</sub>NH<sub>2</sub>&nbsp;solution. The K<sub>b</sub> of CH<sub>3</sub>NH<sub>2</sub><span style="font-size: 10.5pt;"> is 4.38x10<sup>-4</sup></span><span style="font-size: 10.5pt;">.<br></span></span>
+<table style="border-collapse: collapse; width: 46.9261%;" border="1">
+<tbody>
+<tr>
+<td style="width: 24.9702%;">R</td>
+<td style="width: 24.9702%;">CH<sub>3</sub>NH<sub>2</sub>&nbsp;</td>
+<td style="width: 12.5573%;">+ H<sub>2</sub>O <span style="font-size: 10.5pt;">⇄</span></td>
+<td style="width: 12.5573%;">OH<sup>-</sup></td>
+<td style="width: 24.9702%;">+ CH<sub>3</sub>NH<sub>3</sub><sup>+</sup></td>
+</tr>
+<tr>
+<td style="width: 24.9702%;">I</td>
+<td style="width: 24.9702%;">0.541</td>
+<td style="width: 12.5573%;">&nbsp;</td>
+<td style="width: 12.5573%;">0</td>
+<td style="width: 24.9702%;">0</td>
+</tr>
+<tr>
+<td style="width: 24.9702%;">C</td>
+<td style="width: 24.9702%;">- x</td>
+<td style="width: 12.5573%;">&nbsp;</td>
+<td style="width: 12.5573%;">+ x</td>
+<td style="width: 24.9702%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 24.9702%;">E</td>
+<td style="width: 24.9702%;">0.541 - x</td>
+<td style="width: 12.5573%;">&nbsp;</td>
+<td style="width: 12.5573%;">x</td>
+<td style="width: 24.9702%;">x</td>
+</tr>
+</tbody>
+</table>
+<br>K<sub>b</sub> = <span style="font-size: 10.5pt;">4.38x10<sup>-4</sup></span><span style="font-size: 10.5pt;"> = X<sup>2</sup>/(0.541 - x), the small x assumption is valid because 0.541/(4.38x10<sup>-4</sup>) = 1240<br></span>0.541 x <span style="font-size: 10.5pt;">4.38x10<sup>-4</sup></span><span style="font-size: 10.5pt;">= X<sup>2</sup><br></span>x = <span style="font-size: 10.5pt;">√(0.000237)<br>pOH = -log[OH<sup>-</sup>] = -log(0.0154)<br>pOH = 1.81<br>pH = 14 - pH = 14 - 1.81 = 12.2</span></div><p></p></div><div class='question'><div class='stem'>9) What is the conjugate acid of HSO<sub>4</sub><sup>-</sup>?</div><div class='option'>A) SO<sub>4</sub>OH</div><div class='option'>B) SO<sub>4</sub><sup>2-</sup></div><div class='option'>C) H<sub>2</sub>SO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>D)  None of the above.</div><div class='solution'>To find the conjugate acid of HSO<sub>4</sub><sup>-</sup>, add a H<sup>+</sup> ion (or remove OH<sup>-</sup>).&nbsp; This will give you H<sub>2</sub>SO<sub>4</sub>, which has 1 more hydrogen and a charge 1 higher.</div><p></p></div><div class='question'><div class='stem'>10) Determine the [H<sub>3</sub>O<sup>+</sup>] in a 0.270 M HClO solution. The K<sub>a</sub> of HClO is 2.9 × 10<sup>-8</sup>.<br></span></div><div class='option'>A) 0.000106 M</div><div class='option'>B) 7.83x10<sup>-9</sup> M</div><div class='option'>C) 8670 M</div><div class='option'>D) 0.0000885 M<span class='asterisk'>*</span></div><div class='solution'><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">Since HClO is a weak acid, we need a RICE table, and acid dissociation constant equation.<br></span></span>
+<table style="border-collapse: collapse; width: 20.8114%;" border="1">
+<tbody>
+<tr>
+<td style="width: 7.73981%;">R</td>
+<td style="width: 35.7966%;"><span style="font-size: 10.5pt;">HClO ⇄</span></td>
+<td style="width: 14.8195%;"><span style="font-size: 10.5pt;">H<sup>+</sup> +&nbsp;</span></td>
+<td style="width: 41.6166%;"><span style="font-size: 10.5pt;">ClO<sup>-</sup></span></td>
+</tr>
+<tr>
+<td style="width: 7.73981%;">I</td>
+<td style="width: 35.7966%;">0.270</td>
+<td style="width: 14.8195%;">0</td>
+<td style="width: 41.6166%;">0</td>
+</tr>
+<tr>
+<td style="width: 7.73981%;">C</td>
+<td style="width: 35.7966%;">- x</td>
+<td style="width: 14.8195%;">+ x</td>
+<td style="width: 41.6166%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 7.73981%;">E</td>
+<td style="width: 35.7966%;">0.270 - x</td>
+<td style="width: 14.8195%;">x</td>
+<td style="width: 41.6166%;">x</td>
+</tr>
+</tbody>
+</table>
+<br>K<sub>a</sub> = 2.9 × 10<sup>-8</sup> = [H+][ClO<sup>-</sup>]/[HClO]<br>2.9 × 10<sup>-8</sup> = x<sup>2</sup>/(0.270 - x), small x assumption is valid because 0.270/(2.9 × 10<sup>-8</sup>) = 9.31x10<sup>6</sup><br>2.9 × 10<sup>-8</sup> = x<sup>2</sup>/0.270<br>0.270 x 2.9 × 10<sup>-8</sup> = x<sup>2<br></sup>x = √(0.270 x 2.9 × 10-8)<br>[H<sub>3</sub>O<sup>+</sup>] = x = 0.0000885 M</span></div><p></p></div><div class='question'><div class='stem'>11) If a solution has a hydronium (hydrogen) ion concentration of 1.99x10<sup>-8</sup> M, then what is the pH of the solution at 25°C?</div><div class='option'>A) 5.03x10<sup>-7</sup></div><div class='option'>B) 6.30</div><div class='option'>C) 7.70<span class='asterisk'>*</span></div><div class='option'>D) -7.86</div><div class='solution'>pH = -log[H<sup>+</sup>]<br>pH = -log(1.99x10<sup>-8</sup>)<br>pH = 7.70</div><p></p></div><div class='question'><div class='stem'>12) Determine the pH&nbsp;in a 0.832 M HClO solution. The K<sub>a</sub> of HClO is 2.9 × 10<sup>-8</sup>.<br></span></div><div class='option'>A) 4.18</div><div class='option'>B) 3.81<span class='asterisk'>*</span></div><div class='option'>C) 7.62</div><div class='option'>D) 0.000155</div><div class='solution'><span style="font-size: 10.5pt;">Since HClO is a weak acid, we need a RICE table, and acid dissociation constant equation.<br></span>
+<table style="border-collapse: collapse; width: 20.8114%;" border="1">
+<tbody>
+<tr>
+<td style="width: 7.73981%;">R</td>
+<td style="width: 35.7966%;"><span style="font-size: 10.5pt;">HClO ⇄</span></td>
+<td style="width: 14.8195%;"><span style="font-size: 10.5pt;">H<sup>+</sup> +&nbsp;</span></td>
+<td style="width: 41.6166%;"><span style="font-size: 10.5pt;">ClO<sup>-</sup></span></td>
+</tr>
+<tr>
+<td style="width: 7.73981%;">I</td>
+<td style="width: 35.7966%;">0.832</td>
+<td style="width: 14.8195%;">0</td>
+<td style="width: 41.6166%;">0</td>
+</tr>
+<tr>
+<td style="width: 7.73981%;">C</td>
+<td style="width: 35.7966%;">- x</td>
+<td style="width: 14.8195%;">+ x</td>
+<td style="width: 41.6166%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 7.73981%;">E</td>
+<td style="width: 35.7966%;">0.832 - x</td>
+<td style="width: 14.8195%;">x</td>
+<td style="width: 41.6166%;">x</td>
+</tr>
+</tbody>
+</table>
+<br>K<sub>a</sub> = 2.9 × 10<sup>-8</sup> = [H+][ClO<sup>-</sup>]/[HClO]<br>2.9 × 10<sup>-8</sup> = x<sup>2</sup>/(0.832 - x), small x assumption is valid because 0.832/(2.9 × 10<sup>-8</sup>) = 2.87x10<sup>7</sup><br>2.9 × 10<sup>-8</sup> = x<sup>2</sup>/0.832<br>0.832 x 2.9 × 10<sup>-8</sup> = x<sup>2<br></sup>x = √(0.832 x 2.9 × 10-8)<br>[H<sub>3</sub>O<sup>+</sup>] = x = 0.000155 M<br><br>pH = -log[H<sub>3</sub>O<sup>+</sup>]<br>pH = -log(0.000155)<br>pH = 3.81</span></div><p></p></div><div class='question'><div class='stem'>13) Which of the following is the strongest acid?</div><div class='option'>A) H<sub>2</sub>PO<sub>4</sub><sup>-</sup></div><div class='option'>B) HPO<sub>4</sub><sup>2-</sup></div><div class='option'>C) H<sub>3</sub>PO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>D) PO<sub>4</sub><sup>3-</sup></div><div class='solution'>Oxyacids become stronger acids the more oxygens they have.&nbsp; Also, the more positively charged an acid is (least negatively charged), the stronger the acid will be.</div><p></p></div><div class='question'><div class='stem'>14) If a solution has a pOH of 10.4, then what is the hydronium (hydrogen) ion concentration at 25°C?</div><div class='option'>A) 3.98x10<sup>-11</sup> M</div><div class='option'>B) 0.000251 M<span class='asterisk'>*</span></div><div class='option'>C) 3.60 M</div><div class='option'>D) 2.51x10<sup>10</sup> M</div><div class='solution'>pH = 14 - pOH<br>pH = 3.60<br>[OH<sup>-</sup>,H<sup>+</sup>] = 10<sup>-pH</sup><br>[OH<sup>-</sup>,H<sup>+</sup>] = 10<sup>-3.60</sup><br>[OH<sup>-</sup>,H<sup>+</sup>] = 0.000251 M</div><p></p></div><div class='question'><div class='stem'>15) Determine the pH in a 0.906 M HSO<sub>4</sub><sup>-</sup>&nbsp;solution. The K<sub>b</sub> of SO<sub>4</sub><sup>2-</sup><span style="font-size: 10.5pt;"> is 8.33 × 10<sup>-13</sup></span><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 1.01<span class='asterisk'>*</span></div><div class='option'>B) 2.04</div><div class='option'>C) 13.0</div><div class='option'>D)  None of the above.</div><div class='solution'><span style="font-size: 10.5pt;">Since HSO<sub>4</sub><sup>-</sup>&nbsp;is a weak acid, we need a RICE table, and acid dissociation constant equation.<br></span>
+<table style="border-collapse: collapse; width: 22.584%;" border="1">
+<tbody>
+<tr>
+<td style="width: 7.82114%;">R</td>
+<td style="width: 42.0386%;"><span style="font-size: 10.5pt;">HSO<sub>4</sub><sup>-</sup> ⇄</span></td>
+<td style="width: 16.9458%;"><span style="font-size: 10.5pt;">H<sup>+</sup> +&nbsp;</span></td>
+<td style="width: 33.2398%;">SO<sub>4</sub><sup>2-</sup></td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">I</td>
+<td style="width: 42.0386%;">0.906</td>
+<td style="width: 16.9458%;">0</td>
+<td style="width: 33.2398%;">0</td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">C</td>
+<td style="width: 42.0386%;">- x</td>
+<td style="width: 16.9458%;">+ x</td>
+<td style="width: 33.2398%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">E</td>
+<td style="width: 42.0386%;">0.906 - x</td>
+<td style="width: 16.9458%;">x</td>
+<td style="width: 33.2398%;">x</td>
+</tr>
+</tbody>
+</table>
+<p><br>K<sub>a</sub> = 10<sup>-14</sup>/<span style="font-size: 10.5pt;">8.33 × 10<sup>-13</sup></span><span style="font-size: 10.5pt;"> = 0.0120<br></span><span style="font-size: 10.5pt;">0.0120</span><span style="font-size: 10.5pt;">&nbsp;= [H+][SO<sub>4</sub><sup>2-</sup>]/[HSO<sub>4</sub><sup>-</sup>]<br>0.0120 = x<sup>2</sup>/(0.906 - x), small x assumption is not valid because 0.906/(1.2 × 10<sup>-2</sup>) = 75.5<br>0.0120 = x<sup>2</sup>/0.906<br>(0.906 - x) x (0.0120) = x<sup>2<br></sup>0.0109 - 0.0120x = x<sup>2<br></sup>0 = x<sup>2</sup> + 0.0120x - 0.0109<br>x = 0.0985<br>pH = -log[H<sub>3</sub>O<sup>+</sup>]<br>pH = -log(0.0985)<br>pH = 1.01</span></p></div><p></p></div><div class='question'><div class='stem'>16) Which of the following chemicals are amphoteric?</div><div class='option'>A) NH<sub>4</sub><sup>+</sup></div><div class='option'>B) Ca(OH)<sub>2</sub></div><div class='option'>C) HPO<sub>4</sub><sup>2-</sup><span class='asterisk'>*</span></div><div class='option'>D) NO<sub>3</sub><sup>-</sup></div><div class='solution'>Amphoteric (amph- like amphibian, means both) means that it can act as either an acid or a base.&nbsp; What you should be looking for is a chemical with an acidic hydrogen (typically it will have the hydrogen listed first or a carboxylic acid group -COOH), that can also accept an additional hydrogen (e.g. water or negatively charged).&nbsp; Thus HPO<sub>4</sub><sup>2-</sup> can be classified as amphoteric.</div><p></p></div><div class='question'><div class='stem'>17) Determine the pH of a 0.0000155 M LiOH&nbsp; solution.</div><div class='option'>A) 6.25</div><div class='option'>B) 4.81</div><div class='option'>C) 9.19<span class='asterisk'>*</span></div><div class='option'>D) 6.45x10<sup>-10</sup></div><div class='solution'>pOH = -log[OH<sup>-</sup>]<br>pOH = -log[0.0000155]<br>pOH = 4.81<br>pH = 14 - pOH<br>pH = 14 - 4.81<br>pH = &nbsp;9.19</div><p></p></div><div class='question'><div class='stem'>18) What is the conjugate base of &nbsp;HSO<sub>4</sub><sup>-</sup>?</div><div class='option'>A) SO<sub>4</sub><sup>2-</sup><span class='asterisk'>*</span></div><div class='option'>B) H<sub>2</sub>SO<sub>4</sub></div><div class='option'>C) SO<sub>4</sub>OH</div><div class='option'>D)  None of the above.</div><div class='solution'>To get the conjugate base, you'd need to remove a H<sup>+</sup> or add an OH<sup>-</sup>.&nbsp; In this case, when we remove a H<sup>+</sup> from HSO<sub>4</sub><sup>-</sup> it gives us SO<sub>4</sub><sup>2-</sup>.</div><p></p></div><div class='question'><div class='stem'>19) Calculate the concentration of H<sub>3</sub>O<sup>+</sup> (H<sup>+</sup>) in a solution that has a concentration of OH<sup>-</sup>&nbsp;of 6.46x10<sup>-8</sup> M at 25°C.</div><div class='option'>A) 1.86x10<sup>-7</sup> M</div><div class='option'>B) 1.55x10<sup>-7</sup> M<span class='asterisk'>*</span></div><div class='option'>C) 1.58x10<sup>-23</sup> M</div><div class='option'>D) 1.39x10<sup>-7</sup> M</div><div class='solution'>[H<sup>+</sup>][OH<sup>-</sup>] = 10<sup>-14</sup> at 25°C.&nbsp; <br>[H<sup>+</sup>] = 10<sup>-14</sup>/[OH<sup>-</sup>]<br>10<sup>-14</sup>/6.46x10<sup>-8</sup> = 1.55x10<sup>-7</sup> M</div><p></p></div><div class='question'><div class='stem'>20) Determine the pOH of a 0.000508 M KOH solution.</div><div class='option'>A) 3.29<span class='asterisk'>*</span></div><div class='option'>B) 1.97x10<sup>-11</sup></div><div class='option'>C) 10.7</div><div class='option'>D) 3.95</div><div class='solution'>Since KOH is a strong base, assume the concentration of KOH is the concentration of OH<sup>-</sup>.<br>pOH = -log[OH<sup>-</sup>]<br>pOH = -log(0.000508)<br>pOH = 3.29</div><p></p></div><div class='question'><div class='stem'>21) Calculate pK<sub>b</sub> for the conjugate base of an acid that has a pK<sub>a</sub> of 8.90 (at 25°C).</div><div class='option'>A) 5.10<span class='asterisk'>*</span></div><div class='option'>B) 1.26x10<sup>-9</sup></div><div class='option'>C) 1.12x10<sup>-15</sup></div><div class='option'>D) 7.94x10<sup>-6</sup></div><div class='solution'>pK<sub>a</sub> +&nbsp;pK<sub>b</sub> = 14<br>pK<sub>b</sub> = 14 - pK<sub>a</sub><br>pK<sub>b</sub> = 5.10</div><p></p></div><div class='question'><div class='stem'>22) Determine the pH in a 0.992 M HSO<sub>4</sub><sup>-</sup> solution. The K<sub>a</sub> of HSO<sub>4</sub><sup>-</sup><span style="font-size: 10.5pt;"> is 1.2 × 10<sup>-2</sup></span><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 1.75 c</div><div class='option'>B) 0.986<span class='asterisk'>*</span></div><div class='option'>C) 0.962 b</div><div class='option'>D)  None of the above.</div><div class='solution'><span style="font-size: 10.5pt;">Since HSO<sub>4</sub><sup>-</sup>&nbsp;is a weak acid, we need a RICE table, and acid dissociation constant equation.<br></span>
+<table style="border-collapse: collapse; width: 22.584%;" border="1">
+<tbody>
+<tr>
+<td style="width: 7.82114%;">R</td>
+<td style="width: 42.0386%;"><span style="font-size: 10.5pt;">HSO<sub>4</sub><sup>-</sup> ⇄</span></td>
+<td style="width: 16.9458%;"><span style="font-size: 10.5pt;">H<sup>+</sup> +&nbsp;</span></td>
+<td style="width: 33.2398%;">SO<sub>4</sub><sup>2-</sup></td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">I</td>
+<td style="width: 42.0386%;">0.992</td>
+<td style="width: 16.9458%;">0</td>
+<td style="width: 33.2398%;">0</td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">C</td>
+<td style="width: 42.0386%;">- x</td>
+<td style="width: 16.9458%;">+ x</td>
+<td style="width: 33.2398%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">E</td>
+<td style="width: 42.0386%;">0.992 - x</td>
+<td style="width: 16.9458%;">x</td>
+<td style="width: 33.2398%;">x</td>
+</tr>
+</tbody>
+</table>
+<br>K<sub>a</sub> = <span style="font-size: 10.5pt;">1.2 × 10<sup>-2</sup></span><span style="font-size: 10.5pt;"></span><span style="font-size: 10.5pt;"> = [H+][SO<sub>4</sub><sup>2-</sup>]/[HSO<sub>4</sub><sup>-</sup>]<br>1.2 × 10<sup>-2</sup>= x<sup>2</sup>/(0.992 - x), small x assumption is not valid because 0.992/(1.2 × 10<sup>-2</sup>) = 82.7<br>1.2 × 10<sup>-2</sup> = x<sup>2</sup>/0.992<br>(0.992 - x) x (1.2 × 10<sup>-2</sup>) = x<sup>2<br></sup>0.0119 - 1.2 × 10-2x = x<sup>2<br></sup>0 = x<sup>2</sup> + 1.2 × 10-2x - 0.0119<br>x = 0.103<br>pH = -log[H<sub>3</sub>O<sup>+</sup>]<br>pH = -log(0.103)<br>pH = 0.986</span></div><p></p></div><div class='question'><div class='stem'>23) (SLO 4.5) Calculate the percent ionization of a monoprotic weak acid (HA) in a solution that is 0.131 M, if the acid dissociation constant (K<sub>a</sub>) is 3.74x10<sup>-7</sup>.&nbsp;<br>HA ➞ H<sup>+</sup> + A<sup>-</sup></div><div class='option'>A) 0.155 %</div><div class='option'>B) 0.0000374 %</div><div class='option'>C) 0.169 %<span class='asterisk'>*</span></div><div class='option'>D) 0.00177 %</div><p></p></div><div class='question'><div class='stem'>24) (SLO 4.2) Which of the following is a Brønsted–Lowry base?</div><div class='option'>A) H<sub>3</sub>PO<sub>4</sub></div><div class='option'>B) Mg(OH)<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>C) CH<sub>4</sub></div><div class='option'>D) Br<sub>2</sub></div><div class='option'>E)  None of the above.</div><div class='solution'>H<sub>3</sub>PO<sub>4</sub> is an acid.<br>Br<sub>2</sub> will not dissociate in water, and is not an acid or a base.<br>CH<sub>4</sub> does not have an acidic hydrogen (the C-H bonds won't break), and is not an acid or a base.<br>Mg(OH)<sub>2</sub> is the only base.</div><p></p></div><div class='question'><div class='stem'>25) (SLO 4.7) How many milliliters of 0.0852 M NaOH are required to titrate 30 mL of 0.145 M HBr to the equivalence point.</div><div class='option'>A) 17.6 mL</div><div class='option'>B) 5.11 mL</div><div class='option'>C) 51.1 mL<span class='asterisk'>*</span></div><div class='option'>D) 43.4 mL</div><div class='solution'>30 mL x (1L/1000mL) x (0.145 mol/L) x (1 mol NaOH/1 mol HBr) x (1 L/0.0852 mol) x (1000 mL/1L) = 51.1 mL</div><p></p></div><div class='question'><div class='stem'>26) (SLO 4.6) What is the [CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H] ratio necessary to make a buffer solution with a pH of 5.97?&nbsp;<br>K<sub>a</sub> = 1.8x10<sup>-5</sup> for CH<sub>3</sub>CO<sub>2</sub>H.</div><div class='option'>A) 17 : 1<span class='asterisk'>*</span></div><div class='option'>B) 0.060 : 1</div><div class='option'>C) 9.3 : 1</div><div class='option'>D) 20. : 1</div><div class='solution'>pH = -log(K<sub>a</sub>) + log(base/acid)<br>5.97 = -log(1.8x10<sup>-5</sup>) + log([CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H])<br>5.97 = -5.26 + log([CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H])<br>5.97 - -5.26 = log([CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H])<br>11.2 = log([CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H])<br>10<sup>11.2</sup>&nbsp; = [CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H]<br>[CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H] = 17 : 1<br></div><p></p></div><div class='question'><div class='stem'>27) (SLO 4.4) Calculate the pOH of a solution that contains 3.49x10<sup>-2</sup>&nbsp;M H<sub>3</sub>O<sup>+</sup> at 25°C</div><div class='option'>A) 2.87x10<sup>-13</sup></div><div class='option'>B) 2.00</div><div class='option'>C) 12.5<span class='asterisk'>*</span></div><div class='option'>D) 1.46</div><div class='solution'>pH = -log[H<sup>+</sup>]<br>pH = -log(3.49x10<sup>-2</sup><br>pH = 1.46<br>pOH = 14 - 1.46<br>pOH = 12.5</div><p></p></div><div class='question'><div class='stem'>28) (SLO 4.3) Identify the weakest acid.</div><div class='option'>A) H<sub>2</sub>SO<sub>3</sub></div><div class='option'>B) They are all equal strength</div><div class='option'>C) H<sub>2</sub>SO<sub>4</sub></div><div class='option'>D) H<sub>2</sub>SO<sub>2</sub><span class='asterisk'>*</span></div><div class='solution'>The oxyacid with the fewest oxygens will be the weakest acid, because it's conjugate base will be the least stable due to resonance.</div><p></p></div><div class='question'><div class='stem'>29) (SLO 4.1) Which of the following is a Brønsted–Lowry acid?</div><div class='option'>A) CH<sub>4</sub></div><div class='option'>B) H<sub>3</sub>PO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>C) CH<sub>3</sub>NH<sub>2</sub></div><div class='option'>D) Mg(OH)<sub>2</sub></div><div class='option'>E)  All of the above.</div><div class='solution'>You can tell H<sub>3</sub>PO<sub>4</sub> is a Brønsted–Lowry acid, by the H in the front of the formula.<br>CH<sub>3</sub>NH<sub>2</sub> is a base.<br>CH<sub>4</sub> does not have an acidic hydrogen (the C-H bonds won't break).<br>Mg(OH)<sub>2</sub> is a base.</div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 16 Study Guide<br><canvas id="scantron" class="scantron"></div></body></html>

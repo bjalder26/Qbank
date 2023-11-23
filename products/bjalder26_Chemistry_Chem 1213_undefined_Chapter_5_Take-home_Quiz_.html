@@ -1,0 +1,280 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[2],"2":[0],"3":[2],"4":[2],"5":[2],"6":[2],"7":[3],"8":[2],"9":[0],"10":[0],"11":[2],"12":[3],"13":[1],"14":[0],"15":[0],"16":[2],"17":[2],"18":[1],"19":[2]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter 5 Take-home Quiz</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) Which of the following would have the highest lattice energy?</div><div class='option'>A) Na<sub>2</sub>O</div><div class='option'>B) Li<sub>2</sub>O</div><div class='option'>C) MgO<span class='asterisk'>*</span></div><div class='option'>D) Li<sub>2</sub>O</div><div class='solution'>There are two parts that are involved in lattice energy.&nbsp; One is the charge on the ions (this is the bigger priority), and the other is the distance between the ions.&nbsp; This is only testing on knowing that the larger the charge on the ions, the larger the lattice energy.&nbsp; Since Mg has the highest charge, MgO will have the highest lattice energy.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) The statement "if two elements form more than one compound the ratios of the masses of the second element that combine with a fixed mass of the first element will always be ratios of small whole numbers" belongs to:</div><div class='option'>A) The Law of Multiple Proportions<span class='asterisk'>*</span></div><div class='option'>B) Dalton's Atomic Theory</div><div class='option'>C) The Law of Definite Proportions</div><div class='option'>D) The Law of Conservation of Mass</div><div class='solution'><p>Dalton's Atomic Theory: Matter is composed of small indestructible particles.</p>
+<p>The Law of Conservation of Mass: In a chemical reaction, matter is neither created nor destroyed.</p>
+<p>The Law of Multiple Proportions: If two elements form more than one compound, the ratios of the masses of the second element that combine with a fixed mass of the first element will always be ratios of small whole numbers.</p>
+<p>The Law of Definite Proportions: Samples of a compound will always contain the same proportion of elements by mass.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) What is the name of the <span style="font-size: 10.5pt;">ClO</span><sup>-</sup> ion?</div><div class='option'>A) chlorate</div><div class='option'>B) chlorite</div><div class='option'>C) hypochlorite<span class='asterisk'>*</span></div><div class='option'>D) perchlorate</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) An ionic bond is best described as</div><div class='option'>A) A bond formed when electrons are shared between two atoms</div><div class='option'>B) A bond between two non-metals</div><div class='option'>C) A bond formed when electrons are transferred from one atom to another<span class='asterisk'>*</span></div><div class='option'>D) A bond between two metals</div><div class='solution'>A covalent bond is formed when two atoms share electrons in order to achieve a stable electron configuration. In a covalent bond, the atoms involved have similar electronegativity, meaning they have similar tendencies to attract electrons. This sharing of electrons allows both atoms to fill their outermost energy levels and achieve greater stability.<br><br>An ionic bond is formed when electrons are transferred from one atom to another, resulting in the formation of ions. In an ionic bond, one atom donates electrons to another atom, resulting in the formation of a positively charged ion (cation) and a negatively charged ion (anion). The attraction between these opposite charges holds the ions together and forms an ionic bond.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) What is the name of the following polyatomic ion?<br>HPO<sub>4</sub><sup>2-</sup></span></div><div class='option'>A) phosphate</div><div class='option'>B) phosphite</div><div class='option'>C) hydrogen phosphate<span class='asterisk'>*</span></div><div class='option'>D) dihydrogen phosphate</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) Determine the name for FePO<sub>4</sub><strong>·</strong>4H<sub>2</sub>O</span></div><div class='option'>A) Iron phosphate tetrahydrate</div><div class='option'>B) Iron (III) phosphate trihydrate</div><div class='option'>C) Iron (III) phosphate tetrahydrate<span class='asterisk'>*</span></div><div class='option'>D) Iron (III) phosphate quadhydrate</div><div class='solution'>FePO<sub>4</sub><strong>·</strong>4H<sub>2</sub>O is an ionic compound and a hydrate.&nbsp; To name the ionic compound portion give the name of the cation followed by the name of the anion.&nbsp; In this case that would be iron (III) phosphate.  The hydrate portion of the formula is named based on the number of water molecules.&nbsp; Since this hydrate has 4 water molecules in its formula the prefix 'tetra-' is used before the word 'hydrate'.&nbsp; Thus the correct name is iron (III) phosphate tetrahydrate.</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Calculate the formula mass for Sn(ClO<sub>4</sub>)<sub>4</sub>.</div><div class='option'>A) 324.5 amu</div><div class='option'>B) 872.6 amu</div><div class='option'>C) 218.2 amu</div><div class='option'>D) 516.5 amu<span class='asterisk'>*</span></div><div class='solution'>To calculate the formula mass for Sn(ClO<sub>4</sub>)<sub>4</sub>, take the number of each element from the periodic table and multiply it by the &nbsp;formula mass of the element, then sum all the formula masses from each element.<br>Sn: 118.71 amu x 1 = 118.71 amu<br>Cl: 35.45 amu x 4 = 141.8 amu<br>O: 16.00 amu x 20 = 300 amu<br>Total: 516.5 amu</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) What is the name of the acid H<sub>3</sub>PO<sub>4</sub>?</div><div class='option'>A) Phosphorous acid</div><div class='option'>B) Hydrophosphorous acid</div><div class='option'>C) Phosphoric acid<span class='asterisk'>*</span></div><div class='option'>D) Hydrophosphoric acid</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) Which of the following is the correct Lewis structure for P<sup>-</sup>?</div><div class='option'>A) <img title="p6.jpg" src="../images/38.jpeg" alt="" width="49" height="50"><span class='asterisk'>*</span></div><div class='option'>B) <img title="p4.jpg" src="../images/33.jpeg" alt="" width="46" height="50"></div><div class='option'>C) <img title="p3.jpg" src="../images/28.jpeg" alt="" width="51" height="50"></div><div class='option'>D) <img title="p5.jpg" src="../images/23.jpeg" alt="" width="49" height="50" data-mce-fragment="1"></div><div class='solution'>Since P<sup>-</sup> has a -1 charge, it will have one more electron than the neutral P. &nbsp;P is in the 5A period, so the Lewis structure should have 5 + 1 = 6 electrons.&nbsp; Thus the correct Lewis structure is <img title="p6.jpg" src="../images/38.jpeg" alt="" width="49" height="50">.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) Give the name for Cl<sub>2</sub>O<sub>7</sub>.</div><div class='option'>A) Dichloride heptoxide<span class='asterisk'>*</span></div><div class='option'>B) Chloride oxide</div><div class='option'>C) Chloride (II) oxide</div><div class='option'>D) Chloride heptoxide</div><div class='solution'>Both Cl and O are nonmetals, so we will need to put a Greek prefix before the name of each element, then give the second element an -ide ending.&nbsp; However, mono- is dropped from the beginning in cases where there is only 1 of the first element in the compound.&nbsp; Since there are 2 Cl and 7 O, the name is Dichloride heptoxide.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) Which of the following is the correct Lewis structure for S ?</div><div class='option'>A) <img title="s5.jpg" src="../images/39.jpeg" alt="" width="47" height="50"></div><div class='option'>B) <img title="s3.jpg" src="../images/29.jpeg" alt="" width="43" height="50"></div><div class='option'>C) <img title="s6.jpg" src="../images/24.jpeg" alt="" width="49" height="50"><span class='asterisk'>*</span></div><div class='option'>D) <img title="s4.jpg" src="../images/34.jpeg" alt="" width="50" height="50"></div><div class='solution'>Since S is in the 6A group, it should have 6 valence electrons in its Lewis structure.&nbsp; Thus&nbsp; <img title="s6.jpg" src="../images/24.jpeg" alt="" width="49" height="50"> is the answer.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) What is the name of the following polyatomic ion?<br><span style="font-size: 10.5pt;">C<sub>2</sub>H<sub>3</sub>O</span><sub>2</sub><sup>-</sup></div><div class='option'>A) carbohydroxate</div><div class='option'>B) dicarbon trihydrogen dioxide</div><div class='option'>C) acetite</div><div class='option'>D) acetate<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) What is the name of the following polyatomic ion?<br><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">PO</span><sub>4</sub><sup>3-</sup></div><div class='option'>A) phosphide</div><div class='option'>B) phosphate<span class='asterisk'>*</span></div><div class='option'>C) phosphite</div><div class='option'>D) phosphoxide</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) Which of the following is the correct formula for the compound sodium sulfide?</div><div class='option'>A) Na<sub>2</sub>S<span class='asterisk'>*</span></div><div class='option'>B) NaS</div><div class='option'>C) NaS<sub>2</sub></div><div class='option'>D) So<sub>2</sub>S</div><div class='solution'>Sodium is a fixed charge metal and sulfide is a nonmetal cation, so this will be an ionic compound, and the charges can be know from the periodic table. &nbsp;Sodium will carry a +1 charge because it is in the 1A group.&nbsp; Sulfide will carry a -2<br>charge because sulfur is in the 6A group.&nbsp; The lowest common multiple of 1 and 2 is 2.&nbsp; Therefore we will need 2 sodium ions and 1 sulfide ion.&nbsp; That gives us a formula of Na<sub>2</sub>S.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) What is the formula for the compound sodium acetate?</div><div class='option'>A) NaC<sub>2</sub>H<sub>3</sub>O<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>B) NaNH<sub>4</sub></div><div class='option'>C) Na<sub>2</sub>CO<sub>3</sub></div><div class='option'>D) Na<sub>2</sub>C<sub>2</sub>H<sub>3</sub>O<sub>2</sub></div><div class='solution'>Sodium is a fixed charge metal and acetate is a polyatomic ion.&nbsp; Since sodium acetate contains a polyatomic ion, it is an ionic compound.&nbsp; Therefore, to get the formula you must balance the charges of the two ions. Sodium will carry a +1, whereas&nbsp; acetate will carry a -1 charge.&nbsp; The lowest common multiple of 1 and 1 is 1, therefore there will need to be 1 sodium ions and 1 acetate ions.&nbsp; That gives us a formula of: NaC<sub>2</sub>H<sub>3</sub>O<sub>2</sub>.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) Calculate the molecular mass for C<sub>7</sub>H<sub>14</sub>O.</div><div class='option'>A) 29.02 amu</div><div class='option'>B) 98.18 amu</div><div class='option'>C) 114.2 amu<span class='asterisk'>*</span></div><div class='option'>D) 101.1 amu</div><div class='solution'>To calculate the molecular mass for C<sub>7</sub>H<sub>10</sub>O, take the number of each element from the periodic table and multiply it by the&nbsp; molecular mass of the element, then sum all the molecular masses from each element.<br>C: 12.01 amu x 7 = 84.07 amu<br>H: 1.008 amu x 10 = 14.11 amu<br>O: 16.00 amu x 1 = 16.00 amu<br>Total: 114.2 amu</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) What is the empirical formula for a sulfur oxide (compound composed of sulfur and oxygen) that is 66.7% sulfur by mass?</div><div class='option'>A) SO<sub>2</sub></div><div class='option'>B) S<sub>2</sub>O</div><div class='option'>C) SO<span class='asterisk'>*</span></div><div class='option'>D) SO<sub>3</sub></div><div class='solution'>Since the sulfur oxide compound is is 66.7% sulfur by mass, it will be 100% - 66.7% = 33.3 % oxygen by mass.<br><br>Assuming a 100 g sample gives us:&nbsp; 66.7 g sulfur and 33.3 g oxygen.<br><br>Next convert those grams to moles.<br>66.7 g S x <span class="math-tex">\( \frac{1 mol S}{32.06 g S} \)</span> = 2.08 mol S<br>33.3 g O x <span class="math-tex">\( \frac{1 mol O}{16.00 g O} \)</span> = 2.08 mol O<br><br>Then divide by the lower of the two mol amounts, and get the lowest whole number ratio.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) What is the empirical formula for N<sub>2</sub>H<sub>6</sub>?</div><div class='option'>A) N<sub>2</sub>H<sub>3</sub></div><div class='option'>B) NH<sub>3</sub><span class='asterisk'>*</span></div><div class='option'>C) N<sub>3</sub>H</div><div class='option'>D) N<sub>2</sub>H<sub>6</sub></div><div class='solution'>An empirical formula represents the simplest ratio of elements present in a compound. It shows the relative number of atoms of each element in a compound without specifying the actual number of atoms.&nbsp; To get the empirical formula you need to divide the subscripts in the equation (N<sub>2</sub>H<sub>6</sub>) by their greatest common divisor.&nbsp; In this case 1 and 2 are divisible by 2, which gives NH<sub>3</sub> as the empirical formula.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) Give the name for Fe<sub>2</sub>O<sub>3</sub>.</div><div class='option'>A) Iron oxide</div><div class='option'>B) Iron (II) oxide</div><div class='option'>C) Iron (III) oxide<span class='asterisk'>*</span></div><div class='option'>D) Diiron trioxide</div><div class='solution'>Since Fe is a metal and O is a nonmetal, this is an ionic compound.&nbsp; Since Fe is a variable charge metal we need to calculate the charge on Fe and put a roman numeral in the name indicating the charge.&nbsp; three O will carry a total negative charge of -6, which is 3 x -2.&nbsp; Therefore, the total positive charge must be +6, and that positive charge is carried by two Fe.&nbsp; This means that each Fe must carry a +3 charge.&nbsp; The roman numeral is placed after the name of the metal, and the anion receives an -ide ending, so the correct name is Iron (III) oxide.</div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 5 Take-home Quiz<br><canvas id="scantron" class="scantron"></div></body></html>

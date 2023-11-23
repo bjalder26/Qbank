@@ -1,0 +1,223 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint {
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in; <!--9.969325in; -->
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[3],"2":[2],"3":[3],"4":[1],"5":[0],"6":[1],"7":[0],"8":[1],"9":[1],"10":[0],"11":[1],"12":[0],"13":[0],"14":[3],"15":[0],"16":[3],"17":[0],"18":[0],"19":[0],"20":[0]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 let questionsObject = JSON.parse(questionsObjectText);
+	let markCoordinates = [];
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+    //markCoordinates.push({x: 61.5+23.73*value, y: 74+12.06*key});
+  }
+}
+} else {alert('no questionsObject')}
+
+// Function to draw the dark marks on the canvas
+function drawMarks() {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  //canvas.width = 100;
+  //canvas.height = 100;
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  //ctx.scale(2, 2);
+
+
+ 
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+
+// Call the drawMarks function to draw the dark marks on the canvas
+
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers & Ctrl-x to toggle the solutions.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter 15 Take Home Quiz</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Jul 13, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) Consider the reaction at 271 K:<br>2 NO (g) + O<sub>2</sub> (g) ⇌ 2 NO<sub>2</sub> (g)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ΔG<em>°</em>= -65.7 kJ<br>Calculate ΔG<sub>rxn</sub> under these conditions:<br>P<sub>NO</sub> = 0.200 atm; P<sub>O2</sub> = 0.300 atm; P<sub>NO2</sub> = 3.00 atm</div><div class='option'>A) 14.9 kJ</div><div class='option'>B) 1.49x10<sup>4</sup> kJ</div><div class='option'>C) -59.2 kJ</div><div class='option'>D) -50.8 kJ<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>2) At equilibrium, which of the following are true?</div><div class='option'>A) The concentration of the reactants and products are equal</div><div class='option'>B) The reaction stops</div><div class='option'>C) The concentration of the reactants and products are stable<span class='asterisk'>*</span></div><div class='option'>D) The rate constant of the forward reaction is equal to the equilibrium constant</div><p></p></div><div class='question'><div class='stem'>3) In the reaction below, at equilibrium, the concentration of H<sub>2</sub> is 0.350 M, and the concentration of O<sub>2</sub> is 0.361 M. Determine the equilibrium concentration of H<sub>2</sub>O (g).<br>2 H<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 H<sub>2</sub>O (g)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 2.01x10<sup>-2</sup></div><div class='option'>A) 0.000889 M</div><div class='option'>B) 0.0504 M</div><div class='option'>C) 0.00254 M</div><div class='option'>D) 0.0298 M<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>4) What is Δn for the following equation in relating K<sub>c</sub> to K<sub>p</sub>?<br>4 NH<sub>3 </sub>(g) + 3 O<sub>2</sub> (g) ⇌ 2 N<sub>2</sub> (g) + 6 H<sub>2</sub>O (g)</div><div class='option'>A) -2</div><div class='option'>B) 1<span class='asterisk'>*</span></div><div class='option'>C) 0</div><div class='option'>D) 3</div><p></p></div><div class='question'><div class='stem'>5) If ΔG° = 14.9 kJ at 308 K, then what is K<sub>eq</sub> at 308 K?</div><div class='option'>A) 0.00297<span class='asterisk'>*</span></div><div class='option'>B) 0.167</div><div class='option'>C) 0.953</div><div class='option'>D) 336</div><p></p></div><div class='question'><div class='stem'>6) Once this reaction has reached equilibrium, which of the following changes would shift the equilibrium to the left?<br>N<sub>2</sub>O<sub>4</sub> (g) ⇌ 2 NO<sub>2</sub> (g),&nbsp; &nbsp; &nbsp; ΔH = +57 kJ</div><div class='option'>A) An increase in volume</div><div class='option'>B) An increase in pressure<span class='asterisk'>*</span></div><div class='option'>C) An increase in temperature</div><div class='option'>D) Adding reactant</div><p></p></div><div class='question'><div class='stem'>7) The reaction below has a K<sub>p</sub> value of 7.42x10<sup>-5</sup>. What is the value of K<sub>c</sub> for this reaction at 560 K?<br>3 A (g) + 3 B (g) ⇌ A<sub>3</sub>B<sub>3</sub> (g)</div><div class='option'>A) 1.52x10<sup>4</sup><span class='asterisk'>*</span></div><div class='option'>B) 3.62x10<sup>-13</sup></div><div class='option'>C) 2.76x10<sup>-10</sup></div><div class='option'>D) 3.62x10<sup>-13</sup></div><p></p></div><div class='question'><div class='stem'>8) Is the following reaction reactant or product favored?<br>AgCl (s) ⇌ Ag<sup>+</sup> (aq) + Cl<sup>-</sup> (aq)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 1.8x10<sup>-10</sup></div><div class='option'>A) Product favored</div><div class='option'>B) Reactant favored<span class='asterisk'>*</span></div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>9) Is the following reaction reactant or product favored?<br>HBr (s) + H<sub>2</sub>O (l) ⇌ H<sub>3</sub>O<sup>+</sup> (aq) + Br<sup>-</sup> (aq)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 1.0x10<sup>9</sup></div><div class='option'>A) Reactant favored</div><div class='option'>B) Product favored<span class='asterisk'>*</span></div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>10) Consider the reaction at 306 K:<br>2 NO (g) + O<sub>2</sub> (g) ⇌ 2 NO<sub>2</sub> (g)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ΔG<em>°</em>= -85.1 kJ<br>Calculate ΔG<sub>rxn</sub> under these conditions:<br>P<sub>NO</sub> = 0.200 atm; P<sub>O2</sub> = 0.200 atm; P<sub>NO2</sub> = 2.00 atm</div><div class='option'>A) -69.3 kJ<span class='asterisk'>*</span></div><div class='option'>B) 1.57x10<sup>4</sup> kJ</div><div class='option'>C) -78.2 kJ</div><div class='option'>D) 15.8 kJ</div><p></p></div><div class='question'><div class='stem'>11) Once this reaction has reached equilibrium, which of the following changes would shift the equilibrium to the left?<br>2 SO<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 SO<sub>3</sub> (g),&nbsp; &nbsp; &nbsp; ΔH = -197.7 kJ</div><div class='option'>A) A decrease in volume</div><div class='option'>B) Removing O<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>C) An increase in pressure</div><div class='option'>D) Adding O<sub>2</sub></div><p></p></div><div class='question'><div class='stem'>12) If Q (the reactant quotient) is less than the equilibrium constant, then which way will the reaction proceed more quickly?</div><div class='option'>A) In the forward direction<span class='asterisk'>*</span></div><div class='option'>B) In the reverse direction</div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>13) For the following reaction, if a container holds 2.16 M I<sub>2</sub> and 2.68 M Br<sub>2</sub>. After a reaction takes place, what would be the equilibrium concentration of IBr?<br>I<sub>2</sub> (g) + Br<sub>2</sub> (g) ⇌ 2 IBr (g)&nbsp; &nbsp; &nbsp;K<sub>c</sub> = 7.10</div><div class='option'>A) 2.73 M<span class='asterisk'>*</span></div><div class='option'>B) 2.15 M</div><div class='option'>C) 1.32 M</div><div class='option'>D) 3.46 M</div><p></p></div><div class='question'><div class='stem'>14) (SLO 3.7) Consider the following reaction.<br>Xe (g) + 2 F<sub>2</sub> (g) ⇌ XeF<sub>4</sub> (g)<br><br>A reaction mixture contains 5.36 atm of Xe, 6.99 atm F<sub>2</sub>.&nbsp; Once the reaction reaches equilibrium, the pressure of Xe is 4.24 atm.&nbsp; What is the equilibrium constant (K<sub>p</sub>) for the reaction?</div><div class='option'>A) 0.0556</div><div class='option'>B) 0.00767</div><div class='option'>C) 85.4</div><div class='option'>D) 0.0117<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>15) (SLO 3.3) The K<sub>p</sub> for the reaction below is 7.92 x 10<sup>-3</sup> at 220<em>°</em>C.<br>CO (g) + Cl<sub>2</sub> (g) ⇌ COCl<sub>2</sub> (g)<br><br>In an equilibrium mixture of the three gases, P<sub>CO</sub> = P<sub>Cl<span style="font-size: 10.5pt;">₂</span></sub>&nbsp;= 1.40 x 10<sup>-4</sup> atm.&nbsp; The partial pressure of the product, phosgene (COCl<sub>2</sub>), is __________ atm.</div><div class='option'>A) 1.55x10<sup>-10</sup> atm<span class='asterisk'>*</span></div><div class='option'>B) 2.47x10<sup>-6</sup> atm</div><div class='option'>C) 1.96x10<sup>-8</sup> atm</div><div class='option'>D) 1.11x10<sup>-6</sup> atm</div><p></p></div><div class='question'><div class='stem'>16) (SLO 3.2) The equilibrium constant is given for one of the reactions below.&nbsp; Determine the value of the missing equilibrium constant (K<sub>c2</sub>).<br>N<sub>2</sub>O<sub>4</sub> (g) ⇌ 2 NO<sub>2</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;K<sub>c1</sub> = 1.90<br>3 N<sub>2</sub>O<sub>4</sub> (g) ⇌ 6 NO<sub>2</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;K<sub>c2</sub> = ?</div><div class='option'>A) 47.0</div><div class='option'>B) 8.06</div><div class='option'>C) 5.70</div><div class='option'>D) 6.86<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>17) (SLO 3.1) What is the equilibrium constant equation for the following reaction?<br>2 H<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 H<sub>2</sub>O (g)</div><div class='option'>A) K = <span class="math-tex">\( \frac{[H_2O]^2}{[H_2]^2[O_2]} \)</span><span class='asterisk'>*</span></div><div class='option'>B) K = <span class="math-tex">\( \frac{[H_2][O_2]}{[H_2O]} \)</span></div><div class='option'>C) K = <span class="math-tex">\( \frac{[H_2]^2[O_2]}{[H_2O]^2} \)</span></div><div class='option'>D) K = <span class="math-tex">\( \frac{[H_2O]}{[H_2][O_2]} \)</span></div><p></p></div><div class='question'><div class='stem'>18) (SLO 3.4) The following reaction is exothermic.&nbsp; Which change will shift the equilibrium to the left?<br>2 NH<sub>3</sub> (g) ⇌ N<sub>2</sub> (g) + 3 H<sub>2</sub> (g)</div><div class='option'>A) Raising the temperature<span class='asterisk'>*</span></div><div class='option'>B) Adding a solid</div><div class='option'>C) Lowering the temperature</div><div class='option'>D)  All of the above.</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>19) (SLO 3.6) In a reaction mixture containing <strong>only </strong>products, what is the value of Q<sub>c</sub>?</div><div class='option'>A) ꝏ (infinity)<span class='asterisk'>*</span></div><div class='option'>B) 2</div><div class='option'>C) 0</div><div class='option'>D) <span class="math-tex">\( \sqrt(2) \)</span></div><p></p></div><div class='question'><div class='stem'>20) (SLO 3.5) Identify the change that will always shift the equilibrium to the right.</div><div class='option'>A) Removing product<span class='asterisk'>*</span></div><div class='option'>B) Removing reactant</div><div class='option'>C) Increasing pressure</div><div class='option'>D) Decreasing volume</div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 15 Take Home Quiz<br><canvas id="scantron" class="scantron"></div></body></html>

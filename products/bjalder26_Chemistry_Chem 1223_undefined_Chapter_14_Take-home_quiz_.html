@@ -1,0 +1,377 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[3],"2":[0],"3":[1],"4":[0],"5":[2],"6":[3],"7":[2],"8":[0],"9":[0],"10":[3],"11":[1],"12":[2],"13":[0],"14":[3],"15":[2],"16":[1],"17":[0],"18":[0],"19":[0],"20":[0],"21":[0],"22":[0],"23":[0]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter 14 Take-home quiz</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Sep 11, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) What generally happens with a reaction when the temperature is increased?</div><div class='option'>A) The rate constant (K) increases, causing the rate of the reaction to decrease</div><div class='option'>B) The rate constant (K) decreases, causing the rate of the reaction to increase</div><div class='option'>C) The rate constant (K) decreases, causing the rate of the reaction to decrease.</div><div class='option'>D) The rate constant (K) increases, causing the rate of the reaction to increase<span class='asterisk'>*</span></div><div class='solution'>If you think about a generic rate equation such as Rate = k[A][B], anything that affects the rate, that isn't a change in concentration of A or B must cause a change in k.&nbsp; Since an increase in temperature increases the rate of a reaction, it must be because it increases the value of k.<br><br>The effect of temperature on the equilibrium constant is shown in the Arrhenius equation.<br>k = <span class="math-tex">\( Ae^{\frac{-E_a}{RT}} \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) What is the <strong>overall order</strong> of the following reaction?<br>2 NH<sub>3</sub> (g) + N<sub>2</sub> (g) ➞ 3 H<sub>2</sub> (g);&nbsp; &nbsp; &nbsp; Rate = k</div><div class='option'>A) zeroth<span class='asterisk'>*</span></div><div class='option'>B) first</div><div class='option'>C) third</div><div class='option'>D) second</div><div class='solution'>based on the rate law (Rate = k), the order of the reaction is zeroth, because if you add the exponents (orders) of each reactant, then you will get 0</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) A reaction is found to have an activation energy of 42.8 kJ/mol, and a frequency factor (A) of 6.82x10<sup>10</sup> s<sup>-1</sup>.&nbsp; What is the rate constant of the reaction at 375 K?</div><div class='option'>A) 6.24x10<sup>16</sup> s<sup>-1</sup></div><div class='option'>B) 7.45x10<sup>4</sup> s<sup>-1</sup><span class='asterisk'>*</span></div><div class='option'>C) 5.96x10<sup>4</sup> s<sup>-1</sup></div><div class='option'>D) 6.73x10<sup>10</sup> s<sup>-1</sup></div><div class='solution'>K = <span class="math-tex">\( Ae^{\frac{-E_a}{RT}} \)</span><br>Substituting in for 6.82x10<sup>10</sup> s<sup>-1 </sup>A, 42.8 kJ/mol for E<sub>a</sub>, 0.0083145 kJ/mol-K for R, and 375 K for T gives:<br>K = 6.82x10<sup>10</sup> s<sup>-1</sup> x e<sup>(-42.8 kJ/mol)/(0.0083145 kJ/mol-K x 375 K)</sup><br>K = 7.45x10<sup>4</sup> s<sup>-1</sup><br>*E<sub>a</sub> and K need to both be in J or kJ</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) The following reaction is a zero order reaction.&nbsp; If the rate constant is 2.81 M/s, and the original concentration of&nbsp; A&nbsp;is 2.42x10<sup>-2 </sup>M, then what is the half-life?<br><br>
+<div style="text-align: center;">A (g) + 2 B (g)<span style="font-size: 10.5pt;">➞</span><span style="font-size: 10.5pt;">&nbsp;AB</span><sub>2</sub><span style="font-size: 10.5pt;"> (g)</span></div></div><div class='option'>A) 0.00431 s<span class='asterisk'>*</span></div><div class='option'>B) 0.247 s</div><div class='option'>C) 116 s</div><div class='option'>D) 14.7 s</div><div class='solution'>Since this is a second order reaction, the half-life equation is <span class="math-tex">\( \frac{[A]_0}{2K} = t_{1/2} \)</span><br>Substituting in 2.81 Ms<sup>-1</sup> for K, and 2.42x10<sup>-2 </sup>M for [A]<sub>0</sub> gives:<br>t<sub>1/2</sub> = (2.42x10<sup>-2 </sup>M)/(2x2.81 Ms<sup>-1</sup>) = 0.00431 s</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) What is are the units for the k in the following rate law.<br>Rate = k[A]<sup>2</sup></div><div class='option'>A) 1/(M<sup>2</sup>S) or M<sup>-2</sup>S<sup>-1</sup></div><div class='option'>B) M/s or Ms<sup>-1</sup></div><div class='option'>C) 1/(Ms) or M<sup>-1</sup>s<sup>-1</sup><span class='asterisk'>*</span></div><div class='option'>D) 1/(M<sup>3</sup>s) or M<sup>-3</sup>s<sup>-1</sup></div><div class='solution'>Based on the rate law (Rate = k[A]<sup>2</sup>), the overall order of the reaction is second, so the exponents for units of the rate constant will add to -2.&nbsp; Since seconds is always to the -1 power, molarity will have to be to the -1 power.&nbsp; Thus 1/(Ms) or M<sup>-1</sup>s<sup>-1</sup> is the answer.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) Using the balanced chemical equation below, calculate the rate of rate reaction with a rate in change of concentration of NH<sub>3</sub> equal to -12.3 M/s.
+<div style="text-align: center;">2 NH<sub>3</sub> (g) + 3 Cl<sub>2</sub> (g) → N<sub>2</sub> (g) + 6 HCl (g)</div></div><div class='option'>A) 12.3 M/s</div><div class='option'>B) 24.6 M/s</div><div class='option'>C) 151 M/s</div><div class='option'>D) 6.15 M/s<span class='asterisk'>*</span></div><div class='solution'>Rate = <span class="math-tex">\( -\frac{1}{2}\frac{Δ[NH_3]}{Δt} \)</span> = <span class="math-tex">\( -\frac{1}{3}\frac{Δ[Cl_2]}{Δt} \)</span> = <span class="math-tex">\( +\frac{Δ[N_2]}{Δt} \)</span> = <span class="math-tex">\( +\frac{1}{6}\frac{Δ[HCl]}{Δt} \)</span><br>Substitute in -12.3 M/s for change of concentration of NH<sub>3</sub><br>Rate = -1/2 12.3 M/s&nbsp;<br>Rate = 6.15 M/s</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) The energy diagram below is for a 3 step reaction.&nbsp; Which step is the rate determining step?<br><img title="enthalpy reaction.jpg" src="../images/57.jpeg" alt="" width="362" height="189"></div><div class='option'>A) 1st step</div><div class='option'>B) 3rd step</div><div class='option'>C) 2nd step<span class='asterisk'>*</span></div><div class='solution'>The step with the highest activation energy will be the slowest step (rate determining step), thus step 2 is the rate determining step.<br><img title="reaction steps.jpg" src="data:image/jpeg;base64,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C81xbwz6ZrGmS/ZdY0e6G260q4H3o3X07qw4YYIrv6+f/wBpTTLf4MfG/wAE/Fe3tvs9lHctoXiqaBmQz2lwuy3mlUfK6wzEHJGQH64Ar35W3rkHIPII71+RnqDqKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAr4n/4Itf8AIlfEv/sY/wD2nX2xXxP/AMEWv+RK+Jf/AGMf/tOgD7YooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAMP4ieNrP4a+BNY8QaiwjstGs5b2cltvyxoWIz6nGB9a8t/Y08Fa1eaBqfxG8X28EHjD4iGK9lgjO5dMslTFtaoTzgKS5GfvOc8iq/7a0r+Px4L+F9uzb/H2sINRCYJTTLXE9ySPRtqJ/wADr3GGBbaFURQiIAqqowFA6ACgB6dadRRQB+f3/BuF/wAmQeKf+x5u/wD0g0+v0Br8/v8Ag3C/5Mg8U/8AY83f/pBp9foDX2fiH/yUmM/x/ojkwP8Au8PQw/iH4FsPiZ4G1Xw/qsSz6drFrJaXCEZyrjGR7jqPcCvO/wBjbxjf6j8Ob/wrrdwLrxD8PNRk8O302eblIgpgn6D78LRnp1Br2CvDZM/Cr9upG+dNM+Keh7DyAn9o2HI/Frdz9fLr4w6z3KiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK+J/+CLX/IlfEv8A7GP/ANp19sV8T/8ABFr/AJEr4l/9jH/7ToA+2KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiuP+PHxQh+C3wb8R+KZgWGjWEk8aAZMsuMRoB/tOVH40Aeb/AAfX/hb37XvjzxkwL6b4MhTwdpDMg2mYYnvXU/77Rp/wA17xXmn7I/wum+EX7P8A4f0u951i4hOo6rJg5lvLhjNMT77nI/4CK9Lo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zgHAJ4r5g8B/sseNoP2X/A8tjoNx4Q+MHwoQnTLi6ubSSDWo2aR5bIvBO4MEqtt/ebCrdMKWJ+x6KAPlv45/8LH+M+ofCzUf+FReKNNuvCHiW213Vbcaxo80exI3V44JPtimQ5YYLpGCOuOld9feNfFsvxBttZ0r4Q+IrO4mgW21W+1C/wBKaaSzh82SO3t4or8q0rSyMA0jIqB2JLYCn2aigD54+Fn7Or+PPh5rmsfELQvHOneK/EV3dXes6VbeL7i3tr4uoVIoo7S+Fu0awLFbqZdrMIRvAGDXlvw+/ZQ+IHj/APZeX4ceINCvvCmreAtWbWvBOvXt7Z3EL+XKzwQXK280kiHEjKSoZVABBYoEb7ZooA8n0b4tfEfUfDsVtcfCrUNP8SOPKe4m1rT30SKTdjzTIk7XRix8wAt9/IXA+9WN+3F4K8WfEv8AZY1nwjoeg3XibX9ftY7d5rGS2sraGRJI3aRhcXCsqNtbaqmQjgE/xV7jRQB5h4wvPEGsfsyXdvF4O1069qOkS6b/AGOLqw+028jRvEHaQ3AgKdG+WUttYfLuyo8a0L9lLxZ4+/ZH+HOiyae/gv4ifCi8tb/SpdUmguLO6uIOSCbaWX9w+QCSA4Kfdx1+tKKAPB/i3qPxI+PHwjvfBll4CvvBuoeJrQ6dqmratqdhc6fpkEiFbkwC3mee4cqWSMNFCDuDMY8bS3Rvh1qnwi+KXwy0Xw94K1++8J+C9HudEm1dbvT0j/0j7HibY9wszBTDI0mIwcn5FfOK96ooA+ZfHP7GeqaB+1d4d8b+DLlo/Dmq6+ureKtFMqrELpYplW/jDH7x8xg6jkl84OTt+mqKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/2Q==" alt="" width="256" height="134"></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) What are biological catalysts called?</div><div class='option'>A) Enzymes<span class='asterisk'>*</span></div><div class='option'>B) Exfoliators</div><div class='option'>C) Inhibitors</div><div class='option'>D) Substrates</div><div class='solution'>&nbsp;Biological catalysts are called enzymes.&nbsp; Substrates bind to catalysts.&nbsp; Inhibitors slow the action of an enzyme.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) The reaction A + B ➞ C + D, has a rate constant of 5.40 × 10<sup>-5</sup> M<sup>-2</sup>s<sup>-1</sup> at 0°C, what is the overall order of the reaction?</div><div class='option'>A) 3<span class='asterisk'>*</span></div><div class='option'>B) 1</div><div class='option'>C) 0</div><div class='option'>D) 2</div><div class='solution'>If you add the exponents of the rate constant units (M<sup>-2</sup>s<sup>-1</sup>), you get -3, so the order of the overall reaction is 3.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) Given the following proposed mechanism, what is the rate law for the reaction?<br>A<sub>2 </sub>+ B <span style="font-size: 10.5pt;">➞ A<sub>2</sub>B (overall reaction)</span><br>
+<table style="border-collapse: collapse; width: 295px;" border="0" width="128" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 108.891px;" height="20">step 1</td>
+<td style="width: 109.922px;">A<sub>2</sub> <span style="font-size: 10.5pt;">➞ 2A</span></td>
+<td style="width: 73.1836px;">fast</td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 108.891px;" height="20">step 2</td>
+<td style="width: 109.922px;">2A + B <span style="font-size: 10.5pt;">➞ A<sub>2</sub>B</span></td>
+<td style="width: 73.1836px;">slow</td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) Rate = <span class="math-tex">\( K[A_2]^{1/2}[B] \)</span></div><div class='option'>B) Rate = <span class="math-tex">\( K[A_2]^2[B] \)</span></div><div class='option'>C) Rate = <span class="math-tex">\( \frac{K[A_2]^2[B]}{2} \)</span></div><div class='option'>D) Rate = <span class="math-tex">\( K[A_2][B] \)</span><span class='asterisk'>*</span></div><div class='solution'>The rate law for the rate determining (slow) step (2A + B <span style="font-size: 10.5pt;">➞ A<sub>2</sub>B</span>) is:<br>rate = k<sub>2</sub>[A]<sup>2</sup>[B], however, we can't have an intermediate ([A]) in our final rate law.<br><br>Assume the first-fast reaction (A<sub>2</sub> <span style="font-size: 10.5pt;">➞ 2A</span>) reaches equilibrium.<br>rate<sub>F</sub> = rate<sub>R</sub><br>k<sub>F</sub>[A<sub>2</sub>] = k<sub>R</sub>[A]<sup>2</sup>&nbsp;<br>Typically you would solve for the concentration of the intermediate ([A]), but in this case we can solve for [A]<sup>2</sup><br><span class="math-tex">\( \frac{k_F}{k_R} \)</span>[A<sub>2</sub>] = [A]<sup>2<br></sup><br>Substitute in<span class="math-tex">\( \frac{k_F}{k_R} \)</span>[A<sub>2</sub>] for [A]<sup>2</sup> in rate = k<sub>2</sub>[A]<sup>2</sup>[B] to get:<br>rate = k<sub>2</sub><span class="math-tex">\( \frac{k_F}{k_R} \)</span>[A<sub>2</sub>][B], then combine the constants to get:<br>rate = K[A<sub>2</sub>][B]<br><br></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) Which of these two pathways represents the catalyzed pathway?<br><img title="cat path.jpg" src="../images/58.jpeg" alt="" width="309" height="268"></div><div class='option'>A) A</div><div class='option'>B) B<span class='asterisk'>*</span></div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>The catalyzed pathway will have a lower activation energy (E<sub>a</sub>).</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) What is the order of the reaction represented by the graph below?<br><img title="orderx.jpg" src="../images/45.jpeg" alt="" width="284" height="240"></div><div class='option'>A) third</div><div class='option'>B) second</div><div class='option'>C) first<span class='asterisk'>*</span></div><div class='option'>D) zeroth</div><div class='solution'><table style="border-collapse: collapse; width: 51.4448%;" border="1">
+<tbody>
+<tr>
+<td style="width: 17.7096%;">Zero order</td>
+<td style="width: 17.6563%;">First order</td>
+<td style="width: 64.5974%;">Second order</td>
+</tr>
+<tr>
+<td style="width: 17.7096%;"><img title="orderz.jpg" src="../images/44.jpeg" alt="" width="275" height="240"></td>
+<td style="width: 17.6563%;"><img title="orderx.jpg" src="../images/45.jpeg" alt="" width="284" height="240"></td>
+<td style="width: 64.5974%;"><img title="ordery.jpg" src="../images/46.jpeg" alt="" width="288" height="240"></td>
+</tr>
+</tbody>
+</table></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) Which of the following expressions accurately depicts the rate of this reaction?<br><br>
+<div style="text-align: center;">N<sub>2</sub>(g) + 3 H<sub>2</sub>(g) ➞ 2 NH<sub>3</sub>(g)</div></div><div class='option'>A) <span class="math-tex">\( +\frac{1}{2}\frac{Δ[NH_3]}{Δt} \)</span><span class='asterisk'>*</span></div><div class='option'>B) <span class="math-tex">\( +\frac{Δ[N_2]}{Δt} \)</span></div><div class='option'>C) <span class="math-tex">\( -\frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>D) <span class="math-tex">\( -\frac{1}{2}\frac{Δ[NH_3]}{Δt} \)</span></div><div class='solution'>You should be looking for an answer that shows a negative sign for reactants or positive for products.&nbsp; Also, the coefficient from the balanced chemical equation should be in the denominator.<br>Rate =<span class="math-tex">\( -\frac{Δ[N_2]}{Δt} \)</span> = <span class="math-tex">\( -\frac{1}{3}\frac{Δ[H_2]}{Δt} \)</span> = <span class="math-tex">\( +\frac{1}{2}\frac{Δ[NH_3]}{Δt} \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) The decomposition of cyclopropane to propene is a first-order reaction that has a rate constant of 6.31x10<sup>-4</sup> s<sup>-1</sup>. If the initial concentration of cyclopropane is 2.55 M, what is the concentration of cyclopropane after 88.1 s?</div><div class='option'>A) 2.49 M</div><div class='option'>B) 2.97 M</div><div class='option'>C) 0.142 M</div><div class='option'>D) 2.41 M<span class='asterisk'>*</span></div><div class='solution'>The integrate rate law for a first order reaction is <span class="math-tex">\( ln\frac{[A]_t}{[A]_0} = -kt \)</span><br>Taking the inverse log of both sides gives:<br><span class="math-tex">\( \frac{[A]_t}{[A]_0} = e^{-kt} \)</span>, multiplying both sides by [A]<sub>0</sub> gives:<br><span class="math-tex">\( [A]_t = [A]_0 x e^{-kt} \)</span><br>Plugging in 2.55 M for [A]<sub>0</sub>, 6.31x10<sup>-4</sup> s<sup>-1</sup> for K, and 88.1 s for t gives:<br>[A]<sub>t</sub> = 2.55 M&nbsp;x e<sup>(-6.31x10-4 s-1 x 88.1 s)</sup><br>[A]<sub>t</sub> = 2.41 M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) Identify the statement that is <strong>true</strong>.</div><div class='option'>A) The rate constant will always double if you double the temperature</div><div class='option'>B) Catalysts decrease the rate constant</div><div class='option'>C) Increasing the temperature generally increases the rate constant<span class='asterisk'>*</span></div><div class='option'>D) A catalyst is an intermediate in a reaction</div><div class='solution'>If you look at a generic rate law (rate = k[A][B]), anything that affects the rate, besides changes in concentration are accounted for in the rate constant.&nbsp; Since increasing temperature increases the rate of a reaction, it will do so by increasing the rate constant.&nbsp; The same is true for adding a catalyst.<br>The affect temperature has on the rate constant is shown in the Arrhenius equation.&nbsp; So is the effect of a catalyst, because it lowers the activation energy (E<sub>a</sub>).<br>K = <span class="math-tex">\( Ae^{\frac{-E_a}{RT}} \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) Given the initial rate data below, what is the rate law for the following reaction?<br>A (g) + B&nbsp;(g) <span style="font-size: 10.5pt;">➞</span> C&nbsp;(g)<br><br>
+<table style="border-collapse: collapse; width: 359px;" border="0" width="256" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.8594px;" width="64" height="20">Trial</td>
+<td style="width: 49.418px;" width="64">[A]</td>
+<td style="width: 45.4922px;" width="64">[B]</td>
+<td style="width: 194.473px;" width="64">rate (M/s)</td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.8594px;" height="20">1</td>
+<td style="width: 49.418px;">1.0</td>
+<td style="width: 45.4922px;">1.0</td>
+<td style="width: 194.473px;">3.18x10<sup>-8</sup></td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.8594px;" height="20">2</td>
+<td style="width: 49.418px;">1.0</td>
+<td style="width: 45.4922px;">2.0</td>
+<td style="width: 194.473px;">2.54x10<sup>-7</sup></td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.8594px;" height="20">3</td>
+<td style="width: 49.418px;">2.0</td>
+<td style="width: 45.4922px;">1.0</td>
+<td style="width: 194.473px;">1.27x10<sup>-7</sup></td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) rate =<sup> </sup>K[A]<sup>4</sup>[B]<sup>9</sup></div><div class='option'>B) rate =<sup> </sup>K[A]<sup>2</sup>[B]<sup>3</sup><span class='asterisk'>*</span></div><div class='option'>C) rate =<sup> </sup>K[A][B]</div><div class='option'>D) rate =<sup> </sup>K[A]<sup>3</sup>[B]<sup>2</sup></div><div class='solution'>From trial 1 to 3 only the concentration of A changed.&nbsp;<br><br>
+<table style="border-collapse: collapse; width: 100.04%;" border="1">
+<tbody>
+<tr>
+<td style="width: 10.4263%;">Trial</td>
+<td style="width: 11.5926%;">[A]</td>
+<td style="width: 77.941%;">Rate</td>
+</tr>
+<tr>
+<td style="width: 10.4263%;">3</td>
+<td style="width: 11.5926%;">[2.0]</td>
+<td style="width: 77.941%;">1.27x10<sup>-7</sup></td>
+</tr>
+<tr>
+<td style="width: 10.4263%;">1</td>
+<td style="width: 11.5926%;">[1.0]</td>
+<td style="width: 77.941%;">3.18x10<sup>-8</sup></td>
+</tr>
+</tbody>
+</table>
+Dividing the rate law of trial 3 by the rate law of trial 1, then canceling out the rate constant and concentration of B leaves the following.<br><span class="math-tex">\( \frac{[2.0]^x}{[1.0]^x} \)</span> = 1.27x10<sup>-7</sup>/3.18x10<sup>-8</sup><br><span class="math-tex">\( (\frac{[2.0]}{[1.0]} )^x \)</span>= 4<br>x = 2<br><br>
+<table style="border-collapse: collapse; width: 100.04%;" border="1">
+<tbody>
+<tr>
+<td style="width: 10.4263%;">Trial</td>
+<td style="width: 11.5926%;">[B]</td>
+<td style="width: 77.941%;">Rate</td>
+</tr>
+<tr>
+<td style="width: 10.4263%;">2</td>
+<td style="width: 11.5926%;">[2.0]</td>
+<td style="width: 77.941%;">2.54x10<sup>-7</sup></td>
+</tr>
+<tr>
+<td style="width: 10.4263%;">1</td>
+<td style="width: 11.5926%;">[1.0]</td>
+<td style="width: 77.941%;">3.18x10<sup>-8</sup></td>
+</tr>
+</tbody>
+</table>
+<p><br>Dividing the rate law of trial 2 by the rate law of trial 1, then canceling out the rate constant and concentration of A leaves the following.<br><span class="math-tex">\( \frac{[2.0]^y}{[1.0]^y} \)</span> = 1.27x10<sup>-7</sup>/3.18x10<sup>-8</sup><br><span class="math-tex">\( (\frac{[2.0]}{[1.0]} )^y \)</span>= 4<br>y = 2<br><br>Thus the rate law will be:<br>Rate = K[A]<sup>2</sup>[B]<sup>2</sup> = K[A]<sup>2</sup>[B]<sup>3</sup></p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) (SLO 2.4) What rate is bimolecular?</div><div class='option'>A) Rate = K[A][B]<span class='asterisk'>*</span></div><div class='option'>B) Rate = K[A][B][C]</div><div class='option'>C) Rate = K[A][B]<sup>2</sup></div><div class='option'>D) Rate = K[A]<sup>3</sup></div><div class='solution'>Adding the exponents (orders) of the concentrations for K[A][B] gives 2 so the reaction would be bimolecular</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) (SLO 2.7) Which of the following reactions would you predict to have the largest orientation factor?</div><div class='option'>A) H (g) + F (g) ➞ HF (g)<span class='asterisk'>*</span></div><div class='option'>B) NOCl (g) + NOCl (g) ➞ 2 NO (g) + Cl<sub>2</sub> (g)</div><div class='option'>C) Br<sub>2</sub> (g) + H<sub>2</sub>C-CH<sub>2</sub> (g) ➞ H<sub>2</sub>BrC-CBrH<sub>2</sub> (g)</div><div class='option'>D) NH<sub>3</sub> (g) + BCl<sub>3</sub> (g) ➞ H<sub>3</sub>N-BCl<sub>3</sub> (g)</div><div class='solution'>The reaction with the largest orientation factor will be the reaction with atomic (not molecular) reactants.&nbsp; Because atoms are essentially spheres, and there is not really a "bad orientation" for spheres.&nbsp; So the orientation factor would be close to 1 (meaning ~100% collide with a proper orientation).</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) (SLO 2.2) Given the following balanced equation, determine the rate of reaction with respect to [H<sub>2</sub>].<br>N<sub>2</sub> (g) + 3 H<sub>2</sub> (g) ➞ 2 NH<sub>3</sub> (g)</div><div class='option'>A) Rate = <span class="math-tex">\( -\frac{1}{3} \frac{Δ[H_2]}{Δt} \)</span><span class='asterisk'>*</span></div><div class='option'>B) Rate = <span class="math-tex">\( +\frac{3}{1} \frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>C) Rate = <span class="math-tex">\( -\frac{3}{2} \frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>D) Rate = <span class="math-tex">\( -\frac{2}{3} \frac{Δ[H_2]}{Δt} \)</span></div><div class='solution'>Rate = <span class="math-tex">\( - \frac{Δ[N_2]}{Δt} \)</span> = <span class="math-tex">\( -\frac{1}{3}\frac{Δ[H_2]}{Δt} \)</span> = <span class="math-tex">\( +\frac{1}{2}\frac{Δ[NH_3]}{Δt} \)</span> =</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">20</span>) (SLO 2.3) What is the overall order of the following reaction, given the rate law?<br> X + 4 Y ➞ 4 Z&nbsp; &nbsp; &nbsp;Rate = k[X]<sup></sup>[Y]<sup></sup></div><div class='option'>A) 2<span class='asterisk'>*</span></div><div class='option'>B) 5</div><div class='option'>C) 1</div><div class='option'>D) 4</div><div class='solution'>Ignore the chemical equation, and just add the exponents (orders) of the reactants.<br>&nbsp;Rate = k[X]<sup></sup>[Y]<sup></sup><br>1 + 1 = 2</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">21</span>) (SLO 2.5) For a reaction that follows the general rate law, Rate = K[A]<sup>2</sup>[B]<sup>2</sup>, what will happen to the rate of reaction if the concentration of A is increased by a factor of 5?</div><div class='option'>A) The rate will increase by a factor of 25<span class='asterisk'>*</span></div><div class='option'>B) The rate will increase by a factor of 20.</div><div class='option'>C) The rate will decrease by a factor of 1/25</div><div class='option'>D) The rate will decrease by a factor of 1/20.</div><div class='solution'>To solve this question, take the exponent (order) for A, and raise the factor (5) by that exponent.<br>5<sup>2</sup> =&nbsp; 25</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">22</span>) (SLO 2.6) At 345 K a reaction is found to have a rate constant of &nbsp;34000 (3 sf) M<sup>-1</sup>s<sup>-1</sup>, at 241 K the reaction is found to have a rate constant of 3.40 M<sup>-1</sup>s<sup>-1</sup>. What is the activation energy for this reaction.</div><div class='option'>A) 61.2 kJ/mol<span class='asterisk'>*</span></div><div class='option'>B) -61.2 kJ/mol</div><div class='option'>C) 26.6 kJ/mol</div><div class='option'>D) -26.6 kJ/mol</div><div class='solution'><p>Starting with the Arrhenius equation:</p>
+<p><span class="math-tex">\( ln \frac{k_2}{k_1} = -\frac{E_a}{R}(\frac{1}{T_2} - \frac{1}{T_1}) \)</span>, multiplying each side by -R<br><span class="math-tex">\( -R x ln \frac{k_2}{k_1} = E_a x (\frac{1}{T_2} - \frac{1}{T_1}) \)</span>, dividing each side by <span class="math-tex">\( (\frac{1}{T_2} - \frac{1}{T_1}) \)</span><br><span class="math-tex">\( \frac{-R x ln \frac{k_2}{k_1}}{(\frac{1}{T_2} - \frac{1}{T_1}) } = E_a \)</span>, then plugging in 34000 (3 sf) M<sup>-1</sup>s<sup>-1</sup> in for K<sub>1</sub>, 3.40 M<sup>-1</sup>s<sup>-1</sup> in for K<sub>2</sub>,&nbsp; 0.0083145 kJ/mol-K for R,&nbsp; 345 K for T<sub>1</sub>, and 241 K for T<sub>2</sub> gives:<br>Ea = (-0.0083145 kJ/mol-K x ln( 3.40 M<sup>-1</sup>s<sup>-1</sup> / 34000 (3 sf) M<sup>-1</sup>s<sup>-1</sup>)) / (1/241 K - 1/345 K)<br>E<sub>a</sub> = 61.2 kJ/mol</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">23</span>) (SLO 2.1) If the rate of appearance </strong>of H<sub>2</sub> in the gas phase reaction is 0.106 M/s, then the rate of disappearance </strong>of HBr&nbsp;is _______&nbsp; M/s
+<div style="text-align: left;">2 HBr (g) ➞ H<sub>2</sub> (g) + Br<sub>2</sub> (g)</div></div><div class='option'>A) 0.212 M/s<span class='asterisk'>*</span></div><div class='option'>B) 0.0530 M/s</div><div class='option'>C) 0.106 M/s</div><div class='option'>D) 9.43 M/s</div><div class='solution'>Rate = <span class="math-tex">\( -\frac{1}{2}\frac{Δ[HBr]}{Δt} \)</span> = <span class="math-tex">\( \frac{Δ[H_2]}{Δt} \)</span> = <span class="math-tex">\( \frac{Δ[Br_2]}{Δt} \)</span><br>If we substitute in 0.106 M/s for the change in concentration of H<sub>2</sub>, and solve for the rate of disappearance </strong>of HBr, then we'll get 0.212 M/s.</div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 14 Take-home quiz<br><canvas id="scantron" class="scantron"></div></body></html>

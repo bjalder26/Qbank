@@ -1,0 +1,456 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[2],"2":[3],"3":[1],"4":[0],"5":[2],"6":[0],"7":[2],"8":[3],"9":[0],"10":[1],"11":[1],"12":[0],"13":[0],"14":[2],"15":[0],"16":[3],"17":[0],"18":[1],"19":[3],"20":[0],"21":[0],"22":[1],"23":[1],"24":[0],"25":[3],"26":[1],"27":[1],"28":[3],"29":[1],"30":[1],"31":[0],"32":[1],"33":[3],"34":[1],"35":[2],"36":[0],"37":[3],"38":[1],"39":[2],"40":[1],"41":[3],"42":[1],"43":[2],"44":[1],"45":[0],"46":[0]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers & Ctrl-x to toggle the solutions.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Final exam (Ch 11 & 13-20)</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Jul 27, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) What is the main reason why the boiling point of HF is much higher than that of HCl?</div><div class='option'>A) HF has stronger London dispersion forces than HCl</div><div class='option'>B) HF has dipole-dipole forces whereas HCl does not</div><div class='option'>C) HF can hydrogen bond whereas HCl cannot<span class='asterisk'>*</span></div><div class='option'>D) HCl&nbsp;can hydrogen bond whereas HF&nbsp;cannot</div><div class='solution'>HF has a hydrogen attached to a N, O, or F, so it can hydrogen bond whereas HCl does not, so it cannot hydrogen bone.&nbsp; Hydrogen bonding gives HF a higher boiling point.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) Identify the place which has the <strong>lowest </strong>boiling point of water.</div><div class='option'>A) New Orleans, sea level</div><div class='option'>B) Death Valley, 282 feet below sea level</div><div class='option'>C) Denver, Colorado, 5280 feet</div><div class='option'>D) Mt. Everest, 29,035 feet<span class='asterisk'>*</span></div><div class='solution'>The <strong>lowest </strong>boiling point will be where the atmospheric pressure is the lowest.&nbsp; Atmospheric pressure will be the lowest at the highest elevation.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) Which of the following 3 alkane isomers would you expect to have the <strong>highest</strong> boiling point?<br><img title="alkanes.jpg" src="../images/75.jpeg" alt="" width="397" height="178"></div><div class='option'>A) Isopentane</div><div class='option'>B) Pentane<span class='asterisk'>*</span></div><div class='option'>C) Since they are isomers, they will have the same boiling point.</div><div class='option'>D) Neopentane</div><div class='solution'>Pentane is the least branched alkane, so it will have the most surface area interacting for London dispersion forces.&nbsp; Thus it will have the highest intermolecular forces and the highest boiling point.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) (SLO 1.2) In liquid butanol CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>OH, which intermolecular forces are present?</div><div class='option'>A) Dispersion, hydrogen bonding, and dipole-dipole forces are present<span class='asterisk'>*</span></div><div class='option'>B) Only dipole-dipole and ion-dipole forces are present</div><div class='option'>C) Only hydrogen bonding forces are present</div><div class='option'>D) Only dispersion and dipole-dipole forces are present</div><div class='solution'>butanol CH<sub>3</sub>CH<sub>2</sub>CH<sub>2</sub>CH<sub>2</sub>OH can hydrogen bond, is polar (thus dipole-dipole forces), and will have London dispersion forces.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) <span style="font-size: 10.5pt;">How much energy is required to heat 30.5 g H<sub>2</sub>O from a liquid at 54.6°C to a gas at 110°C?<br>ΔH<sub>vap</sub> = 40.7 kJ/mol<br>C<sub>liquid</sub>&nbsp;= 4.184 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;<br>C<sub>gas</sub> = 2.01 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;&nbsp;<br>C<sub>solid</sub> = 2.09 <span class="math-tex">\( \frac{J}{g°C} \)</span>&nbsp;<br>T<sub>melting</sub> = 0°C&nbsp;<br>T<sub>boiling</sub> = 100°C<br></span></div><div class='option'>A) 1250 kJ</div><div class='option'>B) 6480 kJ</div><div class='option'>C) 75.3 kJ<span class='asterisk'>*</span></div><div class='option'>D) 82.6 kJ</div><div class='solution'><p>To calculate the energy required to heat water from a liquid at 54.6°C to a gas at 110°C, we need to consider the following steps:</p>
+<ol>
+<li>Heating the liquid water from its initial temperature to its boiling point.</li>
+<li>Vaporizing the liquid water at its boiling point to gas.</li>
+<li>Heating the water vapor from it's boiling point to 110°C.</li>
+</ol>
+<p>Step 1: Heating the liquid water First, we calculate the energy required to heat the liquid water from 54.6°C to its boiling point at 100°C.</p>
+<p>q<sub>1</sub> = m x C<sub>liquid</sub> x ΔT<sub>1</sub></p>
+<p>where: q<sub>1</sub> = energy required (in joules) m = mass of water (in grams) <br>C<sub>liquid</sub> = specific heat capacity of liquid water (in J/g-°C) <br>ΔT<sub>1</sub> = change in temperature (final temperature - initial temperature)<br>C<sub>gas</sub> = specific heat capacity of liquid water (in J/g-°C)</p>
+<p>Given: m = 30.5 g <br>C<sub>liquid</sub> = 4.184 J/g-°C <br>ΔT<sub>1</sub> = 100°C - 54.6°C = 45.4°C</p>
+<p>q<sub>1</sub> = (30.5 g) x (4.184 J/g-°C) x (45.4°C) <br>q<sub>1</sub> ≈ 5790 J x <span class="math-tex">\( \frac{1 kJ}{1000 J} \)</span> = 5.79 kJ</p>
+<p>Step 2: Vaporizing the liquid water Next, we calculate the energy required to vaporize the liquid water at its boiling point.</p>
+<p>q<sub>2</sub> = n x ΔH<sub>vap</sub></p>
+<p>where: q<sub>2</sub> = energy required (in joules) <br>n = number of moles of water <br>ΔH<sub>vap</sub> = enthalpy of vaporization (in J/mol)</p>
+<p>To calculate the number of moles of water, we use the molar mass of water (H<sub>2</sub>O), which is approximately 18.02 g/mol.</p>
+<p>mol = 30.5 x <span class="math-tex">\( \frac{1 mol H_2O}{18.02 g H_2O} \)</span> ≈ 1.69 mol</p>
+<p>Given: ΔH<sub>vap</sub> = 40.7 kJ/mol&nbsp;</p>
+<p>q<sub>2</sub> = (1.69 mol) * (40.7 kJ/mol) ≈ 68.9 kJ<br><br>Step 3: Heating the water vapor, we calculate the energy required to heat the water vapor from 100°C to 110°C.</p>
+<p>q<sub>3</sub> = m x C<sub>liquid</sub> x ΔT<sub>2<br></sub></p>
+<p>where: q<sub>3</sub> = energy required (in J) m = mass of water (in grams) <br>C<sub>gas</sub> = specific heat capacity of liquid water (in J/g-°C) <br>ΔT<sub>1</sub> = change in temperature (final temperature - initial temperature)</p>
+<p>Given: m = 30.5 g <br>C<sub>liquid</sub> = 2.01 J/g-°C <br>ΔT<sub>1</sub> = 110°C - 100°C = 10.0°C</p>
+<p>q<sub>3</sub> = (30.5 g) x (2.01 J/g-°C) x (10.0°C) <br>q<sub>3</sub> ≈ 613 J x <span class="math-tex">\( \frac{1 kJ}{1000 J} \)</span> = 0.613 kJ</p>
+<p>Total energy required: The total energy required is the sum of q<sub>1</sub>, q<sub>2</sub> and q<sub>3</sub>.</p>
+<p>Total energy = q<sub>1</sub> + q<sub>2</sub> + q<sub>3</sub> ≈ 5.79 kJ + 68.9 kJ + 0.613 kJ</p>
+<p>Total energy ≈ 75.3 kJ</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) A 2.68 L sample of an aqueous solution contains 0.169 g of sodium ions.&nbsp; Determine the concentration of sodium ions in ppm if the density of the solution is 1.09 g/mL.</div><div class='option'>A) 57.9 ppm<span class='asterisk'>*</span></div><div class='option'>B) 5.79x10<sup>4</sup> ppm</div><div class='option'>C) 0.0000579 ppm</div><div class='option'>D) 64.3 ppm</div><div class='solution'>2.68 L solution x (1000 mL / 1 L) x (1.09 g / 1 mL) = 2920 g solution<br><br>PPM = mass of sodium ions/mass of solution x 10<sub>6</sub> = 0.169 g of sodium ions / 2920 g solution x 10<sup>6</sup> = 57.9 ppm</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) What mass (in g) of NH<sub>3</sub> (17.03 g/mol) must be dissolved in 600. g of methanol (32.04 g/mol) to make a 0.557 m solution?</div><div class='option'>A) 10.7 g</div><div class='option'>B) 0.178 g</div><div class='option'>C) 5.70 g<span class='asterisk'>*</span></div><div class='option'>D) 0.334 g</div><div class='solution'>What mass (in g) of NH<sub>3</sub> (17.03 g/mol) must be dissolved in 600. g of methanol (32.04 g/mol) to make a 0.557 m solution?<br>0.600 Kg solution x (0.557 mol<sub>solute</sub> / 1 Kg <sub>solvent</sub>)&nbsp; &nbsp;X (17.03 g solute / 1 mol solute) = 5.70 g</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) How many moles of NaI are contained in 376 g of water in a 0.229 m NaI solution?</div><div class='option'>A) 0.897 mol</div><div class='option'>B) 12.9 mol</div><div class='option'>C) 86.1 mol</div><div class='option'>D) 0.0861 mol<span class='asterisk'>*</span></div><div class='solution'>376 g water x (1 Kg / 1000 g)= 0.376 Kg<br>0.376 Kg of water X (0.229 mol NaI / 1 Kg water) = 0.0861 mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) A sealed container contains 0.454 L of water with an atmosphere of oxygen gas. What is the concentration of O<sub>2</sub> in the water if the external pressure is 6.08 atm given that k<sub>H</sub> for O<sub>2</sub> is 1.66 × 10<sup>-6</sup> M/mm Hg at this temperature?</div><div class='option'>A) 0.00767 M<span class='asterisk'>*</span></div><div class='option'>B) 0.0000101 M</div><div class='option'>C) 4820 M</div><div class='option'>D) 1.33x10<sup>-8</sup> M</div><div class='solution'><p>Step 1: Convert the external pressure from atm to mm Hg: 6.08 atm x 760 mmHg / 1atm ≈ 4620 mm Hg</p>
+<p>Step 2: Calculate the concentration of O<sub>2</sub> in water using Henry's law: <br>Concentration of O<sub>2</sub> = k<sub>H</sub> * Partial pressure of O<sub>2</sub> <br>Partial pressure of O<sub>2</sub> = External pressure</p>
+<p>Concentration of O2 = 1.66 × 10<sup>-6</sup> M/mm Hg x &nbsp;4620 mm Hg mm Hg <br>Concentration of O2 ≈ 0.00767 M</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) (SLO 1.4) An aqueous solution is 0.641 <strong>m (molality) </strong>LiF (25.94 g/mol). &nbsp;What is the <strong>molarity (M)</strong> of the solution if the density of the aqueous solution is 1.29 g/mL?</div><div class='option'>A) 0.0469 M</div><div class='option'>B) 0.813 M<span class='asterisk'>*</span></div><div class='option'>C) 0.631 M</div><div class='option'>D) 0.827 M</div><div class='solution'>A solution is 0.641 m LiF (25.94 g/mol). &nbsp;What is the <strong>molarity (M) </strong>of the solution if the density of the solution is 1.29 g/mL?<br>0.641 mol LiF x (25.94 g&nbsp; LiF)/(1 mol LiF) = 16.6 g LiF<br>1 kg water x 1000 g/1 kg = 1000 g water<br>1000 g water + 16.6 g LiF = 1020 g solution<br>1020 g solution x 1 mL/1.29 g = 788 mL<br>788 mL x 1 L/1000 mL = 0.788 L<br>molarity (M) = 0.641 mol LiF/ 0.788 L = 0.813 M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) What generally happens with a reaction when the temperature is increased?</div><div class='option'>A) The rate constant (K) decreases, causing the rate of the reaction to decrease.</div><div class='option'>B) The rate constant (K) increases, causing the rate of the reaction to increase<span class='asterisk'>*</span></div><div class='option'>C) The rate constant (K) increases, causing the rate of the reaction to decrease</div><div class='option'>D) The rate constant (K) decreases, causing the rate of the reaction to increase</div><div class='solution'>If you think about a generic rate equation such as Rate = k[A][B], anything that affects the rate, that isn't a change in concentration of A or B must cause a change in k.&nbsp; Since an increase in temperature increases the rate of a reaction, it must be because it increases the value of k.<br><br>The effect of temperature on the equilibrium constant is shown in the Arrhenius equation.<br>k = <span class="math-tex">\( Ae^{\frac{-E_a}{RT}} \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) (SLO 2.5) For a reaction that follows the general rate law, Rate = K[A]<sup></sup>[B]<sup>2</sup>, what will happen to the rate of reaction if the concentration of A is increased by a factor of 5?</div><div class='option'>A) The rate will increase by a factor of 5.0<span class='asterisk'>*</span></div><div class='option'>B) The rate will increase by a factor of 10.</div><div class='option'>C) The rate will decrease by a factor of 1/5.0</div><div class='option'>D) The rate will decrease by a factor of 1/10.</div><div class='solution'>To solve this question, take the exponent (order) for A, and raise the factor (5) by that exponent.<br>5<sup>1</sup> =&nbsp; 5.0</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) (SLO 2.3) What is the overall order of the following reaction, given the rate law?<br>3 X + 2 Y ➞ 4 Z&nbsp; &nbsp; &nbsp;Rate = k[X]<sup>2</sup>[Y]<sup>2</sup></div><div class='option'>A) 4<span class='asterisk'>*</span></div><div class='option'>B) 5</div><div class='option'>C) 3</div><div class='option'>D) 2</div><div class='solution'>Ignore the chemical equation, and just add the exponents (orders) of the reactants.<br>&nbsp;Rate = k[X]<sup>2</sup>[Y]<sup>2</sup><br>2 + 2 = 4</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) Identify the statement that is <strong>true</strong>.</div><div class='option'>A) Catalysts only affect the activation energy and not the rate constant</div><div class='option'>B) The rate constant is unaffected by temperature changes</div><div class='option'>C) Adding a catalyst increases the rate constant<span class='asterisk'>*</span></div><div class='option'>D) A catalyst has no affect on the rate of a reaction</div><div class='solution'>If you look at a generic rate law (rate = k[A][B]), anything that affects the rate, besides changes in concentration are accounted for in the rate constant.&nbsp; Since increasing temperature increases the rate of a reaction, it will do so by increasing the rate constant.&nbsp; The same is true for adding a catalyst.<br>The affect temperature has on the rate constant is shown in the Arrhenius equation.&nbsp; So is the effect of a catalyst, because it lowers the activation energy (E<sub>a</sub>).<br>K = <span class="math-tex">\( Ae^{\frac{-E_a}{RT}} \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) Which of these two pathways represents the uncatalyzed pathway?<br><img title="cat path.jpg" src="../images/58.jpeg" alt="" width="309" height="268"></div><div class='option'>A) A<span class='asterisk'>*</span></div><div class='option'>B) B</div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>The uncatalyzed pathway will have a higher activation energy (E<sub>a</sub>).</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) At equilibrium, which of the following are true?</div><div class='option'>A) The concentration of the reactants and products are equal</div><div class='option'>B) The reaction stops</div><div class='option'>C) The rate constant of the forward reaction is equal to the equilibrium constant</div><div class='option'>D) The rate of the forward reaction is equal to the rate of the reverse reaction<span class='asterisk'>*</span></div><div class='solution'>The rate of the forward reaction is equal to the rate of the reverse reaction, which means that the concentration of the reactants and products will remain stable.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) (SLO 3.7) Consider the following reaction.<br>Xe (g) + 2 F<sub>2</sub> (g) ⇌ XeF<sub>4</sub> (g)<br><br>A <strong>reaction mixture</strong> contains 5.77 atm of Xe, 6.79 atm F<sub>2</sub>.&nbsp; Once the reaction reaches equilibrium, the pressure of Xe is 4.44 atm.&nbsp; What is the equilibrium constant (K<sub>p</sub>) for the reaction?</div><div class='option'>A) 0.0130<span class='asterisk'>*</span></div><div class='option'>B) 0.0259</div><div class='option'>C) 0.0576</div><div class='option'>D) -0.013</div><div class='solution'><table style="border-collapse: collapse; width: 49.5039%;" border="1">
+<tbody>
+<tr>
+<td style="width: 6.20568%;">R</td>
+<td style="width: 26.6614%;">Xe (g)&nbsp;</td>
+<td style="width: 27.3481%;">+ 2 F<sub>2</sub>&nbsp;(g)&nbsp;</td>
+<td style="width: 39.7652%;">⇌ XeF<sub>4</sub>&nbsp;(g)</td>
+</tr>
+<tr>
+<td style="width: 6.20568%;">I</td>
+<td style="width: 26.6614%;">5.77</td>
+<td style="width: 27.3481%;">6.79</td>
+<td style="width: 39.7652%;">0</td>
+</tr>
+<tr>
+<td style="width: 6.20568%;">C&nbsp;</td>
+<td style="width: 26.6614%;">-x</td>
+<td style="width: 27.3481%;">-2x</td>
+<td style="width: 39.7652%;">+x</td>
+</tr>
+<tr>
+<td style="width: 6.20568%;">E</td>
+<td style="width: 26.6614%;">4.44</td>
+<td style="width: 27.3481%;">6.79-2x</td>
+<td style="width: 39.7652%;">x</td>
+</tr>
+</tbody>
+</table>
+5.77 -&nbsp; x = 4.44<br>5.77 - 4.44 = x<br>2 x 1.33 = 2x<br>2.66 = 2x<br>P<sub>XeF4</sub> = 1.33<br>P<sub>F2</sub> = 6.79 - 2x = 4.13<br>K<sub>p</sub> = (1.33)/(4.44 x 4.13<sup>2</sup>)<br>K<sub>p</sub> = 0.0176</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) Is the following reaction reactant or product favored?<br>HBr (s) + H<sub>2</sub>O (l) ⇌ H<sub>3</sub>O<sup>+</sup> (aq) + Br<sup>-</sup> (aq)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 1.0x10<sup>9</sup></div><div class='option'>A) Reactant favored</div><div class='option'>B) Product favored<span class='asterisk'>*</span></div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>When K<sub>c</sub> is greater than 1, it is product favored, when K<sub>c</sub> is less than 1 it is reactant favored.&nbsp; This is because K<sub>c</sub> is essentially products over reactants.&nbsp; So a number greater than 1 indicates more products than reactants, whereas a number lower than 1 indicates more reactants than products.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) In the reaction below, at equilibrium, the concentration of H<sub>2</sub> is 0.319 M, and the concentration of O<sub>2</sub> is 0.370 M. Determine the equilibrium concentration of H<sub>2</sub>O (g).<br>2 H<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 H<sub>2</sub>O (g)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 2.38x10<sup>-2</sup></div><div class='option'>A) 0.000896 M</div><div class='option'>B) 0.0530 M</div><div class='option'>C) 0.00281 M</div><div class='option'>D) 0.0299 M<span class='asterisk'>*</span></div><div class='solution'>K<sub>c</sub> = <span class="math-tex">\( \frac{[H_2O]^2}{[H_2]^2[O_2]} \)</span> = ([H<sub>2</sub>O]<sup>2</sup>)/(0.319<sup>2</sup> x 0.370) =&nbsp; 2.38x10<sup>-2</sup><br>[H<sub>2</sub>O]<sup>2</sup> = (0.319<sup>2</sup> x 0.370) x 2.38x10<sup>-2</sup><br>[H<sub>2</sub>O]<sup>2</sup> = 0.000896 M<sup>2</sup><br>[H<sub>2</sub>O] 0.0299 M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">20</span>) If Q (the reactant quotient) is greater than the equilibrium constant, then which way will the reaction proceed more quickly?</div><div class='option'>A) In the reverse direction<span class='asterisk'>*</span></div><div class='option'>B) In the forward direction</div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>If Q (the reactant quotient) is greater than the equilibrium constant, then it means we have too much product (numerator) and too little reactant (denominator) to be at equilibrium.&nbsp; Since reversible reactions will always proceed to equilibrium, the reaction will have to proceed in the reverse direction to produce more reactant, and use up some of the product.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">21</span>) If a solution has a pH of 3.89, then what is the hydronium (hydrogen) ion concentration at 25°C?</div><div class='option'>A) 0.000129 M<span class='asterisk'>*</span></div><div class='option'>B) 7760 M</div><div class='option'>C) -0.59 M</div><div class='option'>D) 10.1 M</div><div class='option'>E)  None of the above.</div><div class='solution'>[H<sup>+</sup>] = 10<sup>-pH</sup><br>[H<sup>+</sup>] = 10<sup>-3.89</sup>&nbsp;<br>[H<sup>+</sup>] = 0.000129 M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">22</span>) Which of the following has the strongest conjugate base?</div><div class='option'>A) HI</div><div class='option'>B) HCN<span class='asterisk'>*</span></div><div class='option'>C) HBr</div><div class='option'>D) HCl</div><div class='solution'>The weakest acid will have the strongest conjugate base.&nbsp; Out of all the choices, only HCN is a weak acid.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">23</span>) Which of the following is the strongest Lewis acid (best at giving up H<sup>+</sup> or binding OH<sup>-</sup>)?</div><div class='option'>A) Li<sup>+</sup></div><div class='option'>B) NH<sub>4</sub><sup>+</sup><span class='asterisk'>*</span></div><div class='option'>C) Na<sup>+</sup></div><div class='option'>D) K<sup>+</sup></div><div class='solution'>The strongest acid, will have the weakest conjugate base.&nbsp; The conjugate bases of Na<sup>+</sup>, Li<sup>+</sup>, and K<sup>+</sup> are all strong bases (NaOH, LiOH, and KOH).&nbsp; Thus the answer is NH<sub>4</sub><sup>+</sup>.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">24</span>) Determine the pH in a 0.688 M H<sub>2</sub>SO<sub>3</sub>&nbsp;solution. The K<sub>b</sub> of HSO<sub>3</sub><sup>-</sup> is 8.33 × 10<sup>-13</sup>.<br></span></div><div class='option'>A) 1.07<span class='asterisk'>*</span></div><div class='option'>B) 12.9</div><div class='option'>C) 1.86</div><div class='option'>D)  None of the above.</div><div class='solution'><span style="font-size: 10.5pt;">Since H<sub>2</sub>SO<sub>3</sub>&nbsp;is a weak acid, we need a RICE table, and acid dissociation constant equation.<br></span>
+<table style="border-collapse: collapse; width: 22.584%;" border="1">
+<tbody>
+<tr>
+<td style="width: 7.82114%;">R</td>
+<td style="width: 42.0386%;"><span style="font-size: 10.5pt;">H<sub>2</sub>SO<sub>3</sub> ⇄</span></td>
+<td style="width: 16.9458%;"><span style="font-size: 10.5pt;">H<sup>+</sup> +&nbsp;</span></td>
+<td style="width: 33.2398%;">HSO<sub>3</sub><sup>-</sup></td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">I</td>
+<td style="width: 42.0386%;">0.688</td>
+<td style="width: 16.9458%;">0</td>
+<td style="width: 33.2398%;">0</td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">C</td>
+<td style="width: 42.0386%;">- x</td>
+<td style="width: 16.9458%;">+ x</td>
+<td style="width: 33.2398%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">E</td>
+<td style="width: 42.0386%;">0.688 - x</td>
+<td style="width: 16.9458%;">x</td>
+<td style="width: 33.2398%;">x</td>
+</tr>
+</tbody>
+</table>
+<p><br>K<sub>a</sub> = 10<sup>-14</sup>/8.33 × 10<sup>-13</sup> = 0.0120<br></span><span style="font-size: 10.5pt;">0.0120</span><span style="font-size: 10.5pt;">&nbsp;= [H+][HSO<sub>3</sub><sup>-</sup>]/[H<sub>2</sub>SO<sub>3</sub>]<br>0.0120 = x<sup>2</sup>/(0.688 - x), small x assumption is not valid because 0.688/(1.2 × 10<sup>-2</sup>) = 57.3<br>0.0120 = x<sup>2</sup>/0.688<br>(0.688 - x) x (0.0120) = x<sup>2<br></sup>0.00826 - 0.0120x = x<sup>2<br></sup>0 = x<sup>2</sup> + 0.0120x - 0.00826<br>x = 0.0851<br>pH = -log[H<sub>3</sub>O<sup>+</sup>]<br>pH = -log(0.0851)<br>pH = 1.07</span></p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">25</span>) (SLO 4.7) How many milliliters of 0.0660 M NaOH are required to titrate 30 mL of 0.145 M HBr to the equivalence point.</div><div class='option'>A) 6.59 mL</div><div class='option'>B) 13.7 mL</div><div class='option'>C) 56.0 mL</div><div class='option'>D) 65.9 mL<span class='asterisk'>*</span></div><div class='solution'>30 mL x (1L/1000mL) x (0.145 mol/L) x (1 mol NaOH/1 mol HBr) x (1 L/0.0660 mol) x (1000 mL/1L) = 65.9 mL</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">26</span>) You add 600 mL of a 0.130 M NaOH solution to 600 mL of a 0.130 M HClO solution (K<sub>a</sub> for HClO&nbsp;is 3.5x10<sup>-8</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 3.79</div><div class='option'>B) 10.1<span class='asterisk'>*</span></div><div class='option'>C) 10.5</div><div class='option'>D) 6.27</div><div class='solution'>600 x (1L/1000mL) x (0.13 mol/L) = 0.0780 mol NaOH<br>600 x (1L/1000mL) x (0.13 mol/L) = 0.0780 mol&nbsp; HClO<br><br>0.0780 mol of NaOH will react with 0.0780 mol of HClO to produce 0.0780 mol of ClO<sup>-</sup>.<br><br>0.0780 mol / 1.20 L = 0.0650 M<br>
+<table style="border-collapse: collapse; width: 100%;" border="1">
+<tbody>
+<tr>
+<td style="width: 18.5637%;">R</td>
+<td style="width: 18.5637%;">&nbsp;ClO<sup>-</sup> +</td>
+<td style="width: 18.5637%;">H<sub>2</sub>O ⇄</td>
+<td style="width: 18.5637%;">HClO +&nbsp;</td>
+<td style="width: 18.5696%;">OH<sup>-</sup></td>
+</tr>
+<tr>
+<td style="width: 18.5637%;">I</td>
+<td style="width: 18.5637%;">0.0650</td>
+<td style="width: 18.5637%;">&nbsp;</td>
+<td style="width: 18.5637%;">0</td>
+<td style="width: 18.5696%;">0</td>
+</tr>
+<tr>
+<td style="width: 18.5637%;">C</td>
+<td style="width: 18.5637%;">- x</td>
+<td style="width: 18.5637%;">&nbsp;</td>
+<td style="width: 18.5637%;">+ x</td>
+<td style="width: 18.5696%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 18.5637%;">E</td>
+<td style="width: 18.5637%;">0.0650 - x</td>
+<td style="width: 18.5637%;">&nbsp;</td>
+<td style="width: 18.5637%;">x</td>
+<td style="width: 18.5696%;">x</td>
+</tr>
+</tbody>
+</table>
+<br>K<sub>b</sub> = 10<sup>-14</sup>/3.5x10<sup>-8</sup> = 2.86x10<sup>-7</sup><br>K<sub>b</sub> = 2.86x10<sup>-7</sup> = x<sup>2</sup>/(0.0650 - x), the small x assumption is valid because 0.0650/2.86x10<sup>-7</sup> = 2.28x10<sup>5</sup><br>2.86x10<sup>-7</sup> = x<sup>2</sup>/(0.0650)<br>(0.0650) x 2.86x10<sup>-7</sup> = x<sup>2</sup><br>(0.0650) x 2.86x10<sup>-7</sup> = x<sup>2<br></sup>1.86x10<sup>-8</sup> = x<sup>2</sup><br>√(1.86x10<sup>-8</sup>) = x<br>0.000136 = x<br>pOH = -log(0.000136) = 3.87<br>pH = 14 - 3.87 = 10.1</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">27</span>) What would be the pH of a solution formed by mixing 200 mL of 1.66 M HCN with 200 mL of 0.361 M NaCN?&nbsp; The K<sub>b</sub> for CN<sup>-</sup> is 1.61x10<sup>-5</sup>.</div><div class='option'>A) 9.87</div><div class='option'>B) 8.54<span class='asterisk'>*</span></div><div class='option'>C) 7.50</div><div class='option'>D) 9.21</div><div class='solution'>In this case, you're mixing a weak acid with it's weak conjugate base.<br>This will create a buffer solution, for which we will use the Henderson–Hasselbalch equation to solve for pH.<br>First we need the moles of the acid and the base.<br>[HCN] = 2 mL x (1 L/1000 mL) x (1.66 mol/1L) = 0.00332 mol<br>[NaCN] = 2 mL x (1 L/1000 mL) x (0.361 mol/1L) = 0.000722 mol*<br>K<sub>a</sub> = 10<sup>-14</sup>/K<sub>b</sub> = 10^-14/(1.61x10<sup>-5</sup>)<br>pH = -log(K<sub>a</sub>) + log(base/acid) = -log(6.21x10<sup>-10</sup>) + log(0.000722/0.00332)<br>pH = 8.54<br>*since we were using the same volume, we could have just plugged in molarity (before mixing) as a short-cut, or we could have calculated millimoles by not dividing by 1000, as a different shortcut.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">28</span>) You add 800 mL of a 0.180 M NaOH solution to 600 mL of a 0.130 M HNO<sub>2</sub> solution (K<sub>a</sub> for HNO<sub>2</sub> is 4.5x10<sup>-4</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 13.1</div><div class='option'>B) 1.18</div><div class='option'>C) 3.09</div><div class='option'>D) 12.7<span class='asterisk'>*</span></div><div class='solution'>Molarity strong base<br>800 mL x (1L/1000mL) x (0.18 mol/L) = 0.144 mol NaOH<br>0.144 mol NaOH / 1.40 L = 0.103 M<br><br>Molarity weak acid<br>600 mL x (1L/1000mL) x (0.13 mol/L) = 0.0780 mol HNO<sub>2</sub><br>0.0780 mol HNO<sub>2</sub> / 1.40 L = 0.0557 M<br><br>Since there is more strong base than weak acid, the pH will be based on the remaining strong base.<br>Subtract the molarity of weak acid from the molarity of strong base to get the remaining strong base.<br>0.103 M HBr - 0.0557 M CH<sub>3</sub>NH<sub>2</sub> = 0.0471 M NaOH remaining<br>pOH = -log(0.0471)<br>pOH 1.33<br>pH = 14 - pOH = 14 - 1.33 = 12.7</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">29</span>) The molar solubility of ZnS is 1.6×10<sup>-12</sup> M in pure water.&nbsp; Calculate the K<sub>sp</sub> for ZnS.</div><div class='option'>A) 1.02x10<sup>-23</sup></div><div class='option'>B) 2.56x10<sup>-24</sup><span class='asterisk'>*</span></div><div class='option'>C) 1.60x10<sup>-12</sup></div><div class='option'>D) 5.12x10<sup>-24</sup></div><div class='solution'>K<sub>sp</sub> = (x)(x)<br>K<sub>sp</sub> = x<sup>2</sup><br>Substituting in 1.6×10<sup>-12</sup> for x<br>K<sub>sp</sub> = (1.6×10<sup>-12</sup>)<sup>2</sup><br>K<sub>sp</sub> = 2.56x10<sup>-24</sup></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">30</span>) What would be the pH of a solution formed by mixing 700 mL of 1.85 M H<sub>2</sub>CO<sub>3</sub> with 700 mL of 0.358 M NaHCO<sub>3</sub>?&nbsp; The K<sub>a</sub> for H<sub>2</sub>CO<sub>3</sub> is 4.5x10<sup>-7</sup>.</div><div class='option'>A) 6.35</div><div class='option'>B) 5.63<span class='asterisk'>*</span></div><div class='option'>C) 6.68</div><div class='option'>D) 7.06</div><div class='solution'>In this case, you're mixing a weak acid with it's weak conjugate base.<br>This will create a buffer solution, for which we will use the Henderson–Hasselbalch equation to solve for pH.<br>First we need the moles of the acid and the base.<br>[H<sub>2</sub>CO<sub>3</sub>] = 7 mL x (1 L/1000 mL) x (1.85 mol/1L) = 0.0130 mol<br>[NaHCO<sub>3</sub>] = 7 mL x (1 L/1000 mL) x (0.358 mol/1L) = 0.00251 mol*<br>pH = -log(K<sub>a</sub>) + log(base/acid) = -log(4.5x10<sup>-7</sup>) + log(0.00251/0.0130)<br>pH = 5.63<br>*since we were using the same volume, we could have just plugged in molarity (before mixing) as a short-cut, or we could have calculated millimoles by not dividing by 1000, as a different shortcut.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">31</span>) How many moles of Pb(IO<sub>3</sub>)<sub>2</sub> can be dissolved in 2.00 L of solution. K<sub>sp</sub> (Pb(IO<sub>3</sub>)<sub>2</sub>) = 2.60x10<sup>-13</sup>.</div><div class='option'>A) 0.0000804 moles<span class='asterisk'>*</span></div><div class='option'>B) 0.0000402 moles</div><div class='option'>C) 5.10x10<sup>-7</sup> moles</div><div class='option'>D) 0.000128 moles</div><div class='solution'>K<sub>sp</sub> (Pb(IO<sub>3</sub>)<sub>2</sub>) = 2.60x10<sup>-13</sup> = (x)(2x)<sup>2</sup><br>2.60x10<sup>-13</sup> = 4x<sup>3</sup><br>x = 3√(2.60x10<sup>-13</sup>/4) = 0.0000402 M<br>0.0000402 M x 2.00 L = 0.0000804 moles</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">32</span>) Iodine-131 is an unstable isotope of iodine that is used to treat hyperthyroidism.&nbsp; It has a half-life of 8.02 days.&nbsp; If 36.2 mg of iodine-131 is injected into a patient, then how long will it take for the amount of iodine in their system to drop to&nbsp; 4.53 mg (assume none is excreted)?</div><div class='option'>A) 16.0 days</div><div class='option'>B) 24.1 days<span class='asterisk'>*</span></div><div class='option'>C) 8.02 days</div><div class='option'>D) 32.1 days</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">33</span>) (SLO 5.5) For a given compound, list the <strong>increasing </strong>order of entropy for a liquid, solid and gas.</div><div class='option'>A) Solid &lt; gas &lt; liquid</div><div class='option'>B) Gas &lt; liquid &lt; solid</div><div class='option'>C) Gas &lt; solid &lt; liquid</div><div class='option'>D) Solid &lt; liquid &lt; gas<span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">34</span>) Calculate the ΔG°<sub>rxn</sub> at 25°C using the following information. <br>2 HNO<sub>3</sub> (aq) + NO (g) → 3 NO<sub>2</sub> (g) + H<sub>2</sub>O (l), ΔG°rxn = ?<br>
+<div class="section-content">
+<figure class="table-container">
+<table>
+<tbody>
+<tr>
+<th scope="row">&nbsp;</th>
+<td>ΔH°<sub>f</sub> (kJ/mol)</td>
+<td>S°(J/mol∙K)</td>
+</tr>
+<tr>
+<th scope="row">HNO<sub>3</sub> (aq)</th>
+<td>-207.0</td>
+<td>146.0&nbsp;</td>
+</tr>
+<tr>
+<th scope="row">NO (g)</th>
+<td>91.3</td>
+<td>210.8&nbsp;</td>
+</tr>
+<tr>
+<th scope="row">NO<sub>2</sub> (g)</th>
+<td>33.2</td>
+<td>240.1&nbsp;</td>
+</tr>
+<tr>
+<th scope="row">H<sub>2</sub>O (l)</th>
+<td>-285.8</td>
+<td>70.0</td>
+</tr>
+</tbody>
+</table>
+</figure>
+</div>
+<section aria-labelledby="what_is_a_table"></section></div><div class='option'>A) -56.6 kJ</div><div class='option'>B) 50.8 kJ<span class='asterisk'>*</span></div><div class='option'>C) 129 kJ</div><div class='option'>D) -8.56x10<sup>4</sup> kJ</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">35</span>) (SLO 5.2) Given the following equation,<br>CH<sub>4</sub> (g) + 3 Cl<sub>2</sub> (g) ➞ CHCl<sub>3</sub> (l) + 3 HCl (g), ΔG°<sub>rxn</sub> = -305.49 kJ<br>Calculate the ΔG°<sub>rxn</sub> for the following reaction.<br>9 CH<sub>4</sub> (g) + 27 Cl<sub>2</sub> (g) ➞ 9 CHCl<sub>3</sub> (l) + 27 HCl (g)</div><div class='option'>A) -305.49 kJ</div><div class='option'>B) 2749.4 kJ</div><div class='option'>C) -2749.4 kJ<span class='asterisk'>*</span></div><div class='option'>D) -33.943 kJ</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">36</span>) If <span class="math-tex">\( _{38}^{89}Sr \)</span> undergoes beta decay, what is the resulting daughter nuclide?</div><div class='option'>A) <span class="math-tex">\( _{39}^{89}Y \)</span><span class='asterisk'>*</span></div><div class='option'>B) <span class="math-tex">\( _{38}^{90}Sr \)</span></div><div class='option'>C) <span class="math-tex">\( _{39}^{90}Y \)</span></div><div class='option'>D) <span class="math-tex">\( _{36}^{85}Kr \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">37</span>) Which of the following is a gamma particle?</div><div class='option'>A) <span class="math-tex">\( _2^4He \)</span></div><div class='option'>B) <span class="math-tex">\( _{+1}^{  0}e \)</span></div><div class='option'>C) <span class="math-tex">\( _{-1}^{  0}e \)</span></div><div class='option'>D) <span class="math-tex">\( _0^0γ \)</span><span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">38</span>) Identify the location of reduction in a concentration cell.</div><div class='option'>A) the anode</div><div class='option'>B) the cathode<span class='asterisk'>*</span></div><div class='option'>C) the salt bridge</div><div class='option'>D) the wire between electrodes</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">39</span>) (SLO 5.3) Does the following reaction show an increase, decrease, or no change in entropy of the system?<br><br>2 Na (s) + Cl<sub>2</sub> (g) ➞ 2 NaCl (s)</div><div class='option'>A) Increase</div><div class='option'>B) No change in entropy</div><div class='option'>C) Decrease<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">40</span>) What is the unknown particle emitted, which is represented by <span class="math-tex">\( _{?}^{?}X \)</span>?<br><span class="math-tex">\( _{95}^{241}Am \)</span> ➞ <span class="math-tex">\( _{?}^{?}X \)</span> + <span class="math-tex">\( _{93}^{237}Np \)</span></div><div class='option'>A) A gamma particle</div><div class='option'>B) An alpha particle<span class='asterisk'>*</span></div><div class='option'>C) A positron</div><div class='option'>D) A beta particle</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">41</span>) Calculate the ΔS°<sub>rxn</sub> at 25°C using the following information. <br>C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> (s) + 6 O<sub>2</sub> (g) →&nbsp; 6 CO<sub>2</sub> (g) + 6 H<sub>2</sub>O (l), ΔS°rxn = ?<br>
+<div class="section-content">
+<figure class="table-container">
+<table style="width: 111.943%; height: 180.37px;">
+<tbody>
+<tr style="height: 42.358px;">
+<th style="width: 51.3969%; height: 42.358px;" scope="row">&nbsp;</th>
+<td style="width: 48.8259%; height: 42.358px;">S°(J/mol∙K)</td>
+</tr>
+<tr style="height: 23.3523px;">
+<th style="width: 51.3969%; height: 23.3523px;" scope="row">C<sub>6</sub>H<sub>12</sub>O<sub>6 </sub>(s)</th>
+<td style="width: 48.8259%; height: 23.3523px;">212.1</td>
+</tr>
+<tr style="height: 25.5966px;">
+<th style="width: 51.3969%; height: 25.5966px;" scope="row">&nbsp;O<sub>2</sub> (aq)</th>
+<td style="width: 48.8259%; height: 25.5966px;">205.2</td>
+</tr>
+<tr style="height: 46.108px;">
+<th style="width: 51.3969%; height: 46.108px;" scope="row">CO<sub>2</sub> (g)</th>
+<td style="width: 48.8259%; height: 46.108px;">213.8</td>
+</tr>
+<tr style="height: 23.3523px;">
+<th style="width: 51.3969%; height: 23.3523px;" scope="row">&nbsp;H<sub>2</sub>O (l)</th>
+<td style="width: 48.8259%; height: 23.3523px;">70.0</td>
+</tr>
+</tbody>
+</table>
+</figure>
+</div>
+<section aria-labelledby="what_is_a_table"></section></div><div class='option'>A) -133 J/K</div><div class='option'>B) 580. J/K</div><div class='option'>C) 3150 J/K</div><div class='option'>D) 260. J/K<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">42</span>) If <span class="math-tex">\( _{95}^{241}Am \)</span> undergoes alpha decay, what is the resulting daughter nuclide?</div><div class='option'>A) <span class="math-tex">\( _{93}^{237}Np \)</span></div><div class='option'>B) <span class="math-tex">\( _{96}^{241}Cm \)</span><span class='asterisk'>*</span></div><div class='option'>C) <span class="math-tex">\( _{97}^{245}Bk \)</span></div><div class='option'>D) <span class="math-tex">\( _{94}^{241}Pu \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">43</span>) (SLO 5.7) Which answer correctly identifies the sign on change in enthalpy and entropy?<br>H<sub>2</sub>O (l) ➞ H<sub>2</sub>O (s)</div><div class='option'>A) A positive ΔH and a negative ΔS</div><div class='option'>B) A positive ΔH and a positive ΔS</div><div class='option'>C) A negative ΔH and a negative ΔS<span class='asterisk'>*</span></div><div class='option'>D) A negative ΔH and a positive ΔS</div><div class='option'>E)  All of the above.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">44</span>) If <span class="math-tex">\( _{37}^{81}Rb \)</span> undergoes beta decay, what is the resulting daughter nuclide?</div><div class='option'>A) <span class="math-tex">\( _{39}^{85}Y \)</span></div><div class='option'>B) <span class="math-tex">\( _{38}^{81}Sr \)</span><span class='asterisk'>*</span></div><div class='option'>C) <span class="math-tex">\( _{36}^{80}Kr \)</span></div><div class='option'>D) <span class="math-tex">\( _{36}^{81}Kr \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">45</span>) Consider a reaction that has a positive ΔH and a negative ΔS.&nbsp; Which of the following statements is <strong>TRUE</strong>.</div><div class='option'>A) The reaction will be nonspontaneous at all temperatures<span class='asterisk'>*</span></div><div class='option'>B) The reaction will be spontaneous at high temperatures</div><div class='option'>C) The reaction will be spontaneous at all temperatures</div><div class='option'>D) The reaction will be spontaneous at low temperatures</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">46</span>) If <span class="math-tex">\( _{6}^{11}C \)</span> undergoes a positron emission, what is the resulting daughter nuclide?</div><div class='option'>A) <span class="math-tex">\( _{5}^{11}B \)</span><span class='asterisk'>*</span></div><div class='option'>B) <span class="math-tex">\( _{5}^{10}B \)</span></div><div class='option'>C) <span class="math-tex">\( _{7}^{11}N \)</span></div><div class='option'>D) <span class="math-tex">\( _{7}^{12}N \)</span></div><p></p></div><div id="scantrondiv" class="scantrondiv">Final exam (Ch 11 & 13-20)<br><canvas id="scantron" class="scantron"></div></body></html>

@@ -1,0 +1,306 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[1],"2":[0],"3":[1],"4":[2],"5":[0],"6":[3],"7":[3],"8":[1],"9":[1],"10":[3],"11":[0],"12":[1],"13":[3],"14":[0],"15":[1],"16":[0],"17":[0],"18":[0],"19":[1],"20":[1]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter 13 Take-home quiz</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Sep 15, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) Determine the vapor pressure of a solution at 25°C that contains 60.8 g of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>) (180.2 g/mol) in 400 mL of water (18.02 g/mol).&nbsp; The vapor pressure of pure water at 25°C is 23.8 torr, and the density of water is 1.00 g/mL.</div><div class='option'>A) 0.362 torr</div><div class='option'>B) 23.4 torr<span class='asterisk'>*</span></div><div class='option'>C) 1570 torr</div><div class='option'>D) 0.356 torr</div><div class='solution'>60.8 g of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>) x (1 mol glucose / 180.2 g glucose) = 0.337 mol glucose <br>400 mL water x (1.00 g water/ 1 mL water) x (1 mol water / 18.02 g water) = 22.2 mol water<br>Total moles solution = 0.337 mol glucose + 22.2 mol water = 22.5 mol<br>Xwater = 22.2 mol water / 22.5 mol = 0.985<br>P<sub>solution</sub> = X<sub>water</sub> x P<sub>pure water</sub> = 0.985 x 23.8 torr = 23.4 torr</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) The enthalpy of solution for a compound is -93 kJ/mol, and the enthalpy of hydration for the compound's ion X- is -560 kJ/mol. Calculate the lattice energy (in kJ/mol) of the compound.</div><div class='option'>A) 467 kJ/mol<span class='asterisk'>*</span></div><div class='option'>B) -653 kJ/mol</div><div class='option'>C) 653 kJ/mol</div><div class='option'>D) -467 kJ/mol</div><div class='solution'><p>To solve this problem, we can use the following equation:</p>
+<p>ΔH<sub>solution</sub> = ΔH<sub>lattice</sub> + ΔH<sub>hydration</sub></p>
+<p>Where: ΔH<sub>solution</sub> = Enthalpy of solution <br>ΔH<sub>lattice</sub> = Lattice energy <br>ΔH<sub>hydration</sub> = Enthalpy of hydration</p>
+<p>We are given: ΔH<sub>solution</sub> = -93 kJ/mol <br>ΔH<sub>hydration</sub> = -560 kJ/mol</p>
+<p>Rearranging the equation, we can solve for ΔH<sub>lattice</sub>:</p>
+<p>ΔH<sub>lattice</sub> = ΔH<sub>solution</sub> - ΔH<sub>hydration</sub></p>
+<p>Plugging in the given values:</p>
+<p>ΔH<sub>lattice</sub> = -93 kJ/mol - (-560 kJ/mol) = -93 kJ/mol + 93.0 kJ/mol = 467 kJ/mol</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) A 2.44 L sample of an aqueous solution contains 0.187 g of sodium ions.&nbsp; Determine the concentration of sodium ions in ppm if the density of the solution is 1.03 g/mL.</div><div class='option'>A) 82.7 ppm</div><div class='option'>B) 74.4 ppm<span class='asterisk'>*</span></div><div class='option'>C) 7.44x10<sup>4</sup> ppm</div><div class='option'>D) 0.0000744 ppm</div><div class='solution'>2.44 L solution x (1000 mL / 1 L) x (1.03 g / 1 mL) = 2510 g solution<br><br>2510 g solution - 0.187 g of sodium ions = 2510 g water<br><br>PPM = mass of sodium ions/mass of solution x 10<sub>6</sub> = 0.187 g of sodium ions / 2510 g solution x 10<sup>6</sup> = 74.4 ppm</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) A sealed container contains 0.532 L of water with an atmosphere of oxygen gas. What is the concentration of O<sub>2</sub> in the water if the external pressure is 2.74 atm given that k<sub>H</sub> for O<sub>2</sub> is 1.66 × 10<sup>-6</sup> M/mm Hg at this temperature (1 atm = 760 mm Hg)?</div><div class='option'>A) 5.98x10<sup>-9</sup> M</div><div class='option'>B) 4.55x10<sup>-6</sup> M</div><div class='option'>C) 0.00346 M<span class='asterisk'>*</span></div><div class='option'>D) 2170 M</div><div class='solution'><p>Step 1: Convert the external pressure from atm to mm Hg: 2.74 atm x 760 mmHg / 1atm ≈ 2082.4 mm Hg</p>
+<p>Step 2: Calculate the concentration of O<sub>2</sub> in water using Henry's law: <br>Concentration of O<sub>2</sub> = k<sub>H</sub> * Partial pressure of O<sub>2</sub> <br>Partial pressure of O<sub>2</sub> = External pressure</p>
+<p>Concentration of O<sub>2</sub> = 1.66 × 10<sup>-6</sup> M/mm Hg x &nbsp;2082.4 mm Hg&nbsp;<br>Concentration of O<sub>2</sub> ≈ 0.00346 M</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) What is the major intermolecular force between CH<sub>3</sub>OH and H<sub>2</sub>O?</div><div class='option'>A) Hydrogen bonding<span class='asterisk'>*</span></div><div class='option'>B) London dispersion forces</div><div class='option'>C) Ion-dipole forces</div><div class='option'>D) Dipole-dipole forces</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) What is the parts per million (ppm) of a 0.00600 m (molality) aqueous KOH (molar mass 56.11 g/mol) solution?</div><div class='option'>A) 6.00 ppm</div><div class='option'>B) 2970 ppm</div><div class='option'>C) 0.000337 ppm</div><div class='option'>D) 337 ppm<span class='asterisk'>*</span></div><div class='solution'>1 kg H<sub>2</sub>O x 1000 g/1 kg = 1000 g H<sub>2</sub>O<br>Total grams of solution = 0.337 g + 1000 g = 1000. g<br>ppm =&nbsp; (0.337 g&nbsp; KOH)/(1000. g solution) x 10<sup>6</sup> = 337 ppm</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Which of the following compounds will be most soluble in water (H<sub>2</sub>O)?</div><div class='option'>A) Ethane (C<sub>2</sub>H<sub>6</sub>)</div><div class='option'>B) Acetylene (C<sub>2</sub>H<sub>2</sub>)</div><div class='option'>C) Methane (CH<sub>4</sub>)</div><div class='option'>D) Ammonia (NH<sub>3</sub>)<span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><div class='solution'>The compounds will be most soluble in water (H<sub>2</sub>O) will be a compound that can also hydrogen bond.&nbsp; Of the choices, only Ammonia (NH<sub>3</sub>) can hydrogen bond, so Ammonia (NH<sub>3</sub>) is the answer.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) Which of the following describes how you would prepare a 2.0 <strong>m (molality)</strong> solution of KI?</div><div class='option'>A) Measure out 1.0 moles of KI, then put it in a volumetric flask and add enough water to produce 2 L of solution.</div><div class='option'>B) Measure out 2.0 moles of KI, then add 1 Kg of water.<span class='asterisk'>*</span></div><div class='option'>C) Measure out 1.0 moles of KI, then add 2 Kg of water.</div><div class='option'>D) Measure out 2.0 moles of KI, then put it in a volumetric flask and add enough water to produce 1 L of solution.</div><div class='solution'>Measure out 2.0 moles of KI, then add 1 Kg of water.&nbsp;<br>It is important to remember that molality is moles of solute over kilograms of solvent.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) Which of the following have a great impact on the solubility of a gas in a liquid?</div><div class='option'>A) Atmospheric pressure only</div><div class='option'>B) Temperature and partial pressure of the gas<span class='asterisk'>*</span></div><div class='option'>C) Temperature only</div><div class='option'>D)  None of the above.</div><div class='solution'>Only temperature has any significant impact on the solubility of a solid (increasing the temperature increases the solid's solubility).&nbsp;&nbsp;<br>Both temperature and partial pressure of the gas would have a significant impact on the solubility of a gas (increasing the temperature decreases the solubility of a gas, and increasing the partial pressure of the gas increases the solubility of a gas).</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) Which of the following would result in an endothermic reaction?</div><div class='option'>A) The reactants have weaker bonds than the products</div><div class='option'>B) The products and reactants have equal strength bonds</div><div class='option'>C) The reactants are at a higher potential energy than the products</div><div class='option'>D) The reactants have stronger bonds than the products<span class='asterisk'>*</span></div><div class='solution'>Exothermic:<br>Products have stronger bonds/reactants have weaker bonds<br>The product is at a lower potential energy<br><br>Endothermic:<br>Products have weaker bonds/reactants have stronger bonds<br>The product is at a higher potential energy</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) How many moles of NaI are contained in 329 g of water in a 0.228 m NaI solution?</div><div class='option'>A) 0.0750 mol<span class='asterisk'>*</span></div><div class='option'>B) 75.0 mol</div><div class='option'>C) 11.2 mol</div><div class='option'>D) 0.781 mol</div><div class='solution'>329 g water x (1 Kg / 1000 g)= 0.329 Kg<br>0.329 Kg of water X (0.228 mol NaI / 1 Kg water) = 0.0750 mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) What mass (in g) of NH<sub>3</sub> (17.03 g/mol) must be dissolved in 550. g of methanol (32.04 g/mol) to make a 0.998 m solution?</div><div class='option'>A) 0.292 g</div><div class='option'>B) 9.34 g<span class='asterisk'>*</span></div><div class='option'>C) 17.6 g</div><div class='option'>D) 0.549 g</div><div class='solution'>What mass (in g) of NH<sub>3</sub> (17.03 g/mol) must be dissolved in 550. g of methanol (32.04 g/mol) to make a 0.998 m solution?<br>0.550 Kg solution x (0.998 mol<sub>solute</sub> / 1 Kg <sub>solvent</sub>)&nbsp; &nbsp;X (17.03 g solute / 1 mol solute) = 9.34 g</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) Calculate the mass of oxygen (in mg) dissolved in a 5.00 L bucket of water exposed to a pressure of 1.18 atm of <strong>air</strong>. Assume the mole fraction of O<sub>2</sub> in air to be 0.21 given that k<sub>H</sub> for O<sub>2</sub> is 1.3 × 10<sup>-3</sup> M/atm at this temperature.</div><div class='option'>A) 25.8 mg</div><div class='option'>B) 0.0515 mg</div><div class='option'>C) 245 mg</div><div class='option'>D) 51.5 mg<span class='asterisk'>*</span></div><div class='solution'>P<sub>O2</sub> = X<sub>O2</sub> x P<sub>air</sub><br>P<sub>O2</sub> = 0.21 x 1.18 atm<br><br>S (M) =&nbsp; K<sub>H</sub> * P<sub>O2</sub> = 1.3 × 10<sup>-3</sup> M/atm x 0.248 atm = 0.000322 M<br><br>0.000322 M x&nbsp; 5.00 L = 0.00161 mol x (32.00 g O<sub>2</sub> / 1 mol O<sub>2</sub>) x (1000 mL / 1L) = 51.5 mg</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) Determine the Henry's law constant for an unknown gas in water at 25°C if the unknown gas at a pressure of 0.0402 atm produces a solution with a concentration of 4.00 M.</div><div class='option'>A) 99.5 M/atm<span class='asterisk'>*</span></div><div class='option'>B) 4.02 M/atm</div><div class='option'>C) 0.161 M/atm</div><div class='option'>D) 0.0100 M/atm</div><div class='solution'>S = K<sub>h</sub> * p<br>K<sub>h</sub> = S/p<br>K<sub>h</sub> = 4.00 m/0.0402 atm = 99.5 M/atm</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) What is the mol fraction of ethanol, C<sub>2</sub>H<sub>5</sub>OH (46.07 g/mol), in a solution of 63.7 g of ethanol and 200 g of water (18.02 g/mol)?</div><div class='option'>A) 0.889</div><div class='option'>B) 0.111<span class='asterisk'>*</span></div><div class='option'>C) 8.03</div><div class='option'>D) 0.125</div><div class='solution'>63.7 g ethanol x (1 mol ethanol / 46.07 g ethanol) = 1.38 mol ethanol<br>200 g water x (1 mol water / 18.02 g water) = 11.1 mol water<br>Total moles solution =&nbsp; 1.38 mol ethanol + 11.1 mol water = 12.5 mol<br>mole fraction of ethanol = 1.38 mol ethanol / 12.5 mol = 0.111</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) (SLO 1.3) The Henry’s law constant for nitrogen gas in water at 20ºC is 7.1 x 10<sup>-4</sup> M/atm. When the partial pressure of nitrogen above a sample of water is 0.739 atm, the concentration of nitrogen in the water is ______ M.</div><div class='option'>A) 0.000525<span class='asterisk'>*</span></div><div class='option'>B) 1040</div><div class='option'>C) 0.000961</div><div class='option'>D) 5.25</div><div class='solution'><p>Henry's law relates the concentration of a gas in a liquid to its partial pressure above the liquid. The equation for Henry's law is:</p>
+<p>C = k * P</p>
+<p>where: C is the concentration of the gas in the liquid (in Molarity, M) k is the Henry's law constant for the specific gas-solvent system (in M/atm) P is the partial pressure of the gas above the liquid (in atm)</p>
+<p>Given: Henry's law constant (k) for nitrogen gas in water = 7.1 x 10<sup>-4</sup> M/atm <br>Partial pressure of nitrogen (P) = 0.739 atm</p>
+<p>Using Henry's law, we can calculate the concentration of nitrogen gas in the water (C):</p>
+<p>C = (7.1 x 10<sup>-4</sup> M/atm) * (0.739 atm) C ≈ 0.000525 M</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) (SLO 1.4) An aqueous solution is 0.748 <strong>m (molality) </strong>MgCl<sub>2</sub> (95.21 g/mol). &nbsp;What is the <strong>molarity (M)</strong> of the solution if the density of the aqueous solution is 1.11 g/mL?</div><div class='option'>A) 0.775 M<span class='asterisk'>*</span></div><div class='option'>B) 0.830 M</div><div class='option'>C) 0.0115 M</div><div class='option'>D) 0.698 M</div><div class='solution'>A solution is 0.748 m MgCl<sub>2</sub> (95.21 g/mol). &nbsp;What is the <strong>molarity (M) </strong>of the solution if the density of the solution is 1.11 g/mL?<br>0.748 mol MgCl<sub>2</sub> x (95.21 g&nbsp; MgCl<sub>2</sub>)/(1 mol MgCl<sub>2</sub>) = 71.2 g MgCl<sub>2</sub><br>1 kg water x 1000 g/1 kg = 1000 g water<br>1000 g water + 71.2 g MgCl<sub>2</sub> = 1070 g solution<br>1070 g solution x 1 mL/1.11 g = 965 mL<br>965 mL x 1 L/1000 mL = 0.965 L<br>molarity (M) = 0.748 mol MgCl<sub>2</sub>/ 0.965 L = 0.775 M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) (SLO 1.1) The osmotic pressure of a solution formed by dissolving 32.5 mg of Aspirin (C<sub>9</sub>H<sub>8</sub>O<sub>4</sub>) (180.16 g/mol) in enough water to make 0.225 L of solution at 30°C is _____ atm.</div><div class='option'>A) 0.0199<span class='asterisk'>*</span></div><div class='option'>B) 0.00197</div><div class='option'>C) 19.9</div><div class='option'>D) 0.00449</div><div class='solution'><p>Given: Mass of Aspirin = 32.5 mg x 1 g/1000 mg= 0.0325 g <br>Molar mass of Aspirin (C<sub>9</sub>H<sub>8</sub>O<sub>4</sub>) = 180.16 g/mol <br>Volume of solution (V) = 0.225 L</p>
+<p>First, calculate the number of moles of Aspirin:</p>
+<p>moles of Aspirin = 0.0236 g x (1mol Aspirin)/(180.16 g Aspirin) ≈ 0.000180 mol</p>
+<p>Next, calculate the molarity (M) of the solution:</p>
+<p>Molarity (M) = moles of solute / volume of solution Molarity (M) = 0.0000180 mol / 0.225 L <br>Molarity (M) ≈ &nbsp;0.000802 M</p>
+<p>Now we can calculate the osmotic pressure:</p>
+<p>π = MRT</p>
+<p>where: M is the molarity of the solution R is the ideal gas constant (0.0821 L·atm/(mol·K)) T is the temperature in Kelvin (K)</p>
+<p>Given: Temperature (T) = 30°C +273.15 = 303.15 K</p>
+<p>π = (0.000802) * (0.08206 L·atm/(mol·K)) * (303.15 K) π ≈ 0.0199 atm</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) (SLO 1.7) What is a solution containing the maximum equilibrium amount of solute at a given temperature called?</div><div class='option'>A) A supersaturated solution</div><div class='option'>B) A saturated solution<span class='asterisk'>*</span></div><div class='option'>C) A dilute solution</div><div class='option'>D) An unsaturated solution</div><div class='option'>E)  None of the above.</div><div class='solution'>An unsaturated solution contains less than the maximum amount of solute at a given temperature<br>A supersaturated solution contains more than the maximum amount of solute at a given temperature<br>A saturated solution contains the maximum equilibrium amount of solute at a given temperature</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">20</span>) (SLO 1.6) What is the <strong>change </strong>in boiling point of a solution of 25.8 g KCl (74.55 g/mol) in 763 g of water? K<sub>b</sub> for water is 0.512°C/m.&nbsp; Assume ideal behavior.</div><div class='option'>A) 17.3°C</div><div class='option'>B) 0.464°C<span class='asterisk'>*</span></div><div class='option'>C) 0.232°C</div><div class='option'>D) 0.000232°C</div><div class='solution'><p>To calculate the change in boiling point of a solution, we can use the equation:</p>
+<p>ΔTb = i x Kb x m</p>
+<p>where: i = van't Hoff factor<br>ΔTb = change in boiling point <br>Kb = boiling point elevation constant (0.512 °C/m for water) <br>m = molality of the solution (moles of solute per kilogram of solvent)</p>
+<p>First, we need to calculate the molality of the solution, which is the number of moles of solute per kilogram of solvent.</p>
+<p>&nbsp;25.8 g KCl x (1 mol KCl)/(74.55 g KCl) = 0.346 mol KCl<br><br>Step 2: Calculate the molality of the solution: Molality = moles of solute / mass of solvent (in kg) Mass of solvent (water) = 763 g x 1 kg/1000 g = 0.763 kg&nbsp;</p>
+<p>Molality =0.346 mol KCl mol / 0.763 kg ≈ 0.454&nbsp; M<br><br>Step 3: van't Hoff factor<br>The van't Hoff factor for KCl will be estimated at 2 because&nbsp; KCl contains 2 ions.</p>
+<p>Step 3: Calculate the change in boiling point: ΔTb = i x Kb x m ΔTb = 2 x 0.512 °C/m * 0.454&nbsp; M ≈ 0.464&nbsp; M °C</p></div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 13 Take-home quiz<br><canvas id="scantron" class="scantron"></div></body></html>

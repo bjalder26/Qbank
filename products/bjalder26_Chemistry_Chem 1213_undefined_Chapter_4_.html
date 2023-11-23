@@ -1,0 +1,277 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[3],"2":[1],"3":[2],"4":[0],"5":[3],"6":[1],"7":[3],"8":[0],"9":[0],"10":[0],"11":[3],"12":[2],"13":[0],"14":[1],"15":[0],"16":[2]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-Z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter 4</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) Which of the following is the correct formula for the compound sodium sulfide?</div><div class='option'>A) NaS<sub>2</sub></div><div class='option'>B) NaS</div><div class='option'>C) So<sub>2</sub>S</div><div class='option'>D) Na<sub>2</sub>S<span class='asterisk'>*</span></div><div class='solution'>Sodium is a fixed charge metal and sulfide is a nonmetal cation, so this will be an ionic compound, and the charges can be know from the periodic table. &nbsp;Sodium will carry a +1 charge because it is in the 1A group.&nbsp; Sulfide will carry a -2<br>charge because sulfur is in the 6A group.&nbsp; The lowest common multiple of 1 and 2 is 2.&nbsp; Therefore we will need 2 sodium ions and 1 sulfide ion.&nbsp; That gives us a formula of Na<sub>2</sub>S.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) What is the empirical formula for C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>?</div><div class='option'>A) C<sub>3</sub>H<sub>6</sub>O<sub>3</sub></div><div class='option'>B) CH<sub>2</sub>O<span class='asterisk'>*</span></div><div class='option'>C) C<sub>2</sub>H<sub>4</sub>O<sub>2</sub></div><div class='option'>D) C<sub>6</sub>H<sub>12</sub>O<sub>6</sub></div><div class='solution'>An empirical formula represents the simplest ratio of elements present in a compound. It shows the relative number of atoms of each element in a compound without specifying the actual number of atoms.&nbsp; To get the empirical formula you need to divide the subscripts in the equation (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>) by their greatest common divisor.&nbsp; In this case 2 and 6 are divisible by 6, which gives CH<sub>2</sub>O as the empirical formula.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) An ionic bond is best described as</div><div class='option'>A) A bond between two non-metals</div><div class='option'>B) A bond between two metals</div><div class='option'>C) A bond formed when electrons are transferred from one atom to another<span class='asterisk'>*</span></div><div class='option'>D) A bond formed when electrons are shared between two atoms</div><div class='solution'>A covalent bond is formed when two atoms share electrons in order to achieve a stable electron configuration. In a covalent bond, the atoms involved have similar electronegativity, meaning they have similar tendencies to attract electrons. This sharing of electrons allows both atoms to fill their outermost energy levels and achieve greater stability.<br><br>An ionic bond is formed when electrons are transferred from one atom to another, resulting in the formation of ions. In an ionic bond, one atom donates electrons to another atom, resulting in the formation of a positively charged ion (cation) and a negatively charged ion (anion). The attraction between these opposite charges holds the ions together and forms an ionic bond.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) Which of the following would have the highest lattice energy?</div><div class='option'>A) MgO<span class='asterisk'>*</span></div><div class='option'>B) Li<sub>2</sub>O</div><div class='option'>C) Na<sub>2</sub>O</div><div class='option'>D) Li<sub>2</sub>O</div><div class='solution'>There are two parts that are involved in lattice energy.&nbsp; One is the charge on the ions (this is the bigger priority), and the other is the distance between the ions.&nbsp; This is only testing on knowing that the larger the charge on the ions, the larger the lattice energy.&nbsp; Since Mg has the highest charge, MgO will have the highest lattice energy.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) An unknown compound contains only carbon and hydrogen. When it undergoes combustion analysis, it produces 16.941 g of CO<sub>2</sub> and 13.884 g of H<sub>2</sub>O. Given that it has a molar mass of 16.0 g/mol, what is the molecular formula?</div><div class='option'>A) C<sub>1</sub>H<sub>2</sub></div><div class='option'>B) C<sub>0.5</sub>H<sub>2</sub></div><div class='option'>C) C<sub>1</sub>H<sub>11</sub></div><div class='option'>D) C<sub>1</sub>H<sub>4</sub><span class='asterisk'>*</span></div><div class='solution'>Step 1: Convert the grams of CO<sub>2</sub> and H<sub>2</sub>O to moles of C and O.<br>&nbsp;16.9 g CO<sub>2</sub> x <span class="math-tex">\( \frac{1 mol CO_2}{44.01 g CO_2} \)</span>x <span class="math-tex">\( \frac{1 mol C}{1 mol CO_2} \)</span> = &nbsp;0.385 mol C<br>13.9 g H<sub>2</sub>O x <span class="math-tex">\( \frac{1 mol H_2O}{18.016 g H_2O} \)</span> x <span class="math-tex">\( \frac{2 mol H}{1 mol H_2O} \)</span> = 1.54 mol H<br><br>Step 2: Divide both mole amounts by the lower of the two numbers.<br>0.385 mol C/0.385 = 1.00 mol C<br>1.54 mol H/0.385 = 4.00 mol H<br><br>Step 3: Get the smallest whole number ratio of each mole amount to get the empirical formula.<br><br>Step 4: Calculate the molar mass of the empirical and dived the molar mass of the compound by the molar mass of the empirical formula.&nbsp; This number will tell you what you need to multiply the subscripts in the empirical formula by to get the molecular formula.<br><br>Thus the molecular formula is: C<sub>1</sub>H<sub>4<br></sub></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) Calculate the molar mass for Sn(ClO<sub>4</sub>)<sub>4</sub>.</div><div class='option'>A) 218.2 g/mol</div><div class='option'>B) 516.5 g/mol<span class='asterisk'>*</span></div><div class='option'>C) 872.6 g/mol</div><div class='option'>D) 324.5 g/mol</div><div class='solution'>To calculate the molar mass for Sn(ClO<sub>4</sub>)<sub>4</sub>, take the number of each element from the periodic table and multiply it by the &nbsp;molar mass of the element, then sum all the molar masses from each element.<br>Sn: 118.71 g/mol x 1 = 118.71 g/mol<br>Cl: 35.45 g/mol x 4 = 141.8 g/mol<br>O: 16.00 g/mol x 20 = 300 g/mol<br>Total: 516.5 g/mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Which of the following is the correct Lewis structure for Br ?</div><div class='option'>A) <img title="br6.jpg" src="../images/35.jpeg" alt="" width="50" height="50"></div><div class='option'>B) <img title="br5.jpg" src="../images/30.jpeg" alt="" width="46" height="50"></div><div class='option'>C) <img title="br8.jpg" src="../images/40.jpeg" alt="" width="58" height="50"></div><div class='option'>D) <img title="br7.jpg" src="../images/25.jpeg" alt="" width="55" height="50"><span class='asterisk'>*</span></div><div class='solution'>Since Br is in the 7A group, it should have 7 valence electrons in its Lewis structure.&nbsp; Thus&nbsp; <img title="br7.jpg" src="../images/25.jpeg" alt="" width="55" height="50"> is the answer.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) An unknown compound contains only carbon and hydrogen. When it undergoes combustion analysis, it produces 19.364 g of CO<sub>2</sub> and 7.9288 g of H<sub>2</sub>O.&nbsp; What is the empirical formula for the compound?</div><div class='option'>A) C<sub></sub>H<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>B) C<sub></sub>H<sub>3</sub></div><div class='option'>C) C<sub>2</sub>H<sub>4</sub></div><div class='option'>D) C<sub></sub>H<sub>4</sub></div><div class='solution'>Step 1: Convert the grams of CO<sub>2</sub> and H<sub>2</sub>O to moles of C and O.<br>19.4 g CO<sub>2</sub> x <span class="math-tex">\( \frac{1 mol CO_2}{44.01 g CO_2} \)</span>x <span class="math-tex">\( \frac{1 mol C}{1 mol CO_2} \)</span> = &nbsp;0.440 mol C<br>7.93 g H<sub>2</sub>O x <span class="math-tex">\( \frac{1 mol H_2O}{18.016 g H_2O} \)</span> x <span class="math-tex">\( \frac{2 mol H}{1 mol H_2O} \)</span> = 0.440 mol H<br><br>Step 2: Divide both mole amounts by the lower of the two numbers.<br><br>Step 3: Get the smallest whole number ratio of each mole amount.<br>1 mol C to 2 mol H<br><br>Thus the empirical formula is: C<sub></sub>H<sub>2</sub></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) Which of the following is the correct Lewis structure for Br<sup>-</sup>?</div><div class='option'>A) <img title="br8.jpg" src="../images/40.jpeg" alt="" width="58" height="50"><span class='asterisk'>*</span></div><div class='option'>B) <img title="br6.jpg" src="../images/35.jpeg" alt="" width="50" height="50"></div><div class='option'>C) <img title="br7.jpg" src="../images/25.jpeg" alt="" width="55" height="50" data-mce-fragment="1"></div><div class='option'>D) <img title="br5.jpg" src="../images/30.jpeg" alt="" width="46" height="50"></div><div class='solution'>Since Br<sup>-</sup> has a -1 charge, it will have one more electron than the neutral Br. &nbsp;Br is in the 7A period, so the Lewis structure should have 7 + 1 = 8 electrons.&nbsp; Thus the correct Lewis structure is <img title="br8.jpg" src="../images/40.jpeg" alt="" width="58" height="50">.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) A triple covalent bond contains how many electrons?</div><div class='option'>A) 6<span class='asterisk'>*</span></div><div class='option'>B) 8</div><div class='option'>C) 4</div><div class='option'>D) 3</div><div class='solution'>A single covalent bond contains 2 shared electrons.<br>A double covalent bond contains 4 shared electrons.<br>A triple covalent bond contains 6 shared electrons.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) Determine the name for NaC<sub>2</sub>H<sub>3</sub>O<sub>2</sub><strong>·</strong>3H<sub>2</sub>O</span></div><div class='option'>A) Sodium (I) acetate trihydrate</div><div class='option'>B) Sodium acetate tetrahydrate</div><div class='option'>C) Sodium acetate dihydrogen monoxide</div><div class='option'>D) Sodium acetate trihydrate<span class='asterisk'>*</span></div><div class='solution'>NaC<sub>2</sub>H<sub>3</sub>O<sub>2</sub><strong>·</strong>3H<sub>2</sub>O is an ionic compound and a hydrate.&nbsp; To name the ionic compound portion give the name of the cation followed by the name of the anion.&nbsp; In this case that would be sodium acetate.  The hydrate portion of the formula is named based on the number of water molecules.&nbsp; Since this hydrate has 3 water molecules in its formula the prefix 'tri-' is used before the word 'hydrate'.&nbsp; Thus the correct name is sodium acetate trihydrate.</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) Give the formula for Iron (II) nitrate</div><div class='option'>A) Fe<sub>2</sub>NO<sub>3</sub></div><div class='option'>B) FeNO<sub>3</sub></div><div class='option'>C) Fe(NO<sub>3</sub>)<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>D) Fe(NO<sub>2</sub>)<sub>2</sub></div><div class='solution'><p>The Roman numeral (II) tells us that the charge on Iron is +2.&nbsp; From a list of polyatomic ions we can know that the charge on nitrate is -1.&nbsp; The lowest common multiple of 2 and 1 is 2, so the number of Iron ions will need to be 1, and the number of nitrate ions will need to be 2.&nbsp; This will give us a formula of Fe(NO<sub>3</sub>)<sub>2</sub>.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) What is the empirical formula for a sulfur oxide (compound composed of sulfur and oxygen) that is 50.0% sulfur by mass?</div><div class='option'>A) SO<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>B) S<sub>3</sub>O</div><div class='option'>C) S<sub>2</sub>O</div><div class='option'>D) SO<sub>3</sub></div><div class='solution'>Since the sulfur oxide compound is is 50.0% sulfur by mass, it will be 100% - 50.0% = 50.0 % oxygen by mass.<br><br>Assuming a 100 g sample gives us:&nbsp; 50.0 g sulfur and 50.0 g oxygen.<br><br>Next convert those grams to moles.<br>50.0 g S x <span class="math-tex">\( \frac{1 mol S}{32.06 g S} \)</span> = 1.56 mol S<br>50.0 g O x <span class="math-tex">\( \frac{1 mol O}{16.00 g O} \)</span> = 3.13 mol O<br><br>Then divide by the lower of the two mol amounts, and get the lowest whole number ratio.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) Give the name for N<sub>2</sub>O<sub>3</sub>.</div><div class='option'>A) Nitrogen oxide</div><div class='option'>B) Dinitrogen trioxide<span class='asterisk'>*</span></div><div class='option'>C) Nitrogen (II) oxide</div><div class='option'>D) Nitrogen trioxide</div><div class='solution'>Both N and O are nonmetals, so we will need to put a Greek prefix before the name of each element, then give the second element an -ide ending.&nbsp; However, mono- is dropped from the beginning in cases where there is only 1 of the first element in the compound.&nbsp; Since there are 2 N and 3 O, the name is Dinitrogen trioxide.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) What is the name of the compound Li<sub>2</sub>SO<sub>4</sub>?</div><div class='option'>A) Lithium sulfate<span class='asterisk'>*</span></div><div class='option'>B) Lithium sulfuroxide</div><div class='option'>C) Lithium monosulfate</div><div class='option'>D) Lithium sulfide</div><div class='solution'>Li<sub>2</sub>SO<sub>4</sub> is an ionic compound because it contains a polyatomic ion (SO<sub>4</sub><sup>2-</sup>).&nbsp; Thus to name Li<sub>2</sub>SO<sub>4</sub>, you need to say the name of the polyatomic cation followed by the name of the polyatomic anion.&nbsp; Therefore the correct name is Lithium sulfate.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) Calculate the formula mass for C<sub>6</sub>H<sub>12</sub>O.</div><div class='option'>A) 89.07 amu</div><div class='option'>B) 84.16 amu</div><div class='option'>C) 100.2 amu<span class='asterisk'>*</span></div><div class='option'>D) 29.02 amu</div><div class='solution'>To calculate the formula mass for C<sub>6</sub>H<sub>10</sub>O, take the number of each element from the periodic table and multiply it by the&nbsp; formula mass of the element, then sum all the formula masses from each element.<br>C: 12.01 amu x 6 = 72.06 amu<br>H: 1.008 amu x 10 = 12.10 amu<br>O: 16.00 amu x 1 = 16.00 amu<br>Total: 100.2 amu</div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 4<br><canvas id="scantron" class="scantron"></div></body></html>

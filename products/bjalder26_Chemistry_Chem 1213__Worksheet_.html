@@ -1,0 +1,434 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+	  .selected {
+  border: 2px solid blue;
+  font-weight: bold;
+}
+
+.correct {
+  border: 2px solid green;
+  font-weight: bold;
+}
+
+.incorrect {
+  border: 2px solid red;
+}
+
+.missed {
+  border: 2px solid yellow;
+  font-weight: bold;
+}
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	let questionsObject = {};
+	
+	
+					questionsObject = {"1":[3],"2":[1],"3":[3],"4":[2],"5":[1],"6":[1],"7":[1],"8":[3],"9":[1],"10":[1],"11":[2],"12":[0],"13":[2],"14":[2],"15":[0],"16":[2]}; 
+				 
+	
+	
+	
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	  //###replace me###
+	  
+	 
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let markCoordinates = [];
+	  
+function getSelected() {
+// Initialize an object to store the question number and selected options
+var selectedOptions = {};
+
+// Select all questions
+var questions = document.querySelectorAll('.question');
+
+// Iterate through each question
+questions.forEach(function(question, index) {
+  // Find all the options in the current question
+  var options = question.querySelectorAll('.option');
+
+  // Initialize an array to store the selected option indices
+  var selectedIndices = [];
+
+  // Iterate through the options and check if they have the "selected" class
+  options.forEach(function(option, optionIndex) {
+    if (option.classList.contains('selected')) {
+      selectedIndices.push(optionIndex);
+    }
+  });
+
+  // Store the selected indices in the object with the question number as the key
+  selectedOptions[(index + 1).toString()] = selectedIndices;
+});
+
+// The selectedOptions object now contains the desired data
+console.log(selectedOptions);
+return selectedOptions;
+}
+	  
+function submitQuiz() {
+  let passed = {};
+  passed.selected = getSelected();
+  passed.fileName = fileName;
+  passed.sessionId = sessionId ? sessionId : "nope";
+  passed = encodeURIComponent(JSON.stringify(passed))
+    var path = '/submitQuiz/' + passed;
+    window.open(path, '_blank');  // this is probably what opens it in a new window
+} 
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  if(canvas) {
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+  }
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Worksheet</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) Use the standard reaction enthalpies given below to determine ΔH°<sub>rxn</sub> for the following reaction
+<p>P<sub>4</sub>(g) + 10 Cl<sub>2</sub>(g) → 4PCl<sub>5</sub>(s), ΔH°<sub>rxn</sub> = ?</p>
+<p>Given:</p>
+<p>PCl<sub>5</sub>(s) → PCl<sub>3</sub>(g) + Cl<sub>2</sub>(g), ΔH°<sub>rxn</sub> = +157 kJ</p>
+<p>P<sub>4</sub>(g) + 6 Cl<sub>2</sub>(g) → 4 PCl<sub>3</sub>(g), ΔH°<sub>rxn</sub> = -1207 kJ</p></div><div class='option'>A) -1050. kJ</div><div class='option'>B) -1364 kJ</div><div class='option'>C) -1786 kJ</div><div class='option'>D) -1835 kJ<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) What are the signs on q (heat) and w (work) for a system that is doing work on the surroundings, as well as gaining heat from the surroundings?</div><div class='option'>A) w is positive, q is positive</div><div class='option'>B) w is negative, q is positive<span class='asterisk'>*</span></div><div class='option'>C) w is positive, q is negative</div><div class='option'>D) w is negative, q is negative</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) Use the bond energies provided to estimate ΔH°<sub>rxn</sub>&nbsp;for the reaction below.
+<p>C<sub>2</sub>H<sub>4</sub>(g) + H<sub>2</sub>(g) → C<sub>2</sub>H<sub>6</sub>(g), ΔH°<sub>rxn</sub> = ?</p>
+<table style="border-collapse: collapse; border-color: #7e8c8d; border-style: dashed; width: 14.5392%;" border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d;" width="66">Bond</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d;" width="66">
+<p>Bond Energy (kJ/mol)</p>
+</td>
+</tr>
+<tr>
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d;" width="66">
+<p>C-C</p>
+</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d;" width="66">
+<p>347</p>
+</td>
+</tr>
+<tr>
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d;" width="66">
+<p>C-H</p>
+</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d;" width="66">
+<p>414</p>
+</td>
+</tr>
+<tr>
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d;" width="66">
+<p>C=C</p>
+</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d;" width="66">
+<p>611</p>
+</td>
+</tr>
+<tr>
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d;" width="66">
+<p>C≡C</p>
+</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d;" width="66">
+<p>837</p>
+</td>
+</tr>
+<tr>
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d;" width="66">
+<p>H-H</p>
+</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d;" width="66">436</td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) +700 kJ</div><div class='option'>B) +98 kJ</div><div class='option'>C) -102 kJ</div><div class='option'>D) -128 kJ<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) How much heat energy is required to raise the temperature of 9.86 g of water from 41.61°C to 71.38°C? The specific heat capacity of water = 4.184 J/g°C.</div><div class='option'>A) 2940 J</div><div class='option'>B) 125 J</div><div class='option'>C) 1230 J<span class='asterisk'>*</span></div><div class='option'>D) 294 J</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) What is the final temperature of a aluminum sample (mass = 333 g) that has a starting temperature of 450 K but loses 4.97 kJ of heat. The specific heat capacity of aluminum is 0.900 J/g°C.</div><div class='option'>A) 467 K</div><div class='option'>B) 433 K<span class='asterisk'>*</span></div><div class='option'>C) 448 K</div><div class='option'>D) 452 K</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) Use the ΔH°f information provided to calculate ΔH°<sub>rxn</sub>&nbsp;for the following
+<p>&nbsp;SO<sub>2</sub>Cl<sub>2</sub>(g) + 2 H<sub>2</sub>O(l) → 2 HCl(g) + H<sub>2</sub>SO<sub>4</sub>(l), ΔH°<sub>rxn</sub> = ?</p>
+<table style="border-collapse: collapse; border-color: #7e8c8d; border-style: dashed; width: 18.4287%;" border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">&nbsp;</td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p><u>ΔH</u>°f (kJ/mol)</p>
+</td>
+</tr>
+<tr>
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p>SO<sub>2</sub>Cl<sub>2</sub>(g)</p>
+</td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p>-364</p>
+</td>
+</tr>
+<tr>
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66"><span style="text-align: start;">H<sub>2</sub>O(l)</span></td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p><span style="text-align: start;">-286</span></p>
+</td>
+</tr>
+<tr>
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p><span style="text-align: start;">HCl(g)</span></p>
+</td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p><span style="text-align: start;">-92</span></p>
+</td>
+</tr>
+<tr>
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p><span style="text-align: start;">H<sub>2</sub>SO<sub>4</sub>(l)</span></p>
+</td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center;" width="66">
+<p><span style="text-align: start;">-814</span></p>
+</td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) +161 kJ</div><div class='option'>B) -62 kJ<span class='asterisk'>*</span></div><div class='option'>C) +800. kJ</div><div class='option'>D) -256 kJ</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) A sample of aluminum absorbs 33.3 kJ of heat, resulting in a temperature rise of 70°C, determine the mass (in Kg) of the aluminum sample if the specific heat capacity of aluminum is 0.900 J/g°C.</div><div class='option'>A) 476</div><div class='option'>B) 0.529<span class='asterisk'>*</span></div><div class='option'>C) 101</div><div class='option'>D) 529</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) The temperature rises from 26.8°C to 28.5°C in a bomb calorimeter when 4.92 g of an unknown compound undergoes combustion in a bomb calorimeter. Calculate ΔE<sub>rxn</sub> for the combustion of sucrose in kJ/mol of the unknown compound. The heat capacity of the calorimeter is 6.52 kJ/°C. The molar mass of the unknown compound is 325 g/mol (for this problem the water is considered part of the calorimeter, so consider all the heat produced as being absorbed by the calorimeter).</div><div class='option'>A) -2.25 kJ/mol</div><div class='option'>B) -431 kJ/mol</div><div class='option'>C) -1.23x10<sup>4</sup> kJ/mol</div><div class='option'>D) -732 kJ/mol<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) A 7.23 g sample of aniline (C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub>, molar mass = 93.13 g/mol) was combusted in a bomb calorimeter. If the temperature rose by 29.8°C, use the information below to determine the heat capacity of the calorimeter (for this problem the water is considered part of the calorimeter, so consider all the heat produced as being absorbed by the calorimeter).
+<p style="text-align: center;">4 C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub>(l) + 35 O<sub>2</sub>(g) → 24 CO<sub>2</sub>(g) + 14 H<sub>2</sub>O(g) + 4 NO<sub>2</sub>(g), ΔH°rxn = -1.28 × 10<sup>4</sup>&nbsp;kJ</p></div><div class='option'>A) 33.3 kJ/°C</div><div class='option'>B) 8.34 kJ/°C<span class='asterisk'>*</span></div><div class='option'>C) 0.311 kJ/°C</div><div class='option'>D) 248 kJ/°C</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) A 3.61 g sample of aniline (C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub>, molar mass = 93.13 g/mol) was combusted in a coffee cup (constant pressure) calorimeter with a heat capacity of 3.86 kJ/°C. If the temperature rose from 37.8°C to 76.9°C, determine the value of ΔH°<sub>combustion</sub> for aniline (for this problem the water is considered part of the calorimeter, so consider all the heat produced as being absorbed by the calorimeter).</div><div class='option'>A) -7660 kJ/mol</div><div class='option'>B) -3890 kJ/mol<span class='asterisk'>*</span></div><div class='option'>C) 7660 kJ/mol</div><div class='option'>D) 3890 kJ/mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) How much energy is <strong>required</strong> to decompose 678 g of PCl<sub>3</sub>, according to the reaction below? The molar mass of PCl<sub>3</sub> is 137.32 g/mol and may be useful.
+<p style="text-align: center;">4 PCl<sub>3</sub>(g) → P<sub>4</sub>(s) + 6 Cl<sub>2</sub>(g), ΔH°<sub>rxn</sub> = +1207 kJ</p></div><div class='option'>A) 4.14x10<sup>4</sup> kJ</div><div class='option'>B) 2.05x10<sup>5</sup> kJ</div><div class='option'>C) 1490 kJ<span class='asterisk'>*</span></div><div class='option'>D) 5960 kJ</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) Determine the specific heat capacity of an alloy that requires 78.2 kJ to raise the temperature of 139 g of the alloy from 298 K to 397 K.</div><div class='option'>A) 5.68 J/g-K<span class='asterisk'>*</span></div><div class='option'>B) 1.89 J/g-K</div><div class='option'>C) 0.790 J/g-K</div><div class='option'>D) 1.42 J/g-K</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) A piece of iron (mass is 20.1 g) at 350 K is placed in a Styrofoam coffee cup containing 30.0 mL of water at 298 K. Assuming that <strong>no heat is lost to the cup or the surroundings</strong>, what will the final temperature of the water be? The specific heat capacity of iron is 0.449 J/g°C and water is 4.184 J/g°C.&nbsp; The density of water is 1.00 g/mL.</div><div class='option'>A) 192 K</div><div class='option'>B) 319 K</div><div class='option'>C) 301 K<span class='asterisk'>*</span></div><div class='option'>D) 294 K</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) Which of the following is true regarding reactions carried out in a coffee cup calorimeter?</div><div class='option'>A) Reactions have zero enthalpy change</div><div class='option'>B) Reactions occur at a fixed temperature</div><div class='option'>C) Reactions occur under constant pressure<span class='asterisk'>*</span></div><div class='option'>D) Reactions occur under constant volume</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) Which of the following is an exothermic process?</div><div class='option'>A) You mix an acid and a base and the solution becomes hot<span class='asterisk'>*</span></div><div class='option'>B) Sweat evaporating</div><div class='option'>C) Melting ice</div><div class='option'>D) Boiling water</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) Choose the thermochemical equation that illustrates ΔH°f for Li<sub>2</sub>SO<sub>4</sub>.</div><div class='option'>A) Li<sub>2</sub>SO<sub>4</sub>(aq) → 2 Li<sup>+</sup>(aq) + SO<sub>4</sub><sup>2-</sup>(aq)</div><div class='option'>B) 2 Li<sup>+</sup>(aq) + SO<sub>4</sub><sup>2-</sup>(aq) → Li<sub>2</sub>SO<sub>4</sub>(aq)</div><div class='option'>C) 2 Li(s) + 1/8 S<sub>8</sub>(s, rhombic) + 2 O<sub>2</sub>(g) → Li<sub>2</sub>SO<sub>4</sub>(s)<span class='asterisk'>*</span></div><div class='option'>D) 8 Li<sub>2</sub>SO<sub>4</sub>(s) → 16 Li(s) + S<sub>8</sub>(s, rhombic) + 16 O<sub>2</sub>(g)</div><p></p></div><div id="scantrondiv" class="scantrondiv">Worksheet<br><canvas id="scantron" class="scantron"></div></body></html>

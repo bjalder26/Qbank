@@ -1,0 +1,324 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+	  .selected {
+  border: 2px solid blue;
+  font-weight: bold;
+}
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	let questionsObject = {};
+	
+	
+					questionsObject = {"1":[3],"2":[1],"3":[2],"4":[3],"5":[2],"6":[0],"7":[3],"8":[2],"9":[3],"10":[3],"11":[1],"12":[1],"13":[1,2],"14":[0],"15":[0],"16":[1],"17":[1],"18":[1],"19":[2],"20":[1],"21":[0],"22":[1],"23":[3],"24":[3],"25":[3],"26":[2],"27":[2],"28":[0],"29":[1],"30":[1],"31":[0],"32":[3],"33":[2],"34":[3]}; 
+				 
+	
+	
+	
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	  //###replace me###
+	  
+	 
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  if(canvas) {
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+  }
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Exam 3 (Ch 6, 7 & 8)</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Oct 30, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) Which of the following shows the best Lewis structure for OCl<sub>2</sub>?</div><div class='option'>A) <img title="ocl2-4.jpg" src="../images/62.jpeg" alt="" width="146" height="60"></div><div class='option'>B) <img title="ocl2-3.jpg" src="../images/61.jpeg" alt="" width="146" height="60"></div><div class='option'>C) <img title="ocl2-2.jpg" src="../images/60.jpeg" alt="" width="146" height="60"></div><div class='option'>D) <img title="ocl2-1.jpg" src="../images/59.jpeg" alt="" width="146" height="60"><span class='asterisk'>*</span></div><div class='solution'>Oxygen has 6 valence electrons and chlorine has 7 valence electrons.&nbsp; Both oxygen and chlorine must have an octet. &nbsp;<img title="ocl2-1.jpg" src="../images/59.jpeg" alt="" width="146" height="60"> is the only structure with the correct number of electrons (6 + 7 + 7 = 20), where both oxygen and chlorine have an octet.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) A single covalent bond contains how many electrons?</div><div class='option'>A) 3</div><div class='option'>B) 2<span class='asterisk'>*</span></div><div class='option'>C) 1</div><div class='option'>D) 4</div><div class='solution'>A single covalent bond contains 2 shared electrons.<br>A double covalent bond contains 4 shared electrons.<br>A triple covalent bond contains 6 shared electrons.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) Which of the following bonds is <strong>most</strong> polar?</div><div class='option'>A) H-I</div><div class='option'>B) HCl</div><div class='option'>C) H-F<span class='asterisk'>*</span></div><div class='option'>D) HBr</div><div class='solution'>The most polar bond will be the one with the&nbsp; largest dipole moment.<br>&nbsp;<br>The largest dipole moment will be between the two elements that have the largest difference in electronegativity. Generally speaking the elements with the largest difference in electronegativity will be furthest on the periodic table.&nbsp; However, you should remember that hydrogen has an electronegativity that is around that of metalloids.&nbsp; In other words, it is low for a nonmetal.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) Place the following bonds in order of <strong>increasing</strong> dipole moment.<br>
+<p>Si-P&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Si-Cl&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Si-S</p></div><div class='option'>A) Si-Cl &lt; Si-S &lt; Si-P</div><div class='option'>B) Si-Cl &lt; Si-P &lt; Si-S</div><div class='option'>C) Si-P &lt; Si-Cl &lt; Si-S</div><div class='option'>D) Si-P &lt; Si-S &lt; Si-Cl<span class='asterisk'>*</span></div><div class='solution'>The bond with the lowest dipole moment will be the between elements closest on the periodic table.&nbsp; Since Si and P are the closest on the periodic table, they will have the lowest dipole moment.&nbsp; Since Si and S are the next closest, they will have the second to lowest dipole moment.&nbsp; Si and Cl are the furthest on the periodic table, so they will have the largest dipole moment.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) Which of the following shows the best Lewis structure for N<sub>2</sub>H<sub>4</sub>?</div><div class='option'>A) <img title="n2h2c.jpg" src="../images/84.jpeg" alt="" width="125" height="118"></div><div class='option'>B) <img title="n2h2d.jpg" src="../images/85.jpeg" alt="" width="155" height="90"></div><div class='option'>C) <img title="n2h2a.jpg" src="../images/82.jpeg" alt="" width="151" height="90"><span class='asterisk'>*</span></div><div class='option'>D) <img title="n2h2b.jpg" src="../images/83.jpeg" alt="" width="151" height="90"></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) Which compound has the <strong>largest</strong> dipole moment in the gas phase?</div><div class='option'>A) LiF<span class='asterisk'>*</span></div><div class='option'>B) HF</div><div class='option'>C) Cl<sub>2</sub></div><div class='option'>D) ClF</div><div class='solution'>The largest dipole moment will be between the two elements that have the largest difference in electronegativity. Generally speaking the elements with the largest difference in electronegativity will be furthest on the periodic table.&nbsp; However, you should remember that hydrogen has an electronegativity that is around that of metalloids.&nbsp; In other words, it is low for a nonmetal.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Which of the following shows the best Lewis structure for NOF?</div><div class='option'>A) <img title="NOFc.jpg" src="../images/88.jpeg" alt="" width="200" height="90"></div><div class='option'>B) <img title="NOFa.jpg" src="../images/86.jpeg" alt="" width="180" height="79"></div><div class='option'>C) <img title="NOFd.jpg" src="../images/89.jpeg" alt="" width="200" height="91"></div><div class='option'>D) <img title="NOFb.jpg" src="../images/87.jpeg" alt="" width="190" height="86"><span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) Which of the following shows the best Lewis structure for CH<sub>3</sub>OH?</div><div class='option'>A) <img title="CH3OHa.jpg" src="../images/90.jpeg" alt="" width="113" height="110"></div><div class='option'>B) <img title="CH3OHc.jpg" src="../images/92.jpeg" alt="" width="146" height="110"></div><div class='option'>C) <img title="CH3OHd.jpg" src="../images/93.jpeg" alt="" width="146" height="110"><span class='asterisk'>*</span></div><div class='option'>D) <img title="CH3OHb.jpg" src="../images/91.jpeg" alt="" width="152" height="110"></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) Which of the following elements is the <strong>most</strong> electronegative.</div><div class='option'>A) Iodine</div><div class='option'>B) Bromine</div><div class='option'>C) Chlorine</div><div class='option'>D) Fluorine<span class='asterisk'>*</span></div><div class='solution'>The trend for electronegativity is that it increases as you go up and to the right on the periodic table.&nbsp; However, noble gasses have an electronegativity of approximately zero, so fluorine has the highest electronegativity.&nbsp; Thus in this case, fluorine is the <strong>most</strong> electronegative.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) Identify the<strong> strongest</strong> bond.</div><div class='option'>A) All bonds are the same strength</div><div class='option'>B) Single covalent bond</div><div class='option'>C) Double covalent bond</div><div class='option'>D) Triple covalent bond<span class='asterisk'>*</span></div><div class='solution'>Triple bonds are stronger than double bonds, which are stronger than single bonds.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) Which of the following shows the best Lewis structure for BH<sub>3</sub>?</div><div class='option'>A) <img title="bh3d.jpg" src="../images/97.jpeg" alt="" width="170" height="131"></div><div class='option'>B) <img title="bh3c.jpg" src="../images/96.jpeg" alt="" width="170" height="131"><span class='asterisk'>*</span></div><div class='option'>C) <img title="bh3a.jpg" src="../images/94.jpeg" alt="" width="240" height="81"></div><div class='option'>D) <img title="bh3b.jpg" src="../images/95.jpeg" alt="" width="240" height="80"></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) Which of the following shows the best Lewis structure for ICl<sub>5</sub>?</div><div class='option'>A) <img title="icl5-2.jpg" src="../images/72.jpeg" alt="" width="133" height="120"></div><div class='option'>B) <img title="icl5-1.jpg" src="../images/71.jpeg" alt="" width="134" height="120"><span class='asterisk'>*</span></div><div class='option'>C) <img title="icl5-3.jpg" src="../images/73.jpeg" alt="" width="133" height="120"></div><div class='option'>D) <img title="icl5-4.jpg" src="../images/74.jpeg" alt="" width="133" height="120"></div><div class='solution'>I has 7 valence electrons, and Cl has 7 valence electrons.&nbsp; I can get more than an octet because it is below the 2nd period.&nbsp; Chlorine will only get an octet because it is not the central atom.&nbsp; The formal charges need to be as close to zero as possible.&nbsp; <img title="icl5-1.jpg" src="../images/71.jpeg" alt="" width="134" height="120"> is the only structure that contains the correct number of electrons (7 x 6 = 42) where all the formal charges are zero.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) Use the molecular orbital diagram shown below to determine which of the following are the paramagnetic (<strong>there may be more than one answer</strong>).<br><br><img title="molecular orbital diagram 1.png" src="../images/42.png" alt="" width="207" height="352"></div><div class='option'>A) N<sub>2</sub></div><div class='option'>B) C<sub>2</sub><sup>-</sup><span class='asterisk'>*</span></div><div class='option'>C) BC<span class='asterisk'>*</span></div><div class='option'>D) BC<sup>-</sup></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>BC: 7 valence electrons<br>BC<sup>-</sup>: 8 valence electrons<br>C<sub>2</sub><sup>-</sup>: 9 valence electrons<br>N<sub>2</sub>: 10 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine if there are any unpaired electrons in the molecular orbital diagram.<br>BC: 7 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>BC<sup>-</sup>: 8 valence electrons, the pi 2p orbitals get filled, leaving no unpaired electrons = diamagnetic<br>C<sub>2</sub><sup>-</sup>: 9 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic&nbsp;&nbsp;<br>N<sub>2</sub>: 10 valence electrons, the last 2 electrons go into sigma 2p orbital filling it, which means there are no unpaired electrons = diamagnetic</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) What is the<strong> molecular shape </strong>of SiO<sub>2</sub>?</div><div class='option'>A) Linear<span class='asterisk'>*</span></div><div class='option'>B) bent</div><div class='option'>C) Trigonal planar</div><div class='option'>D) Tetrahedral</div><div class='solution'>Since the Lewis structure of SiO<sub>2</sub> has 2 electron domains, none of which are lone pairs, the<strong> molecular shape </strong>of SiO<sub>2</sub> is linear.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) Which of the following compounds is <strong>polar</strong>?</div><div class='option'>A) IF<sub>5</sub><span class='asterisk'>*</span></div><div class='option'>B) PF<sub>5</sub></div><div class='option'>C) SiS<sub>2</sub></div><div class='option'>D) O<sub>2</sub></div><div class='solution'>IF<sub>5</sub> is square planar shaped which is not a symmetrical shape, thus IF<sub>5</sub> will be polar.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) What is the<strong> VSEPR shape (electron domain geometry) </strong>of CH<sub>4</sub>?</div><div class='option'>A) Linear</div><div class='option'>B) Tetrahedral<span class='asterisk'>*</span></div><div class='option'>C) Bent</div><div class='option'>D) Trigonal planar</div><div class='solution'>Since the Lewis structure of CH<sub>4</sub> has 4 electron domains, the VSEPR <strong>shape (electron domain geometry) </strong>of CH<sub>4</sub> is tetrahedral.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) What is the<strong> VSEPR shape (electron domain geometry) </strong>of CO<sub>2</sub>?</div><div class='option'>A) Bent</div><div class='option'>B) Linear<span class='asterisk'>*</span></div><div class='option'>C) Trigonal planar</div><div class='option'>D) Tetrahedral</div><div class='solution'>Since the Lewis structure of CO<sub>2</sub> has 2 electron domains, the<strong> VSEPR shape (electron domain geometry) </strong>of CO<sub>2</sub> is linear.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) What is the<strong> molecular shape </strong>of ClF<sub>3</sub>?</div><div class='option'>A) Octahedral</div><div class='option'>B) T-shape<span class='asterisk'>*</span></div><div class='option'>C) See saw (saw horse)</div><div class='option'>D) Trigonal bipyramidal</div><div class='solution'>Since the Lewis structure<strong>&nbsp;</strong>of ClF<sub>3</sub> has 5 electron domains, two of which are lone pairs, the<strong> molecular shape </strong>of ClF<sub>3</sub> is T-shaped.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) What is the<strong> molecular shape </strong>of NHO?</div><div class='option'>A) Trigonal planar</div><div class='option'>B) Tetrahedral</div><div class='option'>C) bent<span class='asterisk'>*</span></div><div class='option'>D) Linear</div><div class='solution'>Since the Lewis structure of NHO has 3 electron domains, and 1 of them is a lone pair, the<strong> molecular shape </strong>of NHO is bent.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">20</span>) Is XeF<sub>4</sub>&nbsp;polar or nonpolar?</div><div class='option'>A) Polar</div><div class='option'>B) Nonpolar<span class='asterisk'>*</span></div><div class='solution'>Since XeF<sub>4</sub> is square planar (which is a symmetrical shape), the electronegativities of the four fluorines balance out and XeF<sub>4</sub>&nbsp;is nonpolar.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">21</span>) Give the molecular shape for XeF<sub>6</sub></div><div class='option'>A) Octahedral<span class='asterisk'>*</span></div><div class='option'>B) Square planar</div><div class='option'>C) Trigonal bipyramid</div><div class='option'>D) Trigonal planar</div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to Xe.<br>You should get 6 electron domains, of which &nbsp;0 are lone pairs.<br>6 electron domains and 0 are lone pairs corresponds to an octahedral molecular shape.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">22</span>) Which of the following compounds is nonpolar?</div><div class='option'>A) SH<sub>2</sub></div><div class='option'>B) Cl<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>C) CH<sub>2</sub>O</div><div class='option'>D) PF<sub>3</sub></div><div class='solution'>Cl<sub>2</sub> is linear shaped, which is a symmetrical shape.&nbsp; That means the chlorines electronegativities will balance out and Cl<sub>2</sub> will be nonpolar.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">23</span>) Which orbitals overlap in the carbon-hydrogen bonds in C<sub>2</sub>H<sub>4</sub>?</div><div class='option'>A) sp and s</div><div class='option'>B) Two p orbitals</div><div class='option'>C) sp<sup>3</sup> and s</div><div class='option'>D) sp<sup>2</sup> and s<span class='asterisk'>*</span></div><div class='solution'>Step 1) Draw the Lewis structure for C<sub>2</sub>H<sub>4</sub>.<br>Step 2) Count the number of electron domains on one of the carbons.&nbsp; There are 3 electron domains on each carbon.<br>Step 3) Determine the hybridization of one of the carbons.&nbsp; Since there 3 are electron domains, it is sp<sup>2</sup> hybridized.<br>Step 4) Since the hydrogens only have an s orbital, the bond is between a sp<sup>2</sup> hybridized orbital and an s orbital, thus (sp<sup>2</sup> and s) is the answer.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">24</span>) What is the limiting reactant when 13.0 moles of ZnS react with 11.9 moles of AlP?
+<div style="text-align: center;">3 ZnS + 2 AlP ➞ Zn<sub>3</sub>P<sub>2</sub> + Al<sub>2</sub>S<sub>3</sub></div></div><div class='option'>A) Zn<sub>3</sub>P<sub>2</sub></div><div class='option'>B) AlP</div><div class='option'>C) Al<sub>2</sub>S<sub>3</sub></div><div class='option'>D) ZnS<span class='asterisk'>*</span></div><div class='solution'><p>To determine the limiting reactant, we need to compare the moles of each product we could produce from the moles of each reactant, assuming the other reactant is in excess.&nbsp; The reactant that produces fewer moles of product will be the limiting reactant.</p>
+<p>From the balanced equation: 3 ZnS + 2 AlP ➞ Zn<sub>3</sub>P<sub>2</sub> + Al<sub>2</sub>S<sub>3</sub></p>
+<p>The stoichiometric ratio between ZnS and AlP is 3:2. This means that 3 moles of ZnS react with 2 moles of AlP.</p>
+<p>Moles of ZnS = 13.0 moles <br>Moles of AlP = 11.9 moles</p>
+<p>To determine the limiting reactant, we compare the moles of product we could produce from each reactant.<br>Mols of Zn<sub>3</sub>P<sub>2</sub> assuming ZnS is our limiting reactant (assuming AlP is in excess):<br>Moles of ZnS x (1 mol Zn<sub>3</sub>P<sub>2</sub> / 3 mol ZnS)&nbsp; = 13.0 moles x (1 / 3) = 4.33 Moles of Zn<sub>3</sub>P<sub>2</sub>&nbsp;<br><br>Mols of Zn<sub>3</sub>P<sub>2</sub> assuming AlP is our limiting reactant (assuming ZnS is in excess):<br>Moles of AlP x (1 mol Zn<sub>3</sub>P<sub>2</sub> / 2 mol ZnS)&nbsp; = 11.9 moles x (1 / 2) = 5.95 Moles of Zn<sub>3</sub>P<sub>2</sub>&nbsp;</p>
+<p>Since assuming ZnS was our limiting reactant produced fewer moles of product, ZnS is the limiting reactant.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">25</span>) <span style="font-size: 10.5pt;">What is the percent yield of the reaction if 18.6 g of Fe are produced when 10.5g of Al&nbsp; react with excess Fe</span><sub>2</sub><span style="font-size: 10.5pt;">O</span><sub>3</sub><span style="font-size: 10.5pt;"> according to the following reaction.</span>
+<div style="text-align: center;">Fe<sub>2</sub>O<sub>3</sub>(s) + 2 Al(s) → Al<sub>2</sub>O<sub>3</sub>(s) + 2 Fe(s)</div></div><div class='option'>A) 56.5 %</div><div class='option'>B) 27.3 %</div><div class='option'>C) 177 %</div><div class='option'>D) 85.6 %<span class='asterisk'>*</span></div><div class='solution'><p>To calculate the percent yield, we need to compare the actual yield to the theoretical yield and express it as a percentage.</p>
+<p>Given: <br>Mass of Fe produced = <span class="placeholder">18.6</span> g <br>Mass of Al used = <span class="placeholder">10.5</span> g</p>
+<p>First, we need to determine the theoretical yield of Fe based on the stoichiometry of the balanced chemical equation. From the balanced equation, we can see that the stoichiometric ratio between Fe<sub>2</sub>O<sub>3</sub> and Fe is 1:2. Therefore, for every 1 mole of Fe<sub>2</sub>O<sub>3</sub>, we expect to produce 2 moles of Fe.</p>
+<p>Molar mass of Fe = 55.85 g/mol <br>Molar mass of Al = 26.98 g/mol</p>
+<p>Theoretical yield of Fe = 10.5 g Al *&nbsp; (1 mol Al / 26.98 g Al) × (2 mol Fe / 2 mol Al) x (55.85 g Fe / 1 mol Fe) = 21.7 g Fe</p>
+<p>Now, we can calculate the percent yield using the formula:</p>
+<p>Percent yield = (Actual yield / Theoretical yield) × 100 Percent = (18.6 g / 21.7 g) × 100 = 85.6 %</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">26</span>) An unknown compound contains only carbon and hydrogen. When it undergoes combustion analysis, it produces 43.130 g of CO<sub>2</sub> and 13.245 g of H<sub>2</sub>O.&nbsp; What is the empirical formula for the compound?</div><div class='option'>A) C<sub>2</sub>H<sub>7</sub></div><div class='option'>B) C<sub>2</sub>H<sub>5</sub></div><div class='option'>C) C<sub>2</sub>H<sub>3</sub><span class='asterisk'>*</span></div><div class='option'>D) C<sub>2</sub>H<sub>6</sub></div><div class='solution'>Step 1: Convert the grams of CO<sub>2</sub> and H<sub>2</sub>O to moles of C and O.<br>43.1 g CO<sub>2</sub> x <span class="math-tex">\( \frac{1 mol CO_2}{44.01 g CO_2} \)</span>x <span class="math-tex">\( \frac{1 mol C}{1 mol CO_2} \)</span> = &nbsp;0.980 mol C<br>13.2 g H<sub>2</sub>O x <span class="math-tex">\( \frac{1 mol H_2O}{18.016 g H_2O} \)</span> x <span class="math-tex">\( \frac{2 mol H}{1 mol H_2O} \)</span> = 0.735 mol H<br><br>Step 2: Divide both mole amounts by the lower of the two numbers.<br><br>Step 3: Get the smallest whole number ratio of each mole amount.<br>2 mol C to 3 mol H<br><br>Thus the empirical formula is: C<sub>2</sub>H<sub>3</sub></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">27</span>) An unknown compound contains only carbon and hydrogen. When it undergoes combustion analysis, it produces 55.005 g of CO<sub>2</sub> and 33.793 g of H<sub>2</sub>O. Given that it has a molar mass of 30.1 g/mol, what is the molecular formula?</div><div class='option'>A) C<sub>2</sub>H<sub>4</sub></div><div class='option'>B) C<sub>1</sub>H<sub>3</sub></div><div class='option'>C) C<sub>2</sub>H<sub>6</sub><span class='asterisk'>*</span></div><div class='option'>D) C<sub>2</sub>H<sub>13</sub></div><div class='solution'>Step 1: Convert the grams of CO<sub>2</sub> and H<sub>2</sub>O to moles of C and O.<br>&nbsp;55.0 g CO<sub>2</sub> x <span class="math-tex">\( \frac{1 mol CO_2}{44.01 g CO_2} \)</span>x <span class="math-tex">\( \frac{1 mol C}{1 mol CO_2} \)</span> = &nbsp;1.25 mol C<br>33.8 g H<sub>2</sub>O x <span class="math-tex">\( \frac{1 mol H_2O}{18.016 g H_2O} \)</span> x <span class="math-tex">\( \frac{2 mol H}{1 mol H_2O} \)</span> = 3.75 mol H<br><br>Step 2: Divide both mole amounts by the lower of the two numbers.<br>1.25 mol C/1.25 = 1.00 mol C<br>3.75 mol H/1.25 = 3.00 mol H<br><br>Step 3: Get the smallest whole number ratio of each mole amount to get the empirical formula.<br><br>Step 4: Calculate the molar mass of the empirical and dived the molar mass of the compound by the molar mass of the empirical formula.&nbsp; This number will tell you what you need to multiply the subscripts in the empirical formula by to get the molecular formula.<br><br>Thus the molecular formula is: C<sub>2</sub>H<sub>6<br></sub></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">28</span>) What is the theoretical yield, in grams of CO<sub>2</sub>, from the reaction of 4.79 moles of C<sub>3</sub>H<sub>8</sub> with 35.7 moles of O<sub>2</sub>?
+<div style="text-align: center;">C<sub>3</sub>H<sub>8</sub> + 5 O<sub>2</sub> ➞ 3 CO<sub>2</sub> + 4 H<sub>2</sub>O</div></div><div class='option'>A) 632 g<span class='asterisk'>*</span></div><div class='option'>B) 14.4 g</div><div class='option'>C) 70.3 g</div><div class='option'>D) 943 g</div><div class='solution'><p>To determine the theoretical yield of CO<sub>2</sub> in grams, we need to calculate the stoichiometric ratio between C<sub>3</sub>H<sub>2</sub> and CO<sub>2</sub> in the balanced chemical equation. The stoichiometric ratio is the ratio of moles of reactants and products involved in the reaction.</p>
+<p>From the balanced equation: 1 mole of C<sub>3</sub>H<sub>8</sub> reacts to produce 3 moles of CO<sub>2</sub>.</p>
+<p>Given: <br>Number of moles of C<sub>3</sub>H<sub>8</sub> = 4.79 mol<br>Number of moles of O2 = 35.7 mol</p>
+<p>We will use the stoichiometry to determine the maximum number of grams of CO<sub>2</sub> we could produce assuming each reactant was the limiting reactant:</p>
+<p>Assuming C<sub>3</sub>H<sub>8</sub> is the limiting reactant:<br>Number of grams of CO<sub>2</sub> = (4.79 mol C<sub>3</sub>H<sub>8</sub>) × (3 mol CO<sub>2</sub> / 1 mol C<sub>3</sub>H<sub>8</sub>) x (44.01 g CO<sub>2</sub> / 1 mol CO<sub>2</sub>) = 632 g CO<sub>2</sub>&nbsp;<br><br>Assuming O<sub>2</sub> is the limiting reactant:<br>Number of grams of CO<sub>2</sub> = (35.7 mol O<sub>2</sub>) × (3 mol CO<sub>2</sub> / 5 mol C<sub>3</sub>H<sub>8</sub>) x (44.01 g CO<sub>2</sub> / 1 mol CO<sub>2</sub>) = 943 g CO<sub>2</sub>&nbsp;<br><br>Since C<sub>3</sub>H<sub>8</sub> produces fewer grams of our reactant, the theoretical yield is 632 g CO<sub>2</sub></p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">29</span>) What is the limiting reactant when 8.06 g of B<sub>2</sub>Br<sub>6</sub> react with 17.9 g of HNO<sub>3</sub>?
+<div style="text-align: center;">B<sub>2</sub>Br<sub>6</sub> + 6 HNO<sub>3</sub> ➞ 2 B(NO<sub>3</sub>)<sub>3</sub> + 6 HBr</div></div><div class='option'>A) HNO<sub>3</sub></div><div class='option'>B) B<sub>2</sub>Br<sub>6</sub><span class='asterisk'>*</span></div><div class='option'>C) HBr</div><div class='option'>D) B(NO<sub>3</sub>)<sub>3</sub></div><div class='solution'><p>To determine the limiting reactant, we need to compare the amount of product that can be formed from each reactant.</p>
+<p>First, let's calculate the moles of each reactant: Molar mass of B<sub>2</sub>Br<sub>6</sub> = 2 * (10.81 g/mol of B) + 6 * (79.90 g/mol of Br) = 370.48 g/mol <br>Moles of B<sub>2</sub>Br<sub>6</sub> = 8.06 g / 370.48 g/mol = 0.0218 mol</p>
+<p>Molar mass of HNO<sub>3</sub> = 1 * (1.01 g/mol of H) + 1 * (14.01 g/mol of N) + 3 * (16.00 g/mol of O) = 63.02 g/mol <br>Moles of HNO<sub>3</sub> = 17.9 g / 63.02 g/mol = 0.284 mol</p>
+<p>Next, we need to compare the mole ratios between B<sub>2</sub>Br<sub>6</sub> and HNO<sub>3</sub> in the balanced equation: From the equation, we see that the mole ratio between B(NO<sub>3</sub>)<sub>3</sub> and B<sub>2</sub>Br<sub>6</sub> and is 2:1. <br>The mole ratio between B(NO<sub>3</sub>)<sub>3</sub> and HNO<sub>3</sub> is 2:6.</p>
+<p>So, using the mole ratios, we can determine the amount of B(NO<sub>3</sub>)<sub>3</sub> that can be formed: <br><br>Moles of B(NO<sub>3</sub>)<sub>3</sub> formed assuming B<sub>2</sub>Br<sub>6</sub> is the limiting reactant = 0.0218 mol B<sub>2</sub>Br<sub>6</sub> * (2 mol B(NO<sub>3</sub>)<sub>3</sub> / 1 mol B<sub>2</sub>Br<sub>6</sub>) = 0.0532 mol B(NO<sub>3</sub>)<sub>3</sub></p>
+<p>Moles of B(NO<sub>3</sub>)<sub>3</sub> formed assuming HNO<sub>3</sub> is the limiting reactant = 0.284 mol HNO<sub>3</sub> * (2 mol B(NO<sub>3</sub>)<sub>3</sub> / 6 mol HNO<sub>3</sub>) = 0.0847 mol B(NO<sub>3</sub>)<sub>3</sub></p>
+<p>Based on the mole ratios, we can see that B<sub>2</sub>Br<sub>6</sub> is the limiting reactant because it forms less moles of B(NO<sub>3</sub>)<sub>3</sub> compared to the moles formed by HNO<sub>3</sub>.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">30</span>) The statement "in a chemical reaction matter is neither created nor destroyed" belongs to:</div><div class='option'>A) The Law of Multiple Proportions</div><div class='option'>B) The Law of Conservation of Mass<span class='asterisk'>*</span></div><div class='option'>C) Dalton's Atomic Theory</div><div class='option'>D) The Law of Definite Proportions</div><div class='solution'><p>Dalton's Atomic Theory: Matter is composed of small indestructible particles.</p>
+<p>The Law of Conservation of Mass: In a chemical reaction, matter is neither created nor destroyed.</p>
+<p>The Law of Multiple Proportions: If two elements form more than one compound, the ratios of the masses of the second element that combine with a fixed mass of the first element will always be ratios of small whole numbers.</p>
+<p>The Law of Definite Proportions: Samples of a compound will always contain the same proportion of elements by mass.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">31</span>) One method for producing HCl gas (which then can be dissolved in water to produce hydrochloric acid) is to react sodium chloride with sulfuric acid (reaction below).<br><br>2 NaCl (s) + H<sub>2</sub>SO<sub>4</sub> (l) → 2 HCl (g) + Na<sub>2</sub>SO<sub>4</sub>(s)<br><br>Calculate the atom economy for the production of HCl gas in this reaction.</div><div class='option'>A) 33.9 %<span class='asterisk'>*</span></div><div class='option'>B) 66.1 %</div><div class='option'>C) 20.4 %</div><div class='option'>D) 36.4 %</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">32</span>) Balance the following equation.<br><br>________ C<sub>3</sub>H<sub>8</sub>&nbsp;+ ________ O<sub>2</sub> → ________ H<sub>2</sub>O + ________ CO<sub>2<br><br></sub>What is the coefficient in front of O<sub>2</sub>?</div><div class='option'>A) 3</div><div class='option'>B) 4</div><div class='option'>C) 7</div><div class='option'>D) 5<span class='asterisk'>*</span></div><div class='solution'>Step 1) First balance the hydrogen on each sides by finding the least common multiple of<sub> </sub><strong>8</strong> and 2.<br>Step 2) Next balance the carbon on each side.<br>Step 3) Finally balance the oxygen last (because it exists in its elemental form unbound to other atoms).&nbsp; If needed, first double all the other coefficients.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">33</span>) What is the theoretical yield, in moles of CO<sub>2</sub>, from the reaction of 12.6 moles of C<sub>2</sub>H<sub>6</sub> with 31.9 moles of O<sub>2</sub>?
+<div style="text-align: center;">2 C<sub>2</sub>H<sub>6</sub> + 7 O<sub>2</sub> ➞ 4 CO<sub>2</sub> + 6 H<sub>2</sub>O</div></div><div class='option'>A) 7.20 moles</div><div class='option'>B) 55.8 moles</div><div class='option'>C) 18.2 moles<span class='asterisk'>*</span></div><div class='option'>D) 25.2 moles</div><div class='solution'><p>To determine the theoretical yield of CO<sub>2</sub>, we need to compare the moles of C<sub>2</sub>H<sub>6</sub> and O<sub>2</sub> and their respective stoichiometric coefficients in the balanced equation. The reactant that produces the least amount of CO<sub>2</sub> based on the stoichiometry will limit the amount of CO<sub>2</sub> produced.</p>
+<p>From the balanced equation: 2 C<sub>2</sub>H<sub>6</sub> + 7 O<sub>2</sub> ➞ 4 CO<sub>2</sub> + 6 H<sub>2</sub>O</p>
+<p>Moles of C<sub>2</sub>H<sub>6</sub> = 12.6 moles <br>Moles of O<sub>2</sub> = 31.9 moles</p>
+<p>To determine the limiting reactant, we compare the the amounts of product we can produce from each reactant.</p>
+<p>The stoichiometric ratio between C<sub>2</sub>H<sub>6</sub> and CO<sub>2</sub> is 2:4. This means that 2 moles of C<sub>2</sub>H<sub>6</sub>&nbsp;react to produce 4 moles of CO<sub>2</sub>.</p>
+<p>The theoretical yield of CO<sub>2</sub> based on the C<sub>2</sub>H<sub>6</sub> being the limiting reagent: Moles of limiting reactant (C<sub>2</sub>H<sub>6</sub>) × Stoichiometric coefficient of CO<sub>2</sub> = 12.6 moles × (4 mol CO<sub>2</sub> / 2 mol C<sub>2</sub>H<sub>6</sub>) = 25.2 moles CO<sub>2<br></sub><br>The stoichiometric ratio between O<sub>2</sub> and CO<sub>2</sub> is 7:4. This means that 7 moles of O<sub>2</sub>&nbsp;react to produce 4 moles of CO<sub>2</sub>.</p>
+<p>The theoretical yield of CO<sub>2</sub> based on the O<sub>2</sub> being the limiting reagent: Moles of limiting reactant (O<sub>2</sub>) × Stoichiometric coefficient of CO<sub>2</sub> = 31.9 moles × (4 mol CO<sub>2</sub> / 7 mol O<sub>2</sub>) = 18.2 moles CO<sub>2</sub></p>
+<p>Since assuming O<sub>2</sub> is the limiting reagent produces a lower yield, O<sub>2</sub> is actually our limiting reactant.&nbsp;&nbsp;<br><br>Therefore, the theoretical yield of CO<sub>2</sub> from the given reaction is approximately 18.2 moles CO<sub>2</sub>.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">34</span>) How many moles of FeBr<sub>3</sub> can be formed from 1.40 moles of KBr? Assume an excess of Fe(OH)<sub>3</sub>.
+<div style="text-align: center;">3 KBr + Fe(OH)<sub>3</sub> ➞ 3 KOH + FeBr<sub>3</sub></div></div><div class='option'>A) 1.40 moles</div><div class='option'>B) 4.20 moles</div><div class='option'>C) 138 moles</div><div class='option'>D) 0.467 moles<span class='asterisk'>*</span></div><div class='solution'><p>From the balanced chemical equation: 3 KBr + Fe(OH)<sub>3</sub> ➞ 3 KOH + FeBr<sub>3</sub></p>
+<p>We can see that the stoichiometric ratio between KBr and FeBr3 is 3:1. This means that for every 3 moles of KBr, we can expect 1 mole of FeBr<sub>3</sub> to be formed.</p>
+<p>Given that we have 1.40 moles of KBr, we can calculate the moles of FeBr<sub>3</sub> using the stoichiometric ratio:</p>
+<p>Moles of FeBr3 = (1.40 moles of KBr) / (3 moles of KBr per 1 mole of FeBr<sub>3</sub>) Moles of FeBr3 = 1.40 moles / 3 Moles of FeBr3 = 0.467 moles</p></div><p></p></div><div id="scantrondiv" class="scantrondiv">Exam 3 (Ch 6, 7 & 8)<br><canvas id="scantron" class="scantron"></div></body></html>

@@ -1,0 +1,332 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[3],"2":[1],"3":[3],"4":[3],"5":[2],"6":[1,3],"7":[3],"8":[1],"9":[1],"10":[3],"11":[3],"12":[0],"13":[0],"14":[2],"15":[3],"16":[0],"17":[3],"18":[0],"19":[2],"20":[0],"21":[3],"22":[2]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter 7 Take-home Quiz</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) Which of the following compounds is <strong>polar</strong>?</div><div class='option'>A) SF<sub>6</sub></div><div class='option'>B) CS<sub>2</sub></div><div class='option'>C) BH<sub>3</sub></div><div class='option'>D) H<sub>2</sub>O<span class='asterisk'>*</span></div><div class='solution'>H<sub>2</sub>O is bent shaped which is not a symmetrical shape, thus H<sub>2</sub>O will be polar.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) What is the<strong> molecular shape </strong>of CF<sub>4</sub>?</div><div class='option'>A) Linear</div><div class='option'>B) Tetrahedral<span class='asterisk'>*</span></div><div class='option'>C) bent</div><div class='option'>D) Trigonal planar</div><div class='solution'>Since the Lewis structure of CF<sub>4</sub> has 4 electron domains, none of which are lone pairs, the<strong> molecular shape </strong>of CF<sub>4</sub> is tetrahedral.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) What is the hybridization on the central atom for HSiN?</div><div class='option'>A) sp<sup>3</sup></div><div class='option'>B) sp<sup>3</sup>d</div><div class='option'>C) sp<sup>2</sup></div><div class='option'>D) sp<span class='asterisk'>*</span></div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to &nbsp;Si.<br>You should get 2 electron domains.<br>2 electron domains corresponds to sp hybridization.<br>
+<table style="border-collapse: collapse; width: 13.8266%; border-color: #34495E;" border="1">
+<tbody>
+<tr>
+<td style="width: 46.9569%;"># Electron domains</td>
+<td style="width: 53.0431%;">Hybridization</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">2</td>
+<td style="width: 53.0431%;">sp</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">3</td>
+<td style="width: 53.0431%;">sp<sup>2</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">4</td>
+<td style="width: 53.0431%;">sp<sup>3</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">5</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">6</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d<sup>2</sup></td>
+</tr>
+</tbody>
+</table></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) Use the molecular orbital diagram shown below to determine which of the following are the <strong>MOST</strong> stable.<br><br><img title="molecular orbital diagram 1.png" src="../images/42.png" alt="" width="207" height="352"></div><div class='option'>A) BC</div><div class='option'>B) BC<sup>-</sup></div><div class='option'>C) C<sub>2</sub><sup>-</sup></div><div class='option'>D) N<sub>2</sub><span class='asterisk'>*</span></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>BC: 7 valence electrons<br>BC<sup>-</sup>: 8 valence electrons<br>C<sub>2</sub><sup>-</sup>: 9 valence electrons<br>N<sub>2</sub>: 10 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine the bond order.&nbsp; Since after 4 valence electrons, the rest go into bonding orbitals, the highest number of electrons will have the highest bond order.<br>Bond order = (electrons in bonding orbitals - electrons in antibonding orbitals)/2<br>Bond order for BC: (5-2)/2 = 1.5<br>Bond order for BC<sup>-</sup>: (6-2)/2 = 2<br>Bond order for C<sub>2</sub><sup>-</sup>: (7-2)/2 = 2.5<br>Bond order for N<sub>2</sub>: (8-2)/2 = 3<br>Since N<sub>2</sub>&nbsp;has the highest bond order, it will be the <strong>MOST</strong> stable.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) Give the electron domain geometry for NH<sub>3</sub></div><div class='option'>A) Seesaw (or saw horse)</div><div class='option'>B) Octahedral</div><div class='option'>C) Tetrahedral<span class='asterisk'>*</span></div><div class='option'>D) Linear</div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to N.<br>You should get 4 electron domains.<br>4 electron domains corresponds to a tetrahedral electron domain geometry.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) Use the molecular orbital diagram shown below to determine which of the following are the paramagnetic (<strong>there may be more than one answer</strong>).<br><br><img title="molecular orbital diagram 1.png" src="../images/42.png" alt="" width="207" height="352"></div><div class='option'>A) BC<sup>-</sup></div><div class='option'>B) C<sub>2</sub><sup>-</sup><span class='asterisk'>*</span></div><div class='option'>C) N<sub>2</sub></div><div class='option'>D) BC<span class='asterisk'>*</span></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>BC: 7 valence electrons<br>BC<sup>-</sup>: 8 valence electrons<br>C<sub>2</sub><sup>-</sup>: 9 valence electrons<br>N<sub>2</sub>: 10 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine if there are any unpaired electrons in the molecular orbital diagram.<br>BC: 7 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>BC<sup>-</sup>: 8 valence electrons, the pi 2p orbitals get filled, leaving no unpaired electrons = diamagnetic<br>C<sub>2</sub><sup>-</sup>: 9 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic&nbsp;&nbsp;<br>N<sub>2</sub>: 10 valence electrons, the last 2 electrons go into sigma 2p orbital filling it, which means there are no unpaired electrons = diamagnetic</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Use the molecular orbital diagram shown below to determine which of the following are the <strong>diamagnetic </strong>(<strong>there may be more than one answer</strong>).<br><img title="molecular orbital diagram.png" src="../images/41.png" alt="" width="207" height="352"></div><div class='option'>A) O<sub>2</sub></div><div class='option'>B) OF</div><div class='option'>C) F<sub>2</sub><sup>-</sup></div><div class='option'>D) OF<sup>-</sup><span class='asterisk'>*</span></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>O<sub>2</sub>: 12 valence electrons<br>OF: 13 valence electrons<br>OF<sup>-</sup>: 14 valence electrons<br>F<sub>2</sub><sup>-</sup>: 15 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine if there are any unpaired electrons in the molecular orbital diagram.<br>O<sub>2</sub>: 12 valence electrons, the last 2 electrons go into pi 2p orbitals, which means there are 2 unpaired electrons = paramagnetic<br>OF: 13 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic<br>OF<sup>-</sup>: 14 valence electrons, the pi 2p orbitals get filled, leaving no unpaired electrons = diamagnetic<br>F<sub>2</sub><sup>-</sup>: 15 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) What is the<strong> VSEPR shape (electron domain geometry) </strong>of SF<sub>6</sub>?</div><div class='option'>A) Tetrahedral</div><div class='option'>B) Octahedral<span class='asterisk'>*</span></div><div class='option'>C) Trigonal planar</div><div class='option'>D) Trigonal bipyramidal</div><div class='solution'>Since the Lewis structure of SF<sub>6</sub> has 6 electron domains, the<strong> VSEPR shape (electron domain geometry) </strong>of SF<sub>6</sub> is octahedral.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) Is H<sub>2</sub>O&nbsp;polar or nonpolar?</div><div class='option'>A) Nonpolar</div><div class='option'>B) Polar<span class='asterisk'>*</span></div><div class='solution'>Since H<sub>2</sub>O is bent (which is an asymmetrical shape), H<sub>2</sub>O will be polar.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) What is the<strong> VSEPR shape (electron domain geometry) </strong>of CO<sub>2</sub>?</div><div class='option'>A) Tetrahedral</div><div class='option'>B) Trigonal planar</div><div class='option'>C) Bent</div><div class='option'>D) Linear<span class='asterisk'>*</span></div><div class='solution'>Since the Lewis structure of CO<sub>2</sub> has 2 electron domains, the<strong> VSEPR shape (electron domain geometry) </strong>of CO<sub>2</sub> is linear.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) What is the<strong> VSEPR shape (electron domain geometry) </strong>of CH<sub>4</sub>?</div><div class='option'>A) Bent</div><div class='option'>B) Trigonal planar</div><div class='option'>C) Linear</div><div class='option'>D) Tetrahedral<span class='asterisk'>*</span></div><div class='solution'>Since the Lewis structure of CH<sub>4</sub> has 4 electron domains, the VSEPR <strong>shape (electron domain geometry) </strong>of CH<sub>4</sub> is tetrahedral.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) What is the<strong> VSEPR shape (electron domain geometry) </strong>of NH<sub>3</sub>?</div><div class='option'>A) Tetrahedral<span class='asterisk'>*</span></div><div class='option'>B) Bent</div><div class='option'>C) Linear</div><div class='option'>D) Trigonal planar</div><div class='solution'>The Lewis structure for NH<sub>3</sub>&nbsp; has 4 electron domains, so the<strong> VSEPR shape (electron domain geometry) </strong>of NH<sub>3</sub> is tetrahedral.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) Use the molecular orbital diagram shown below to determine which of the following are the <strong>MOST</strong> stable.<br><img title="molecular orbital diagram.png" src="../images/41.png" alt="" width="207" height="352"></div><div class='option'>A) FO<sup>+</sup><span class='asterisk'>*</span></div><div class='option'>B) NeF</div><div class='option'>C) F<sub>2</sub><sup>+</sup></div><div class='option'>D) F<sub>2</sub></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>FO<sup>+</sup>: 12 valence electrons<br>F<sub>2</sub><sup>+</sup>: 13 valence electrons<br>F<sub>2</sub>: 14 valence electrons<br>NeF: 15 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine the bond order.&nbsp; Since after 10 valence electrons, the rest go into anti-bonding orbitals, the lowest number of electrons will have the highest bond order.<br>Bond order = (electrons in bonding orbitals - electrons in antibonding orbitals)/2<br>Bond order for FO<sup>+</sup>: (8-4)/2 = 2<br>Bond order for F<sub>2</sub><sup>+</sup>: (8-5)/2 = 1.5<br>Bond order for F<sub>2</sub>: (8-6)/2 = 1<br>Bond order for NeF: (8-7)/2 = 0.5<br>Since FO<sup>+</sup> has the highest bond order, it will be the <strong>MOST</strong> stable.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) What is the<strong> molecular shape </strong>of KrF<sub>2</sub>?</div><div class='option'>A) Octahedral</div><div class='option'>B) T-shape</div><div class='option'>C) Linear<span class='asterisk'>*</span></div><div class='option'>D) See saw (saw horse)</div><div class='solution'>Since the Lewis structure of KrF<sub>2</sub> has 5 electron domains, 3 of which are lone pair,&nbsp;the<strong> molecular shape </strong>of KrF<sub>2</sub> is linear.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) What is the<strong> molecular shape </strong>of SiO<sub>2</sub>?</div><div class='option'>A) bent</div><div class='option'>B) Tetrahedral</div><div class='option'>C) Trigonal planar</div><div class='option'>D) Linear<span class='asterisk'>*</span></div><div class='solution'>Since the Lewis structure of SiO<sub>2</sub> has 2 electron domains, none of which are lone pairs, the<strong> molecular shape </strong>of SiO<sub>2</sub> is linear.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) What is the<strong> molecular shape </strong>of NHO?</div><div class='option'>A) bent<span class='asterisk'>*</span></div><div class='option'>B) Trigonal planar</div><div class='option'>C) Linear</div><div class='option'>D) Tetrahedral</div><div class='solution'>Since the Lewis structure of NHO has 3 electron domains, and 1 of them is a lone pair, the<strong> molecular shape </strong>of NHO is bent.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) Give the molecular shape for NH<sub>3</sub></div><div class='option'>A) Linear</div><div class='option'>B) Seesaw (or saw horse)</div><div class='option'>C) Octahedral</div><div class='option'>D) Trigonal pyramid<span class='asterisk'>*</span></div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to N.<br>You should get 4 electron domains, of which &nbsp;1 are lone pairs.<br>4 electron domains and 1 are lone pairs corresponds to a trigonal pyramid molecular shape.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) What is the<strong> molecular shape </strong>of ClF<sub>3</sub>?</div><div class='option'>A) T-shape<span class='asterisk'>*</span></div><div class='option'>B) See saw (saw horse)</div><div class='option'>C) Trigonal bipyramidal</div><div class='option'>D) Octahedral</div><div class='solution'>Since the Lewis structure<strong>&nbsp;</strong>of ClF<sub>3</sub> has 5 electron domains, two of which are lone pairs, the<strong> molecular shape </strong>of ClF<sub>3</sub> is T-shaped.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) Identify the number of electron groups (electron domains) around a molecule with sp<sup>2</sup> hybridization.</div><div class='option'>A) 6</div><div class='option'>B) 5</div><div class='option'>C) 3<span class='asterisk'>*</span></div><div class='option'>D) 4</div><div class='solution'><table style="border-collapse: collapse; width: 13.8266%; border-color: #34495E;" border="1">
+<tbody>
+<tr>
+<td style="width: 46.9569%;"># Electron domains</td>
+<td style="width: 53.0431%;">Hybridization</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">2</td>
+<td style="width: 53.0431%;">sp</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">3</td>
+<td style="width: 53.0431%;">sp<sup>2</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">4</td>
+<td style="width: 53.0431%;">sp<sup>3</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">5</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">6</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d<sup>2</sup></td>
+</tr>
+</tbody>
+</table></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">20</span>) Is SF<sub>6</sub> polar or nonpolar?</div><div class='option'>A) Nonpolar<span class='asterisk'>*</span></div><div class='option'>B) Polar</div><div class='solution'>Since SF<sub>6</sub> is octahedral (which is a symmetrical shape), the electronegativities of the six fluorines balance out and SF<sub>6</sub> is nonpolar.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">21</span>) Which of the following compounds is nonpolar?</div><div class='option'>A) CHF<sub>3</sub></div><div class='option'>B) H<sub>2</sub>O</div><div class='option'>C) NH<sub>3</sub></div><div class='option'>D) SiF<sub>4</sub><span class='asterisk'>*</span></div><div class='solution'>SiF<sub>4</sub> is tetrahedral shaped, which is a symmetrical shape.&nbsp; That means the fluorines electronegativities will balance out and SiF<sub>4</sub> will be nonpolar.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">22</span>) Which orbitals overlap in the carbon-hydrogen bonds in C<sub>2</sub>H<sub>2</sub>?</div><div class='option'>A) p and s</div><div class='option'>B) sp<sup>3</sup> and s</div><div class='option'>C) sp and s<span class='asterisk'>*</span></div><div class='option'>D) sp<sup>2</sup> and s</div><div class='solution'>Step 1) Draw the Lewis structure for C<sub>2</sub>H<sub>2</sub>.<br>Step 2) Count the number of electron domains on one of the carbons.&nbsp; There are 2 electron domains on each carbon.<br>Step 3) Determine the hybridization of one of the carbons.&nbsp; Since there 2 are electron domains, it is sp hybridized.<br>Step 4) Since the hydrogens only have an s orbital, the bond is between a sp hybridized orbital and an s orbital, thus (sp and s) is the answer.</div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 7 Take-home Quiz<br><canvas id="scantron" class="scantron"></div></body></html>

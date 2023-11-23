@@ -1,0 +1,223 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint {
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in; <!--9.969325in; -->
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[0],"2":[1],"3":[3],"4":[3],"5":[1],"6":[2],"7":[1],"8":[1],"9":[3],"10":[0],"11":[0],"12":[0],"13":[1],"14":[1],"15":[3],"16":[],"17":[2],"18":[0],"19":[1],"20":[0]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 let questionsObject = JSON.parse(questionsObjectText);
+	let markCoordinates = [];
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+    //markCoordinates.push({x: 61.5+23.73*value, y: 74+12.06*key});
+  }
+}
+} else {alert('no questionsObject')}
+
+// Function to draw the dark marks on the canvas
+function drawMarks() {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  //canvas.width = 100;
+  //canvas.height = 100;
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  //ctx.scale(2, 2);
+
+
+ 
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+
+// Call the drawMarks function to draw the dark marks on the canvas
+
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers & Ctrl-x to toggle the solutions.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Study Guide Exam 2 Part 1 (Ch 15)</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Jul 14, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) For the following reaction, if a container holds ${i 2 3 3} M I<sub>2</sub> and ${b 2 3 3} M Br<sub>2</sub>. After a reaction takes place, what would be the equilibrium concentration of IBr?<br>I<sub>2</sub> (g) + Br<sub>2</sub> (g) ⇌ 2 IBr (g)&nbsp; &nbsp; &nbsp;K<sub>c</sub> = ${k 3 8 3}</div><div class='option'>A) <font color="red">Equation Error: (${k}*(${i}+${b})-( ( -${k}*(${i}+${b}) )^2-4*(${k}-4)*(${k}*${i}*${b}) )^0.5)/(2*(${k}-4))*2</font> M<span class='asterisk'>*</span></div><div class='option'>B) <font color="red">Equation Error: (${k}*(${i}+${b})-( ( -${k}*(${i}+${b}) )^2-4*(${k}-4)*(${k}*${i}*${b}) )^0.5)/(2*(${k}-4))*${r 1.2 1.5 3}*2</font> M</div><div class='option'>C) <font color="red">Equation Error: (${k}*(${i}+${b})-( ( -${k}*(${i}+${b}) )^2-4*(${k}-4)*(${k}*${i}*${b}) )^0.5)/(2*(${k}-4))/${r}*2</font> M</div><div class='option'>D) <font color="red">Equation Error: (${k}*(${i}+${b})-( ( -${k}*(${i}+${b}) )^2-4*(${k}-4)*(${k}*${i}*${b}) )^0.5)/(2*(${k}-4))*0.97</font> M</div><div class='solution'>K<sub>c</sub> = <span class="math-tex">\( \frac{[IBr]^2}{[I_2][Br_2]} \)</span> = ([IBr]<sup>2</sup>)/(${I<sub>2</sub>} x ${Br<sub>2</sub>}) =&nbsp; ${k}<br>[IBr]<sup>2</sup> = (${i} x ${b}) x ${k}<br>[IBr]<sup>2</sup> = <font color="red">Equation Error: ${k}*${i}*${b}</font> M<sup>4</sup><br>[NH<sub>3</sub>] = <font color="red">Equation Error: (${k}*10^(${e}*(${-1, 1}))*${p}^6*${h}^2)^(0.25)</font> M</div><p></p></div><div class='question'><div class='stem'>2) At equilibrium, which of the following are true?</div><div class='option'>A) The concentration of the reactants and products are equal</div><div class='option'>B) ${The rate of the forward reaction is equal to the rate of the reverse reaction, The concentration of the reactants and products are stable}<span class='asterisk'>*</span></div><div class='option'>C) The rate constant of the forward reaction is equal to the equilibrium constant</div><div class='option'>D) The reaction stops</div><p></p></div><div class='question'><div class='stem'>3) In the reaction below, at equilibrium, the concentration of H<sub>2</sub> is ${h 0.3 0.5 3} M, and the concentration of O<sub>2</sub> is ${p 0.3 0.5 3} M. Determine the equilibrium concentration of H<sub>2</sub>O (g).<br>2 H<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 H<sub>2</sub>O (g)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = ${k 2 6 3}x10<sup><font color="red">Equation Error: ${e 1 3 1}*${-1, 1}</font></sup></div><div class='option'>A) <font color="red">Equation Error: (${k}*10^(${e}*${-1, 1})*${p}*${h})</font> M</div><div class='option'>B) <font color="red">Equation Error: (${k}*10^(${e}*${-1, 1})*${p}*${h})^(0.5)</font> M</div><div class='option'>C) <font color="red">Equation Error: (${k}*10^(${e}*${-1, 1})*${p}*${h}^2)</font> M</div><div class='option'>D) <font color="red">Equation Error: (${k}*10^(${e}*${-1, 1})*${p}*${h}^2)^(0.5)</font> M<span class='asterisk'>*</span></div><div class='solution'>K<sub>c</sub> = <span class="math-tex">\( \frac{[H_2O]^2}{[H_2]^2[O_2]} \)</span> = ([H<sub>2</sub>O]<sup>2</sup>)/(${h}<sup>2</sup> x ${p}) =&nbsp; ${k}x10<sup><font color="red">Equation Error: ${e}*${-1, 1}</font></sup><br>[H<sub>2</sub>O]<sup>2</sup> = (${h}<sup>2</sup> x ${p}) x ${k}x10<sup><font color="red">Equation Error: ${e}*${-1, 1}</font></sup><br>[H<sub>2</sub>O]<sup>2</sup> = <font color="red">Equation Error: (${k}*10^(${e}*${-1, 1})*${p}*${h}^2)</font> M<sup>2</sup><br>[H<sub>2</sub>O] <font color="red">Equation Error: (${k}*10^(${e}*${-1, 1})*${p}*${h}^2)^(0.5)</font> M</div><p></p></div><div class='question'><div class='stem'>4) Once this reaction has reached equilibrium, which of the following changes would shift the equilibrium to the right?<br>2 SO<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 SO<sub>3</sub> (g),&nbsp; &nbsp; &nbsp; ΔH = -197.7 kJ</div><div class='option'>A) ${An increase in temperature, An increase in volume, A decrease in pressure}</div><div class='option'>B) ${Removing SO<sub>2</sub>, Removing O<sub>2</sub>, Adding SO<sub>3</sub>}</div><div class='option'>C) ${An increase in volume, A decrease in pressure, An increase in temperature}</div><div class='option'>D) ${Adding SO<sub>2</sub>, Adding O<sub>2</sub>, Removing SO<sub>3</sub>}<span class='asterisk'>*</span></div><div class='solution'>Adding reactants or removing products will shift a reaction to the right.</div><p></p></div><div class='question'><div class='stem'>5) If Q (the reactant quotient) is ${greater, less} than the equilibrium constant, then which way will the reaction proceed more quickly?</div><div class='option'>A) ${In the forward direction, In the reverse direction}</div><div class='option'>B) ${In the reverse direction, In the forward direction}<span class='asterisk'>*</span></div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>6) Once this reaction has reached equilibrium, which of the following changes would shift the equilibrium to the left?<br>N<sub>2</sub>O<sub>4</sub> (g) ⇌ 2 NO<sub>2</sub> (g),&nbsp; &nbsp; &nbsp; ΔH = +57 kJ</div><div class='option'>A) ${An increase in temperature, An increase in volume, A decrease in pressure}</div><div class='option'>B) ${Adding a catalyst, Adding reactant, Removing product}</div><div class='option'>C) ${A decrease in volume, An increase in pressure, A decrease in temperature}<span class='asterisk'>*</span></div><div class='option'>D) ${A decrease in pressure, An increase in temperature, An increase in volume}</div><div class='solution'>Since there are more moles of gas on the right side of the equation, a decrease in volume (increase in pressure) will shift the equilibrium to the left.&nbsp; <br>Since the reaction is endothermic, a decrease in temperature will shift the reaction to the left.</div><p></p></div><div class='question'><div class='stem'>7) Is the following reaction reactant or product favored?<br>AgCl (s) ⇌ Ag<sup>+</sup> (aq) + Cl<sup>-</sup> (aq)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 1.8x10<sup>-10</sup></div><div class='option'>A) Product favored</div><div class='option'>B) Reactant favored<span class='asterisk'>*</span></div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>8) If ΔG° = <font color="red">Equation Error: ${g 5 100 3}*${-1, 1}</font> kJ at ${t 200 500 3} K, then what is K<sub>eq</sub> at ${t 200 500 3} K?</div><div class='option'>A) <font color="red">Equation Error: 2.71828^((${1, -1}*${g})/(${t}))</font></div><div class='option'>B) <font color="red">Equation Error: 2.71828^((${1, -1}*${g})/(0.0083145*${t}))</font><span class='asterisk'>*</span></div><div class='option'>C) <font color="red">Equation Error: 2.71828^((${1, -1}*${g})/(8.3145))</font></div><div class='option'>D) <font color="red">Equation Error: 2.71828^((${-1, 1}*${g})/(0.0083145*${t}))</font></div><p></p></div><div class='question'><div class='stem'>9) Consider the reaction at ${t 250 330 3} K:<br>2 NO (g) + O<sub>2</sub> (g) ⇌ 2 NO<sub>2</sub> (g)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ΔG<em>°</em>= ${g -90 -60 3} kJ<br>Calculate ΔG<sub>rxn</sub> under these conditions:<br>P<sub>NO</sub> = ${a .1 .3 1}00 atm; P<sub>O2</sub> = ${b .1 .3 1}00 atm; P<sub>NO2</sub> = ${c 1 3 1}.00 atm</div><div class='option'>A) <font color="red">Equation Error: 0.0083145*${t}*(log((${c}^2)/(${a}^2*${b}))/log(2.71828))</font> kJ</div><div class='option'>B) <font color="red">Equation Error: ${g}+0.0083145*${t}*(log((${c}^2)/(${a}^2*${b})))</font> kJ</div><div class='option'>C) <font color="red">Equation Error: ${g}+8.3145*${t}*(log((${c}^2)/(${a}^2*${b}))/log(2.71828))</font> kJ</div><div class='option'>D) =[${g}+0.0083145*${t}*(log((${c}^2)/(${a}^2*${b}))/log(2.71828))] kJ<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>10) What is Δn for the following equation in relating K<sub>c</sub> to K<sub>p</sub>?<br>H<sub>2 </sub>(g) + Br<sub>2 </sub>(g) ⇌ 2 HBr (g)</div><div class='option'>A) 0<span class='asterisk'>*</span></div><div class='option'>B) ${-2, 2}</div><div class='option'>C) ${3, -3}</div><div class='option'>D) ${1, -1}</div><div class='solution'>A change is always final minus initial, so take the moles <strong>of gas</strong> in the product 2 HBr (g), and subtract the moles of gas on the reactant side H<sub>2 </sub>(g) + Br<sub>2 </sub>(g).<br>2 - 2 = 0</div><p></p></div><div class='question'><div class='stem'>11) Is the following reaction reactant or product favored?<br>HBr (s) + H<sub>2</sub>O (l) ⇌ H<sub>3</sub>O<sup>+</sup> (aq) + Br<sup>-</sup> (aq)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 1.0x10<sup>9</sup></div><div class='option'>A) Product favored<span class='asterisk'>*</span></div><div class='option'>B) Reactant favored</div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>12) Consider the reaction at ${t 250 330 3} K:<br>2 NO (g) + O<sub>2</sub> (g) ⇌ 2 NO<sub>2</sub> (g)&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ΔG<em>°</em>= ${g -90 -60 3} kJ<br>Calculate ΔG<sub>rxn</sub> under these conditions:<br>P<sub>NO</sub> = ${a .1 .3 1}00 atm; P<sub>O2</sub> = ${b .1 .3 1}00 atm; P<sub>NO2</sub> = ${c 1 3 1}.00 atm</div><div class='option'>A) =[${g}+0.0083145*${t}*(log((${c}^2)/(${a}^2*${b}))/log(2.71828))] kJ<span class='asterisk'>*</span></div><div class='option'>B) <font color="red">Equation Error: ${g}+8.3145*${t}*(log((${c}^2)/(${a}^2*${b}))/log(2.71828))</font> kJ</div><div class='option'>C) <font color="red">Equation Error: ${g}+0.0083145*${t}*(log((${c}^2)/(${a}^2*${b})))</font> kJ</div><div class='option'>D) <font color="red">Equation Error: 0.0083145*${t}*(log((${c}^2)/(${a}^2*${b}))/log(2.71828))</font> kJ</div><p></p></div><div class='question'><div class='stem'>13) The reaction below has a K<sub>p</sub> value of ${x 1 9.99 3}x10<sup>${y -7 -2 1}</sup>. What is the value of K<sub>c</sub> for this reaction at ${t 500 700 2} K?<br>${a 1 5 1} A (g) + ${b 2 3 1} B (g) ⇌ A<sub>${a}</sub>B<sub>${b}</sub> (g)</div><div class='option'>A) =[${x}*10^${y}/((0.08206)^(1-${a}-${b}))]</div><div class='option'>B) =[${x}*10^${y}/((0.08206*${t})^(1-${a}-${b}))]<span class='asterisk'>*</span></div><div class='option'>C) =[${x}*10^${y}/((0.08206*${t})^(${a}+${b}-1))]</div><div class='option'>D) =[${x}*10^${y}*(0.08206*${t})^(1-${a}-${b})]</div><div class='solution'>K<sub>p</sub> = K<sub>c</sub>(RT)<sup>Δn</sup>, solving for K<sub>c</sub>:<br>&nbsp;K<sub>c</sub> = K<sub>p</sub>/(RT)<sup>Δn</sup><sub> =&nbsp; </sub>${x}x10<sup>${y}</sup>/(0.08206 L-atm/mol-K x ${t} K)<sup>=[1-${a}-${b}; 1]<br></sup>K<sub>c</sub> = [${x}*10^${y}/((0.08206*${t})^(1-${a}-${b}))]</div><p></p></div><div class='question'><div class='stem'>14) (SLO 3.4) The following reaction is ${exothermic, endothermic}.&nbsp; Which change will shift the equilibrium to the left?<br>${2 NH<sub>3</sub> (g) ⇌ N<sub>2</sub> (g) + 3 H<sub>2</sub> (g), N<sub>2</sub>O<sub>4</sub> ⇌ 2 NO<sub>2</sub>}</div><div class='option'>A) ${Adding a solid, Adding a catalyst}</div><div class='option'>B) ${Raising the temperature, Lowering the temperature}<span class='asterisk'>*</span></div><div class='option'>C) ${Lowering the temperature, Raising the temperature}</div><div class='option'>D)  All of the above.</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>15) (SLO 3.5) Identify the change that will always shift the equilibrium to the ${right, right, left, left}.</div><div class='option'>A) ${Decreasing volume, Decreasing temperature, Decreasing pressure, Increasing pressure}</div><div class='option'>B) ${Removing reactant, Adding product, Adding reactant, Removing product}</div><div class='option'>C) ${Increasing pressure, Increasing volume, Increasing temperature, Decreasing pressure}</div><div class='option'>D) ${Removing product, Adding reactant, Adding product, Removing reactant}<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>16) (SLO 3.2) The equilibrium constant is given for one of the reactions below.&nbsp; Determine the value of the missing equilibrium constant (K<sub>c2</sub>).<br>H<sub>2</sub> (g) + I<sub>2</sub> (g) ⇌ 2 HI&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;K<sub>c1</sub> = ${k 50 60 3}<br>${b 2 4 1} H<sub>2</sub> (g) + ${b} I<sub>2</sub> (g) ⇌ =[${b}*2; 1] HI&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;K<sub>c2</sub> = ?</div><div class='option'>A) =[${b}^${k}]</div><div class='option'>B) =[${k}^(${b}*2)]</div><p></p></div><div class='question'><div class='stem'>17) (SLO 3.1) What is the equilibrium constant equation for the following reaction?<br>2 H<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 H<sub>2</sub>O (g)</div><div class='option'>A) K = <span class="math-tex">\( \frac{[H_2][O_2]}{[H_2O]} \)</span></div><div class='option'>B) K = <span class="math-tex">\( \frac{[H_2]^2[O_2]}{[H_2O]^2} \)</span></div><div class='option'>C) K = <span class="math-tex">\( \frac{[H_2O]^2}{[H_2]^2[O_2]} \)</span><span class='asterisk'>*</span></div><div class='option'>D) K = <span class="math-tex">\( \frac{[H_2O]}{[H_2][O_2]} \)</span></div><p></p></div><div class='question'><div class='stem'>18) (SLO 3.3) The K<sub>p</sub> for the reaction below is ${a 1 9.99 3} x 10<sup>${e -8 -2 1}</sup> at =[${t 1 3 2}*100; 2]<em>°</em>C.<br>2 NO (g) + Cl<sub>2</sub> (g) ⇌ 2 NOCl (g)<br><br>In an equilibrium mixture of the three gases, P<sub>NO</sub> = P<sub>Cl<span style="font-size: 10.5pt;">₂</span></sub>&nbsp;= ${b 1 9.99 3} x 10<sup>${f -8 -2 1}</sup> atm.&nbsp; The partial pressure of the product, nitrosyl chloride (NOCl<sub>2</sub>), is __________ atm.</div><div class='option'>A) =[((${b}*10^${f})^3*${a}*10^${e})^0.5] atm<span class='asterisk'>*</span></div><div class='option'>B) =[((${b}*10^${f})^2*${a}*10^${e})^0.5] atm</div><div class='option'>C) =[((${b}*10^${f})^3*${a}*10^${e})] atm</div><div class='option'>D) =[((${b}*10^${f})^3*${a}/10^${e})^0.5] atm</div><p></p></div><div class='question'><div class='stem'>19) (SLO 3.7) Consider the following reaction.<br>Xe (g) + 2 F<sub>2</sub> (g) ⇌ XeF<sub>4</sub> (g)<br><br>A reaction mixture contains ${i 5 6 3} atm of Xe, ${j 5 9 3} atm F<sub>2</sub>.&nbsp; Once the reaction reaches equilibrium, the pressure of Xe is ${e 4 4.5 3} atm.&nbsp; What is the equilibrium constant (K<sub>p</sub>) for the reaction?</div><div class='option'>A) =[((${i}-${e})/((${e})*(${j}+2*(${e}-${i}))^2))^-1; 3]</div><div class='option'>B) =[(${i}-${e})/((${e})*(${j}+2*(${e}-${i}))^2); 3]<span class='asterisk'>*</span></div><div class='option'>C) =[(${i}-${e})/((${e})*(${j}+(${e}-${i}))^2); 3]</div><div class='option'>D) =[(${i}-${e})/((${e})*(${j}+2*(${e}-${i}))); 3]</div><p></p></div><div class='question'><div class='stem'>20) (SLO 3.6) In a reaction mixture containing <strong>only </strong>${reactants, products}, what is the value of Q<sub>c</sub>?</div><div class='option'>A) ${0, ꝏ (infinity)}<span class='asterisk'>*</span></div><div class='option'>B) ${-1, 2}</div><div class='option'>C) ${ꝏ (infinity), 0}</div><div class='option'>D) ${1, <span class="math-tex">\( \sqrt(2) \)</span>}</div><p></p></div><div id="scantrondiv" class="scantrondiv">Study Guide Exam 2 Part 1 (Ch 15)<br><canvas id="scantron" class="scantron"></div></body></html>

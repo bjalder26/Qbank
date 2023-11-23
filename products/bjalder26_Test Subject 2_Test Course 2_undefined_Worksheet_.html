@@ -18,7 +18,7 @@
 
       .tooltiptext {
         visibility: hidden;
-        width: 120px;
+        width: 140px;
         background-color: black;
         color: #fff;
         text-align: center;
@@ -69,42 +69,105 @@
         display: inline-block;
 		margin: 8px 0px 8px -22px;
       }
-
+	  .solution {
+	    margin-left: 40px;
+	  }
       @media print {
         .noPrint {
           display: none;
         }
+		.scantron {
+		page-break-before: always;
+		height: 10in;
+		}
       }
+	  #scantron {
+  position: relative;
+ background-size: 100%;
+ background-repeat: no-repeat;
+ background-image: url('/html/scantron 50 cut.jpg');
+ display: none;
+}
 
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
     </style>
     <link rel="stylesheet" href="/css/custom.css">
     <script>
+	
+					var questionsObjectText = {"1":[2],"2":[0,2,3],"3":[1]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
     function loading() {
       const mts = document.getElementsByClassName('math-tex');
       for(let mt of mts) {
         const questionOrOption = mt.parentElement;
         questionOrOption.classList.add("svg");
       }
+	  
+	 let questionsObject = JSON.parse(questionsObjectText);
+	let markCoordinates = [];
+if (questionsObject) {
+for (const key in questionsObject) {
+  const values = questionsObject[key];
+  for (const value of values) {
+    markCoordinates.push({x: 62+24*value, y: 66+11.96*key});
+  }
+}
+} else {alert('no questionsObject')}
+
+// Function to draw the dark marks on the canvas
+function drawMarks() {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.width = 308;
+  canvas.height = 720;
+  //ctx.scale(2, 2);
+
+
+ 
+  // Set the color and size of the dark marks
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+  const markWidth = 14;
+  const markHeight = 6;
+
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+  //console.log(coord);
+    ctx.fillRect(coord.x, coord.y, markWidth, markHeight);
+  }
+}
+
+// Call the drawMarks function to draw the dark marks on the canvas
+drawMarks();
     }
+
     </script>
   </head>
 
-  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers & Ctrl-x to toggle the solutions.</span>
     <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
     <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
     <script>
-      let toggle = true;
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
 
-      function toggleAnswers() {
-        let asterisks = document.getElementsByClassName('asterisk');
-        for (let astrisk of asterisks) {
-          if (toggle) {
-            astrisk.style.display = 'none';
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
           } else {
-            astrisk.style.display = null;
+            aClass.style.display = 'inherit';
           }
         }
-        toggle = !toggle;
+        toggle[thisClass] = !toggle[thisClass];
       }
 
       let keysPressed = {};
@@ -112,18 +175,23 @@
         keysPressed[event.key] = true;
 
         if (keysPressed['Control'] && event.key == 'z') {
-          toggleAnswers();
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantron');
         }
       });
 
       document.addEventListener('keyup', (event) => {
         delete keysPressed[event.key];
       });
-
     </script>
     <h1>Worksheet</h1>
 	<h4></h4>
 	<h6></h6>
     <div class='rightjustify'>name: ______________________________________</div>
     <p></p>
-<div class='question'><div class='stem'>1) Test, test, test</div><p></p></div><div class='question'><div class='stem'>2) Test, test, test</div><p></p></div></body></html>
+<div class='question'><div class='stem'>1) Test, test, test, xxxyyyzzz</div><div class='option'>A) incorr</div><div class='option'>B) incorr</div><div class='option'>C) corr<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>2) Test, test, test</div><div class='option'>A) corr<span class='asterisk'>*</span></div><div class='option'>B) incorr</div><div class='option'>C) corrx<span class='asterisk'>*</span></div><div class='option'>D) corrx<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>3) Test, test, test 1</div><div class='option'>A) incorr</div><div class='option'>B) corr<span class='asterisk'>*</span></div><p></p></div><canvas id="scantron" class="scantron" width="310" height="800" scalewidth="1.5"></body></html>

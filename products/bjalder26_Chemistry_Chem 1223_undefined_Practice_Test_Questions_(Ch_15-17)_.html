@@ -1,0 +1,649 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[1],"2":[3],"3":[0],"4":[2],"5":[1],"6":[3],"7":[0],"8":[0],"9":[3],"10":[3],"11":[3],"12":[2],"13":[2],"14":[2],"15":[0],"16":[0],"17":[0],"18":[3],"19":[0],"20":[2],"21":[2],"22":[1],"23":[0],"24":[1],"25":[0],"26":[2],"27":[0],"28":[1],"29":[0],"30":[3],"31":[2],"32":[3],"33":[2],"34":[3],"35":[1],"36":[2],"37":[3],"38":[0],"39":[0],"40":[3],"41":[2],"42":[1],"43":[1],"44":[2],"45":[3],"46":[1],"47":[0],"48":[3],"49":[3],"50":[0],"51":[1],"52":[3],"53":[2],"54":[2],"55":[1],"56":[2],"57":[0],"58":[2],"59":[3],"60":[0],"61":[2],"62":[2],"63":[2],"64":[1]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Practice Test Questions (Ch 15-17)</h1>
+	<h4></h4>
+	<h6>Oct 26, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) The reaction below has a K<sub>p</sub> value of 2.48x10<sup>-3</sup>. What is the value of K<sub>c</sub> for this reaction at 660 K?<br>2 A (g) + 3 B (g) ⇌ A<sub>2</sub>B<sub>3</sub> (g)</div><div class='option'>A) 2.88x10<sup>-10</sup></div><div class='option'>B) 2.13x10<sup>4</sup><span class='asterisk'>*</span></div><div class='option'>C) 1.12x10<sup>-7</sup></div><div class='option'>D) 2.88x10<sup>-10</sup></div><div class='solution'>K<sub>p</sub> = K<sub>c</sub>(RT)<sup>Δn</sup>, solving for K<sub>c</sub>:<br>&nbsp;K<sub>c</sub> = K<sub>p</sub>/(RT)<sup>Δn</sup><sub> =&nbsp; </sub>2.48x10<sup>-3</sup>/(0.08206 L-atm/mol-K x 660 K)<sup>-4<br></sup>K<sub>c</sub> = [2.48*10^-3/((0.08206*660)^(1-2-3))]</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) What is Δn for the following equation in relating K<sub>c</sub> to K<sub>p</sub>?<br>H<sub>2 </sub>(g) + Br<sub>2 </sub>(g) ⇌ 2 HBr (g)</div><div class='option'>A) 3</div><div class='option'>B) -2</div><div class='option'>C) 1</div><div class='option'>D) 0<span class='asterisk'>*</span></div><div class='solution'>A change is always final minus initial, so take the moles <strong>of gas</strong> in the product 2 HBr (g), and subtract the moles of gas on the reactant side H<sub>2 </sub>(g) + Br<sub>2 </sub>(g).<br>2 - 2 = 0</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) Is the following reaction reactant or product favored?<br>AgCl (s) ⇌ Ag<sup>+</sup> (aq) + Cl<sup>-</sup> (aq)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 1.8x10<sup>-10</sup></div><div class='option'>A) Reactant favored<span class='asterisk'>*</span></div><div class='option'>B) Product favored</div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>When K<sub>c</sub> is greater than 1, it is product favored, when K<sub>c</sub> is less than 1 it is reactant favored.&nbsp; This is because K<sub>c</sub> is essentially products over reactants.&nbsp; So a number greater than 1 indicates more products than reactants, whereas a number lower than 1 indicates more reactants than products.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) Once this reaction has reached equilibrium, which of the following changes would shift the equilibrium to the right?<br>2 SO<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 SO<sub>3</sub> (g),&nbsp; &nbsp; &nbsp; ΔH = -197.7 kJ</div><div class='option'>A) A decrease in pressure</div><div class='option'>B) Adding SO<sub>3</sub></div><div class='option'>C) Removing SO<sub>3</sub><span class='asterisk'>*</span></div><div class='option'>D) An increase in temperature</div><div class='solution'>Adding reactants or removing products will shift a reaction to the right.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) If Q (the reactant quotient) is greater than the equilibrium constant, then which way will the reaction proceed more quickly?</div><div class='option'>A) In the forward direction</div><div class='option'>B) In the reverse direction<span class='asterisk'>*</span></div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>If Q (the reactant quotient) is greater than the equilibrium constant, then it means we have too much product (numerator) and too little reactant (denominator) to be at equilibrium.&nbsp; Since reversible reactions will always proceed to equilibrium, the reaction will have to proceed in the reverse direction to produce more reactant, and use up some of the product.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) At equilibrium, which of the following are true?</div><div class='option'>A) The reaction stops</div><div class='option'>B) The concentration of the reactants and products are equal</div><div class='option'>C) The rate constant of the forward reaction is equal to the equilibrium constant</div><div class='option'>D) The rate of the forward reaction is equal to the rate of the reverse reaction<span class='asterisk'>*</span></div><div class='solution'>The rate of the forward reaction is equal to the rate of the reverse reaction, which means that the concentration of the reactants and products will remain stable.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Is the following reaction reactant or product favored?<br>HBr (s) + H<sub>2</sub>O (l) ⇌ H<sub>3</sub>O<sup>+</sup> (aq) + Br<sup>-</sup> (aq)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 1.0x10<sup>9</sup></div><div class='option'>A) Product favored<span class='asterisk'>*</span></div><div class='option'>B) Reactant favored</div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>When K<sub>c</sub> is greater than 1, it is product favored, when K<sub>c</sub> is less than 1 it is reactant favored.&nbsp; This is because K<sub>c</sub> is essentially products over reactants.&nbsp; So a number greater than 1 indicates more products than reactants, whereas a number lower than 1 indicates more reactants than products.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) Once this reaction has reached equilibrium, which of the following changes would shift the equilibrium to the left?<br>N<sub>2</sub>O<sub>4</sub> (g) ⇌ 2 NO<sub>2</sub> (g),&nbsp; &nbsp; &nbsp; ΔH = +57 kJ</div><div class='option'>A) A decrease in volume<span class='asterisk'>*</span></div><div class='option'>B) An increase in temperature</div><div class='option'>C) Adding a catalyst</div><div class='option'>D) A decrease in pressure</div><div class='solution'>Since there are more moles of gas on the right side of the equation, a decrease in volume (increase in pressure) will shift the equilibrium to the left.&nbsp; <br>Since the reaction is endothermic, a decrease in temperature will shift the reaction to the left.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) In the reaction below, at equilibrium, the concentration of N<sub>2</sub> is 0.443 M, and the concentration of H<sub>2</sub> is 0.415 M. Determine the equilibrium concentration of NH<sub>3</sub>&nbsp;(g).<br>2 N<sub>2</sub> (g) + 6 H<sub>2</sub> (g) ⇌ 4 NH<sub>3</sub> (g) &nbsp; &nbsp; &nbsp; K<sub>c</sub> = 3.65x10<sup>-1</sup></div><div class='option'>A) 0.0671 M</div><div class='option'>B) 0.000366 M</div><div class='option'>C) 0.509 M</div><div class='option'>D) 0.138 M<span class='asterisk'>*</span></div><div class='solution'>K<sub>c</sub> = <span class="math-tex">\( \frac{[NH_3]^4}{[N_2]^2[H_2]^6} \)</span> = ([NH<sub>3</sub>]<sup>4</sup>)/(0.443<sup>2</sup> x 0.415<sup>6</sup>) =&nbsp; 3.65x10<sup>-1</sup><br>[NH<sub>3</sub>]<sup>4</sup> = (0.443<sup>2</sup> x 0.415<sup>6</sup>) x 3.65x10<sup>-1</sup><br>[NH<sub>3</sub>]<sup>4</sup> = 0.000366 M<sup>4</sup><br>[NH<sub>3</sub>] = 0.138 M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) For the following reaction, if a reaction container holds 2.98 M I<sub>2</sub> and 2.79 M Br<sub>2</sub>. After a reaction takes place, what would be the equilibrium concentration of IBr?<br>I<sub>2</sub> (g) + Br<sub>2</sub> (g) ⇌ 2 IBr (g)&nbsp; &nbsp; &nbsp;K<sub>c</sub> = 5.41</div><div class='option'>A) 2.79 M</div><div class='option'>B) 1.55 M</div><div class='option'>C) 2.02 M</div><div class='option'>D) 3.10 M<span class='asterisk'>*</span></div><div class='solution'><table style="border-collapse: collapse; width: 39.8223%;" border="1">
+<tbody>
+<tr>
+<td style="width: 4.70415%;">R</td>
+<td style="width: 25.4808%;">I<sub>2</sub>&nbsp;(g)</td>
+<td style="width: 30.5536%;">+ Br<sub>2</sub>&nbsp;(g)</td>
+<td style="width: 39.2246%;">&nbsp;&nbsp;⇌ 2 IBr (g)&nbsp;</td>
+</tr>
+<tr>
+<td style="width: 4.70415%;">I</td>
+<td style="width: 25.4808%;">2.98 M</td>
+<td style="width: 30.5536%;">2.79 M</td>
+<td style="width: 39.2246%;">0</td>
+</tr>
+<tr>
+<td style="width: 4.70415%;">C</td>
+<td style="width: 25.4808%;">-x M</td>
+<td style="width: 30.5536%;">-x M</td>
+<td style="width: 39.2246%;">+2x M</td>
+</tr>
+<tr>
+<td style="width: 4.70415%;">E</td>
+<td style="width: 25.4808%;">2.98 -x M</td>
+<td style="width: 30.5536%;">2.79 -x M</td>
+<td style="width: 39.2246%;">2x M</td>
+</tr>
+</tbody>
+</table>
+<br>&nbsp;K<sub>c</sub> = 5.41 = <span class="math-tex">\( \frac{[IBr]^2}{[I_2][Br_2]} \)</span> =&nbsp;
+<table style="border-collapse: collapse; width: 19.8117%; height: 39.2px;" border="1">
+<tbody>
+<tr style="height: 19.6px;">
+<td style="width: 100%; height: 19.6px; text-align: center;">(2x)<sup>2</sup></td>
+</tr>
+<tr style="height: 19.6px;">
+<td style="width: 100%; height: 19.6px; text-align: center;">-----------------------</td>
+</tr>
+<tr>
+<td style="width: 100%; text-align: center;">(2.98 -x )(2.79 -x)</td>
+</tr>
+</tbody>
+</table>
+5.41(2.98 -x )(2.79 -x) = (2x)<sup>2</sup><br>5.41(8.31 - 5.77x + x<sup>2</sup>) = 4x<sup>2</sup><br>45.0 - 31.2x + 5.41x<sup>2</sup> = 4x<sup>2</sup><br>1.41x<sup>2</sup> - 31.2 + 45.0 = 0<br>x =&nbsp;<br>
+<table style="border-collapse: collapse; width: 39.8768%;" border="1">
+<tbody>
+<tr>
+<td style="width: 100%; text-align: center;">31.2 ± √[(- 31.2)<sup>2</sup> - 4([5.41-4])( 45.0)]</td>
+</tr>
+<tr>
+<td style="width: 100%; text-align: center;">--------------------------------------------------------------------</td>
+</tr>
+<tr>
+<td style="width: 100%; text-align: center;">2 x 1.41</td>
+</tr>
+</tbody>
+</table>
+<br>x = 1.55 M, or 20.6 M<br>20.6 M can be rejected because it will give a negative equilibrium concentration for I<sub>2</sub> and Br<sub>2</sub>.<br>Thus [IBr] = 2 x 1.55 M&nbsp;<br>[IBr] =&nbsp; 3.10 M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) (SLO 3.5) Identify the change that will always shift the equilibrium to the right.</div><div class='option'>A) Removing reactant</div><div class='option'>B) Increasing pressure</div><div class='option'>C) Decreasing volume</div><div class='option'>D) Removing product<span class='asterisk'>*</span></div><div class='solution'>Adding reactant will always shift the equilibrium to the right<br>Removing reactant will always shift the equilibrium to the left<br>Adding product will always shift the equilibrium to the left<br>Removing product will always shift the equilibrium to the right<br>Increasing pressure or decreasing volume will always shift the equilibrium to the side with lower moles of gas<br>Decreasing pressure ore increasing volume will always shift the equilibrium to the side with higher moles of gas<br>Increasing temperature will shift the equilibrium to the right in an endothermic reaction, but to the left in an exothermic reaction<br>Decreasing temperature will shift the equilibrium to the left in an endothermic reaction, but to the right in an endothermic reaction<br><br></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) (SLO 3.4) The following reaction is exothermic.&nbsp; Which change will shift the equilibrium to the left?<br>2 NH<sub>3</sub> (g) ⇌ N<sub>2</sub> (g) + 3 H<sub>2</sub> (g)</div><div class='option'>A) Adding a solid</div><div class='option'>B) Lowering the temperature</div><div class='option'>C) Raising the temperature<span class='asterisk'>*</span></div><div class='option'>D)  All of the above.</div><div class='option'>E)  None of the above.</div><div class='solution'>In an exothermic reaction, you can treat heat as if it is a product, thus raising the temperature will shift the equilibrium to the left.<br>Adding a solid does not affect equilibrium.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) (SLO 3.6) In a reaction mixture containing <strong>only </strong>reactants, what is the value of Q<sub>c</sub>?</div><div class='option'>A) -1</div><div class='option'>B) 1</div><div class='option'>C) 0<span class='asterisk'>*</span></div><div class='option'>D) ꝏ (infinity)</div><div class='solution'>"<strong>Only </strong>reactants" would mean that the numerator in the Q<sub>c</sub> equation is zero.&nbsp; Thus the answer is 0.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) (SLO 3.7) Consider the following reaction.<br>Xe (g) + 2 F<sub>2</sub> (g) ⇌ XeF<sub>4</sub> (g)<br><br>A <strong>reaction mixture</strong> contains 5.74 atm of Xe, 7.44 atm F<sub>2</sub>.&nbsp; Once the reaction reaches equilibrium, the pressure of Xe is 4.38 atm.&nbsp; What is the equilibrium constant (K<sub>p</sub>) for the reaction?</div><div class='option'>A) 0.0658</div><div class='option'>B) 0.0189</div><div class='option'>C) 0.0139<span class='asterisk'>*</span></div><div class='option'>D) 0.00840</div><div class='solution'><table style="border-collapse: collapse; width: 49.5039%;" border="1">
+<tbody>
+<tr>
+<td style="width: 6.20568%;">R</td>
+<td style="width: 26.6614%;">Xe (g)&nbsp;</td>
+<td style="width: 27.3481%;">+ 2 F<sub>2</sub>&nbsp;(g)&nbsp;</td>
+<td style="width: 39.7652%;">⇌ XeF<sub>4</sub>&nbsp;(g)</td>
+</tr>
+<tr>
+<td style="width: 6.20568%;">I</td>
+<td style="width: 26.6614%;">5.74</td>
+<td style="width: 27.3481%;">7.44</td>
+<td style="width: 39.7652%;">0</td>
+</tr>
+<tr>
+<td style="width: 6.20568%;">C&nbsp;</td>
+<td style="width: 26.6614%;">-x</td>
+<td style="width: 27.3481%;">-2x</td>
+<td style="width: 39.7652%;">+x</td>
+</tr>
+<tr>
+<td style="width: 6.20568%;">E</td>
+<td style="width: 26.6614%;">4.38</td>
+<td style="width: 27.3481%;">7.44-2x</td>
+<td style="width: 39.7652%;">x</td>
+</tr>
+</tbody>
+</table>
+5.74 -&nbsp; x = 4.38<br>5.74 - 4.38 = x<br>2 x 1.36 = 2x<br>2.72 = 2x<br>P<sub>XeF4</sub> = 1.36<br>P<sub>F2</sub> = 7.44 - 2x = 4.72<br>K<sub>p</sub> = (1.36)/(4.38 x 4.72<sup>2</sup>)<br>K<sub>p</sub> = 0.0139</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) (SLO 3.3) The K<sub>p</sub> for the reaction below is 5.87 x 10<sup>-4</sup> at 180<em>°</em>C.<br>CO (g) + Cl<sub>2</sub> (g) ⇌ COCl<sub>2</sub> (g)<br><br>In an <strong>equilibrium mixture</strong> of the three gases, P<sub>CO</sub> = P<sub>Cl<span style="font-size: 10.5pt;">₂</span></sub>&nbsp;= 9.26 x 10<sup>-7</sup> atm.&nbsp; The partial pressure of the product, phosgene (COCl<sub>2</sub>), is __________ atm.</div><div class='option'>A) 5.03x10<sup>-16</sup> atm<span class='asterisk'>*</span></div><div class='option'>B) 8.57x10<sup>-13</sup> atm</div><div class='option'>C) 5.44x10<sup>-10</sup> atm</div><div class='option'>D) 1.46x10<sup>-9</sup> atm</div><div class='solution'>Notice that these are already equilibrium values.<br>
+<table style="border-collapse: collapse; width: 41.4224%; height: 72.5px;" border="1">
+<tbody>
+<tr style="height: 27.125px;">
+<td style="width: 3.09324%; height: 27.125px;">&nbsp;</td>
+<td style="width: 22.2784%; height: 27.125px;">CO (g)&nbsp;</td>
+<td style="width: 31.9822%; height: 27.125px;">+ Cl<sub>2</sub>&nbsp;(g)&nbsp;</td>
+<td style="width: 42.6609%; height: 27.125px;">⇌ COCl<sub>2</sub>&nbsp;(g)</td>
+</tr>
+<tr style="height: 25.7812px;">
+<td style="width: 3.09324%; height: 25.7812px;">E</td>
+<td style="width: 22.2784%; height: 25.7812px;">9.26 x 10<sup>-7</sup><sub>&nbsp;</sub></td>
+<td style="width: 31.9822%; height: 25.7812px;">9.26 x 10<sup>-7</sup><sub>&nbsp;</sub></td>
+<td style="width: 42.6609%; height: 25.7812px;">x</td>
+</tr>
+</tbody>
+</table>
+<br>K = <span class="math-tex">\( \frac{P_{COCl_2}}{P_{CO} x P_{Cl_2}} \)</span>= x/(9.26 x 10<sup>-7</sup>)<sup>2</sup> = 5.87 x 10<sup>-4</sup><sub><br></sub>x = (5.87*10<sup>-4</sup>) x (9.26 x 10<sup>-7</sup>)<sup>2</sup><br>x = 5.03x10<sup>-16</sup><br>[COCl<sub>2</sub>]<sub>eq</sub> = 5.03x10<sup>-16</sup> atm</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) (SLO 3.1) What is the equilibrium constant equation for the following reaction?<br>2 H<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 H<sub>2</sub>O (g)</div><div class='option'>A) K = <span class="math-tex">\( \frac{[H_2O]^2}{[H_2]^2[O_2]} \)</span><span class='asterisk'>*</span></div><div class='option'>B) K = <span class="math-tex">\( \frac{[H_2O]}{[H_2][O_2]} \)</span></div><div class='option'>C) K = <span class="math-tex">\( \frac{[H_2][O_2]}{[H_2O]} \)</span></div><div class='option'>D) K = <span class="math-tex">\( \frac{[H_2]^2[O_2]}{[H_2O]^2} \)</span></div><div class='solution'>The equilibrium constant expression is concentration of products (raised to their coefficients) over concentration of reactants (raised to their coefficients).<br>K = <span class="math-tex">\( \frac{[H_2O]^2}{[H_2]^2[O_2]} \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) (SLO 3.2) The equilibrium constant is given for one of the reactions below.&nbsp; Determine the value of the missing equilibrium constant (K<sub>c2</sub>).<br>N<sub>2</sub>O<sub>4</sub> (g) ⇌ 2 NO<sub>2</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;K<sub>c1</sub> = 1.86<br>2 N<sub>2</sub>O<sub>4</sub> (g) ⇌ 4 NO<sub>2</sub>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;K<sub>c2</sub> = ?</div><div class='option'>A) 3.46<span class='asterisk'>*</span></div><div class='option'>B) 12.0</div><div class='option'>C) 3.72</div><div class='option'>D) 3.63</div><div class='solution'>Because the coefficients in the second equation are 2 times the coefficients in the first equation, K<sub>c2</sub> will be K<sub>c1</sub> raised to the 2 power.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) Which of the following is the strongest Lewis acid (best at giving up H<sup>+</sup> or binding OH<sup>-</sup>)?</div><div class='option'>A) Li<sup>+</sup></div><div class='option'>B) Na<sup>+</sup></div><div class='option'>C) K<sup>+</sup></div><div class='option'>D) NH<sub>4</sub><sup>+</sup><span class='asterisk'>*</span></div><div class='solution'>The strongest acid, will have the weakest conjugate base.&nbsp; The conjugate bases of Na<sup>+</sup>, Li<sup>+</sup>, and K<sup>+</sup> are all strong bases (NaOH, LiOH, and KOH).&nbsp; Thus the answer is NH<sub>4</sub><sup>+</sup>.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) If a solution has a pH of 9.71, then what is the hydronium (hydrogen) ion concentration at 25°C?</div><div class='option'>A) 1.95x10<sup>-10</sup> M<span class='asterisk'>*</span></div><div class='option'>B) 4.29 M</div><div class='option'>C) 5.13x10<sup>9</sup> M</div><div class='option'>D) -0.987 M</div><div class='option'>E)  None of the above.</div><div class='solution'>[H<sup>+</sup>] = 10<sup>-pH</sup><br>[H<sup>+</sup>] = 10<sup>-9.71</sup>&nbsp;<br>[H<sup>+</sup>] = 1.95x10<sup>-10</sup> M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">20</span>) Determine the [H<sub>3</sub>O<sup>+</sup>] in a 0.506 M HF solution. The K<sub>a</sub> of <span style="font-size: 10.5pt;">HF is 3.5 × 10<sup>-4</sup></span><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 0.000177 M</div><div class='option'>B) 0.0160 M</div><div class='option'>C) 0.0133 M<span class='asterisk'>*</span></div><div class='option'>D) 130. M</div><div class='solution'><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">Since HF is a weak acid, we need a RICE table, and acid dissociation constant equation.<br></span></span>
+<table style="border-collapse: collapse; width: 20.8114%;" border="1">
+<tbody>
+<tr>
+<td style="width: 7.73981%;">R</td>
+<td style="width: 35.7966%;"><span style="font-size: 10.5pt;">HF ⇄</span></td>
+<td style="width: 14.8195%;"><span style="font-size: 10.5pt;">H<sup>+</sup> +&nbsp;</span></td>
+<td style="width: 41.6166%;"><span style="font-size: 10.5pt;">F<sup>-</sup></span></td>
+</tr>
+<tr>
+<td style="width: 7.73981%;">I</td>
+<td style="width: 35.7966%;">0.506</td>
+<td style="width: 14.8195%;">0</td>
+<td style="width: 41.6166%;">0</td>
+</tr>
+<tr>
+<td style="width: 7.73981%;">C</td>
+<td style="width: 35.7966%;">- x</td>
+<td style="width: 14.8195%;">+ x</td>
+<td style="width: 41.6166%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 7.73981%;">E</td>
+<td style="width: 35.7966%;">0.506 - x</td>
+<td style="width: 14.8195%;">x</td>
+<td style="width: 41.6166%;">x</td>
+</tr>
+</tbody>
+</table>
+<br>K<sub>a</sub> = <span style="font-size: 10.5pt;">3.5 × 10<sup>-4</sup></span><span style="font-size: 10.5pt;"> = [H+][F<sup>-</sup>]/[HF]<br>3.5 × 10<sup>-4</sup> = x<sup>2</sup>/(0.506 - x), small x assumption is valid because 0.506/(3.5 × 10<sup>-4</sup>) = 1450<br>3.5 × 10<sup>-4</sup> = x<sup>2</sup>/0.506<br>0.506 x 3.5 × 10<sup>-4</sup> = x<sup>2<br></sup>x = √(0.506 x 3.5 × 10-4)<br>[H<sub>3</sub>O<sup>+</sup>] = x = 0.0133 M</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">21</span>) Which of the following has the strongest conjugate base?</div><div class='option'>A) HCl</div><div class='option'>B) HI</div><div class='option'>C) NH<sub>4</sub><sup>+</sup><span class='asterisk'>*</span></div><div class='option'>D) HBr</div><div class='solution'>The weakest acid will have the strongest conjugate base.&nbsp; Out of all the choices, only NH<sub>4</sub><sup>+</sup> is a weak acid.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">22</span>) If a solution has a pH of 6.29, then what is the hydroxide ion concentration at 25°C?</div><div class='option'>A) 7.71 M</div><div class='option'>B) 1.95x10<sup>-8</sup> M<span class='asterisk'>*</span></div><div class='option'>C) 5.13x10<sup>-7</sup> M</div><div class='option'>D) 1.95x10<sup>6</sup> M</div><div class='solution'>pOH = 14 - pH<br>pOH = 7.71<br>[OH<sup>-</sup>,H<sup>+</sup>] = 10<sup>-pOH</sup><br>[OH<sup>-</sup>,H<sup>+</sup>] = 10<sup>-7.71</sup><br>[OH<sup>-</sup>,H<sup>+</sup>] = 1.95x10<sup>-8</sup> M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">23</span>) Calculate pK<sub>b</sub> for the conjugate base of an acid that has a pK<sub>a</sub> of 2.46 (at 25°C).</div><div class='option'>A) 11.5<span class='asterisk'>*</span></div><div class='option'>B) 0.00347</div><div class='option'>C) 4.07x10<sup>-15</sup></div><div class='option'>D) 2.88x10<sup>-12</sup></div><div class='solution'>pK<sub>a</sub> +&nbsp;pK<sub>b</sub> = 14<br>pK<sub>b</sub> = 14 - pK<sub>a</sub><br>pK<sub>b</sub> = 11.5</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">24</span>) What is the conjugate base of &nbsp;&nbsp; H<sub>2</sub>PO<sub>4</sub><sup>-</sup>?</div><div class='option'>A) &nbsp; H<sub>2</sub>PO<sub>4</sub><sup>-</sup></div><div class='option'>B) &nbsp; HPO<sub>4</sub><sup>2-</sup><span class='asterisk'>*</span></div><div class='option'>C) &nbsp; PO<sub>4</sub><sup>3-</sup></div><div class='option'>D)  None of the above.</div><div class='solution'>To get the conjugate base, you'd need to remove a H<sup>+</sup> or add an OH<sup>-</sup>.&nbsp; In this case, when we remove a H<sup>+</sup> from &nbsp; H<sub>2</sub>PO<sub>4</sub><sup>-</sup> it gives us &nbsp; HPO<sub>4</sub><sup>2-</sup>.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">25</span>) Determine the pH&nbsp;in a 0.472 M <span style="font-size: 10.5pt;">C<sub>6</sub>H<sub>5</sub>CO<sub>2</sub>H solution. The K<sub>a</sub> of </span></span><span style="font-size: 10.5pt;">C<sub>6</sub>H<sub>5</sub>CO<sub>2</sub>H is 6.5 × 10<sup>-5</sup></span><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 2.26<span class='asterisk'>*</span></div><div class='option'>B) 2.73</div><div class='option'>C) 0.00550</div><div class='option'>D) 4.52</div><div class='solution'><span style="font-size: 10.5pt;">Since C<sub>6</sub>H<sub>5</sub>CO<sub>2</sub>H is a weak acid, we need a RICE table, and acid dissociation constant equation.<br></span>
+<table style="border-collapse: collapse; width: 20.8114%;" border="1">
+<tbody>
+<tr>
+<td style="width: 7.73981%;">R</td>
+<td style="width: 35.7966%;"><span style="font-size: 10.5pt;">C<sub>6</sub>H<sub>5</sub>CO<sub>2</sub>H ⇄</span></td>
+<td style="width: 14.8195%;"><span style="font-size: 10.5pt;">H<sup>+</sup> +&nbsp;</span></td>
+<td style="width: 41.6166%;"><span style="font-size: 10.5pt;">C<sub>6</sub>H<sub>5</sub>CO<sub>2</sub><sup>-</sup></span></td>
+</tr>
+<tr>
+<td style="width: 7.73981%;">I</td>
+<td style="width: 35.7966%;">0.472</td>
+<td style="width: 14.8195%;">0</td>
+<td style="width: 41.6166%;">0</td>
+</tr>
+<tr>
+<td style="width: 7.73981%;">C</td>
+<td style="width: 35.7966%;">- x</td>
+<td style="width: 14.8195%;">+ x</td>
+<td style="width: 41.6166%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 7.73981%;">E</td>
+<td style="width: 35.7966%;">0.472 - x</td>
+<td style="width: 14.8195%;">x</td>
+<td style="width: 41.6166%;">x</td>
+</tr>
+</tbody>
+</table>
+<br>K<sub>a</sub> = </span><span style="font-size: 10.5pt;">6.5 × 10<sup>-5</sup></span><span style="font-size: 10.5pt;"> = [H+][C<sub>6</sub>H<sub>5</sub>CO<sub>2</sub><sup>-</sup>]/[C<sub>6</sub>H<sub>5</sub>CO<sub>2</sub>H]<br>6.5 × 10<sup>-5</sup> = x<sup>2</sup>/(0.472 - x), small x assumption is valid because 0.472/(6.5 × 10<sup>-5</sup>) = 7260<br>6.5 × 10<sup>-5</sup> = x<sup>2</sup>/0.472<br>0.472 x 6.5 × 10<sup>-5</sup> = x<sup>2<br></sup>x = √(0.472 x 6.5 × 10-5)<br>[H<sub>3</sub>O<sup>+</sup>] = x = 0.00550 M<br><br>pH = -log[H<sub>3</sub>O<sup>+</sup>]<br>pH = -log(0.00550)<br>pH = 2.26</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">26</span>) Determine the pH in a 0.565 M H<sub>3</sub>PO<sub>4</sub> solution. The K<sub>a</sub> of H<sub>3</sub>PO<sub>4</sub></span></span><span style="font-size: 10.5pt;"> is 7.5 × 10<sup>-3</sup></span><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 2.32</div><div class='option'>B) 1.19</div><div class='option'>C) 1.21<span class='asterisk'>*</span></div><div class='option'>D)  None of the above.</div><div class='solution'><span style="font-size: 10.5pt;">Since H<sub>3</sub>PO<sub>4</sub>&nbsp;is a weak acid, we need a RICE table, and acid dissociation constant equation.<br></span>
+<table style="border-collapse: collapse; width: 22.584%;" border="1">
+<tbody>
+<tr>
+<td style="width: 7.82114%;">R</td>
+<td style="width: 42.0386%;"><span style="font-size: 10.5pt;">H<sub>3</sub>PO<sub>4</sub> ⇄</span></td>
+<td style="width: 16.9458%;"><span style="font-size: 10.5pt;">H<sup>+</sup> +&nbsp;</span></td>
+<td style="width: 33.2398%;">H<sub>2</sub>PO<sub>4</sub><sup>-</sup></td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">I</td>
+<td style="width: 42.0386%;">0.565</td>
+<td style="width: 16.9458%;">0</td>
+<td style="width: 33.2398%;">0</td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">C</td>
+<td style="width: 42.0386%;">- x</td>
+<td style="width: 16.9458%;">+ x</td>
+<td style="width: 33.2398%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">E</td>
+<td style="width: 42.0386%;">0.565 - x</td>
+<td style="width: 16.9458%;">x</td>
+<td style="width: 33.2398%;">x</td>
+</tr>
+</tbody>
+</table>
+<br>K<sub>a</sub> = </span><span style="font-size: 10.5pt;">7.5 × 10<sup>-3</sup></span><span style="font-size: 10.5pt;"></span><span style="font-size: 10.5pt;"> = [H+][H<sub>2</sub>PO<sub>4</sub><sup>-</sup>]/[H<sub>3</sub>PO<sub>4</sub>]<br>7.5 × 10<sup>-3</sup>= x<sup>2</sup>/(0.565 - x), small x assumption is not valid because 0.565/(7.5 × 10<sup>-3</sup>) = 75.3<br>7.5 × 10<sup>-3</sup> = x<sup>2</sup>/0.565<br>(0.565 - x) x (7.5 × 10<sup>-3</sup>) = x<sup>2<br></sup>0.00424 - 7.5 × 10-3x = x<sup>2<br></sup>0 = x<sup>2</sup> + 7.5 × 10-3x - 0.00424<br>x = 0.0615<br>pH = -log[H<sub>3</sub>O<sup>+</sup>]<br>pH = -log(0.0615)<br>pH = 1.21</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">27</span>) Which of the following K<sub>a</sub> values would correspond to the strongest acid?</div><div class='option'>A) K<sub>a</sub> = 2.88 x 10<sup>-1</sup><span class='asterisk'>*</span></div><div class='option'>B) K<sub>a</sub> = 1.62 x 10<sup>-5</sup></div><div class='option'>C) K<sub>a</sub> = 8.26 x 10<sup>-5</sup></div><div class='option'>D) K<sub>a</sub> = 7.59 x 10<sup>-8</sup></div><div class='solution'>Since K<sub>a</sub> is essentially products over reactants, the highest K<sub>a</sub> corresponds with the strongest acid.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">28</span>) If a solution has a hydronium (hydrogen) ion concentration of 2.42x10<sup>-5</sup> M, then what is the pH of the solution at 25°C?</div><div class='option'>A) 4.13x10<sup>-10</sup></div><div class='option'>B) 4.62<span class='asterisk'>*</span></div><div class='option'>C) 9.38</div><div class='option'>D) -4.71</div><div class='solution'>pH = -log[H<sup>+</sup>]<br>pH = -log(2.42x10<sup>-5</sup>)<br>pH = 4.62</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">29</span>) Determine the pH in a 0.754 M CH<sub>3</sub>NH<sub>2</sub>&nbsp;solution. The K<sub>b</sub> of CH<sub>3</sub>NH<sub>2</sub><span style="font-size: 10.5pt;"> is 4.38x10<sup>-4</sup></span><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 12.3<span class='asterisk'>*</span></div><div class='option'>B) 1.74</div><div class='option'>C) 3.48</div><div class='option'>D) 10.5</div><div class='option'>E)  None of the above.</div><div class='solution'>Determine the pH in a 0.754 M CH<sub>3</sub>NH<sub>2</sub>&nbsp;solution. The K<sub>b</sub> of CH<sub>3</sub>NH<sub>2</sub><span style="font-size: 10.5pt;"> is 4.38x10<sup>-4</sup></span><span style="font-size: 10.5pt;">.<br></span></span>
+<table style="border-collapse: collapse; width: 46.9261%;" border="1">
+<tbody>
+<tr>
+<td style="width: 24.9702%;">R</td>
+<td style="width: 24.9702%;">CH<sub>3</sub>NH<sub>2</sub>&nbsp;</td>
+<td style="width: 12.5573%;">+ H<sub>2</sub>O <span style="font-size: 10.5pt;">⇄</span></td>
+<td style="width: 12.5573%;">OH<sup>-</sup></td>
+<td style="width: 24.9702%;">+ CH<sub>3</sub>NH<sub>3</sub><sup>+</sup></td>
+</tr>
+<tr>
+<td style="width: 24.9702%;">I</td>
+<td style="width: 24.9702%;">0.754</td>
+<td style="width: 12.5573%;">&nbsp;</td>
+<td style="width: 12.5573%;">0</td>
+<td style="width: 24.9702%;">0</td>
+</tr>
+<tr>
+<td style="width: 24.9702%;">C</td>
+<td style="width: 24.9702%;">- x</td>
+<td style="width: 12.5573%;">&nbsp;</td>
+<td style="width: 12.5573%;">+ x</td>
+<td style="width: 24.9702%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 24.9702%;">E</td>
+<td style="width: 24.9702%;">0.754 - x</td>
+<td style="width: 12.5573%;">&nbsp;</td>
+<td style="width: 12.5573%;">x</td>
+<td style="width: 24.9702%;">x</td>
+</tr>
+</tbody>
+</table>
+<br>K<sub>b</sub> = <span style="font-size: 10.5pt;">4.38x10<sup>-4</sup></span><span style="font-size: 10.5pt;"> = X<sup>2</sup>/(0.754 - x), the small x assumption is valid because 0.754/(4.38x10<sup>-4</sup>) = 1720<br></span>0.754 x <span style="font-size: 10.5pt;">4.38x10<sup>-4</sup></span><span style="font-size: 10.5pt;">= X<sup>2</sup><br></span>x = <span style="font-size: 10.5pt;">√(0.000330)<br>pOH = -log[OH<sup>-</sup>] = -log(0.0182)<br>pOH = 1.74<br>pH = 14 - pH = 14 - 1.74 = 12.3</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">30</span>) Which of the following pK<sub>a</sub> values would correspond to the strongest acid?</div><div class='option'>A) pK<sub>a</sub> = 7.50</div><div class='option'>B) pK<sub>a</sub> = 5.38</div><div class='option'>C) pK<sub>a</sub> = 4.78</div><div class='option'>D) pK<sub>a</sub> = 2.17<span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><div class='solution'>The lowest pK<sub>a</sub> corresponds to the strongest acid.&nbsp; Possibly the easiest way to remember this is that at the half-equivalence point pH = pK<sub>a</sub>.&nbsp; The strongest acid would have the lowest pH, thus the lowest pK<sub>a</sub>.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">31</span>) What is the conjugate acid of NH<sub>3</sub>?</div><div class='option'>A) NH<sub>2</sub><sup>-</sup></div><div class='option'>B) NH<sub>2</sub><sup>+</sup></div><div class='option'>C) NH<sub>4</sub><sup>+</sup><span class='asterisk'>*</span></div><div class='option'>D)  None of the above.</div><div class='solution'>To find the conjugate acid of NH<sub>3</sub>, add a H<sup>+</sup> ion (or remove OH<sup>-</sup>).&nbsp; This will give you NH<sub>4</sub><sup>+</sup>, which has 1 more hydrogen and a charge 1 higher.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">32</span>) Determine the pH of a 0.0449 M HNO<sub>3</sub>&nbsp; solution.</div><div class='option'>A) 1.89</div><div class='option'>B) 2.23x10<sup>-13</sup></div><div class='option'>C) 12.7</div><div class='option'>D) 1.35<span class='asterisk'>*</span></div><div class='solution'>Since HNO<sub>3</sub> is a strong acid, assume the concentration of HNO<sub>3</sub> is the hydrogen ion concentration.<br>pH = -log([H<sup>+</sup>])<br>pH = -log(0.0449 M)<br>pH = 1.35</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">33</span>) Determine the pH of a 0.0000449 M LiOH&nbsp; solution.</div><div class='option'>A) 4.35</div><div class='option'>B) 5.65</div><div class='option'>C) 9.65<span class='asterisk'>*</span></div><div class='option'>D) 2.23x10<sup>-10</sup></div><div class='solution'>pOH = -log[OH<sup>-</sup>]<br>pOH = -log[0.0000449]<br>pOH = 4.35<br>pH = 14 - pOH<br>pH = 14 - 4.35<br>pH = &nbsp;9.65</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">34</span>) Which of the following chemicals are amphoteric?</div><div class='option'>A) NO<sub>3</sub><sup>-</sup></div><div class='option'>B) NH<sub>4</sub><sup>+</sup></div><div class='option'>C) Ca(OH)<sub>2</sub></div><div class='option'>D) HPO<sub>4</sub><sup>2-</sup><span class='asterisk'>*</span></div><div class='solution'>Amphoteric (amph- like amphibian, means both) means that it can act as either an acid or a base.&nbsp; What you should be looking for is a chemical with an acidic hydrogen (typically it will have the hydrogen listed first or a carboxylic acid group -COOH), that can also accept an additional hydrogen (e.g. water or negatively charged).&nbsp; Thus HPO<sub>4</sub><sup>2-</sup> can be classified as amphoteric.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">35</span>) Which of the following is the strongest acid?</div><div class='option'>A) C<sub>6</sub>H<sub>5</sub>O<sub>7</sub><sup>3-</sup></div><div class='option'>B) H<sub>3</sub>C<sub>6</sub>H<sub>5</sub>O<sub>7</sub><span class='asterisk'>*</span></div><div class='option'>C) HC<sub>6</sub>H<sub>5</sub>O<sub>7</sub><sup>2-</sup></div><div class='option'>D) H<sub>2</sub>C<sub>6</sub>H<sub>5</sub>O<sub>7</sub><sup>-</sup></div><div class='solution'>Oxyacids become stronger acids the more oxygens they have.&nbsp; Also, the more positively charged an acid is (least negatively charged), the stronger the acid will be.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">36</span>) Determine the pOH of a 0.000450 M NaOH solution.</div><div class='option'>A) 2.22x10<sup>-11</sup></div><div class='option'>B) 3.68</div><div class='option'>C) 3.35<span class='asterisk'>*</span></div><div class='option'>D) 10.7</div><div class='solution'>Since NaOH is a strong base, assume the concentration of NaOH is the concentration of OH<sup>-</sup>.<br>pOH = -log[OH<sup>-</sup>]<br>pOH = -log(0.000450)<br>pOH = 3.35</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">37</span>) If a solution has a hydroxide ion concentration of 1.98x10<sup>-6</sup> M, then what is the pH of the solution at 25°C?</div><div class='option'>A) 5.70</div><div class='option'>B) 5.05x10<sup>-9</sup></div><div class='option'>C) -5.82</div><div class='option'>D) 8.30<span class='asterisk'>*</span></div><div class='solution'>pOH = -log[OH<sup>-</sup>]<br>pOH = -log(1.98x10<sup>-6</sup>)<br>pOH = 5.70<br>pH = 14 - pOH<br>pH = 14 - 5.70<br>pH = 8.30</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">38</span>) Calculate the concentration of H<sub>3</sub>O<sup>+</sup> (H<sup>+</sup>) in a solution that has a concentration of OH<sup>-</sup>&nbsp;of 9.11x10<sup>-5</sup> M at 25°C.</div><div class='option'>A) 1.10x10<sup>-10</sup> M<span class='asterisk'>*</span></div><div class='option'>B) 1.32x10<sup>-10</sup> M</div><div class='option'>C) 1.12x10<sup>-20</sup> M</div><div class='option'>D) 9.88x10<sup>-11</sup> M</div><div class='solution'>[H<sup>+</sup>][OH<sup>-</sup>] = 10<sup>-14</sup> at 25°C.&nbsp; <br>[H<sup>+</sup>] = 10<sup>-14</sup>/[OH<sup>-</sup>]<br>10<sup>-14</sup>/9.11x10<sup>-5</sup> = 1.10x10<sup>-10</sup> M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">39</span>) Determine the pH in a 0.198 M H<sub>3</sub>PO<sub>4</sub>&nbsp;solution. The K<sub>b</sub> of H<sub>2</sub>PO<sub>4</sub><sup>-</sup></span></span><span style="font-size: 10.5pt;"> is 1.33 × 10<sup>-12</sup></span><span style="font-size: 10.5pt;">.<br></span></div><div class='option'>A) 1.46<span class='asterisk'>*</span></div><div class='option'>B) 12.5</div><div class='option'>C) NaN00</div><div class='option'>D)  None of the above.</div><div class='solution'><span style="font-size: 10.5pt;">Since H<sub>3</sub>PO<sub>4</sub>&nbsp;is a weak acid, we need a RICE table, and acid dissociation constant equation.<br></span>
+<table style="border-collapse: collapse; width: 22.584%;" border="1">
+<tbody>
+<tr>
+<td style="width: 7.82114%;">R</td>
+<td style="width: 42.0386%;"><span style="font-size: 10.5pt;">H<sub>3</sub>PO<sub>4</sub> ⇄</span></td>
+<td style="width: 16.9458%;"><span style="font-size: 10.5pt;">H<sup>+</sup> +&nbsp;</span></td>
+<td style="width: 33.2398%;">H<sub>2</sub>PO<sub>4</sub><sup>-</sup></td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">I</td>
+<td style="width: 42.0386%;">0.198</td>
+<td style="width: 16.9458%;">0</td>
+<td style="width: 33.2398%;">0</td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">C</td>
+<td style="width: 42.0386%;">- x</td>
+<td style="width: 16.9458%;">+ x</td>
+<td style="width: 33.2398%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 7.82114%;">E</td>
+<td style="width: 42.0386%;">0.198 - x</td>
+<td style="width: 16.9458%;">x</td>
+<td style="width: 33.2398%;">x</td>
+</tr>
+</tbody>
+</table>
+<p><br>K<sub>a</sub> = 10<sup>-14</sup>/</span><span style="font-size: 10.5pt;">1.33 × 10<sup>-12</sup></span><span style="font-size: 10.5pt;"> = 0.00752<br></span><span style="font-size: 10.5pt;">0.00752</span><span style="font-size: 10.5pt;">&nbsp;= [H+][H<sub>2</sub>PO<sub>4</sub><sup>-</sup>]/[H<sub>3</sub>PO<sub>4</sub>]<br>0.00752 = x<sup>2</sup>/(0.198 - x), small x assumption is not valid because 0.198/(7.5 × 10<sup>-3</sup>) = 26.4<br>0.00752 = x<sup>2</sup>/0.198<br>(0.198 - x) x (0.00752) = x<sup>2<br></sup>0.00149 - 0.00752x = x<sup>2<br></sup>0 = x<sup>2</sup> + 0.00752x - 0.00149<br>x = 0.0350<br>pH = -log[H<sub>3</sub>O<sup>+</sup>]<br>pH = -log(0.0350)<br>pH = 1.46</span></p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">40</span>) (SLO 4.6) What is the [CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H] ratio necessary to make a buffer solution with a pH of 5.92?&nbsp;<br>K<sub>a</sub> = 1.8x10<sup>-5</sup> for CH<sub>3</sub>CO<sub>2</sub>H.</div><div class='option'>A) 8.3 : 1</div><div class='option'>B) 18 : 1</div><div class='option'>C) 0.067 : 1</div><div class='option'>D) 15 : 1<span class='asterisk'>*</span></div><div class='solution'>pH = -log(K<sub>a</sub>) + log(base/acid)<br>5.92 = -log(1.8x10<sup>-5</sup>) + log([CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H])<br>5.92 = -5.26 + log([CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H])<br>5.92 - -5.26 = log([CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H])<br>11.2 = log([CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H])<br>10<sup>11.2</sup>&nbsp; = [CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H]<br>[CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H] = 15 : 1<br></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">41</span>) (SLO 4.3) Identify the weakest acid.</div><div class='option'>A) HIO<sub>2</sub></div><div class='option'>B) HIO<sub>4</sub></div><div class='option'>C) HIO<span class='asterisk'>*</span></div><div class='option'>D) HIO<sub>3</sub></div><div class='solution'>The oxyacid with the fewest oxygens will be the weakest acid, because it's conjugate base will be the least stable due to resonance.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">42</span>) (SLO 4.4) Calculate the pOH of a solution that contains 5.03x10<sup>-3</sup>&nbsp;M H<sub>3</sub>O<sup>+</sup> at 25°C</div><div class='option'>A) 2.30</div><div class='option'>B) 11.7<span class='asterisk'>*</span></div><div class='option'>C) 3.00</div><div class='option'>D) 1.99x10<sup>-12</sup></div><div class='solution'>pH = -log[H<sup>+</sup>]<br>pH = -log(5.03x10<sup>-3</sup><br>pH = 2.30<br>pOH = 14 - 2.30<br>pOH = 11.7</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">43</span>) (SLO 4.5) Calculate the percent ionization of a monoprotic weak acid (HA) in a solution that is 0.364 M, if the acid dissociation constant (K<sub>a</sub>) is 7.29x10<sup>-7</sup>.&nbsp;<br>HA ➞ H<sup>+</sup> + A<sup>-</sup></div><div class='option'>A) 0.131 %</div><div class='option'>B) 0.142 %<span class='asterisk'>*</span></div><div class='option'>C) 0.00139 %</div><div class='option'>D) 0.0000729 %</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">44</span>) (SLO 4.7) How many milliliters of 0.0725 M NaOH are required to titrate 10 mL of 0.127 M HBr to the equivalence point.</div><div class='option'>A) 1.75 mL</div><div class='option'>B) 5.71 mL</div><div class='option'>C) 17.5 mL<span class='asterisk'>*</span></div><div class='option'>D) 21.0 mL</div><div class='solution'>10 mL x (1L/1000mL) x (0.127 mol/L) x (1 mol NaOH/1 mol HBr) x (1 L/0.0725 mol) x (1000 mL/1L) = 17.5 mL</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">45</span>) (SLO 4.1) Which of the following is a Arrhenius acid?</div><div class='option'>A) CH<sub>3</sub>CH<sub>2</sub>NH<sub>2</sub></div><div class='option'>B) Be(OH)<sub>2</sub></div><div class='option'>C) CH<sub>2</sub>CH<sub>2</sub></div><div class='option'>D) HCl<span class='asterisk'>*</span></div><div class='option'>E)  All of the above.</div><div class='solution'>You can tell HCl is a Arrhenius acid, by the H in the front of the formula.<br>CH<sub>3</sub>CH<sub>2</sub>NH<sub>2</sub> is a base.<br>CH<sub>2</sub>CH<sub>2</sub> does not have an acidic hydrogen (the C-H bonds won't break).<br>Be(OH)<sub>2</sub> is a base.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">46</span>) (SLO 4.2) Which of the following is a Brønsted–Lowry base?</div><div class='option'>A) Cl<sub>2</sub></div><div class='option'>B) LiOH<span class='asterisk'>*</span></div><div class='option'>C) CHCH</div><div class='option'>D) HClO<sub>2</sub></div><div class='option'>E)  None of the above.</div><div class='solution'>HClO<sub>2</sub> is an acid.<br>Cl<sub>2</sub> will not dissociate in water, and is not an acid or a base.<br>CHCH does not have an acidic hydrogen (the C-H bonds won't break), and is not an acid or a base.<br>LiOH is the only base.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">47</span>) How many moles of Pb<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub> can be dissolved in 2.00 L of solution. K<sub>sp</sub> (Pb<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub>) = 1.0x10<sup>-54</sup>.</div><div class='option'>A) 1.24x10<sup>-11</sup> moles<span class='asterisk'>*</span></div><div class='option'>B) 9.16x10<sup>-10</sup> moles</div><div class='option'>C) 1.55x10<sup>-11</sup> moles</div><div class='option'>D) 1.92x10<sup>-28</sup> moles</div><div class='solution'>K<sub>sp</sub> (Pb<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub>) = 1.0x10<sup>-54</sup> = (3x)<sup>3</sup>(2x)<sup>2</sup><br>1.0x10<sup>-54</sup> = 108x<sup>5</sup><br>x = 5√(1.0*10^-54/108) = 6.21x10<sup>-12</sup> M<br>6.21x10<sup>-12</sup> M x 2.00 L = 1.24x10<sup>-11</sup> moles</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">48</span>) If you are using an acid and it's conjugate base to prepare a buffer that will be effective at a pH of 5.00 at 25°C, which of the following K<sub>a</sub> values would be best for your acid?</div><div class='option'>A) 1.05x10<sup>-6</sup></div><div class='option'>B) 9.10x10<sup>-8</sup></div><div class='option'>C) 0.0000968</div><div class='option'>D) 9.15x10<sup>-6</sup><span class='asterisk'>*</span></div><div class='solution'>You want -log(K<sub>a</sub>) to be as close to your desired pH as possible, because then the buffer solution will have an equal amount of acid and conjugate base (the 1/2 equivalence point).<br>- log(9.15x10<sup>-6</sup>) = 5.04, which is the closest to the pH of 5.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">49</span>) What would be the pH of a solution formed by mixing 300 mL of 0.858 M HCN with 300 mL of 1.48 M NaCN?&nbsp; The K<sub>a</sub> for HCN is 6.2x10<sup>-10</sup>.</div><div class='option'>A) 8.39</div><div class='option'>B) 8.97</div><div class='option'>C) 9.21</div><div class='option'>D) 9.44<span class='asterisk'>*</span></div><div class='solution'>In this case, you're mixing a weak acid with it's weak conjugate base.<br>This will create a buffer solution, for which we will use the Henderson–Hasselbalch equation to solve for pH.<br>First we need the moles of the acid and the base.<br>[HCN] = 3 mL x (1 L/1000 mL) x (0.858 mol/1L) = 0.00257 mol<br>[NaCN] = 3 mL x (1 L/1000 mL) x (1.48 mol/1L) = 0.00444 mol*<br>pH = -log(K<sub>a</sub>) + log(base/acid) = -log(6.2x10<sup>-10</sup>) + log(0.00444/0.00257)<br>pH = 9.44<br>*since we were using the same volume, we could have just plugged in molarity (before mixing) as a short-cut, or we could have calculated millimoles by not dividing by 1000, as a different shortcut.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">50</span>) The molar solubility of ZnS is 1.6×10<sup>-12</sup> M in pure water.&nbsp; Calculate the K<sub>sp</sub> for ZnS.</div><div class='option'>A) 2.56x10<sup>-24</sup><span class='asterisk'>*</span></div><div class='option'>B) 5.12x10<sup>-24</sup></div><div class='option'>C) 1.02x10<sup>-23</sup></div><div class='option'>D) 1.60x10<sup>-12</sup></div><div class='solution'>K<sub>sp</sub> = (x)(x)<br>K<sub>sp</sub> = x<sup>2</sup><br>Substituting in 1.6×10<sup>-12</sup> for x<br>K<sub>sp</sub> = (1.6×10<sup>-12</sup>)<sup>2</sup><br>K<sub>sp</sub> = 2.56x10<sup>-24</sup></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">51</span>) You add 500 mL of a 0.12 M NaOH solution to 800 mL of a 0.155 M HNO<sub>3</sub> solution.&nbsp; What will be the pH of that solution?</div><div class='option'>A) 1.02</div><div class='option'>B) 1.31<span class='asterisk'>*</span></div><div class='option'>C) 1.34</div><div class='option'>D) 1.19</div><div class='solution'>Molarity of strong base:<br>500 mL x (1L/1000mL) x (0.12 mol/L) = 0.0600 mol<br>0.0600 mol / 1.30 L = 0.0462 M<br>Molarity of strong acid:<br>800 mL x (1L/1000mL) x (0.155 mol/L) = 0.124 mol<br>0.124 mol / 1.30 L = 0.0954 M<br><br>Since there is more strong acid than strong base, subtracting the molarity of the base from the molarity of the acid will tell us what the remaining molarity of strong acid will be.<br>0.0954 M&nbsp; HNO<sub>3</sub> - 0.0462 M NaOH = 0.0492 M HNO<sub>3</sub> remaining<br>pH = 1.31</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">52</span>) You add 400 mL of a 0.140 M HI solution to 400 mL of a 0.140 M C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub> solution (K<sub>b</sub> for C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub> is 3.8x10<sup>-10</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 9.42</div><div class='option'>B) 5.29</div><div class='option'>C) 4.58</div><div class='option'>D) 2.87<span class='asterisk'>*</span></div><div class='solution'>In this problem, there is an equal amount of strong acid, and weak base.&nbsp; This means the strong acid and strong base will both be completely consumed.&nbsp; That will leave the conjugate weak acid.<br>HI + C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub> ⇄ C<sub>6</sub>H<sub>5</sub>NH<sub>3</sub><sup>+</sup> + I<sup>-</sup>&nbsp;<br>moles of C<sub>6</sub>H<sub>5</sub>NH<sub>3</sub><sup>+</sup> = 400 mL x (1L/1000mL) x (0.14 mol/L) = 0.0560<br>[C<sub>6</sub>H<sub>5</sub>NH<sub>3</sub><sup>+</sup>] = 0.0560 / 0.800 L = 0.0700 M<br>
+<table style="border-collapse: collapse; width: 42.8015%;" border="1">
+<tbody>
+<tr>
+<td style="width: 20.0269%;">&nbsp;</td>
+<td style="width: 20.0269%;">C<sub>6</sub>H<sub>5</sub>NH<sub>3</sub><sup>+</sup> +</td>
+<td style="width: 20.0269%;">H<sub>2</sub>O ⇄</td>
+<td style="width: 20.0269%;">C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub></td>
+<td style="width: 20.0269%;">H<sub>3</sub>O<sup>+</sup></td>
+</tr>
+<tr>
+<td style="width: 20.0269%;">beg</td>
+<td style="width: 20.0269%;">0.0700&nbsp;</td>
+<td style="width: 20.0269%;">&nbsp;</td>
+<td style="width: 20.0269%;">&nbsp;</td>
+<td style="width: 20.0269%;">&nbsp;</td>
+</tr>
+<tr>
+<td style="width: 20.0269%;">change</td>
+<td style="width: 20.0269%;">- x</td>
+<td style="width: 20.0269%;">&nbsp;</td>
+<td style="width: 20.0269%;">+ x</td>
+<td style="width: 20.0269%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 20.0269%;">end</td>
+<td style="width: 20.0269%;">0.0700 -x</td>
+<td style="width: 20.0269%;">&nbsp;</td>
+<td style="width: 20.0269%;">x</td>
+<td style="width: 20.0269%;">x</td>
+</tr>
+</tbody>
+</table>
+<br>Ka = 10<sup>-14</sup>/ 3.8x10<sup>-10</sup> = 0.0000263<br>K<sub>a</sub> = 0.0000263&nbsp;= x<sup>2</sup>/(0.0700 -x)<br>Since 0.0700 / 0.0000263 = 2660, the small x assumption is valid<br>0.0000263 = x<sup>2</sup>/(0.0700)<br>(0.0700) x 0.0000263&nbsp;= x<sup>2<br></sup>√(1.84x10<sup>-6</sup>) = x&nbsp;&nbsp;<br>x = 0.00136<br>pH = 2.87</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">53</span>) You add 500 mL of a 0.110 M HCl solution to 800 mL of a 0.180 M NH<sub>3</sub> solution (K<sub>b</sub> for NH<sub>3</sub> is 1.8x10<sup>-5</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 4.54</div><div class='option'>B) 9.16</div><div class='option'>C) 9.46<span class='asterisk'>*</span></div><div class='option'>D) 9.66</div><div class='solution'>Mol strong acid:<br>500 mL x (1L/1000mL) x (0.11 mol/L) = 0.0550 mol HCl<br><br>Mol weak acid:<br>800 mL x (1L/1000mL) x (0.18 mol/L) = 0.144 mol NH<sub>3</sub><br><br>Since there are more moles of weak base than strong acid, the strong acid will be consumed and produce an equal number of moles of weak acid.&nbsp; The remaining moles of weak base is the difference between the starting moles of weak acid and strong base.<br><br>Mol weak acid remaining:<br>0.0890<br><br>Mol weak base produced:<br>0.0550 mol NH<sub>4</sub><sup>+</sup><br><br>Since we wind up with an amount of a weak acid and it's conjugate weak base this is a buffer solution, and the Henderson–Hasselbalch can be used to solve for pH.<br>K<sub>a</sub> = 10<sup>-14</sup>/(1.8x10<sup>-5</sup>) = 5.56x10<sup>-10</sup><br>pH = -log(5.56x10<sup>-10</sup>) + log(0.0550/0.0890)<br>pH = 9.46</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">54</span>) What would be the pH of a solution formed by mixing 800 mL of 1.48 M HCN with 800 mL of 0.243 M NaCN?&nbsp; The K<sub>b</sub> for CN<sup>-</sup> is 1.61x10<sup>-5</sup>.</div><div class='option'>A) 7.37</div><div class='option'>B) 9.99</div><div class='option'>C) 8.42<span class='asterisk'>*</span></div><div class='option'>D) 9.21</div><div class='solution'>In this case, you're mixing a weak acid with it's weak conjugate base.<br>This will create a buffer solution, for which we will use the Henderson–Hasselbalch equation to solve for pH.<br>First we need the moles of the acid and the base.<br>[HCN] = 8 mL x (1 L/1000 mL) x (1.48 mol/1L) = 0.0118 mol<br>[NaCN] = 8 mL x (1 L/1000 mL) x (0.243 mol/1L) = 0.00194 mol*<br>K<sub>a</sub> = 10<sup>-14</sup>/K<sub>b</sub> = 10^-14/(1.61x10<sup>-5</sup>)<br>pH = -log(K<sub>a</sub>) + log(base/acid) = -log(6.21x10<sup>-10</sup>) + log(0.00194/0.0118)<br>pH = 8.42<br>*since we were using the same volume, we could have just plugged in molarity (before mixing) as a short-cut, or we could have calculated millimoles by not dividing by 1000, as a different shortcut.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">55</span>) How many moles of AgBr can be dissolved in 3.00 L of solution. K<sub>sp</sub> (AgBr) = 7.7×10<sup>-13</sup>.</div><div class='option'>A) 1.32x10<sup>-6</sup> moles</div><div class='option'>B) 2.63x10<sup>-6</sup> moles<span class='asterisk'>*</span></div><div class='option'>C) 2.31x10<sup>-12</sup> moles</div><div class='option'>D) 8.77x10<sup>-7</sup> moles</div><div class='solution'>K<sub>sp</sub> (AgBr) = 7.7×10<sup>-13</sup> = (x)(x)<br>7.7×10<sup>-13</sup> = x<sup>2</sup><br>x = √(7.7×10<sup>-13</sup>) = 8.77x10<sup>-7</sup> M<br>8.77x10<sup>-7</sup> M x 3.00 L = 2.63x10<sup>-6</sup> moles</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">56</span>) If you have a 1.0 L buffer solution with 0.10 M acetic acid (K<sub>a</sub> 1.75x10<sup>-5</sup>) and 0.10 M sodium acetate, then what will be the pH after adding 0.0400 moles of solid HCl (assume no change in volume)?</div><div class='option'>A) 4.76</div><div class='option'>B) 5.12</div><div class='option'>C) 4.39<span class='asterisk'>*</span></div><div class='option'>D) 4.18</div><div class='solution'>Beginning moles:<br>1L x (0.10 mol acetic acid/L) = 0.10 mol acetic acid<br>1L x (0.10 mol sodium acetate/L) = 0.10 mol sodium acetate<br><br>Moles after adding 0.04 moles of HCl:<br>0.04 moles of HCl will react with 0.04 moles of acetate to produce 0.04 moles of acetic acid<br>0.10 mol acetic acid +0.04 mol = 0.140 mol acetic acid<br>0.10 mol sodium acetate -0.04 mol = 0.0600 mol acetic acid<br>pH = -log(1.75*10<sup>-5</sup>) + log(0.0600)/(0.140)<br>pH = 4.39</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">57</span>) How many moles of Pb(IO<sub>3</sub>)<sub>2</sub> can be dissolved in 3.00 L of solution. K<sub>sp</sub> (Pb(IO<sub>3</sub>)<sub>2</sub>) = 2.60x10<sup>-13</sup>.</div><div class='option'>A) 0.000121 moles<span class='asterisk'>*</span></div><div class='option'>B) 0.0000402 moles</div><div class='option'>C) 7.65x10<sup>-7</sup> moles</div><div class='option'>D) 0.000191 moles</div><div class='solution'>K<sub>sp</sub> (Pb(IO<sub>3</sub>)<sub>2</sub>) = 2.60x10<sup>-13</sup> = (x)(2x)<sup>2</sup><br>2.60x10<sup>-13</sup> = 4x<sup>3</sup><br>x = 3√(2.60x10<sup>-13</sup>/4) = 0.0000402 M<br>0.0000402 M x 3.00 L = 0.000121 moles</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">58</span>) You add 700 mL of a 0.170 M NaOH solution to 500 mL of a 0.100 M HNO<sub>2</sub> solution (K<sub>a</sub> for HNO<sub>2</sub> is 4.5x10<sup>-4</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 13.0</div><div class='option'>B) 2.98</div><div class='option'>C) 12.8<span class='asterisk'>*</span></div><div class='option'>D) 1.16</div><div class='solution'>Molarity strong base<br>700 mL x (1L/1000mL) x (0.17 mol/L) = 0.119 mol NaOH<br>0.119 mol NaOH / 1.20 L = 0.0992 M<br><br>Molarity weak acid<br>500 mL x (1L/1000mL) x (0.10 mol/L) = 0.0500 mol HNO<sub>2</sub><br>0.0500 mol HNO<sub>2</sub> / 1.20 L = 0.0417 M<br><br>Since there is more strong base than weak acid, the pH will be based on the remaining strong base.<br>Subtract the molarity of weak acid from the molarity of strong base to get the remaining strong base.<br>0.0992 M HBr - 0.0417 M CH<sub>3</sub>NH<sub>2</sub> = 0.0575 M NaOH remaining<br>pOH = -log(0.0575)<br>pOH 1.24<br>pH = 14 - pOH = 14 - 1.24 = 12.8</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">59</span>) You add 600 mL of a 0.120 M NaOH solution to 600 mL of a 0.120 M HClO solution (K<sub>a</sub> for HClO&nbsp;is 3.5x10<sup>-8</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 3.81</div><div class='option'>B) 10.5</div><div class='option'>C) 6.23</div><div class='option'>D) 10.1<span class='asterisk'>*</span></div><div class='solution'>600 x (1L/1000mL) x (0.12 mol/L) = 0.0720 mol NaOH<br>600 x (1L/1000mL) x (0.12 mol/L) = 0.0720 mol&nbsp; HClO<br><br>0.0720 mol of NaOH will react with 0.0720 mol of HClO to produce 0.0720 mol of ClO<sup>-</sup>.<br><br>0.0720 mol / 1.20 L = 0.0600 M<br>
+<table style="border-collapse: collapse; width: 100%;" border="1">
+<tbody>
+<tr>
+<td style="width: 18.5637%;">R</td>
+<td style="width: 18.5637%;">&nbsp;ClO<sup>-</sup> +</td>
+<td style="width: 18.5637%;">H<sub>2</sub>O ⇄</td>
+<td style="width: 18.5637%;">HClO +&nbsp;</td>
+<td style="width: 18.5696%;">OH<sup>-</sup></td>
+</tr>
+<tr>
+<td style="width: 18.5637%;">I</td>
+<td style="width: 18.5637%;">0.0600</td>
+<td style="width: 18.5637%;">&nbsp;</td>
+<td style="width: 18.5637%;">0</td>
+<td style="width: 18.5696%;">0</td>
+</tr>
+<tr>
+<td style="width: 18.5637%;">C</td>
+<td style="width: 18.5637%;">- x</td>
+<td style="width: 18.5637%;">&nbsp;</td>
+<td style="width: 18.5637%;">+ x</td>
+<td style="width: 18.5696%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 18.5637%;">E</td>
+<td style="width: 18.5637%;">0.0600 - x</td>
+<td style="width: 18.5637%;">&nbsp;</td>
+<td style="width: 18.5637%;">x</td>
+<td style="width: 18.5696%;">x</td>
+</tr>
+</tbody>
+</table>
+<br>K<sub>b</sub> = 10<sup>-14</sup>/3.5x10<sup>-8</sup> = 2.86x10<sup>-7</sup><br>K<sub>b</sub> = 2.86x10<sup>-7</sup> = x<sup>2</sup>/(0.0600 - x), the small x assumption is valid because 0.0600/2.86x10<sup>-7</sup> = 2.10x10<sup>5</sup><br>2.86x10<sup>-7</sup> = x<sup>2</sup>/(0.0600)<br>(0.0600) x 2.86x10<sup>-7</sup> = x<sup>2</sup><br>(0.0600) x 2.86x10<sup>-7</sup> = x<sup>2<br></sup>1.71x10<sup>-8</sup> = x<sup>2</sup><br>√(1.71x10<sup>-8</sup>) = x<br>0.000131 = x<br>pOH = -log(0.000131) = 3.88<br>pH = 14 - 3.88 = 10.1</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">60</span>) If 3.56x10<sup>-8</sup> moles of &nbsp;Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub> are placed in 2.00 L of solution. K<sub>sp</sub> (&nbsp;Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub>) = 6.00x10<sup>-39</sup>, will a precipitate form?</div><div class='option'>A) Yes, a precipitate will form<span class='asterisk'>*</span></div><div class='option'>B) No, a precipitate will not form</div><div class='solution'>3.56x10<sup>-8</sup> moles &nbsp;Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub> / 2 Liters = 1.78x10<sup>-8</sup> M &nbsp;Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub><br>Q<sub>sp</sub> = (3x)<sup>3</sup>(2x)<sup>2</sup> = 108x<sup>5</sup><br>Substituting in 1.78x10<sup>-8</sup> for x<br>Q<sub>sp</sub> = 108 x (1.78x10<sup>-8</sup>)<sup>5</sup> = 1.92x10<sup>-37</sup><br>Since Q<sub>sp</sub> &gt; K<sub>sp</sub>, a precipitate will form</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">61</span>) You add 600 mL of a 0.130 M NaOH solution to 800 mL of a 0.190 M HClO solution (K<sub>a</sub> for HClO&nbsp;is 3.5x10<sup>-8</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 8.73</div><div class='option'>B) 3.91</div><div class='option'>C) 7.48<span class='asterisk'>*</span></div><div class='option'>D) 7.75</div><div class='solution'>600 x (1L/1000mL) x (0.13 mol/L) = 0.0780 mol NaOH<br>800 x (1L/1000mL) x (0.19 mol/L) = 0.152 mol&nbsp; HClO<br><br>0.0780 mol of NaOH will react with 0.0780 mol of HClO to produce 0.0780 mol of ClO<sup>-</sup>.<br>The remaining&nbsp; HClO will be 0.152 mol - 0.0780 mol = 0.0740 mol HClO<br>pH = -log(K<sub>a</sub>) + log(base/acid)<br>pH = -log(3.5x10<sup>-8</sup>) + log(0.0780/0.0740)<br>pH = 7.48</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">62</span>) Determine the molar solubility of PbSO<sub>4</sub> in a solution containing 0.120 M Na<sub>2</sub>SO<sub>4</sub>. K<sub>sp</sub> (PbSO<sub>4</sub>) = 1.8 × 10<sup>-8</sup>.</div><div class='option'>A) -0.0528 M</div><div class='option'>B) 3.00x10<sup>-7</sup> M</div><div class='option'>C) 1.50x10<sup>-7</sup> M<span class='asterisk'>*</span></div><div class='option'>D)  None of the above.</div><div class='solution'><table style="border-collapse: collapse; width: 29.7514%;" border="1">
+<tbody>
+<tr>
+<td style="width: 6.54275%;">R</td>
+<td style="width: 24.1264%;">PbSO<sub>4</sub> (s) ⇄</td>
+<td style="width: 30.6691%;">Pb<sup>2+</sup> +</td>
+<td style="width: 38.4387%;">SO<sub>4</sub><sup>2-</sup></td>
+</tr>
+<tr>
+<td style="width: 6.54275%;">I</td>
+<td style="width: 24.1264%;">&nbsp;</td>
+<td style="width: 30.6691%;">0</td>
+<td style="width: 38.4387%;">0.12</td>
+</tr>
+<tr>
+<td style="width: 6.54275%;">C</td>
+<td style="width: 24.1264%;">&nbsp;</td>
+<td style="width: 30.6691%;">+ x</td>
+<td style="width: 38.4387%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 6.54275%;">E</td>
+<td style="width: 24.1264%;">&nbsp;</td>
+<td style="width: 30.6691%;">x</td>
+<td style="width: 38.4387%;">0.12 + x</td>
+</tr>
+</tbody>
+</table>
+<br>K<sub>sp</sub> (PbSO<sub>4</sub>) = 1.8 × 10<sup>-8</sup> = (x)(0.12 + x)<br>Since 0.12/(1.8 × 10<sup>-8</sup>) = 6.67x10<sup>6</sup>, the small x assumption is valid<br>1.8 × 10<sup>-8</sup> = 0.12x<br>x&nbsp;= (1.8 × 10<sup>-8</sup>)/0.12 = 1.50x10<sup>-7</sup></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">63</span>) You add 800 mL of a 0.170 M HI solution to 600 mL of a 0.120 M C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub> solution (K<sub>b</sub> for C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub> is 3.8x10<sup>-10</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 9.14</div><div class='option'>B) 9.42</div><div class='option'>C) 1.34<span class='asterisk'>*</span></div><div class='option'>D) 1.19</div><div class='solution'>Molarity strong acid<br>800 mL x (1L/1000mL) x (0.17 mol/L) = 0.136 mol HI<br>0.136 mol HI / 1.40 L = 0.0971 M<br><br>Molarity weak base<br>600 mL x (1L/1000mL) x (0.12 mol/L) = 0.0720 mol C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub><br>0.0720 mol C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub> / 1.40 L = 0.0514 M<br><br>Since there is more strong acid than weak base, the pH will be based on the remaining strong acid.<br>Subtract the molarity of weak base from the molarity of strong acid to get the remaining strong acid.<br>0.0971 M HI - 0.0514 M C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub> = 0.0457 M HI remaining<br>pH = -log(0.0457)<br>pH 1.34</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">64</span>) Determine the molar solubility of AgBr in a solution containing 0.130 M NaBr. K<sub>sp</sub> (AgBr) = 7.7 × 10<sup>-13</sup>.</div><div class='option'>A) -0.0565 M</div><div class='option'>B) 5.92x10<sup>-12</sup> M<span class='asterisk'>*</span></div><div class='option'>C) 1.18x10<sup>-11</sup> M</div><div class='option'>D)  None of the above.</div><div class='solution'><table style="border-collapse: collapse; width: 29.7514%;" border="1">
+<tbody>
+<tr>
+<td style="width: 6.54275%;">R</td>
+<td style="width: 24.1264%;">AgBr (s) ⇄</td>
+<td style="width: 30.6691%;">Ag<sup>+</sup> +</td>
+<td style="width: 38.4387%;">Br<sup>-</sup></td>
+</tr>
+<tr>
+<td style="width: 6.54275%;">I</td>
+<td style="width: 24.1264%;">&nbsp;</td>
+<td style="width: 30.6691%;">0</td>
+<td style="width: 38.4387%;">0.13</td>
+</tr>
+<tr>
+<td style="width: 6.54275%;">C</td>
+<td style="width: 24.1264%;">&nbsp;</td>
+<td style="width: 30.6691%;">+ x</td>
+<td style="width: 38.4387%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 6.54275%;">E</td>
+<td style="width: 24.1264%;">&nbsp;</td>
+<td style="width: 30.6691%;">x</td>
+<td style="width: 38.4387%;">0.13 + x&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<br>&nbsp;K<sub>sp</sub> (AgBr ) = 7.7 × 10<sup>-13</sup> = (x)(0.13+ x)<br>Since 0.13/(7.7 × 10<sup>-13</sup>) = 1.69x10<sup>11</sup>, the small x assumption is valid<br>7.7 × 10<sup>-13</sup> = 0.13x<br>x = (7.7 × 10<sup>-13</sup>)/0.13 = 5.92x10<sup>-12</sup> M</div><p></p></div><div id="scantrondiv" class="scantrondiv">Practice Test Questions (Ch 15-17)<br><canvas id="scantron" class="scantron"></div></body></html>

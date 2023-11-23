@@ -18,7 +18,7 @@
 
       .tooltiptext {
         visibility: hidden;
-        width: 120px;
+        width: 210px;
         background-color: black;
         color: #fff;
         text-align: center;
@@ -46,9 +46,8 @@
       }
 	  
 	  div.stem {
-	    padding-left: 15px ;
-        text-indent: -15px ;
-		display: block;
+	    padding-left: 5px;
+		display: inline;
       }
 
       div.option {
@@ -69,42 +68,186 @@
         display: inline-block;
 		margin: 8px 0px 8px -22px;
       }
-
+	  .solution {
+	    margin-left: 40px;
+	  }
       @media print {
-        .noPrint {
+        .noPrint, .x{
           display: none;
         }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
       }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
 
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
     </style>
     <link rel="stylesheet" href="/css/custom.css">
     <script>
+	
+					var questionsObjectText = {"1":[3],"2":[3],"3":[1],"4":[2],"5":[3],"6":[3],"7":[2],"8":[0],"9":[2],"10":[0],"11":[0],"12":[3],"13":[3],"14":[3],"15":[2],"16":[2],"17":[2],"18":[3],"19":[1],"20":[3],"21":[0],"22":[2],"23":[1],"24":[3],"25":[3],"26":[0],"27":[3],"28":[3],"29":[0],"30":[1],"31":[3],"32":[0],"33":[0],"34":[2],"35":[3],"36":[1],"37":[2],"38":[2]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
     function loading() {
       const mts = document.getElementsByClassName('math-tex');
       for(let mt of mts) {
         const questionOrOption = mt.parentElement;
         questionOrOption.classList.add("svg");
       }
-    }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
     </script>
   </head>
 
-  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers.</span>
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
     <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
     <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
     <script>
-      let toggle = true;
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
 
-      function toggleAnswers() {
-        let asterisks = document.getElementsByClassName('asterisk');
-        for (let astrisk of asterisks) {
-          if (toggle) {
-            astrisk.style.display = 'none';
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
           } else {
-            astrisk.style.display = null;
+            aClass.style.display = 'revert';
           }
         }
-        toggle = !toggle;
+        toggle[thisClass] = !toggle[thisClass];
       }
 
       let keysPressed = {};
@@ -112,19 +255,29 @@
         keysPressed[event.key] = true;
 
         if (keysPressed['Control'] && event.key == 'z') {
-          toggleAnswers();
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
         }
       });
 
       document.addEventListener('keyup', (event) => {
         delete keysPressed[event.key];
       });
-
     </script>
     <h1></h1>
 	<h4></h4>
-	<h6>May 30, 2023</h6>
+	<h6>Oct 24, 2023</h6>
     <div class='rightjustify'>name: ______________________________________</div>
     <p></p>
-<div class='question'><div class='stem'>1) An experiment to determine the density of a sugar solution garners the following results: 1.11 g/mL, 1.13 g/mL, 1.12 g/mL, 1.13 g/mL. If the actual value for the density of the sugar solution is 1.13 g/mL, which statement below best describes her results?</div><div class='option'>A) The results are accurate and precise.<span class='asterisk'>*</span></div><div class='option'>B) The results are neither accurate nor precise.</div><div class='option'>C) The results are accurate but not precise.</div><div class='option'>D) The results are precise but not accurate..</div><p></p></div><div class='question'><div class='stem'>2) Read the water level (shown in mL) with the correct number of significant figures.&nbsp;<br><br><img title="graduated cylindar 3.jpg" src="../images/1.jpeg" alt="" width="151" height="262"></div><div class='option'>A) 2.6 mL</div><div class='option'>B) 2.65 mL<span class='asterisk'>*</span></div><div class='option'>C) 2.7 mL</div><div class='option'>D) 2.75 mL</div><p></p></div><div class='question'><div class='stem'>3) How many significant figures are in the measurement, 0.00018 kg?</div><div class='option'>A) 6</div><div class='option'>B) 5</div><div class='option'>C) 2<span class='asterisk'>*</span></div><div class='option'>D) 4</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><div class='stem'>4) Multiply the following numbers and indicate the answer with correct number of significant figures.<br>
-<div style="text-align: center;">180.19 x 20.</div></div><div class='option'>A) 3600<span class='asterisk'>*</span></div><div class='option'>B) 3603.8</div><div class='option'>C) 3604</div><div class='option'>D) 3600 (3 sf)</div><p></p></div><div class='question'><div class='stem'>5) Determine the density of an object that has a mass of 228.0 g and displaces 9.90 mL of water when placed in a graduated cylinder.</div><div class='option'>A) 218 g/mL</div><div class='option'>B) 23.0 g/mL<span class='asterisk'>*</span></div><div class='option'>C) 2260 g/mL</div><div class='option'>D) 0.0434 g/mL</div><p></p></div><div class='question'><div class='stem'>6) Which of the following mixtures will <strong>NOT</strong> be homogeneous?</div><div class='option'>A) sugar and coffee</div><div class='option'>B) mud and water<span class='asterisk'>*</span></div><div class='option'>C) vinegar and water</div><div class='option'>D) salt and water</div><p></p></div><div class='question'><div class='stem'>7) What element is defined by the following information?&nbsp;<br>p<sup>+</sup> = 11 n° = 12 e<sup>-</sup> = 11</div><div class='option'>A) Phosphorous</div><div class='option'>B) Aluminum</div><div class='option'>C) Magnesium</div><div class='option'>D) Sodium<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>8) Calculate the atomic mass of element "X," if it has 2 naturally occurring isotopes with the&nbsp;<br>following masses and natural abundances.<br>X-106 106.23301 amu 76.440%<br>X-109 109.37930 amu 23.560%</div><div class='option'>A) 106.71 amu</div><div class='option'>B) 108.64 amu</div><div class='option'>C) 160.92 amu</div><div class='option'>D) 106.97 amu<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>9) The atomic number (Z) is the number of ________ found in the nucleus of an atom.</div><div class='option'>A) Protons<span class='asterisk'>*</span></div><div class='option'>B) Neutrons</div><div class='option'>C) Electrons</div><div class='option'>D) Protons and neutrons</div><p></p></div><div class='question'><div class='stem'>10) What is the name of the Ca isotope that has 22 neutrons?</div><div class='option'>A) Calcium-22</div><div class='option'>B) Calcium-40.</div><div class='option'>C) Calcium-20.</div><div class='option'>D) Calcium-42<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>11) An element has an atomic mass of 105.98 amu. The X-110. isotope (109.85 amu) is 35.13%. What is the mass, in amu, of the other isotope?</div><div class='option'>A) 103.89 amu<span class='asterisk'>*</span></div><div class='option'>B) 106 amu</div><div class='option'>C) 102.12 amu</div><div class='option'>D) 103 amu</div><p></p></div><div class='question'><div class='stem'>12) In the following isotope symbol, the letters for the element have been replaced with an X.&nbsp; Determine the number of protons, neutrons and electrons?<br><span class="math-tex">\( ^{13}_{6}X^{2-} \)</span></div><div class='option'>A) protons: 6; neutrons: 7; electrons: 8<span class='asterisk'>*</span></div><div class='option'>B) protons: 6; neutrons: 13; electrons: 8</div><div class='option'>C) protons: 7; neutrons: 6; electrons: 4</div><div class='option'>D) protons: 8; neutrons: 7; electrons: 6</div><p></p></div><div class='question'><div class='stem'>13) Which of the following statements are true?</div><div class='option'>A) Protons and neutrons have approximately the same mass (about 1 amu), whereas electrons have almost no mass.<span class='asterisk'>*</span></div><div class='option'>B) Protons and electrons have approximately the same mass (about 1 amu), whereas neutrons have almost no mass.</div><div class='option'>C) Electrons and neutrons have approximately the same mass (about 1 amu), whereas protons have almost no mass.</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>14) An element has three stable isotopes with masses of 27.934 amu, 30.089 amu, and 32.122 amu. The heavier two isotopes have an abundance of 16.5% (middle mass) and 2.11% (largest mass), respectively. What is the average atomic mass of the element?</div><div class='option'>A) 31.7 amu</div><div class='option'>B) 28.7 amu</div><div class='option'>C) 30.0 amu</div><div class='option'>D) 28.4 amu<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>15) When a neutral atom loses an electron it becomes a(n) ____________, with a _____________ charge.</div><div class='option'>A) anion, negative</div><div class='option'>B) anion, positive</div><div class='option'>C) cation, positive<span class='asterisk'>*</span></div><div class='option'>D) cation, negative</div><p></p></div></body></html>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) What is the name of the following polyatomic ion?<br><span style="font-size: 10.5pt;">NO</span><sub>2</sub><sup>-</sup></div><div class='option'>A) nitroxide</div><div class='option'>B) nitrogen dioxide</div><div class='option'>C) nitrate</div><div class='option'>D) nitrite<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) Determine the name for CaCl<sub>2</sub><strong>·</strong>2H<sub>2</sub>O</span></div><div class='option'>A) Calcium (II) chloride dihydrate</div><div class='option'>B) Calcium chloride diaquate</div><div class='option'>C) Calcium chloride bihydrate</div><div class='option'>D) Calcium chloride dihydrate<span class='asterisk'>*</span></div><div class='solution'>CaCl<sub>2</sub><strong>·</strong>2H<sub>2</sub>O is an ionic compound and a hydrate.&nbsp; To name the ionic compound portion give the name of the cation followed by the name of the anion.&nbsp; In this case that would be calcium chloride. it will receive a Roman numeral indicating its charge. The hydrate portion of the formula is named based on the number of water molecules.&nbsp; Since this hydrate has 2 water molecules in its formula the prefix 'di-' is used before the word 'hydrate'.&nbsp; Thus the correct name is calcium chloride dihydrate.</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) Which of the following would have the highest lattice energy?</div><div class='option'>A) Na<sub>2</sub>O</div><div class='option'>B) MgO<span class='asterisk'>*</span></div><div class='option'>C) Li<sub>2</sub>O</div><div class='option'>D) MgCl<sub>2</sub></div><div class='solution'>There are two parts that are involved in lattice energy.&nbsp; One is the charge on the ions (this is the bigger priority), and the other is the distance between the ions.&nbsp; This is only testing on knowing that the larger the charge on the ions, the larger the lattice energy.&nbsp; Since Mg has the highest charge, MgO will have the highest lattice energy.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) The statement "samples of a compound will always contain the same proportion of elements by mass" belongs to:</div><div class='option'>A) Dalton's Atomic Theory</div><div class='option'>B) The Law of Multiple Proportions</div><div class='option'>C) The Law of Definite Proportions<span class='asterisk'>*</span></div><div class='option'>D) The Law of Conservation of Mass</div><div class='solution'><p>Dalton's Atomic Theory: Matter is composed of small indestructible particles.</p>
+<p>The Law of Conservation of Mass: In a chemical reaction, matter is neither created nor destroyed.</p>
+<p>The Law of Multiple Proportions: If two elements form more than one compound, the ratios of the masses of the second element that combine with a fixed mass of the first element will always be ratios of small whole numbers.</p>
+<p>The Law of Definite Proportions: Samples of a compound will always contain the same proportion of elements by mass.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) What is the name of the following polyatomic ion?<br><span style="font-size: 10.5pt;">SO</span><sub>4</sub><sup>2-</sup></div><div class='option'>A) sulfite</div><div class='option'>B) sulfoxide</div><div class='option'>C) sulfide</div><div class='option'>D) sulfate<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) What is the empirical formula for a sulfur oxide (compound composed of sulfur and oxygen) that is 80.0% sulfur by mass?</div><div class='option'>A) S<sub>3</sub>O</div><div class='option'>B) SO<sub>2</sub></div><div class='option'>C) SO</div><div class='option'>D) S<sub>2</sub>O<span class='asterisk'>*</span></div><div class='solution'>Since the sulfur oxide compound is is 80.0% sulfur by mass, it will be 100% - 80.0% = 20.0 % oxygen by mass.<br><br>Assuming a 100 g sample gives us:&nbsp; 80.0 g sulfur and 20.0 g oxygen.<br><br>Next convert those grams to moles.<br>80.0 g S x <span class="math-tex">\( \frac{1 mol S}{32.06 g S} \)</span> = 2.50 mol S<br>20.0 g O x <span class="math-tex">\( \frac{1 mol O}{16.00 g O} \)</span> = 1.25 mol O<br><br>Then divide by the lower of the two mol amounts, and get the lowest whole number ratio.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Which of the following is the correct Lewis structure for S<sup>+</sup>?</div><div class='option'>A) <img title="s6.jpg" src="../images/24.jpeg" alt="" width="49" height="50" data-mce-fragment="1"></div><div class='option'>B) <img title="s4.jpg" src="../images/34.jpeg" alt="" width="50" height="50"></div><div class='option'>C) <img title="s5.jpg" src="../images/39.jpeg" alt="" width="47" height="50"><span class='asterisk'>*</span></div><div class='option'>D) <img title="s3.jpg" src="../images/29.jpeg" alt="" width="43" height="50"></div><div class='solution'>Since S<sup>+</sup> has a +1 charge, it will have one less electron than the neutral S. &nbsp;S is in the 6A period, so the Lewis structure should have 6 - 1 = 5 electrons.&nbsp; Thus the correct Lewis structure is <img title="s5.jpg" src="../images/39.jpeg" alt="" width="47" height="50">.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) What is the name of the compound Be(NO<sub>2</sub>)<sub>2</sub>?</div><div class='option'>A) Beryllium nitrite<span class='asterisk'>*</span></div><div class='option'>B) Beryllium nitride</div><div class='option'>C) Beryllium dinitrite</div><div class='option'>D) Beryllium nitroxide</div><div class='solution'>Be(NO<sub>2</sub>)<sub>2</sub> is an ionic compound because it contains a polyatomic ion (NO<sub>2</sub><sup>-</sup>).&nbsp; Thus to name Be(NO<sub>2</sub>)<sub>2</sub>, you need to say the name of the fixed charge metal followed by the name of the polyatomic anion.&nbsp; Therefore the correct name is Beryllium nitrite.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) What is the name of the <span style="font-size: 10.5pt;">ClO</span><sub>4</sub><sup>-</sup> ion?</div><div class='option'>A) chlorite</div><div class='option'>B) hypochlorite</div><div class='option'>C) perchlorate<span class='asterisk'>*</span></div><div class='option'>D) chlorate</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) What is the formula of the dihydrogen phosphate ion?<br>H<sub>2</sub>PO<sub>4</sub><sup>-</sup></span></div><div class='option'>A) H<sub>2</sub>PO<sub>4</sub><sup>-</sup></span><span class='asterisk'>*</span></div><div class='option'>B) HPO<sub>4</sub><sup>-</sup></span></div><div class='option'>C) HPO<sub>3</sub><sup>-</sup></span></div><div class='option'>D) H<sub>2</sub>PO<sub>3</sub><sup>-</sup></span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) Give the name for CrO<sub>3</sub>.</div><div class='option'>A) Chromium (VI) oxide<span class='asterisk'>*</span></div><div class='option'>B) Chromium (IV) oxide</div><div class='option'>C) Chromium oxide</div><div class='option'>D) Chromium trioxide</div><div class='solution'>Since Cr is a metal and O is a nonmetal, this is an ionic compound.&nbsp; Since Cr is a variable charge metal we need to calculate the charge on Cr and put a roman numeral in the name indicating the charge.&nbsp; three O will carry a total negative charge of -6, which is 3 x -2.&nbsp; Therefore, the total positive charge must be +6, and that positive charge is carried by one CrO.&nbsp; This means that each Cr must carry a +6 charge.&nbsp; The roman numeral is placed after the name of the metal, and the anion receives an -ide ending, so the correct name is Chromium (VI) oxide.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) Which of the following is the correct formula for the compound sodium sulfide?</div><div class='option'>A) NaS</div><div class='option'>B) NaS<sub>2</sub></div><div class='option'>C) So<sub>2</sub>S</div><div class='option'>D) Na<sub>2</sub>S<span class='asterisk'>*</span></div><div class='solution'>Sodium is a fixed charge metal and sulfide is a nonmetal cation, so this will be an ionic compound, and the charges can be know from the periodic table. &nbsp;Sodium will carry a +1 charge because it is in the 1A group.&nbsp; Sulfide will carry a -2<br>charge because sulfur is in the 6A group.&nbsp; The lowest common multiple of 1 and 2 is 2.&nbsp; Therefore we will need 2 sodium ions and 1 sulfide ion.&nbsp; That gives us a formula of Na<sub>2</sub>S.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) Calculate the molar mass for Sn(ClO<sub>4</sub>)<sub>4</sub>.</div><div class='option'>A) 324.5 g/mol</div><div class='option'>B) 872.6 g/mol</div><div class='option'>C) 218.2 g/mol</div><div class='option'>D) 516.5 g/mol<span class='asterisk'>*</span></div><div class='solution'>To calculate the molar mass for Sn(ClO<sub>4</sub>)<sub>4</sub>, take the number of each element from the periodic table and multiply it by the &nbsp;molar mass of the element, then sum all the molar masses from each element.<br>Sn: 118.71 g/mol x 1 = 118.71 g/mol<br>Cl: 35.45 g/mol x 4 = 141.8 g/mol<br>O: 16.00 g/mol x 20 = 300 g/mol<br>Total: 516.5 g/mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) Give the name for S<sub>2</sub>Cl<sub>2</sub>.</div><div class='option'>A) Sulfur (II) dichloride</div><div class='option'>B) Sulfur chloride</div><div class='option'>C) Sulfur dichloride</div><div class='option'>D) Disulfur dichloride<span class='asterisk'>*</span></div><div class='solution'>Both S and Cl are nonmetals, so we will need to put a Greek prefix before the name of each element, then give the second element an -ide ending.&nbsp; However, mono- is dropped from the beginning in cases where there is only 1 of the first element in the compound.&nbsp; Since there are 2 S and 2 Cl, the name is Disulfur dichloride.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) Calculate the molar mass for C<sub>8</sub>H<sub>16</sub>O.</div><div class='option'>A) 29.02 g/mol</div><div class='option'>B) 113.1 g/mol</div><div class='option'>C) 128.2 g/mol<span class='asterisk'>*</span></div><div class='option'>D) 112.2 g/mol</div><div class='solution'>To calculate the molar mass for C<sub>8</sub>H<sub>20</sub>O, take the number of each element from the periodic table and multiply it by the&nbsp; molar mass of the element, then sum all the molar masses from each element.<br>C: 12.01 g/mol x 8 = 96.08 g/mol<br>H: 1.008 g/mol x 20 = 16.13 g/mol<br>O: 16.00 g/mol x 1 = 16.00 g/mol<br>Total: 128.2 g/mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) What is the empirical formula for C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>?</div><div class='option'>A) C<sub>2</sub>H<sub>4</sub>O<sub>2</sub></div><div class='option'>B) C<sub>6</sub>H<sub>12</sub>O<sub>6</sub></div><div class='option'>C) CH<sub>2</sub>O<span class='asterisk'>*</span></div><div class='option'>D) C<sub>3</sub>H<sub>6</sub>O<sub>3</sub></div><div class='solution'>An empirical formula represents the simplest ratio of elements present in a compound. It shows the relative number of atoms of each element in a compound without specifying the actual number of atoms.&nbsp; To get the empirical formula you need to divide the subscripts in the equation (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>) by their greatest common divisor.&nbsp; In this case 2 and 6 are divisible by 6, which gives CH<sub>2</sub>O as the empirical formula.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) What is the name of the acid H<sub>3</sub>PO<sub>4</sub>?</div><div class='option'>A) Hydrophosphorous acid</div><div class='option'>B) Phosphorous acid</div><div class='option'>C) Phosphoric acid<span class='asterisk'>*</span></div><div class='option'>D) Hydrophosphoric acid</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) An ionic bond is best described as</div><div class='option'>A) A bond formed when electrons are shared between two atoms</div><div class='option'>B) A bond between two metals</div><div class='option'>C) A bond between two non-metals</div><div class='option'>D) A bond formed when electrons are transferred from one atom to another<span class='asterisk'>*</span></div><div class='solution'>A covalent bond is formed when two atoms share electrons in order to achieve a stable electron configuration. In a covalent bond, the atoms involved have similar electronegativity, meaning they have similar tendencies to attract electrons. This sharing of electrons allows both atoms to fill their outermost energy levels and achieve greater stability.<br><br>An ionic bond is formed when electrons are transferred from one atom to another, resulting in the formation of ions. In an ionic bond, one atom donates electrons to another atom, resulting in the formation of a positively charged ion (cation) and a negatively charged ion (anion). The attraction between these opposite charges holds the ions together and forms an ionic bond.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) Which of the following is the correct Lewis structure for P ?</div><div class='option'>A) <img title="p3.jpg" src="../images/28.jpeg" alt="" width="51" height="50"></div><div class='option'>B) <img title="p5.jpg" src="../images/23.jpeg" alt="" width="49" height="50"><span class='asterisk'>*</span></div><div class='option'>C) <img title="p6.jpg" src="../images/38.jpeg" alt="" width="49" height="50"></div><div class='option'>D) <img title="p4.jpg" src="../images/33.jpeg" alt="" width="46" height="50"></div><div class='solution'>Since P is in the 5A group, it should have 5 valence electrons in its Lewis structure.&nbsp; Thus&nbsp; <img title="p5.jpg" src="../images/23.jpeg" alt="" width="49" height="50"> is the answer.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">20</span>) The statement "if two elements form more than one compound the ratios of the masses of the second element that combine with a fixed mass of the first element will always be ratios of small whole numbers" belongs to:</div><div class='option'>A) Dalton's Atomic Theory</div><div class='option'>B) The Law of Definite Proportions</div><div class='option'>C) The Law of Conservation of Mass</div><div class='option'>D) The Law of Multiple Proportions<span class='asterisk'>*</span></div><div class='solution'><p>Dalton's Atomic Theory: Matter is composed of small indestructible particles.</p>
+<p>The Law of Conservation of Mass: In a chemical reaction, matter is neither created nor destroyed.</p>
+<p>The Law of Multiple Proportions: If two elements form more than one compound, the ratios of the masses of the second element that combine with a fixed mass of the first element will always be ratios of small whole numbers.</p>
+<p>The Law of Definite Proportions: Samples of a compound will always contain the same proportion of elements by mass.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">21</span>) A covalent bond is best described as</div><div class='option'>A) A bond formed when electrons are shared between two atoms<span class='asterisk'>*</span></div><div class='option'>B) A bond between a metal and a polyatomic ion</div><div class='option'>C) A bond formed when electrons are transferred from one atom to another</div><div class='option'>D) A bond between a metal and a non-metal</div><div class='solution'>A covalent bond is formed when two atoms share electrons in order to achieve a stable electron configuration. In a covalent bond, the atoms involved have similar electronegativity, meaning they have similar tendencies to attract electrons. This sharing of electrons allows both atoms to fill their outermost energy levels and achieve greater stability.<br><br>An ionic bond is formed when electrons are transferred from one atom to another, resulting in the formation of ions. In an ionic bond, one atom donates electrons to another atom, resulting in the formation of a positively charged ion (cation) and a negatively charged ion (anion). The attraction between these opposite charges holds the ions together and forms an ionic bond.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">22</span>) What is the name of the acid H<sub>3</sub>PO<sub>4</sub>?</div><div class='option'>A) Hydrophosphoric acid</div><div class='option'>B) Hydrophosphorous acid</div><div class='option'>C) Phosphoric acid<span class='asterisk'>*</span></div><div class='option'>D) Phosphorous acid</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">23</span>) What is the name of the following polyatomic ion?<br><span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">SO</span><sub>3</sub><sup>2-</sup></div><div class='option'>A) sulfide</div><div class='option'>B) sulfite<span class='asterisk'>*</span></div><div class='option'>C) sulfoxide</div><div class='option'>D) sulfate</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">24</span>) Calculate the formula mass for C<sub>3</sub>H<sub>6</sub>O.</div><div class='option'>A) 42.08 amu</div><div class='option'>B) 29.02 amu</div><div class='option'>C) 53.04 amu</div><div class='option'>D) 58.08 amu<span class='asterisk'>*</span></div><div class='solution'>To calculate the formula mass for C<sub>3</sub>H<sub>6</sub>O, take the number of each element from the periodic table and multiply it by the&nbsp; formula mass of the element, then sum all the formula masses from each element.<br>C: 12.01 amu x 3 = 36.03 amu<br>H: 1.008 amu x 6 = 6.048 amu<br>O: 16.00 amu x 1 = 16.00 amu<br>Total: 58.08 amu</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">25</span>) Which of the following is the correct Lewis structure for C<sup>+</sup>?</div><div class='option'>A) <img title="c5.jpg" src="../images/32.jpeg" alt="" width="46" height="50"></div><div class='option'>B) <img title="c4.jpg" src="../images/22.jpeg" alt="" width="43" height="50"></div><div class='option'>C) <img title="c6.jpg" src="../images/37.jpeg" alt="" width="49" height="50"></div><div class='option'>D) <img title="c3.jpg" src="../images/27.jpeg" alt="" width="43" height="50"><span class='asterisk'>*</span></div><div class='solution'>Since C<sup>+</sup> has a +1 charge, it will have one less electron than the neutral C. &nbsp;C is in the 4A period, so the Lewis structure should have 4 - 1 = 3 electrons.&nbsp; Thus the correct Lewis structure is <img title="c3.jpg" src="../images/27.jpeg" alt="" width="43" height="50">.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">26</span>) What is the formula for the following nitrite ion?</div><div class='option'>A) <span style="font-size: 10.5pt;">NO</span><sub>2</sub><sup>-</sup><span class='asterisk'>*</span></div><div class='option'>B) <span style="font-size: 10.5pt;">NO</span><sub>3</sub><sup>-</sup></div><div class='option'>C) <span style="font-size: 10.5pt;">NO</span><sub>4</sub><sup>-</sup></div><div class='option'>D) <span style="font-size: 10.5pt;">NO</span><sup>-</sup></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">27</span>) Which of the following would have the highest lattice energy?</div><div class='option'>A) Li<sub>2</sub>O</div><div class='option'>B) Na<sub>2</sub>O</div><div class='option'>C) MgCl<sub>2</sub></div><div class='option'>D) MgO<span class='asterisk'>*</span></div><div class='solution'>There are two parts that are involved in lattice energy.&nbsp; One is the charge on the ions (this is the bigger priority), and the other is the distance between the ions.&nbsp; This is only testing on knowing that the larger the charge on the ions, the larger the lattice energy.&nbsp; Since Mg has the highest charge, MgO will have the highest lattice energy.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">28</span>) What is the formula of the chlorate ion?</div><div class='option'>A) <span style="font-size: 10.5pt;">ClO</span><sub>2</sub><sup>-</sup></div><div class='option'>B) <span style="font-size: 10.5pt;">ClO</span><sub>4</sub><sup>-</sup></div><div class='option'>C) <span style="font-size: 10.5pt;">ClO</span><sup>-</sup></div><div class='option'>D) <span style="font-size: 10.5pt;">ClO</span><sub>3</sub><sup>-</sup><span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">29</span>) Calculate the formula mass for Sn(ClO<sub>3</sub>)<sub>2</sub>.</div><div class='option'>A) 285.6 amu<span class='asterisk'>*</span></div><div class='option'>B) 221.6 amu</div><div class='option'>C) 202.2 amu</div><div class='option'>D) 404.3 amu</div><div class='solution'>To calculate the formula mass for Sn(ClO<sub>3</sub>)<sub>2</sub>, take the number of each element from the periodic table and multiply it by the &nbsp;formula mass of the element, then sum all the formula masses from each element.<br>Sn: 118.71 amu x 1 = 118.71 amu<br>Cl: 35.45 amu x 2 = 70.90 amu<br>O: 16.00 amu x 6 = 100 amu<br>Total: 285.6 amu</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">30</span>) What is the formula for the compound ammonium hydrogen sulfate (or ammonium bisulfate)?</div><div class='option'>A) (NH<sub>4</sub>)<sub>2</sub>S</div><div class='option'>B) NH<sub>4</sub>HSO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>C) (NH<sub>4</sub>)<sub>2</sub>SO<sub>4</sub></div><div class='option'>D) NH<sub>4</sub>SO<sub>4</sub></div><div class='solution'>Ammonium is a polyatomic cation and hydrogen sulfate (or bisulfate) is a polyatomic ion.&nbsp; Since ammonium hydrogen sulfate (or ammonium bisulfate) contains a polyatomic ion, it is an ionic compound.&nbsp; Therefore, to get the formula you must balance the charges of the two ions. Ammonium will carry a +1, whereas&nbsp; hydrogen sulfate (or bisulfate) will carry a -1 charge.&nbsp; The lowest common multiple of 1 and 1 is 1, therefore there will need to be 1 ammonium ions and 1 hydrogen sulfate (or bisulfate) ions.&nbsp; That gives us a formula of: NH<sub>4</sub>HSO<sub>4</sub>.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">31</span>) Which of the following is the correct Lewis structure for S ?</div><div class='option'>A) <img title="s4.jpg" src="../images/34.jpeg" alt="" width="50" height="50"></div><div class='option'>B) <img title="s5.jpg" src="../images/39.jpeg" alt="" width="47" height="50"></div><div class='option'>C) <img title="s3.jpg" src="../images/29.jpeg" alt="" width="43" height="50"></div><div class='option'>D) <img title="s6.jpg" src="../images/24.jpeg" alt="" width="49" height="50"><span class='asterisk'>*</span></div><div class='solution'>Since S is in the 6A group, it should have 6 valence electrons in its Lewis structure.&nbsp; Thus&nbsp; <img title="s6.jpg" src="../images/24.jpeg" alt="" width="49" height="50"> is the answer.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">32</span>) Which of the following is the correct formula for the compound strontium oxide?</div><div class='option'>A) SrO<span class='asterisk'>*</span></div><div class='option'>B) SrO<sub>2</sub></div><div class='option'>C) StO</div><div class='option'>D) Sr<sub>2</sub>O<sub>2</sub></div><div class='solution'>Strontium is a fixed charge metal and oxide is a nonmetal cation, so this will be an ionic compound, and the charges can be know from the periodic table. &nbsp;Strontium will carry a +2 charge because it is in the 2A group.&nbsp; Oxide will carry a -2<br>charge because oxygen is in the 6A group.&nbsp; The lowest common multiple of 2 and 2 is 2.&nbsp; Therefore we will need 1 strontium ions and 1 oxide ion.&nbsp; That gives us a formula of SrO.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">33</span>) What is the empirical formula for Hg<sub>2</sub>(NO<sub>3</sub>)<sub>2</sub>?</div><div class='option'>A) HgNO<sub>3</sub><span class='asterisk'>*</span></div><div class='option'>B) Hg<sub>2</sub>(NO<sub>3</sub>)<sub>2</sub></div><div class='option'>C) Hg(NO)<sub>3</sub></div><div class='option'>D) Hg<sub>2</sub>NO<sub>6</sub></div><div class='solution'>An empirical formula represents the simplest ratio of elements present in a compound. It shows the relative number of atoms of each element in a compound without specifying the actual number of atoms.&nbsp; To get the empirical formula you need to divide the subscripts in the equation (Hg<sub>2</sub>(NO<sub>3</sub>)<sub>2</sub>) by their greatest common divisor.&nbsp; In this case 2 and 2‚ 6‚ 12 and 6 are divisible by 2, which gives HgNO<sub>3</sub> as the empirical formula.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">34</span>) Determine the name for NaC<sub>2</sub>H<sub>3</sub>O<sub>2</sub><strong>·</strong>3H<sub>2</sub>O</span></div><div class='option'>A) Sodium acetate dihydrogen monoxide</div><div class='option'>B) Sodium (I) acetate trihydrate</div><div class='option'>C) Sodium acetate trihydrate<span class='asterisk'>*</span></div><div class='option'>D) Sodium acetate tetrahydrate</div><div class='solution'>NaC<sub>2</sub>H<sub>3</sub>O<sub>2</sub><strong>·</strong>3H<sub>2</sub>O is an ionic compound and a hydrate.&nbsp; To name the ionic compound portion give the name of the cation followed by the name of the anion.&nbsp; In this case that would be sodium acetate.  The hydrate portion of the formula is named based on the number of water molecules.&nbsp; Since this hydrate has 3 water molecules in its formula the prefix 'tri-' is used before the word 'hydrate'.&nbsp; Thus the correct name is sodium acetate trihydrate.</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">35</span>) What is the formula of the dihydrogen phosphate ion?<br>H<sub>2</sub>PO<sub>4</sub><sup>-</sup></span></div><div class='option'>A) HPO<sub>4</sub><sup>-</sup></span></div><div class='option'>B) HPO<sub>3</sub><sup>-</sup></span></div><div class='option'>C) H<sub>2</sub>PO<sub>3</sub><sup>-</sup></span></div><div class='option'>D) H<sub>2</sub>PO<sub>4</sub><sup>-</sup></span><span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">36</span>) Give the name for S<sub>2</sub>Cl<sub>2</sub>.</div><div class='option'>A) Sulfur chloride</div><div class='option'>B) Disulfur dichloride<span class='asterisk'>*</span></div><div class='option'>C) Sulfur (II) dichloride</div><div class='option'>D) Sulfur dichloride</div><div class='solution'>Both S and Cl are nonmetals, so we will need to put a Greek prefix before the name of each element, then give the second element an -ide ending.&nbsp; However, mono- is dropped from the beginning in cases where there is only 1 of the first element in the compound.&nbsp; Since there are 2 S and 2 Cl, the name is Disulfur dichloride.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">37</span>) Give the formula for Iron (II) nitrate</div><div class='option'>A) FeNO<sub>3</sub></div><div class='option'>B) Fe<sub>2</sub>NO<sub>3</sub></div><div class='option'>C) Fe(NO<sub>3</sub>)<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>D) Fe(NO<sub>2</sub>)<sub>2</sub></div><div class='solution'><p>The Roman numeral (II) tells us that the charge on Iron is +2.&nbsp; From a list of polyatomic ions we can know that the charge on nitrate is -1.&nbsp; The lowest common multiple of 2 and 1 is 2, so the number of Iron ions will need to be 1, and the number of nitrate ions will need to be 2.&nbsp; This will give us a formula of Fe(NO<sub>3</sub>)<sub>2</sub>.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">38</span>) What is the empirical formula for a sulfur oxide (compound composed of sulfur and oxygen) that is 50.0% sulfur by mass?</div><div class='option'>A) S<sub>3</sub>O</div><div class='option'>B) SO<sub>3</sub></div><div class='option'>C) SO<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>D) S<sub>2</sub>O</div><div class='solution'>Since the sulfur oxide compound is is 50.0% sulfur by mass, it will be 100% - 50.0% = 50.0 % oxygen by mass.<br><br>Assuming a 100 g sample gives us:&nbsp; 50.0 g sulfur and 50.0 g oxygen.<br><br>Next convert those grams to moles.<br>50.0 g S x <span class="math-tex">\( \frac{1 mol S}{32.06 g S} \)</span> = 1.56 mol S<br>50.0 g O x <span class="math-tex">\( \frac{1 mol O}{16.00 g O} \)</span> = 3.13 mol O<br><br>Then divide by the lower of the two mol amounts, and get the lowest whole number ratio.</div><p></p></div><div id="scantrondiv" class="scantrondiv"><br><canvas id="scantron" class="scantron"></div></body></html>

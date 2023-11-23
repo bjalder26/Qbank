@@ -1,0 +1,403 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[1],"2":[2],"3":[3],"4":[1],"5":[1],"6":[0],"7":[1],"8":[3],"9":[1],"10":[0],"11":[1],"12":[1],"13":[3],"14":[2],"15":[3],"16":[1],"17":[2],"18":[0],"19":[0],"20":[0],"21":[2],"22":[0],"23":[2],"24":[3],"25":[0],"26":[2],"27":[1],"28":[1],"29":[1],"30":[0],"31":[3],"32":[1],"33":[0]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Exam 1 (Ch 1 & 2)</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Sep 5, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) Which of the following is an exact number?</div><div class='option'>A) 6.05 cm<sup>3</sup></div><div class='option'>B) 8 women<span class='asterisk'>*</span></div><div class='option'>C) 4 mg magnesium chloride</div><div class='option'>D) 270 mL alcohol</div><div class='solution'>Items that you can count such as the number of women are exact numbers.&nbsp; Measurements such as mL alcohol,&nbsp; mg magnesium chloride, and cm<sup>3</sup> are not exact numbers.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) Which of the following describes a heterogeneous mixture?</div><div class='option'>A) an individual unit of an element</div><div class='option'>B) two or more elements bonded to each other</div><div class='option'>C) two or more elements or compounds that are not covalently or ionically bonded and do <strong>not </strong>have a uniform composition<span class='asterisk'>*</span></div><div class='option'>D) two or more atoms covalently bonded together</div><div class='solution'><p>An atom: A fundamental unit of matter that consists of a nucleus (containing protons and neutrons) and electrons orbiting the nucleus.</p>
+<p>A molecule: Two or more atoms covalently bonded together. It can be a compound or a diatomic molecule composed of the same type of atoms.</p>
+<p>A compound: Two or more different elements chemically bonded together. Compounds have a fixed ratio of elements and can be represented by a chemical formula.</p>
+<p>A heterogeneous mixture: Two or more elements or compounds that are not covalently or ionically bonded and do not have a uniform composition. In a heterogeneous mixture, the components are not evenly distributed, and their properties may vary within the mixture.</p>
+<p>A homogeneous mixture: Two or more elements or compounds that are not covalently or ionically bonded and have a uniform composition. In a homogeneous mixture, the components are evenly distributed throughout, and the mixture appears uniform at the macroscopic level.</p>
+<p>To summarize:</p>
+<ul>
+<li>Atom: Fundamental unit of matter.</li>
+<li>Molecule: Two or more atoms covalently bonded together.</li>
+<li>Compound: Two or more different elements chemically bonded together.</li>
+<li>Heterogeneous mixture: Components are not evenly distributed and do not have a uniform composition.</li>
+<li>Homogeneous mixture: Components are evenly distributed and have a uniform composition.</li>
+</ul></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) Multiply the following numbers and indicate the answer with correct number of significant figures.<br>
+<div style="text-align: center;">260.02 x 4.1</div></div><div class='option'>A) 1066</div><div class='option'>B) 1070</div><div class='option'>C) 1066.1</div><div class='option'>D) 1100<span class='asterisk'>*</span></div><div class='solution'><p>To multiply the numbers 260.02 and 4.1, we perform the multiplication as follows:<br>260.02 x 4.1<br><br>The result is 1066.1.<br><br>Now, let's determine the correct number of significant figures in the answer.<br>260.02 has five significant figures, and 4.1 has two significant figures. When we multiply numbers, the result should have the same number of significant figures as the number with the least number of significant figures, which is 4.1 in this case. Therefore, the product, The result is 1066.1, should be rounded to two significant figures.<br><br>Rounding 1066.1 to two significant figures gives 1100.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) Which of the following describes the characteristics of a solid</div><div class='option'>A) definite volume but no definite shape</div><div class='option'>B) definite volume and shape<span class='asterisk'>*</span></div><div class='option'>C) no definite volume but a definite shape</div><div class='option'>D) no definite volume or shape</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) Which of the following mixtures will <strong>NOT</strong> be homogeneous?</div><div class='option'>A) ice tea and lemonade</div><div class='option'>B) sand and water<span class='asterisk'>*</span></div><div class='option'>C) sugar and water</div><div class='option'>D) sugar and tea</div><div class='solution'><p>The correct answer is:<br><br>sand and water<br><br>Sand and water will not form a homogeneous mixture. When sand is added to water, it does not dissolve or mix uniformly. Instead, the sand particles will settle at the bottom, creating a heterogeneous mixture where the sand is not evenly distributed throughout the water.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) Which of the following is a physical change?</div><div class='option'>A) Boiling water<span class='asterisk'>*</span></div><div class='option'>B) Lighting a stove</div><div class='option'>C) Leaving a wrench outside until it changes color</div><div class='option'>D)  None of the above.</div><div class='solution'>Boiling water does not change the substance chemically, therefore it is a physical change.&nbsp; State changes such as melting, freezing, boiling, condensing, and dissolving are physical changes.&nbsp; Deforming or breaking an object is a physical change.&nbsp;<br><br>Lighting a stove, and leaving a wrench outside until it changes color involve creating new substances, so they are chemical changes.&nbsp; "Burning", "lighting", "cooking", "baking", and "reacting" are all key words that indicate a chemical change.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Read the water level (shown in mL) with the correct number of significant figures.&nbsp;<br><br><img title="graduated cylindar 3.jpg" src="../images/1.jpeg" alt="" width="151" height="262"></div><div class='option'>A) 2.7 mL</div><div class='option'>B) 2.65 mL<span class='asterisk'>*</span></div><div class='option'>C) 2.75 mL</div><div class='option'>D) 2.6 mL</div><div class='solution'><ol>
+<li>
+<p>Start by identifying the main intervals or markings on the graduated cylinder. For example, if the cylinder has markings every 1 mL, those are the main intervals.</p>
+</li>
+<li>
+<p>Observe the position of the meniscus (the curved surface of the liquid) within the main interval. Determine if the meniscus is closer to the lower or upper marking of the interval.&nbsp; In this case the meniscus appears to be a bit above the 2.6 mL mark.</p>
+</li>
+<li>
+<p>Next, mentally divide the main interval into smaller divisions. Estimate the position of the meniscus within these smaller divisions. For example, if you are estimating to one decimal place, divide the main interval into 10 equal parts.</p>
+</li>
+<li>
+<p>Based on your judgment, determine the fraction or proportion of the interval that the meniscus appears to be closer to. Estimate this fraction as accurately as possible.&nbsp; In this case, it might be reasonable to estimate another 0.05 (exactly in the middle of the 2.6 and 2.7 mL marks) or 0.06 mL (just above &nbsp;the middle of the 2.6 and 2.7 mL marks).</p>
+</li>
+<li>Add the estimated fraction to the main interval reading. This will give you an estimate of the measurement with an extra significant figure.&nbsp; Reasonable estimates could include 2.65 mL or 2.66 mL, however only 2.65 is an option choice.</li>
+</ol>
+The main concept being tested on is that you need to estimate one additional place value past what the main intervals show.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) Which of the following is an accurate description of systematic error?</div><div class='option'>A) Error that is random</div><div class='option'>B) Error that has equal probability of being too high or too low</div><div class='option'>C) Error that averages out over repeated trials</div><div class='option'>D) Error that tends to be too high or tends to be too low<span class='asterisk'>*</span></div><div class='solution'><p>The accurate description of systematic error is:</p>
+<p><strong>Error that tends to be too high or tends to be too low</strong></p>
+<p>Systematic error refers to consistent and predictable deviations from the true value in the same direction. It occurs due to flaws or biases in the measurement process and leads to measurements that are consistently either higher or lower than the true value. This type of error does not average out over repeated trials and can significantly affect the accuracy of the measurements.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) An experiment to determine the density of a sugar solution garners the following results: 1.12 g/mL, 1.12 g/mL, 1.10 g/mL, 1.13 g/mL. If the actual value for the density of the sugar solution is 1.67 g/mL, which statement below best describes her results?</div><div class='option'>A) The results are accurate but not precise.</div><div class='option'>B) The results are precise but not accurate..<span class='asterisk'>*</span></div><div class='option'>C) The results are neither accurate nor precise.</div><div class='option'>D) The results are accurate and precise.</div><div class='solution'><p>To analyze the results, we need to understand the concepts of accuracy and precision. Accuracy refers to how close the measured values are to the true or known value, while precision refers to how close the measured values are to each other.</p>
+<p>Given the known value for the density of the &nbsp;sugar solution is 1.67 g/mL, let's assess the results:</p>
+<p>1.12 g/mL, 1.12 g/mL, 1.10 g/mL, 1.13 g/mL</p>
+<p>Looking at the values, we can see that they are consistently lower than the actual value. This indicates a lack of accuracy, as the measured values do not agree with the known value.</p>
+<p>However, the measured values are quite close to each other, indicating a high level of precision.</p>
+<p>Based on this analysis, the best statement that describes the results is:</p>
+<p><strong>The results are precise but not accurate.</strong></p>
+<p>The measured values are precise because they are close to each other, but they are not accurate because they deviate from the known value.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) How are gases <strong>different </strong>from solids and liquids?</div><div class='option'>A) Gases are compressible<span class='asterisk'>*</span></div><div class='option'>B) Gases are always diatomic</div><div class='option'>C) Gases retain their volume</div><div class='option'>D) Only gases take the shape of their container</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) Determine the density of an item that has a mass of 221.0 g and displaces 14.5 mL of fluid when submersed in a beaker.</div><div class='option'>A) 3200 (3 sf) g/mL</div><div class='option'>B) 15.2 g/mL<span class='asterisk'>*</span></div><div class='option'>C) 0.0656 g/mL</div><div class='option'>D) 207 g/mL</div><div class='solution'><p>To determine the density of an &nbsp;item, we can use the formula:<br>Density = mass / volume<br><br>Given: Mass = 221.0 g Volume = &nbsp;14.5 mL<br>*note that the volume of the item is equal to the volume of the&nbsp; fluid it displaces<br><br>Now, we can substitute the values into the density formula:<br>Density = 221.0 g / &nbsp;14.5 mL<br><br>Let's perform the calculation:<br>Density ≈ 15.2 g/mL</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) Add the following numbers and indicate the correct number of significant figures.<br>
+<div style="text-align: center;">801.6 + 382.0</div></div><div class='option'>A) 419.6</div><div class='option'>B) 1183.6<span class='asterisk'>*</span></div><div class='option'>C) 1184</div><div class='option'>D) 1180</div><div class='solution'><p>When you punch this into your calculator, the result is 1183.6.</p>
+<p>Now, let's determine the correct number of significant figures.</p>
+<p>801.6 has four significant figures, and 382.0 has four significant figures as well. When we add or subtract numbers, the result should have the same number of decimal places as the number with the <strong>least number of decimal places</strong>.&nbsp; Both &nbsp;801.6 and 382.0 have 1 decimal place in this case. Therefore, the sum, 1183.6, should have 1 significant decimal place.</p>
+<p>After rounding to 1 decimal place, the answer is: 1184</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) How many moles of Mg are contained in 543 mg of Mg?</div><div class='option'>A) 13.2 mol</div><div class='option'>B) 22.3 mol</div><div class='option'>C) 0.0000448 mol</div><div class='option'>D) 0.0223 mol<span class='asterisk'>*</span></div><div class='solution'><p>To determine the number of moles, we need to divide the given mass of Mg by its molar mass.</p>
+<p>The molar mass of Mg is approximately 24.31 g/mol.</p>
+<p>First, let's convert the given mass from milligrams (mg) to grams (g): 543 mg x 1 g/1000 mg = 0.543 g</p>
+<p>Next, we can calculate the number of moles: moles = 0.543 g x <span class="math-tex">\( \frac{1 mol}{24.31 g} \)</span> = (0.543)/(24.31) mol ≈ 0.0223 mol</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) Which of the following statements are true?</div><div class='option'>A) Protons and electrons have approximately the same mass (about 1 amu), whereas neutrons have almost no mass.</div><div class='option'>B) Electrons and neutrons have approximately the same mass (about 1 amu), whereas protons have almost no mass.</div><div class='option'>C) Protons and neutrons have approximately the same mass (about 1 amu), whereas electrons have almost no mass.<span class='asterisk'>*</span></div><div class='option'>D)  None of the above.</div><div class='solution'><p>The correct answer is:</p>
+<p><strong>Protons and neutrons have approximately the same mass (about 1 amu), whereas electrons have almost no mass.</strong></p>
+<p>Protons and neutrons, which are both found in the nucleus of an atom, have similar masses of approximately 1 atomic mass unit (amu). Electrons, on the other hand, have a much smaller mass compared to protons and neutrons. The mass of an electron is about 1/1836 times the mass of a proton or neutron, making it almost negligible in comparison.</p>
+<p>While protons and electrons have opposite charges and play crucial roles in determining the properties of atoms, they have significantly different masses. Protons are much more massive than electrons.</p>
+<p>Neutrons and electrons have significantly different masses. Neutrons have a mass similar to protons, while electrons have a much smaller mass.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) Calculate the mass (in g) of 5.49 × 10<sup>24</sup> atoms of Zn.</div><div class='option'>A) 9.12 g</div><div class='option'>B) 0.00168 g</div><div class='option'>C) 2.16x10<sup>4</sup> g</div><div class='option'>D) 596 g<span class='asterisk'>*</span></div><div class='solution'><p>To calculate the mass of a given number of atoms, we need to multiply the moles of the element by the molar mass of the element.<br><br>The number of atoms in one mole is 6.022 x 10<sup>23</sup>.</p>
+<p>The molar mass of Zn is approximately 65.41 g/mol.</p>
+<p>First, let's calculate the moles of Zn using Avogadro's number: moles = number of atoms / Avogadro's number moles = 5.49 × 10<sup>24</sup> atoms × <span class="math-tex">\( \frac{1 mol}{6.022 x 10^{23} atoms} \)</span> ≈ 9.12 mol</p>
+<p>Next, we can calculate the mass: mass = moles × molar mass mass = 9.12 mol × 65.41 g/mol mass ≈ 596 g</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) The statement "matter is composed of small indestructible particles" belongs to:</div><div class='option'>A) The Law of Definite Proportions</div><div class='option'>B) Dalton's Atomic Theory<span class='asterisk'>*</span></div><div class='option'>C) The Law of Multiple Proportions</div><div class='option'>D) The Law of Conservation of Mass</div><div class='solution'><p>Dalton's Atomic Theory: Matter is composed of small indestructible particles.</p>
+<p>The Law of Conservation of Mass: In a chemical reaction, matter is neither created nor destroyed.</p>
+<p>The Law of Multiple Proportions: If two elements form more than one compound, the ratios of the masses of the second element that combine with a fixed mass of the first element will always be ratios of small whole numbers.</p>
+<p>The Law of Definite Proportions: Samples of a compound will always contain the same proportion of elements by mass.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) Which of the following statements about subatomic particles are true.</div><div class='option'>A) positively charted ions (cations) have more electrons than protons</div><div class='option'>B) charge = protons - neutrons</div><div class='option'>C) in a neutral element the number of protons and electrons are equal<span class='asterisk'>*</span></div><div class='option'>D) mass number = protons + electrons</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) What element is defined by the following information?&nbsp;<br>p<sup>+</sup> = 15 n° = 16 e<sup>-</sup> = 15</div><div class='option'>A) Phosphorous<span class='asterisk'>*</span></div><div class='option'>B) Sulfur</div><div class='option'>C) Sodium</div><div class='option'>D) Magnesium</div><div class='solution'>p<sup>+</sup> = 15 indicates that there are &nbsp;15 protons, and that the atomic number is &nbsp;15.<br>The atomic number is all that is needed to identify the element.&nbsp; Checking the periodic table shows that Phosphorous has an atomic number of 15.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) What is the average atomic mass of Mg?</div><div class='option'>A) 24.305 amu<span class='asterisk'>*</span></div><div class='option'>B) 24 amu</div><div class='option'>C) 12 amu</div><div class='option'>D) 54.938 amu</div><div class='solution'>&nbsp;the average atomic mass of Mg is 24.305 amu according to the periodic table.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">20</span>) What is the name of the Cr isotope that has 31 neutrons?</div><div class='option'>A) Chromium-55<span class='asterisk'>*</span></div><div class='option'>B) Chromium-31</div><div class='option'>C) Chromium-24</div><div class='option'>D) Chromium-52</div><div class='solution'><p>To determine an isotope given its chemical symbol and the number of neutrons, follow these steps:</p>
+<ol>
+<li>
+<p>Identify the chemical symbol: The chemical symbol represents the element. It is typically a one- or two-letter abbreviation, such as H for hydrogen, C for carbon, or Au for gold.</p>
+</li>
+<li>
+<p>Determine the atomic number: The atomic number of an element corresponds to the number of protons in the nucleus of its atoms. It is usually listed as a subscript to the left of the chemical symbol. You can find the atomic number on the periodic table.</p>
+</li>
+<li>
+<p>Calculate the mass number: The number of neutrons is given. Add this number to the atomic number to determine the mass number. The mass number represents the total number of protons and neutrons in the nucleus.</p>
+</li>
+<li>
+<p>Write the isotope: Once you know the atomic number and the number of neutrons, you can write the isotope by combining the chemical symbol, atomic number, and mass number. The atomic number is written as a subscript, and the mass number is written as a superscript.</p>
+</li>
+</ol>
+<p>In this problem:</p>
+<ol>
+<li>The chemical symbol is Cr.</li>
+<li>The atomic number of chromium is 24.</li>
+<li>Add the number of neutrons (31 neutrons) to the atomic number (24) to determine the mass number: 31 + 24 = 55.</li>
+<li>Write the isotope: Chromium-55</li>
+</ol></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">21</span>) A new compound was recently discovered and found to have an average atomic mass of 350.83 amu. This element has two isotopes, the lighter of which has an atomic mass of 341.81&nbsp; amu and an abundance of 73.550%. What is the mass of the heavier isotope?</div><div class='option'>A) 354.07</div><div class='option'>B) 338.57</div><div class='option'>C) 375.91<span class='asterisk'>*</span></div><div class='option'>D)  None of the above.</div><div class='solution'><p>To find the mass of the heavier isotope, we can use the information provided. Let's denote the mass of the heavier isotope as X amu.</p>
+<p>The average atomic weight of the compound is calculated by considering the masses and abundances of both isotopes. Using the given values, we can set up the following equation:</p>
+<p>(341.81 amu * 0.73550) + (X amu * abundance of heavier isotope) = 350.83 amu</p>
+<p>Simplifying the equation:</p>
+<p>251.40 amu + (X amu * abundance of heavier isotope * ) = 350.83 amu</p>
+<p>Subtracting 251.40 amu from both sides:</p>
+<p>abundance of heavier isotope * X amu = 99.429 amu</p>
+<p>Now, we can solve for the mass of the heavier isotope:</p>
+<p>X amu = 99.429 amu / abundance of heavier isotope</p>
+<p>Given that the abundance of the heavier isotope is 26.450% (100% - 73.550%), we can set up the following equation:</p>
+<p>X amu = 99.429 amu / 26.450%</p>
+<p>Converting the abundance to a decimal:</p>
+<p>X amu = 99.429 amu / 0.26450</p>
+<p>X amu ≈ 375.91 amu</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">22</span>) In the following isotope symbol, the letters for the element have been replaced with an X.&nbsp; Determine the number of protons, neutrons and electrons?<br><span class="math-tex">\( ^{12}_{6}X^{1-} \)</span></div><div class='option'>A) protons: 6; neutrons: 6; electrons: 7<span class='asterisk'>*</span></div><div class='option'>B) protons: 6; neutrons: 6; electrons: 5</div><div class='option'>C) protons: 7; neutrons: 6; electrons: 6</div><div class='option'>D) protons: 6; neutrons: 12; electrons: 7</div><div class='solution'><p>The isotope symbol <span class="math-tex">\( ^{12}_{6}X^{1-} \)</span> represents an isotope with a mass number of 12 and an atomic number of 6, along with a charge of 1-.</p>
+<ul>
+<li>
+<p>Number of protons (Z): The atomic number (6) represents the number of protons in the nucleus. Therefore, the isotope has 6 protons.</p>
+</li>
+<li>
+<p>Number of neutrons (N): The mass number (12) represents the total number of protons and neutrons in the nucleus. To determine the number of neutrons, we subtract the atomic number from the mass number: 12 - 6 = 6.00 neutrons.</p>
+</li>
+<li>
+<p>Number of electrons: In a neutral atom, the number of electrons is equal to the number of protons. However, the given isotope symbol (<span class="math-tex">\( ^{12}_{6}X^{1-} \)</span>) indicates a charge of -1. This means there is one less electron than the number of protons. Therefore, in this case, there are &nbsp;6 + 1 = 7 electrons.</p>
+</li>
+</ul>
+<p>To summarize:</p>
+<ul>
+<li>Number of protons (Z): &nbsp;6</li>
+<li>Number of neutrons (N): 6</li>
+<li>Number of electrons: 7</li>
+</ul></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">23</span>) Which ion is represented by the following information?<br>p<sup>+</sup> = 13, e<sup>-</sup> = 11</div><div class='option'>A) Mg<sup>2+</sup></div><div class='option'>B) Si<sup>2-</sup></div><div class='option'>C) Al<sup>2+</sup><span class='asterisk'>*</span></div><div class='option'>D) Al<sup>2-</sup></div><div class='solution'>This ion has 13 protons, and 11 electrons.<br>Since it has 13 protons, we can determine the element is Al by looking at the periodic table.<br>Charge = # protons - # electrons<br>Charge = 13 - 11 = 2+<br>Thus the ion can be represented with Al<sup>2+</sup></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">24</span>) What mass (in mg) does 3.09 moles of nickel have?</div><div class='option'>A) 52.6 mg</div><div class='option'>B) 4.33x10<sup>4</sup> mg</div><div class='option'>C) 181 mg</div><div class='option'>D) 1.81x10<sup>5</sup> mg<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">25</span>) What is the charge, and approximate mass of protons, neutrons, and electrons?</div><div class='option'>A) protons: +1 charge &amp; 1 amu; neutron: no charge &amp; 1 amu; electron: -1 charge &amp; 0 amu<span class='asterisk'>*</span></div><div class='option'>B) protons: +1 charge &amp; 1 amu; neutron: -1 charge &amp; 0 amu; electron: no charge &amp; 1 amu</div><div class='option'>C) protons: no charge &amp; 1 amu; neutron: -1 charge &amp; 0 amu; electron: +1 charge &amp; 1 amu</div><div class='option'>D) protons: -1 charge &amp; 0 amu; neutron: no charge &amp; 1 amu; electron: +1 charge &amp; 1 amu</div><div class='solution'><p>Protons: Protons carry a positive charge of +1 and are located in the nucleus of an atom. The approximate mass of a proton is 1.67 x 10^-27 kilograms or 1 atomic mass unit (amu).</p>
+<p>Neutrons: Neutrons are electrically neutral, meaning they have no charge. Like protons, they are located in the nucleus of an atom. The approximate mass of a neutron is also 1.67 x 10^-27 kilograms or 1 atomic mass unit (amu), which is very similar to the mass of a proton.</p>
+<p>Electrons: Electrons carry a negative charge of -1 and orbit around the nucleus of an atom in electron shells. The mass of an electron is much smaller compared to protons and neutrons. It is approximately 9.11 x 10^-31 kilograms or about 1/1836 amu.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">26</span>) Which of the following statements about isotopes is true?</div><div class='option'>A) isotopes have the same number of neutrons but different numbers of protons</div><div class='option'>B) isotopes have the same mass number</div><div class='option'>C) isotopes have the same number of protons but different numbers of neutrons<span class='asterisk'>*</span></div><div class='option'>D) isotopes have the same mass</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">27</span>) An element has an average atomic mass of 105.23 amu. The X-108 isotope (107.65 amu) has an abundance of 39.32%. What is the mass, in amu, of the other isotope?</div><div class='option'>A) 102.81 amu</div><div class='option'>B) 103.66 amu<span class='asterisk'>*</span></div><div class='option'>C) 103 amu</div><div class='option'>D) 105 amu</div><div class='solution'><p>To find the mass of the other isotope, we need to subtract the contribution of the X-108 isotope from the average atomic mass.</p>
+<p>Mass of the X-108 isotope = 107.65 amu Abundance of the X-109 isotope = 39.32%</p>
+<p>Let's denote the mass of the other isotope as "X".</p>
+<p>Average atomic mass = (Mass of X-108 isotope * Abundance of X-108 isotope) + (Mass of X * Abundance of other isotope)</p>
+<p>105.23 amu = (107.65 amu * 39.32%) + (X * (100% - &nbsp;39.32%))</p>
+<p>105.23 amu = (107.65 amu * 0.39320) + (X * 0.60680)</p>
+<p>105.23 amu = 42.328 amu + 0.60680X<br><br>0.60680X = 62.901 amu<br><br>X = 103.66 amu</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">28</span>) An element has three stable isotopes with masses of 28.634 amu, 30.669 amu, and 32.693 amu. The heavier two isotopes have an abundance of 17.2% (middle mass) and 2.08% (largest mass), respectively. What is the average atomic mass of the element?</div><div class='option'>A) 30.7 amu</div><div class='option'>B) 29.1 amu<span class='asterisk'>*</span></div><div class='option'>C) 29.4 amu</div><div class='option'>D) 32.3 amu</div><div class='solution'>To calculate the average atomic mass of the element, we need to consider the masses of the isotopes and their respective abundances.<br>
+<p>Given: Mass of first isotope (lightest) = 28.634 amu <br>Mass of second isotope (middle) = 30.669 amu <br>Mass of third isotope (heaviest) = 32.693 amu <br>Abundance of second isotope = 17.2% <br>Abundance of third isotope = 2.08%</p>
+<p>To find the abundance of the lightest isotope, we subtract the abundances of the other two isotopes from 1: Abundance of lightest isotope = 1 - (abundance of second isotope + abundance of third isotope) = 1 - (0.172+ 0.0208) = 0.807</p>
+<p>Now, let's calculate the average atomic mass.<br>Average atomic mass = (mass of first isotope * abundance of first isotope) + (mass of second isotope * abundance of second isotope) + (mass of third isotope * abundance of third isotope)<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;= (28.634 amu x 0.807) + (30.669 amu x 0.172) + (32.693 amu x 0.0208)<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;= 23.113) amu + 5.2751 amu + 0.68001 amu<br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;= 29.068 amu<br><br>Rounded to the appropriate number of significant figures, the average atomic mass of the element is approximately 29.1 amu.<br><br></p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">29</span>) Which of the following is the elemental symbol for sulfur?</div><div class='option'>A) Na</div><div class='option'>B) S<span class='asterisk'>*</span></div><div class='option'>C) P</div><div class='option'>D) K</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">30</span>) How many atoms are present in 2.25 mg of Fe?</div><div class='option'>A) 2.43x10<sup>19</sup> atoms<span class='asterisk'>*</span></div><div class='option'>B) 4.12x10<sup>-20</sup> atoms</div><div class='option'>C) 0.243 atoms</div><div class='option'>D) 4.03x10<sup>18</sup> atoms</div><div class='solution'><p>To calculate the number of atoms, we need to convert the mass of Fe to moles and then use Avogadro's number to convert to atoms.<br><br>First we'll convert mg to g. &nbsp;2.25 mg x <span class="math-tex">\( \frac{1 g}{1000 mg} \)</span> = 0.00225 g</p>
+<p>Next, we'll calculate the number of moles of Mn: moles = 0.00225 g x <span class="math-tex">\( \frac{1 mol}{55.85 g} \)</span> = 0.0000403 mol</p>
+<p>Next, we'll calculate the number of atoms: number of atoms = moles × Avogadro's number number of atoms = 0.0000403 mol × <span class="math-tex">\( \frac{6.022 × 10^{23} atoms}{1 mol} \)</span></p>
+<p>Calculating the above expression, we get: number of atoms ≈ 2.43x10<sup>19</sup> atoms</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">31</span>) The atomic number (Z) is the number of ________ found in the nucleus of an atom.</div><div class='option'>A) Protons and neutrons</div><div class='option'>B) Neutrons</div><div class='option'>C) Electrons</div><div class='option'>D) Protons<span class='asterisk'>*</span></div><div class='solution'>The atomic number (Z) is the number of protons found in the nucleus of an atom. The atomic number uniquely identifies an element and determines its position in the periodic table. In a neutral atom, the number of protons is equal to the number of electrons surrounding the nucleus.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">32</span>) Calculate the atomic mass of element "X," if it has 2 naturally occurring isotopes with the following masses and natural abundances.<br>X-105 105.35711 amu 76.395%<br>X-=108 108.19690 amu 23.605%</div><div class='option'>A) 159.46 amu</div><div class='option'>B) 106.03 amu<span class='asterisk'>*</span></div><div class='option'>C) 107.53 amu</div><div class='option'>D) 105.71 amu</div><div class='solution'><p>To calculate the atomic mass of element X, we need to consider the masses and natural abundances of its isotopes.</p>
+<p>The atomic mass is calculated by multiplying the mass of each isotope by its natural abundance, summing up the results, and rounding to the appropriate number of decimal places.</p>
+<p>Let's perform the calculation:</p>
+<p>Isotope X-105: Mass: 105.35711&nbsp; amu Abundance: 76.395%</p>
+<p>Isotope X-=108: Mass: 108.19690 amu Abundance: 23.605%</p>
+<p>Atomic mass = (105 amu * 0.76395) + (108.19690 amu * &nbsp;0.23605) = 106.97958967 106.03 amu</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">33</span>) In the following isotope symbol, the letters for the element have been replaced with an X.&nbsp; What is the name of the isotope?<br><span class="math-tex">\( ^{19}_{9}X \)</span></div><div class='option'>A) Fluorine-19<span class='asterisk'>*</span></div><div class='option'>B) Fluorine-9</div><div class='option'>C) Fluorine-9</div><div class='option'>D) Potassium-19</div><div class='solution'><p>The correct answer is Fluorine-19.</p>
+<p>In the isotope symbol <span class="math-tex">\( ^{19}_{9}X \)</span>, the superscript 19 represents the mass number, which is the sum of protons and neutrons in the nucleus. The subscript 9 represents the atomic number, which corresponds to the number of protons in the nucleus.</p>
+<p>Since the atomic number is 9, we can identify the element as fluorine because fluorine has 9 protons according to the periodic table. Therefore, the isotope is Fluorine-19, with a mass number of 19 and an atomic number of 9.</p></div><p></p></div><div id="scantrondiv" class="scantrondiv">Exam 1 (Ch 1 & 2)<br><canvas id="scantron" class="scantron"></div></body></html>

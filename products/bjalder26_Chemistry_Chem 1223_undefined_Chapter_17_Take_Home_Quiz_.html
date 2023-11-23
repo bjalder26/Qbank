@@ -1,0 +1,223 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint {
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in; <!--9.969325in; -->
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[2],"2":[3],"3":[1],"4":[1],"5":[1],"6":[1],"7":[0],"8":[1],"9":[3],"10":[3],"11":[1],"12":[0],"13":[0],"14":[0],"15":[0],"16":[1],"17":[0],"18":[3]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 let questionsObject = JSON.parse(questionsObjectText);
+	let markCoordinates = [];
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+    //markCoordinates.push({x: 61.5+23.73*value, y: 74+12.06*key});
+  }
+}
+} else {alert('no questionsObject')}
+
+// Function to draw the dark marks on the canvas
+function drawMarks() {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  //canvas.width = 100;
+  //canvas.height = 100;
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  //ctx.scale(2, 2);
+
+
+ 
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+
+// Call the drawMarks function to draw the dark marks on the canvas
+
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers & Ctrl-x to toggle the solutions.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter 17 Take Home Quiz</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Jul 20, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) If you have a 1.0 L buffer solution with 0.1 M acetic acid (Ka 1.75x10<sup>-5</sup>) and 0.1 M sodium acetate, then what will be the pH after adding 0.0500 moles of solid NaOH (assume no change in volume)?</div><div class='option'>A) 5.53</div><div class='option'>B) 4.76</div><div class='option'>C) 5.23<span class='asterisk'>*</span></div><div class='option'>D) 4.28</div><p></p></div><div class='question'><div class='stem'>2) You add 700 mL of a 0.100 M KOH solution to 700 mL of a 0.100 M HCN solution (K<sub>a</sub> for HCN&nbsp;is 6.2x10<sup>-10</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 2.99</div><div class='option'>B) 7.91</div><div class='option'>C) 11.3</div><div class='option'>D) 11.0<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>3) What would be the pH of a solution formed by mixing 200 mL of 0.548 M H<sub>2</sub>CO<sub>3</sub> with 200 mL of 1.67 M NaHCO<sub>3</sub>?&nbsp; The K<sub>a</sub> for H<sub>2</sub>CO<sub>3</sub> is 4.5x10<sup>-7</sup>.</div><div class='option'>A) 7.88</div><div class='option'>B) 6.83<span class='asterisk'>*</span></div><div class='option'>C) 5.86</div><div class='option'>D) 6.35</div><p></p></div><div class='question'><div class='stem'>4) If 1.19x10<sup>-8</sup> moles of &nbsp;Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub> are placed in 2.00 L of solution. K<sub>sp</sub> (&nbsp;Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub>) = 6.00x10<sup>-39</sup>, will a precipitate form?</div><div class='option'>A) Yes, a precipitate will form</div><div class='option'>B) No, a precipitate will not form<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>5) Determine the molar solubility of PbSO<sub>4</sub> in a solution containing 0.110 M NaBr. K<sub>sp</sub> (PbSO<sub>4</sub>) = 1.8 × 10<sup>-8</sup>.</div><div class='option'>A) 3.27x10<sup>-7</sup> M</div><div class='option'>B) 1.64x10<sup>-7</sup> M<span class='asterisk'>*</span></div><div class='option'>C) -0.0489 M</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>6) What would be the pH of a solution formed by mixing 600 mL of 1.76 M HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> with 600 mL of 0.723 M NaC<sub>2</sub>H<sub>3</sub>O<sub>2</sub>?&nbsp; The K<sub>b</sub> for C<sub>2</sub>H<sub>3</sub>O<sub>2</sub><sup>-</sup> is 5.71x10<sup>-10</sup>.</div><div class='option'>A) 5.39</div><div class='option'>B) 4.37<span class='asterisk'>*</span></div><div class='option'>C) 5.14</div><div class='option'>D) 4.76</div><p></p></div><div class='question'><div class='stem'>7) You add 400 mL of a 0.110 M HCl solution to 400 mL of a 0.110 M NH<sub>3</sub> solution (K<sub>b</sub> for NH<sub>3</sub> is 1.8x10<sup>-5</sup></sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 5.26<span class='asterisk'>*</span></div><div class='option'>B) 3.00</div><div class='option'>C) 9.26</div><div class='option'>D) 4.74</div><p></p></div><div class='question'><div class='stem'>8) You add 500 mL of a 0.130 M HBr solution to 800 mL of a 0.190 M CH<sub>3</sub>NH<sub>2</sub> solution (K<sub>b</sub> for CH<sub>3</sub>NH<sub>2</sub> is 4.38x10<sup>-4</sup></sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 3.23</div><div class='option'>B) 10.8<span class='asterisk'>*</span></div><div class='option'>C) 10.4</div><div class='option'>D) 11.1</div><p></p></div><div class='question'><div class='stem'>9) The molar solubility of ZnS is 1.6×10<sup>-12</sup> M in pure water.&nbsp; Calculate the K<sub>sp</sub> for ZnS.</div><div class='option'>A) 5.12x10<sup>-24</sup></div><div class='option'>B) 1.02x10<sup>-23</sup></div><div class='option'>C) 1.60x10<sup>-12</sup></div><div class='option'>D) 2.56x10<sup>-24</sup><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>10) If you are using an acid and it's conjugate base to prepare a buffer that will be effective at a pH of 5.00 at 25°C, which of the following K<sub>a</sub> values would be best for your acid?</div><div class='option'>A) 0.0000918</div><div class='option'>B) 1.05x10<sup>-7</sup></div><div class='option'>C) 9.35x10<sup>-7</sup></div><div class='option'>D) 9.39x10<sup>-6</sup><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>11) You add 500 mL of a 0.140 M KOH solution to 700 mL of a 0.160 M HCN solution (K<sub>a</sub> for HCN&nbsp;is 6.2x10<sup>-10</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 3.12</div><div class='option'>B) 9.43<span class='asterisk'>*</span></div><div class='option'>C) 9.41</div><div class='option'>D) 10.7</div><p></p></div><div class='question'><div class='stem'>12) You add 500 mL of a 0.150 M HClO<sub>4</sub> solution to 800 mL of a 0.170 M LiOH solution.&nbsp; What will be the pH of that solution?</div><div class='option'>A) 12.7<span class='asterisk'>*</span></div><div class='option'>B) 1.33</div><div class='option'>C) 12.9</div><div class='option'>D) 12.4</div><p></p></div><div class='question'><div class='stem'>13) You add 700 mL of a 0.170 M HBr solution to 500 mL of a 0.130 M CH<sub>3</sub>NH<sub>2</sub> solution (K<sub>b</sub> for CH<sub>3</sub>NH<sub>2</sub> is 4.38x10<sup>-4</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 1.35<span class='asterisk'>*</span></div><div class='option'>B) 1.27</div><div class='option'>C) 3.36</div><div class='option'>D) 3.10</div><p></p></div><div class='question'><div class='stem'>14) A solution contains 3.8x10<sup>-4</sup> M in Al(NO<sub>3</sub>)<sub>3</sub> and 0.593 M in NaF. If the K<sub>f</sub> for AlF<sub>6</sub><sup>3-</sup> is 7.0x10<sup>19</sup>, what concentration of aluminum (III) ions remain at equilibrium?</div><div class='option'>A) 1.25x10<sup>-22</sup><span class='asterisk'>*</span></div><div class='option'>B) 1.75x10<sup>-22</sup></div><div class='option'>C) 9.15x10<sup>-24</sup></div><div class='option'>D) 8.92x10<sup>-23</sup></div><p></p></div><div class='question'><div class='stem'>15) How many moles of AgI can be dissolved in 3.00 L of solution. K<sub>sp</sub> (AgI) = 8.51x10<sup>-17</sup>.</div><div class='option'>A) 2.77x10<sup>-8</sup> moles<span class='asterisk'>*</span></div><div class='option'>B) 9.22x10<sup>-9</sup> moles</div><div class='option'>C) 1.38x10<sup>-8</sup> moles</div><div class='option'>D) 2.55x10<sup>-16</sup> moles</div><p></p></div><div class='question'><div class='stem'>16) How many moles of &nbsp;Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub> can be dissolved in 3.00 L of solution. K<sub>sp</sub> (&nbsp;Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub>) = 6.00x10<sup>-39</sup>.</div><div class='option'>A) 3.32x10<sup>-8</sup> moles</div><div class='option'>B) 2.67x10<sup>-8</sup> moles<span class='asterisk'>*</span></div><div class='option'>C) 5.86x10<sup>-7</sup> moles</div><div class='option'>D) 2.24x10<sup>-20</sup> moles</div><p></p></div><div class='question'><div class='stem'>17) How many moles of Pb(IO<sub>3</sub>)<sub>2</sub> can be dissolved in 4.00 L of solution. K<sub>sp</sub> (Pb(IO<sub>3</sub>)<sub>2</sub>) = 2.60x10<sup>-13</sup>.</div><div class='option'>A) 0.000161 moles<span class='asterisk'>*</span></div><div class='option'>B) 0.0000402 moles</div><div class='option'>C) 1.02x10<sup>-6</sup> moles</div><div class='option'>D) 0.000255 moles</div><p></p></div><div class='question'><div class='stem'>18) You add 700 mL of a 0.180 M KOH solution to 500 mL of a 0.130 M HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> solution (K<sub>a</sub> for HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> is 1.8x10<sup>-5</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 9.13</div><div class='option'>B) 12.9</div><div class='option'>C) 1.21</div><div class='option'>D) 12.7<span class='asterisk'>*</span></div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 17 Take Home Quiz<br><canvas id="scantron" class="scantron"></div></body></html>

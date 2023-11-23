@@ -1,0 +1,399 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[1],"2":[1],"3":[3],"4":[3],"5":[2],"6":[0],"7":[0],"8":[2],"9":[0],"10":[1],"11":[2],"12":[2],"13":[3],"14":[1],"15":[1],"16":[2],"17":[0],"18":[0]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter 17 example problems</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) What would be the pH of a solution formed by mixing 400 mL of 1.64 M HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> with 400 mL of 0.741 M NaC<sub>2</sub>H<sub>3</sub>O<sub>2</sub>?&nbsp; The K<sub>b</sub> for C<sub>2</sub>H<sub>3</sub>O<sub>2</sub><sup>-</sup> is 5.71x10<sup>-10</sup>.</div><div class='option'>A) 5.10</div><div class='option'>B) 4.41<span class='asterisk'>*</span></div><div class='option'>C) 5.43</div><div class='option'>D) 4.76</div><div class='solution'>In this case, you're mixing a weak acid with it's weak conjugate base.<br>This will create a buffer solution, for which we will use the Henderson–Hasselbalch equation to solve for pH.<br>First we need the moles of the acid and the base.<br>[HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub>] = 4 mL x (1 L/1000 mL) x (1.64 mol/1L) = 0.00656 mol<br>[NaC<sub>2</sub>H<sub>3</sub>O<sub>2</sub>] = 4 mL x (1 L/1000 mL) x (0.741 mol/1L) = 0.00296 mol*<br>K<sub>a</sub> = 10<sup>-14</sup>/K<sub>b</sub> = 10^-14/(5.71x10<sup>-10</sup>)<br>pH = -log(K<sub>a</sub>) + log(base/acid) = -log(0.0000175) + log(0.00296/0.00656)<br>pH = 4.41<br>*since we were using the same volume, we could have just plugged in molarity (before mixing) as a short-cut, or we could have calculated millimoles by not dividing by 1000, as a different shortcut.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) The molar solubility of Ag<sub>2</sub>S is 1.26×10<sup>-16</sup> M in pure water.&nbsp; Calculate the K<sub>sp</sub> for Ag<sub>2</sub>S.</div><div class='option'>A) 4.00x10<sup>-48</sup></div><div class='option'>B) 8.00x10<sup>-48</sup><span class='asterisk'>*</span></div><div class='option'>C) 2.00x10<sup>-48</sup></div><div class='option'>D) 5.04x10<sup>-16</sup></div><div class='solution'>K<sub>sp</sub> = (2x)<sup>2</sup>(x)<br>K<sub>sp</sub> = 4x<sup>3</sup><br>Substituting in 1.26×10<sup>-16</sup> for x<br>K<sub>sp</sub> = 4(1.26×10<sup>-16</sup>)<sup>3</sup><br>K<sub>sp</sub> = 8.00x10<sup>-48</sup></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) You add 600 mL of a 0.100 M HBr solution to 800 mL of a 0.200 M CH<sub>3</sub>NH<sub>2</sub> solution (K<sub>b</sub> for CH<sub>3</sub>NH<sub>2</sub> is 4.38x10<sup>-4</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 11.2</div><div class='option'>B) 3.14</div><div class='option'>C) 10.5</div><div class='option'>D) 10.9<span class='asterisk'>*</span></div><div class='solution'>Mol strong acid:<br>600 mL x (1L/1000mL) x (0.10 mol/L) = 0.0600 mol HBr<br><br>Mol weak acid:<br>800 mL x (1L/1000mL) x (0.20 mol/L) = 0.160 mol CH<sub>3</sub>NH<sub>2</sub><br><br>Since there are more moles of weak base than strong acid, the strong acid will be consumed and produce an equal number of moles of weak acid.&nbsp; The remaining moles of weak base is the difference between the starting moles of weak acid and strong base.<br><br>Mol weak acid remaining:<br>0.100<br><br>Mol weak base produced:<br>0.0600 mol CH<sub>3</sub>NH<sub>3</sub><sup>+</sup><br><br>Since we wind up with an amount of a weak acid and it's conjugate weak base this is a buffer solution, and the Henderson–Hasselbalch can be used to solve for pH.<br>K<sub>a</sub> = 10<sup>-14</sup>/(4.38x10<sup>-4</sup>) = 2.28x10<sup>-11</sup><br>pH = -log(2.28x10<sup>-11</sup>) + log(0.0600/0.100)<br>pH = 10.9</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) You add 600 mL of a 0.110 M KOH solution to 600 mL of a 0.110 M HCN solution (K<sub>a</sub> for HCN&nbsp;is 6.2x10<sup>-10</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 2.97</div><div class='option'>B) 7.95</div><div class='option'>C) 11.3</div><div class='option'>D) 11.0<span class='asterisk'>*</span></div><div class='solution'>600 x (1L/1000mL) x (0.11 mol/L) = 0.0660 mol KOH<br>600 x (1L/1000mL) x (0.11 mol/L) = 0.0660 mol&nbsp; HCN<br><br>0.0660 mol of KOH will react with 0.0660 mol of HCN to produce 0.0660 mol of CN<sup>-</sup>.<br><br>0.0660 mol / 1.20 L = 0.0550 M<br>
+<table style="border-collapse: collapse; width: 100%;" border="1">
+<tbody>
+<tr>
+<td style="width: 18.5637%;">R</td>
+<td style="width: 18.5637%;">&nbsp;CN<sup>-</sup> +</td>
+<td style="width: 18.5637%;">H<sub>2</sub>O ⇄</td>
+<td style="width: 18.5637%;">HCN +&nbsp;</td>
+<td style="width: 18.5696%;">OH<sup>-</sup></td>
+</tr>
+<tr>
+<td style="width: 18.5637%;">I</td>
+<td style="width: 18.5637%;">0.0550</td>
+<td style="width: 18.5637%;">&nbsp;</td>
+<td style="width: 18.5637%;">0</td>
+<td style="width: 18.5696%;">0</td>
+</tr>
+<tr>
+<td style="width: 18.5637%;">C</td>
+<td style="width: 18.5637%;">- x</td>
+<td style="width: 18.5637%;">&nbsp;</td>
+<td style="width: 18.5637%;">+ x</td>
+<td style="width: 18.5696%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 18.5637%;">E</td>
+<td style="width: 18.5637%;">0.0550 - x</td>
+<td style="width: 18.5637%;">&nbsp;</td>
+<td style="width: 18.5637%;">x</td>
+<td style="width: 18.5696%;">x</td>
+</tr>
+</tbody>
+</table>
+<br>K<sub>b</sub> = 10<sup>-14</sup>/6.2x10<sup>-10</sup> = 0.0000161<br>K<sub>b</sub> = 0.0000161 = x<sup>2</sup>/(0.0550 - x), the small x assumption is valid because 0.0550/0.0000161 = 3410<br>0.0000161 = x<sup>2</sup>/(0.0550)<br>(0.0550) x 0.0000161 = x<sup>2</sup><br>(0.0550) x 0.0000161 = x<sup>2<br></sup>8.87x10<sup>-7</sup> = x<sup>2</sup><br>√(8.87x10<sup>-7</sup>) = x<br>0.000942 = x<br>pOH = -log(0.000942) = 3.03<br>pH = 14 - 3.03 = 11.0</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) If you have a 1.0 L buffer solution with 0.10 M acetic acid (K<sub>a</sub> 1.75x10<sup>-5</sup>) and 0.10 M sodium acetate, then what will be the pH after adding 0.0300 moles of solid HCl (assume no change in volume)?</div><div class='option'>A) 4.24</div><div class='option'>B) 4.76</div><div class='option'>C) 4.49<span class='asterisk'>*</span></div><div class='option'>D) 5.03</div><div class='solution'>Beginning moles:<br>1L x (0.10 mol acetic acid/L) = 0.10 mol acetic acid<br>1L x (0.10 mol sodium acetate/L) = 0.10 mol sodium acetate<br><br>Moles after adding 0.03 moles of HCl:<br>0.03 moles of HCl will react with 0.03 moles of acetate to produce 0.03 moles of acetic acid<br>0.10 mol acetic acid +0.03 mol = 0.130 mol acetic acid<br>0.10 mol sodium acetate -0.03 mol = 0.0700 mol acetic acid<br>pH = -log(1.75*10<sup>-5</sup>) + log(0.0700)/(0.130)<br>pH = 4.49</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) Determine the molar solubility of PbSO<sub>4</sub> in a solution containing 0.160 M Na<sub>2</sub>SO<sub>4</sub>. K<sub>sp</sub> (PbSO<sub>4</sub>) = 1.8 × 10<sup>-8</sup>.</div><div class='option'>A) 1.12x10<sup>-7</sup> M<span class='asterisk'>*</span></div><div class='option'>B) -0.0672 M</div><div class='option'>C) 2.25x10<sup>-7</sup> M</div><div class='option'>D)  None of the above.</div><div class='solution'><table style="border-collapse: collapse; width: 29.7514%;" border="1">
+<tbody>
+<tr>
+<td style="width: 6.54275%;">R</td>
+<td style="width: 24.1264%;">PbSO<sub>4</sub> (s) ⇄</td>
+<td style="width: 30.6691%;">Pb<sup>2+</sup> +</td>
+<td style="width: 38.4387%;">SO<sub>4</sub><sup>2-</sup></td>
+</tr>
+<tr>
+<td style="width: 6.54275%;">I</td>
+<td style="width: 24.1264%;">&nbsp;</td>
+<td style="width: 30.6691%;">0</td>
+<td style="width: 38.4387%;">0.16</td>
+</tr>
+<tr>
+<td style="width: 6.54275%;">C</td>
+<td style="width: 24.1264%;">&nbsp;</td>
+<td style="width: 30.6691%;">+ x</td>
+<td style="width: 38.4387%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 6.54275%;">E</td>
+<td style="width: 24.1264%;">&nbsp;</td>
+<td style="width: 30.6691%;">x</td>
+<td style="width: 38.4387%;">0.16 + x</td>
+</tr>
+</tbody>
+</table>
+<br>K<sub>sp</sub> (PbSO<sub>4</sub>) = 1.8 × 10<sup>-8</sup> = (x)(0.16 + x)<br>Since 0.16/(1.8 × 10<sup>-8</sup>) = 8.89x10<sup>6</sup>, the small x assumption is valid<br>1.8 × 10<sup>-8</sup> = 0.16x<br>x&nbsp;= (1.8 × 10<sup>-8</sup>)/0.16 = 1.13x10<sup>-7</sup></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) You add 700 mL of a 0.180 M HCl solution to 500 mL of a 0.120 M NH<sub>3</sub> solution (K<sub>b</sub> for NH<sub>3</sub> is 1.8x10<sup>-5</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 1.26<span class='asterisk'>*</span></div><div class='option'>B) 4.74</div><div class='option'>C) 1.18</div><div class='option'>D) 4.42</div><div class='solution'>Molarity strong acid<br>700 mL x (1L/1000mL) x (0.18 mol/L) = 0.126 mol HCl<br>0.126 mol HCl / 1.20 L = 0.105 M<br><br>Molarity weak base<br>500 mL x (1L/1000mL) x (0.12 mol/L) = 0.0600 mol NH<sub>3</sub><br>0.0600 mol NH<sub>3</sub> / 1.20 L = 0.0500 M<br><br>Since there is more strong acid than weak base, the pH will be based on the remaining strong acid.<br>Subtract the molarity of weak base from the molarity of strong acid to get the remaining strong acid.<br>0.105 M HCl - 0.0500 M NH<sub>3</sub> = 0.0550 M HCl remaining<br>pH = -log(0.0550)<br>pH 1.26</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) How many moles of Pb<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub> can be dissolved in 3.00 L of solution. K<sub>sp</sub> (Pb<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub>) = 1.0x10<sup>-54</sup>.</div><div class='option'>A) 2.89x10<sup>-28</sup> moles</div><div class='option'>B) 1.37x10<sup>-9</sup> moles</div><div class='option'>C) 1.86x10<sup>-11</sup> moles<span class='asterisk'>*</span></div><div class='option'>D) 2.32x10<sup>-11</sup> moles</div><div class='solution'>K<sub>sp</sub> (Pb<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub>) = 1.0x10<sup>-54</sup> = (3x)<sup>3</sup>(2x)<sup>2</sup><br>1.0x10<sup>-54</sup> = 108x<sup>5</sup><br>x = 5√(1.0*10^-54/108) = 6.21x10<sup>-12</sup> M<br>6.21x10<sup>-12</sup> M x 3.00 L = 1.86x10<sup>-11</sup> moles</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) How many moles of PbSO<sub>4</sub> can be dissolved in 3.00 L of solution. K<sub>sp</sub> (PbSO<sub>4</sub>) = 1.8x10<sup>-8</sup>.</div><div class='option'>A) 0.000402 moles<span class='asterisk'>*</span></div><div class='option'>B) 0.000134 moles</div><div class='option'>C) 5.40x10<sup>-8</sup> moles</div><div class='option'>D) 0.000201 moles</div><div class='solution'>K<sub>sp</sub> (PbSO<sub>4</sub>) = 1.8x10<sup>-8</sup> = (x)(x)<br>1.8x10<sup>-8</sup> = x<sup>2</sup><br>x = √(1.8x10<sup>-8</sup>) = 0.000134 M<br>0.000134 M x 3.00 L = 0.000402 moles</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) You add 600 mL of a 0.13 M KOH solution to 800 mL of a 0.198 M H<sub>2</sub>SO<sub>4</sub> solution.&nbsp; What will be the pH of that solution?</div><div class='option'>A) 0.946</div><div class='option'>B) 1.24<span class='asterisk'>*</span></div><div class='option'>C) 1.25</div><div class='option'>D) 1.09</div><div class='solution'>Molarity of strong base:<br>600 mL x (1L/1000mL) x (0.13 mol/L) = 0.0780 mol<br>0.0780 mol / 1.40 L = 0.0557 M<br>Molarity of strong acid:<br>800 mL x (1L/1000mL) x (0.198 mol/L) = 0.158 mol<br>0.158 mol / 1.40 L = 0.113 M<br><br>Since there is more strong acid than strong base, subtracting the molarity of the base from the molarity of the acid will tell us what the remaining molarity of strong acid will be.<br>0.113 M&nbsp; H<sub>2</sub>SO<sub>4</sub> - 0.0557 M KOH = 0.0574 M H<sub>2</sub>SO<sub>4</sub> remaining<br>pH = 1.24</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) How many moles of BaF<sub>2</sub> can be dissolved in 3.00 L of solution. K<sub>sp</sub> (BaF<sub>2</sub>) = 2.45x10<sup>-5</sup>.</div><div class='option'>A) 0.00742 moles</div><div class='option'>B) 0.0871 moles</div><div class='option'>C) 0.0549 moles<span class='asterisk'>*</span></div><div class='option'>D) 0.0183 moles</div><div class='solution'>K<sub>sp</sub> (BaF<sub>2</sub>) = 2.45x10<sup>-5</sup> = (x)(2x)<sup>2</sup><br>2.45x10<sup>-5</sup> = 4x<sup>3</sup><br>x = 3√(2.45x10<sup>-5</sup>/4) = 0.0183 M<br>0.0183 M x 3.00 L = 0.0549 moles</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) If you are using an acid and it's conjugate base to prepare a buffer that will be effective at a pH of 7.00 at 25°C, which of the following K<sub>a</sub> values would be best for your acid?</div><div class='option'>A) 9.93x10<sup>-9</sup></div><div class='option'>B) 1.06x10<sup>-6</sup></div><div class='option'>C) 1.03x10<sup>-7</sup><span class='asterisk'>*</span></div><div class='option'>D) 9.96x10<sup>-10</sup></div><div class='solution'>You want -log(K<sub>a</sub>) to be as close to your desired pH as possible, because then the buffer solution will have an equal amount of acid and conjugate base (the 1/2 equivalence point).<br>- log(1.03x10<sup>-7</sup>) = 6.99, which is the closest to the pH of 7.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) You add 700 mL of a 0.100 M HI solution to 700 mL of a 0.100 M C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub> solution (K<sub>b</sub> for C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub> is 3.8x10<sup>-10</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 9.42</div><div class='option'>B) 5.36</div><div class='option'>C) 4.58</div><div class='option'>D) 2.94<span class='asterisk'>*</span></div><div class='solution'>In this problem, there is an equal amount of strong acid, and weak base.&nbsp; This means the strong acid and strong base will both be completely consumed.&nbsp; That will leave the conjugate weak acid.<br>HI + C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub> ⇄ C<sub>6</sub>H<sub>5</sub>NH<sub>3</sub><sup>+</sup> + I<sup>-</sup>&nbsp;<br>moles of C<sub>6</sub>H<sub>5</sub>NH<sub>3</sub><sup>+</sup> = 700 mL x (1L/1000mL) x (0.10 mol/L) = 0.0700<br>[C<sub>6</sub>H<sub>5</sub>NH<sub>3</sub><sup>+</sup>] = 0.0700 / 1.40 L = 0.0500 M<br>
+<table style="border-collapse: collapse; width: 42.8015%;" border="1">
+<tbody>
+<tr>
+<td style="width: 20.0269%;">&nbsp;</td>
+<td style="width: 20.0269%;">C<sub>6</sub>H<sub>5</sub>NH<sub>3</sub><sup>+</sup> +</td>
+<td style="width: 20.0269%;">H<sub>2</sub>O ⇄</td>
+<td style="width: 20.0269%;">C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub></td>
+<td style="width: 20.0269%;">H<sub>3</sub>O<sup>+</sup></td>
+</tr>
+<tr>
+<td style="width: 20.0269%;">beg</td>
+<td style="width: 20.0269%;">0.0500&nbsp;</td>
+<td style="width: 20.0269%;">&nbsp;</td>
+<td style="width: 20.0269%;">&nbsp;</td>
+<td style="width: 20.0269%;">&nbsp;</td>
+</tr>
+<tr>
+<td style="width: 20.0269%;">change</td>
+<td style="width: 20.0269%;">- x</td>
+<td style="width: 20.0269%;">&nbsp;</td>
+<td style="width: 20.0269%;">+ x</td>
+<td style="width: 20.0269%;">+ x</td>
+</tr>
+<tr>
+<td style="width: 20.0269%;">end</td>
+<td style="width: 20.0269%;">0.0500 -x</td>
+<td style="width: 20.0269%;">&nbsp;</td>
+<td style="width: 20.0269%;">x</td>
+<td style="width: 20.0269%;">x</td>
+</tr>
+</tbody>
+</table>
+<br>Ka = 10<sup>-14</sup>/ 3.8x10<sup>-10</sup> = 0.0000263<br>K<sub>a</sub> = 0.0000263&nbsp;= x<sup>2</sup>/(0.0500 -x)<br>Since 0.0500 / 0.0000263 = 1900 (3 sf), the small x assumption is valid<br>0.0000263 = x<sup>2</sup>/(0.0500)<br>(0.0500) x 0.0000263&nbsp;= x<sup>2<br></sup>√(1.32x10<sup>-6</sup>) = x&nbsp;&nbsp;<br>x = 0.00115<br>pH = 2.94</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) If 2.99x10<sup>-8</sup> moles of &nbsp;Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub> are placed in 4.00 L of solution. K<sub>sp</sub> (&nbsp;Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub>) = 6.00x10<sup>-39</sup>, will a precipitate form?</div><div class='option'>A) Yes, a precipitate will form</div><div class='option'>B) No, a precipitate will not form<span class='asterisk'>*</span></div><div class='solution'>2.99x10<sup>-8</sup> moles &nbsp;Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub> / 4 Liters = 7.47x10<sup>-9</sup> M &nbsp;Ba<sub>3</sub>(PO<sub>4</sub>)<sub>2</sub><br>Q<sub>sp</sub> = (3x)<sup>3</sup>(2x)<sup>2</sup> = 108x<sup>5</sup><br>Substituting in 7.47x10<sup>-9</sup> for x<br>Q<sub>sp</sub> = 108 x (7.47x10<sup>-9</sup>)<sup>5</sup> = 2.51x10<sup>-39</sup><br>Since Q<sub>sp</sub> &lt; K<sub>sp</sub>, no precipitate will form</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) Determine the molar solubility of BaF<sub>2</sub> in a solution containing 0.120 M LiF. K<sub>sp</sub> (BaF<sub>2</sub>) = 1.7 × 10<sup>-6</sup>.</div><div class='option'>A) 0.0000142 M</div><div class='option'>B) 0.000118 M<span class='asterisk'>*</span></div><div class='option'>C) 8.47x10<sup>-9</sup> M</div><div class='option'>D)  None of the above.</div><div class='solution'><table style="border-collapse: collapse; width: 29.7514%;" border="1">
+<tbody>
+<tr>
+<td style="width: 6.54275%;">R</td>
+<td style="width: 24.1264%;">BaF<sub>2</sub> (s) ⇄</td>
+<td style="width: 30.6691%;">Ba<sup>2+</sup> +</td>
+<td style="width: 38.4387%;">2 F<sup>-</sup></td>
+</tr>
+<tr>
+<td style="width: 6.54275%;">I</td>
+<td style="width: 24.1264%;">&nbsp;</td>
+<td style="width: 30.6691%;">0</td>
+<td style="width: 38.4387%;">0.12</td>
+</tr>
+<tr>
+<td style="width: 6.54275%;">C</td>
+<td style="width: 24.1264%;">&nbsp;</td>
+<td style="width: 30.6691%;">+ x</td>
+<td style="width: 38.4387%;">+ 2x</td>
+</tr>
+<tr>
+<td style="width: 6.54275%;">E</td>
+<td style="width: 24.1264%;">&nbsp;</td>
+<td style="width: 30.6691%;">x</td>
+<td style="width: 38.4387%;">0.12 + 2x&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<br>&nbsp;K<sub>sp</sub> (BaF<sub>2</sub>) = 1.7 × 10<sup>-6</sup> = (x)(0.12+ 2x)<sup>2</sup><br>Since 0.12/(1.7 × 10<sup>-6</sup>) = 7.06x10<sup>4</sup>, the small x assumption is valid<br>1.7 × 10<sup>-6</sup> = 0.12<sup>2</sup>x = 0.0144x<br>x = (1.7 × 10<sup>-6</sup>)/0.0144 = 0.000118 M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) You add 800 mL of a 0.170 M NaOH solution to 500 mL of a 0.120 M HNO<sub>2</sub> solution (K<sub>a</sub> for HNO<sub>2</sub> is 4.5x10<sup>-4</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 3.00</div><div class='option'>B) 1.12</div><div class='option'>C) 12.8<span class='asterisk'>*</span></div><div class='option'>D) 13.0</div><div class='solution'>Molarity strong base<br>800 mL x (1L/1000mL) x (0.17 mol/L) = 0.136 mol NaOH<br>0.136 mol NaOH / 1.30 L = 0.105 M<br><br>Molarity weak acid<br>500 mL x (1L/1000mL) x (0.12 mol/L) = 0.0600 mol HNO<sub>2</sub><br>0.0600 mol HNO<sub>2</sub> / 1.30 L = 0.0462 M<br><br>Since there is more strong base than weak acid, the pH will be based on the remaining strong base.<br>Subtract the molarity of weak acid from the molarity of strong base to get the remaining strong base.<br>0.105 M HBr - 0.0462 M CH<sub>3</sub>NH<sub>2</sub> = 0.0585 M NaOH remaining<br>pOH = -log(0.0585)<br>pOH 1.23<br>pH = 14 - pOH = 14 - 1.23 = 12.8</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) You add 500 mL of a 0.120 M LiOH solution to 700 mL of a 0.150 M HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> solution (K<sub>a</sub> for HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub>&nbsp;is 1.75x10<sup>-5</sup>).&nbsp; What will be the pH of that solution?</div><div class='option'>A) 4.88<span class='asterisk'>*</span></div><div class='option'>B) 6.18</div><div class='option'>C) 5.00</div><div class='option'>D) 5.33</div><div class='solution'>500 x (1L/1000mL) x (0.12 mol/L) = 0.0600 mol LiOH<br>700 x (1L/1000mL) x (0.15 mol/L) = 0.105 mol&nbsp; HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub><br><br>0.0600 mol of LiOH will react with 0.0600 mol of HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> to produce 0.0600 mol of C<sub>2</sub>H<sub>3</sub>O<sub>2</sub><sup>-</sup>.<br>The remaining&nbsp; HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub> will be 0.105 mol - 0.0600 mol = 0.0450 mol HC<sub>2</sub>H<sub>3</sub>O<sub>2</sub><br>pH = -log(K<sub>a</sub>) + log(base/acid)<br>pH = -log(1.75*10<sup>-5</sup>) + log(0.0600/0.0450)<br>pH = 4.88</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) What would be the pH of a solution formed by mixing 800 mL of 1.47 M H<sub>2</sub>CO<sub>3</sub> with 800 mL of 0.308 M NaHCO<sub>3</sub>?&nbsp; The K<sub>a</sub> for H<sub>2</sub>CO<sub>3</sub> is 4.5x10<sup>-7</sup>.</div><div class='option'>A) 5.67<span class='asterisk'>*</span></div><div class='option'>B) 7.03</div><div class='option'>C) 6.35</div><div class='option'>D) 6.72</div><div class='solution'>In this case, you're mixing a weak acid with it's weak conjugate base.<br>This will create a buffer solution, for which we will use the Henderson–Hasselbalch equation to solve for pH.<br>First we need the moles of the acid and the base.<br>[H<sub>2</sub>CO<sub>3</sub>] = 8 mL x (1 L/1000 mL) x (1.47 mol/1L) = 0.0118 mol<br>[NaHCO<sub>3</sub>] = 8 mL x (1 L/1000 mL) x (0.308 mol/1L) = 0.00246 mol*<br>pH = -log(K<sub>a</sub>) + log(base/acid) = -log(4.5x10<sup>-7</sup>) + log(0.00246/0.0118)<br>pH = 5.67<br>*since we were using the same volume, we could have just plugged in molarity (before mixing) as a short-cut, or we could have calculated millimoles by not dividing by 1000, as a different shortcut.</div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 17 example problems<br><canvas id="scantron" class="scantron"></div></body></html>

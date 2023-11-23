@@ -1,0 +1,319 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[2],"2":[0],"3":[2],"4":[2],"5":[2],"6":[1],"7":[3]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-Z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter E</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) Determine the volume of an object that has a mass of 374.5 g and a density of 19.7 g/cm<sup>3</sup>.</div><div class='option'>A) 0.0526 cm<sup>3</sup></div><div class='option'>B) 355 cm<sup>3</sup></div><div class='option'>C) 19.0 cm<sup>3</sup><span class='asterisk'>*</span></div><div class='option'>D) 7380 cm<sup>3</sup></div><div class='solution'><p>To determine the volume of an object, we can use the formula:</p>
+<p>Volume = mass / density</p>
+<p>Given: Mass = 374.5 g Density = 19.7 g/cm<sup>3</sup></p>
+<p>Substituting the values into the formula:</p>
+<p>Volume = 374.5 mg / 19.7 g/cm<sup>3</sup></p>
+<p>Now, let's perform the calculation:</p>
+<p>Volume = 19.0 cm<sup>3</sup></p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) An experiment to determine the density of a glucose solution garners the following results: 1.11 g/mL, 1.81 g/mL, 2.08 g/mL, 1.74 g/mL. If the known value for the density of the glucose solution is 1.09 g/mL, which statement below best describes her results?</div><div class='option'>A) The results are neither accurate nor precise.<span class='asterisk'>*</span></div><div class='option'>B) The results are precise but not accurate..</div><div class='option'>C) The results are accurate and precise.</div><div class='option'>D) The results are accurate but not precise.</div><div class='solution'><p>To analyze the results, we need to understand the concepts of accuracy and precision. Accuracy refers to how close the measured values are to the true or known value, while precision refers to how close the measured values are to each other.</p>
+<p>Given the known value for the density of the &nbsp;glucose solution is 1.09 g/mL, let's assess the results:</p>
+<p>1.11 g/mL, 1.81 g/mL, 2.08 g/mL, 1.74 g/mL</p>
+<p>Looking at the values, we can see that they are consistently higher than the known value. This indicates a lack of accuracy, as the measured values do not agree with the known value.</p>
+<p>The measured values are also not very close to each other, indicating a low level of precision.</p>
+<p>Based on this analysis, the best statement that describes the results is:</p>
+<p><strong>The results are neither accurate nor precise.</strong></p>
+<p>The measured values are not precise because they are not very close to each other, and they are not accurate because they deviate from the known value.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) Divide the following numbers and indicate the answer with correct number of significant figures. <br><span class="math-tex">\( \frac{309.4}{18.9} \)</span></div><div class='option'>A) 16.37</div><div class='option'>B) 5850</div><div class='option'>C) 16.4<span class='asterisk'>*</span></div><div class='option'>D) 16</div><div class='solution'><p>To divide the numbers 309.4 and 18.9, we perform the division as follows:<br>309.4 / 18.9<br>The result is 16.37.<br><br>Now, let's determine the correct number of significant figures in the answer.<br>309.4 has four significant figures, and 18.9 has three significant figures. When we divide numbers, the result should be rounded to the same number of significant figures as the number with the least number of significant figures, which is 18.9 in this case. Therefore, the quotient, 16.37, should be rounded to three significant figures.<br>Rounding 16.37 to three significant figures gives 16.4.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) How many significant figures are in the measurement, 0.00080.5 mL?</div><div class='option'>A) 6</div><div class='option'>B) 4</div><div class='option'>C) 2<span class='asterisk'>*</span></div><div class='option'>D) 5</div><div class='option'>E)  None of the above.</div><div class='solution'><p>The measurement 0.00080.5 mL has two significant figures. Significant figures are the digits in a number that contribute to its precision. When determining the number of significant figures, we consider the following:</p>
+<ol>
+<li>Non-zero digits are always significant.</li>
+<li>Leading zeros are never significant.&nbsp; The four zeros before 80.5 are not significant.&nbsp;</li>
+<li>Captured zeros, which are zeros between non-zero digits (1 and 0), are also significant.&nbsp; There are no captured zeros in this case.</li>
+<li>Trailing zeros (the final zeros) are significant only if they are after a decimal point. In this case, since there is a decimal point, the trailing zeros would be considered significant.</li>
+</ol>
+In this case the digits that are significant are 80.5.<br>
+<p>To summarize, captured zeros and non-zero digits are significant, leading zeros (zeros before the non-zero digits) are not significant, and trailing zeros (zeros after the non-zero digits) are significant if there is a decimal.&nbsp; Therefore, the measurement 0.00080.5 mL &nbsp;has two significant figures.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) Which of the following is an accurate description of random error?</div><div class='option'>A) Error that is always in the same direction</div><div class='option'>B) Error that tends to be too high or tends to be too low</div><div class='option'>C) Error that has equal probability of being too high or too low<span class='asterisk'>*</span></div><div class='option'>D) Error where it is impossible to determine the source</div><div class='solution'><p>The accurate description of random error is:</p>
+<p><strong>Error that has equal probability of being too high or too low.</strong></p>
+<p>Random error refers to unpredictable variations in measured values that can occur in any direction. It does not consistently bias measurements in one specific direction (such as always too high or too low). Random errors are typically caused by factors that introduce variability into the measurement process</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) Add the following numbers and indicate the correct number of significant figures.<br>
+<div style="text-align: center;">884.2 + 371.7</div></div><div class='option'>A) 1256</div><div class='option'>B) 1255.9<span class='asterisk'>*</span></div><div class='option'>C) 512.5</div><div class='option'>D) 1260</div><div class='solution'><p>When you punch this into your calculator, the result is 1255.9.</p>
+<p>Now, let's determine the correct number of significant figures.</p>
+<p>884.2 has four significant figures, and 371.7 has four significant figures as well. When we add or subtract numbers, the result should have the same number of decimal places as the number with the <strong>least number of decimal places</strong>.&nbsp; Both &nbsp;884.2 and 371.7 have 1 decimal place in this case. Therefore, the sum, 1255.9, should have 1 significant decimal place.</p>
+<p>After rounding to 1 decimal place, the answer is: 1256</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Read the water level with the correct number of significant figures.&nbsp;<br><br><img title="graduated cylindar 2.jpg" src="../images/4.jpeg" alt="" width="189" height="282"></div><div class='option'>A) 68.0 mL</div><div class='option'>B) 67.00 mL</div><div class='option'>C) 67 mL</div><div class='option'>D) 67.0 mL<span class='asterisk'>*</span></div><div class='solution'><ol>
+<li>
+<p>Start by identifying the main intervals or markings on the graduated cylinder. For example, if the cylinder has markings every 1 mL, those are the main intervals.</p>
+</li>
+<li>
+<p>Observe the position of the meniscus (the curved surface of the liquid) within the main interval. Determine if the meniscus is closer to the lower or upper marking of the interval.&nbsp; In this case the meniscus appears to be right on the 67 mL mark.</p>
+</li>
+<li>
+<p>Next, mentally divide the main interval into smaller divisions. Estimate the position of the meniscus within these smaller divisions. For example, if you are estimating to one decimal place, divide the main interval into 10 equal parts.</p>
+</li>
+<li>
+<p>Based on your judgment, determine the fraction or proportion of the interval that the meniscus appears to be closer to. Estimate this fraction as accurately as possible.&nbsp; In this case, it might be reasonable to estimate another 0.0 (exactly on the 67 mL mark) or 0.1 mL (just above the 67 mL mark).</p>
+</li>
+<li>Add the estimated fraction to the main interval reading. This will give you an estimate of the measurement with an extra significant figure.&nbsp; Reasonable estimates could include 67.0 mL or 67.1 mL, however only 67.0 is an option choice.</li>
+</ol>
+The main concept being tested on is that you need to estimate one additional place value past what the main intervals show.</div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter E<br><canvas id="scantron" class="scantron"></div></body></html>

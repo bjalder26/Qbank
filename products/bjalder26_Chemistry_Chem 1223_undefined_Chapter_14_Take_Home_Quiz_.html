@@ -1,0 +1,269 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 140px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 15px ;
+        text-indent: -15px ;
+		display: block;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint {
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in; <!--9.969325in; -->
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[2],"2":[2],"3":[0],"4":[2],"5":[0],"6":[1],"7":[1],"8":[0],"9":[2],"10":[2],"11":[3],"12":[2],"13":[2],"14":[3],"15":[1],"16":[2],"17":[1],"18":[1],"19":[3],"20":[2],"21":[3],"22":[1],"23":[3]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 let questionsObject = JSON.parse(questionsObjectText);
+	let markCoordinates = [];
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+    //markCoordinates.push({x: 61.5+23.73*value, y: 74+12.06*key});
+  }
+}
+} else {alert('no questionsObject')}
+
+// Function to draw the dark marks on the canvas
+function drawMarks() {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  //canvas.width = 100;
+  //canvas.height = 100;
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  //ctx.scale(2, 2);
+
+
+ 
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+
+// Call the drawMarks function to draw the dark marks on the canvas
+
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Press Ctrl-Z to toggle the answers & Ctrl-x to toggle the solutions.</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter 14 Take Home Quiz</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Jul 10, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><div class='stem'>1) What is the <strong>overall order</strong> of the following reaction?<br>2 NO (g) + O<sub>2</sub> (g) ➞ 2 NO<sub>2</sub> (g);&nbsp; &nbsp; &nbsp; Rate = k[NO]<sup>2</sup>[O<sub>2</sub>]</div><div class='option'>A) zeroth</div><div class='option'>B) second</div><div class='option'>C) third<span class='asterisk'>*</span></div><div class='option'>D) first</div><p></p></div><div class='question'><div class='stem'>2) The following reaction is a second order reaction.&nbsp; If the rate constant is 0.683 M<sup>-1</sup>s<sup>-1</sup>, and the original concentration of O<sub>3</sub> is 0.865x10<sup>-2 </sup>M, then what is the half-life?<br><br>
+<div style="text-align: center;">2 O<sub>3</sub> (g) ➞ 2 O<sub>2</sub> (g)</div></div><div class='option'>A) 79.0 s</div><div class='option'>B) 1.01 s</div><div class='option'>C) 169 s<span class='asterisk'>*</span></div><div class='option'>D) 0.00633 s</div><p></p></div><div class='question'><div class='stem'>3) What generally happens with a reaction when the temperature is increased?</div><div class='option'>A) The rate constant (K) increases, causing the rate of the reaction to increase<span class='asterisk'>*</span></div><div class='option'>B) The rate constant (K) increases, causing the rate of the reaction to decrease</div><div class='option'>C) The rate constant (K) decreases, causing the rate of the reaction to decrease.</div><div class='option'>D) The rate constant (K) decreases, causing the rate of the reaction to increase</div><p></p></div><div class='question'><div class='stem'>4) Identify the statement that is <strong>true</strong>.</div><div class='option'>A) Catalysts increase the concentration of reactants thus increase the rate of a reaction</div><div class='option'>B) The rate constant decreases when temperature is increased</div><div class='option'>C) Rate constants are temperature dependent<span class='asterisk'>*</span></div><div class='option'>D) Catalysts increase the activation energy thus increasing the rate of a reaction</div><p></p></div><div class='question'><div class='stem'>5) What is the order of the reaction represented by the graph below?<br><img title="orderx.jpg" src="../images/45.jpeg" alt="" width="284" height="240"></div><div class='option'>A) first<span class='asterisk'>*</span></div><div class='option'>B) third</div><div class='option'>C) second</div><div class='option'>D) zeroth</div><p></p></div><div class='question'><div class='stem'>6) The decomposition of cyclopropane to propene is a first-order reaction that has a rate constant of 7.60x10<sup>-4</sup> s<sup>-1</sup>. If the initial concentration of cyclopropane is 3.99 M, what is the concentration of cyclopropane after 799 s?</div><div class='option'>A) 3.38 M</div><div class='option'>B) 2.17 M<span class='asterisk'>*</span></div><div class='option'>C) -2.80 M</div><div class='option'>D) 2.42 M</div><p></p></div><div class='question'><div class='stem'>7) What is are the units for the k in the following rate law.<br>Rate = k[A][B][C]</div><div class='option'>A) M/s or Ms<sup>-1</sup></div><div class='option'>B) 1/(M<sup>2</sup>S) or M<sup>-2</sup>S<sup>-1</sup><span class='asterisk'>*</span></div><div class='option'>C) 1/s or s<sup>-1</sup></div><div class='option'>D) 1/(M<sup>3</sup>s) or M<sup>-3</sup>s<sup>-1</sup></div><p></p></div><div class='question'><div class='stem'>8) Which of these two pathways represents the uncatalyzed pathway?<br><img title="cat path.jpg" src="../images/58.jpeg" alt="" width="309" height="268"></div><div class='option'>A) A<span class='asterisk'>*</span></div><div class='option'>B) B</div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><div class='stem'>9) Which step is always the rate-determining step in a multi-step reaction?</div><div class='option'>A) The fastest step</div><div class='option'>B) The last step</div><div class='option'>C) The slowest step<span class='asterisk'>*</span></div><div class='option'>D) The first step</div><p></p></div><div class='question'><div class='stem'>10) Using the balanced chemical equation below, calculate the rate of rate reaction with a rate in change of concentration of P<sub>2</sub>O<sub>5</sub> equal to 11.1 M/s.
+<div style="text-align: center;">4 P + 5 O<sub>2</sub> ➞ 2 P<sub>2</sub>O<sub>5</sub></div></div><div class='option'>A) 123 M/s</div><div class='option'>B) 22.2 M/s</div><div class='option'>C) 5.55 M/s<span class='asterisk'>*</span></div><div class='option'>D) 11.1 M/s</div><p></p></div><div class='question'><div class='stem'>11) Given the following proposed mechanism, what is the rate law for the reaction?<br>A<sub>2 </sub>+ B <span style="font-size: 10.5pt;">➞ A<sub>2</sub>B (overall reaction)</span><br>
+<table style="border-collapse: collapse; width: 295px;" border="0" width="128" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 108.659px;" height="20">step 1</td>
+<td style="width: 90.733px;">A<sub>2</sub> <span style="font-size: 10.5pt;">➞ 2A</span></td>
+<td style="width: 91.9688px;">fast</td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 108.659px;" height="20">step 2</td>
+<td style="width: 90.733px;">2A + B <span style="font-size: 10.5pt;">➞ A<sub>2</sub>B</span></td>
+<td style="width: 91.9688px;">slow</td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) Rate = <span class="math-tex">\( \frac{K[A_2]^2[B]}{2} \)</span></div><div class='option'>B) Rate = <span class="math-tex">\( K[A_2]^{1/2}[B] \)</span></div><div class='option'>C) Rate = <span class="math-tex">\( K[A_2]^2[B] \)</span></div><div class='option'>D) Rate = <span class="math-tex">\( K[A_2][B] \)</span><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>12) Given the initial rate data below, what is the rate law for the following reaction?<br>A (g) + B&nbsp;(g) <span style="font-size: 10.5pt;">➞</span> C&nbsp;(g)<br><br>
+<table style="border-collapse: collapse; width: 359px;" border="0" width="256" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.7102px;" width="64" height="20">Trial</td>
+<td style="width: 49.3182px;" width="64">[A]</td>
+<td style="width: 45.3977px;" width="64">[B]</td>
+<td style="width: 194.02px;" width="64">rate (M/s)</td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.7102px;" height="20">1</td>
+<td style="width: 49.3182px;">1.0</td>
+<td style="width: 45.3977px;">1.0</td>
+<td style="width: 194.02px;">7.04x10<sup>-8</sup></td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.7102px;" height="20">2</td>
+<td style="width: 49.3182px;">1.0</td>
+<td style="width: 45.3977px;">2.0</td>
+<td style="width: 194.02px;">2.82x10<sup>-7</sup></td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.7102px;" height="20">3</td>
+<td style="width: 49.3182px;">2.0</td>
+<td style="width: 45.3977px;">1.0</td>
+<td style="width: 194.02px;">7.04x10<sup>-8</sup></td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) rate =<sup> </sup>K[A][B]</div><div class='option'>B) rate =<sup> </sup>K[A]<sup>2</sup></div><div class='option'>C) rate =<sup> </sup>K[B]<sup>2</sup><span class='asterisk'>*</span></div><div class='option'>D) rate =<sup> </sup>K[B]<sup>4</sup></div><p></p></div><div class='question'><div class='stem'>13) What are biological catalysts called?</div><div class='option'>A) Exfoliators</div><div class='option'>B) Inhibitors</div><div class='option'>C) Enzymes<span class='asterisk'>*</span></div><div class='option'>D) Substrates</div><p></p></div><div class='question'><div class='stem'>14) A reaction is found to have an activation energy of 47.9 kJ/mol, and a frequency factor (A) of 5.76x10<sup>10</sup> s<sup>-1</sup>.&nbsp; What is the rate constant of the reaction at 318 K?</div><div class='option'>A) 4.25x10<sup>18</sup></div><div class='option'>B) 976</div><div class='option'>C) 5.66x10<sup>10</sup></div><div class='option'>D) 781<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>15) The reaction A + B ➞ C + D, has a rate constant of 8.42 × 10<sup>-3</sup> Ms<sup>-1</sup> at 0°C, what is the overall order of the reaction?</div><div class='option'>A) 3</div><div class='option'>B) 0<span class='asterisk'>*</span></div><div class='option'>C) 1</div><div class='option'>D) 2</div><p></p></div><div class='question'><div class='stem'>16) Which of the following expressions accurately depicts the rate of this reaction?<br><br>
+<div style="text-align: center;">Pb(OH)<sub>2</sub> + 2 HCl ➞ PbCl<sub>2</sub> (s) + 2 H<sub>2</sub>O (l)</div></div><div class='option'>A) <span class="math-tex">\( -\frac{1}{2}\frac{Δ[Pb(OH)_2]}{Δt} \)</span></div><div class='option'>B) <span class="math-tex">\( +\frac{1}{2}\frac{Δ[HCl]}{Δt} \)</span></div><div class='option'>C) <span class="math-tex">\( -\frac{1}{2}\frac{Δ[HCl]}{Δt} \)</span><span class='asterisk'>*</span></div><div class='option'>D) <span class="math-tex">\( +\frac{Δ[HCl]}{Δt} \)</span></div><p></p></div><div class='question'><div class='stem'>17) (SLO 2.7) Which of the following reactions would you predict to have the largest orientation factor?</div><div class='option'>A) NH<sub>3</sub> (g) + BCl<sub>3</sub> (g) ➞ H<sub>3</sub>N-BCl<sub>3</sub> (g)</div><div class='option'>B) H (g) + F (g) ➞ HF (g)<span class='asterisk'>*</span></div><div class='option'>C) Br<sub>2</sub> (g) + H<sub>2</sub>C-CH<sub>2</sub> (g) ➞ H<sub>2</sub>BrC-CBrH<sub>2</sub> (g)</div><div class='option'>D) NOCl (g) + NOCl (g) ➞ 2 NO (g) + Cl<sub>2</sub> (g)</div><p></p></div><div class='question'><div class='stem'>18) (SLO 2.4) What rate is termolecular?</div><div class='option'>A) Rate = K[A]<sup>2</sup></div><div class='option'>B) Rate = K[A][B]<sup>2</sup><span class='asterisk'>*</span></div><div class='option'>C) Rate = K[A]</div><div class='option'>D) Rate = K</div><p></p></div><div class='question'><div class='stem'>19) (SLO 2.2) Given the following balanced equation, determine the rate of reaction with respect to [H<sub>2</sub>].<br>N<sub>2</sub> (g) + 3 H<sub>2</sub> (g) ➞ 2 NH<sub>3</sub> (g)</div><div class='option'>A) Rate = <span class="math-tex">\( -\frac{3}{2} \frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>B) Rate = <span class="math-tex">\( +\frac{3}{1} \frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>C) Rate = <span class="math-tex">\( -\frac{2}{3} \frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>D) Rate = <span class="math-tex">\( -\frac{1}{3} \frac{Δ[H_2]}{Δt} \)</span><span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>20) (SLO 2.5) For a reaction that follows the general rate law, Rate = K[A]<sup></sup>[B]<sup>2</sup>, what will happen to the rate of reaction if the concentration of A is increased by a factor of 2?</div><div class='option'>A) The rate will decrease by a factor of 1/4.0</div><div class='option'>B) The rate will decrease by a factor of 1/2.0</div><div class='option'>C) The rate will increase by a factor of 2.0<span class='asterisk'>*</span></div><div class='option'>D) The rate will increase by a factor of 4.0</div><p></p></div><div class='question'><div class='stem'>21) (SLO 2.3) What is the overall order of the following reaction, given the rate law?<br>3 X + 2 Y ➞ 4 Z&nbsp; &nbsp; &nbsp;Rate = k[X]<sup>2</sup>[Y]<sup>2</sup></div><div class='option'>A) 2</div><div class='option'>B) 5</div><div class='option'>C) 3</div><div class='option'>D) 4<span class='asterisk'>*</span></div><p></p></div><div class='question'><div class='stem'>22) (SLO 2.1) If the rate of <strong>disappearance </strong>of HBr in the gas phase reaction is 0.128 M/s, then the rate of <strong>appearance </strong>of Br<sub>2</sub>&nbsp;is _______&nbsp; M/s
+<div style="text-align: left;">2 HBr (g) ➞ H<sub>2</sub> (g) + Br<sub>2</sub> (g)</div></div><div class='option'>A) 0.128 M/s</div><div class='option'>B) 0.0640 M/s<span class='asterisk'>*</span></div><div class='option'>C) 0.256 M/s</div><div class='option'>D) 7.81 M/s</div><p></p></div><div class='question'><div class='stem'>23) (SLO 2.6) At 334 K a reaction is found to have a rate constant of &nbsp;24900 M<sup>-1</sup>s<sup>-1</sup>, at 265 K the reaction is found to have a rate constant of 2.73 M<sup>-1</sup>s<sup>-1</sup>. What is the activation energy for this reaction.</div><div class='option'>A) -42.2 kJ/mol</div><div class='option'>B) -97.3 kJ/mol</div><div class='option'>C) 42.2 kJ/mol</div><div class='option'>D) 97.3 kJ/mol<span class='asterisk'>*</span></div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 14 Take Home Quiz<br><canvas id="scantron" class="scantron"></div></body></html>

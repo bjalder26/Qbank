@@ -1,0 +1,433 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[0],"2":[1],"3":[2],"4":[3],"5":[1],"6":[0],"7":[2],"8":[2],"9":[2],"10":[0],"11":[0],"12":[2],"13":[3],"14":[0],"15":[3],"16":[2],"17":[3],"18":[3],"19":[3],"20":[3],"21":[3],"22":[1],"23":[1],"24":[0],"25":[0],"26":[0],"27":[3],"28":[0],"29":[1],"30":[0],"31":[3],"32":[2],"33":[0],"34":[0],"35":[3],"36":[3],"37":[0],"38":[0],"39":[3],"40":[0]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Exam 2 (Ch 14 & 15) Study Guide</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Sep 27, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) Given the following proposed mechanism, what is the rate law for the reaction?<br>A<sub>2 </sub>+ B <span style="font-size: 10.5pt;">➞ A<sub>2</sub>B (overall reaction)</span><br>
+<table style="border-collapse: collapse; width: 295px;" border="0" width="128" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 108.891px;" height="20">step 1</td>
+<td style="width: 109.922px;">A<sub>2</sub> <span style="font-size: 10.5pt;">➞ 2A</span></td>
+<td style="width: 73.1836px;">fast</td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 108.891px;" height="20">step 2</td>
+<td style="width: 109.922px;">2A + B <span style="font-size: 10.5pt;">➞ A<sub>2</sub>B</span></td>
+<td style="width: 73.1836px;">slow</td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) Rate = <span class="math-tex">\( K[A_2][B] \)</span><span class='asterisk'>*</span></div><div class='option'>B) Rate = <span class="math-tex">\( K[A_2]^{1/2}[B] \)</span></div><div class='option'>C) Rate = <span class="math-tex">\( K[A_2]^2[B] \)</span></div><div class='option'>D) Rate = <span class="math-tex">\( \frac{K[A_2]^2[B]}{2} \)</span></div><div class='solution'>The rate law for the rate determining (slow) step (2A + B <span style="font-size: 10.5pt;">➞ A<sub>2</sub>B</span>) is:<br>rate = k<sub>2</sub>[A]<sup>2</sup>[B], however, we can't have an intermediate ([A]) in our final rate law.<br><br>Assume the first-fast reaction (A<sub>2</sub> <span style="font-size: 10.5pt;">➞ 2A</span>) reaches equilibrium.<br>rate<sub>F</sub> = rate<sub>R</sub><br>k<sub>F</sub>[A<sub>2</sub>] = k<sub>R</sub>[A]<sup>2</sup>&nbsp;<br>Typically you would solve for the concentration of the intermediate ([A]), but in this case we can solve for [A]<sup>2</sup><br><span class="math-tex">\( \frac{k_F}{k_R} \)</span>[A<sub>2</sub>] = [A]<sup>2<br></sup><br>Substitute in<span class="math-tex">\( \frac{k_F}{k_R} \)</span>[A<sub>2</sub>] for [A]<sup>2</sup> in rate = k<sub>2</sub>[A]<sup>2</sup>[B] to get:<br>rate = k<sub>2</sub><span class="math-tex">\( \frac{k_F}{k_R} \)</span>[A<sub>2</sub>][B], then combine the constants to get:<br>rate = K[A<sub>2</sub>][B]<br><br></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) A reaction is found to have an activation energy of 49.0 kJ/mol, and a frequency factor (A) of 5.91x10<sup>10</sup> s<sup>-1</sup>.&nbsp; What is the rate constant of the reaction at 293 K?</div><div class='option'>A) 5.79x10<sup>10</sup> s<sup>-1</sup></div><div class='option'>B) 109 s<sup>-1</sup><span class='asterisk'>*</span></div><div class='option'>C) 3.21x10<sup>19</sup> s<sup>-1</sup></div><div class='option'>D) 87.0 s<sup>-1</sup></div><div class='solution'>K = <span class="math-tex">\( Ae^{\frac{-E_a}{RT}} \)</span><br>Substituting in for 5.91x10<sup>10</sup> s<sup>-1 </sup>A, 49.0 kJ/mol for E<sub>a</sub>, 0.0083145 kJ/mol-K for R, and 293 K for T gives:<br>K = 5.91x10<sup>10</sup> s<sup>-1</sup> x e<sup>(-49.0 kJ/mol)/(0.0083145 kJ/mol-K x 293 K)</sup><br>K = 109 s<sup>-1</sup><br>*E<sub>a</sub> and K need to both be in J or kJ</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) The reaction of nitrogen monoxide with oxygen is second-order with respect to nitrogen monoxide, and has a rate constant of 0.283 <span style="font-size: 11.6667px;">M<sup>-1</sup></span>s<sup>-1</sup>. If the initial concentration of nitrogen monoxide is 2.11 M, what is the concentration of nitrogen monoxide after 553 s?</div><div class='option'>A) 159 M</div><div class='option'>B) 330. M</div><div class='option'>C) 0.00637 M<span class='asterisk'>*</span></div><div class='option'>D) 1.95x10<sup>68</sup> M</div><div class='solution'>The integrated rate law for a second order reaction is <span class="math-tex">\( \frac{1}{[A]_t} = kt + \frac{1}{[A]_0} \)</span><br>substituting in 0.283 <span style="font-size: 11.6667px;">M<sup>-1</sup></span>s<sup>-1</sup> for k, 2.11 M for [A]<sub>0</sub>, and 553 s for t gives:<br><br><span class="math-tex">\( \frac{1}{[A]_t} \)</span> = 0.283 <span style="font-size: 11.6667px;">M<sup>-1</sup></span>s<sup>-1</sup> x 553 s x 1/(2.11 M)<br><span class="math-tex">\( \frac{1}{[A]_t} \)</span> = 157 1/M, taking the inverse of both sides gives:<br>[A]<sub>t</sub> = 0.00637 M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) What are biological catalysts called?</div><div class='option'>A) Exfoliators</div><div class='option'>B) Inhibitors</div><div class='option'>C) Substrates</div><div class='option'>D) Enzymes<span class='asterisk'>*</span></div><div class='solution'>&nbsp;Biological catalysts are called enzymes.&nbsp; Substrates bind to catalysts.&nbsp; Inhibitors slow the action of an enzyme.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) Given the initial rate data below, what is the rate law for the following reaction?<br>A (g) + B&nbsp;(g) <span style="font-size: 10.5pt;">➞</span> C&nbsp;(g)<br><br>
+<table style="border-collapse: collapse; width: 359px;" border="0" width="256" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.8594px;" width="64" height="20">Trial</td>
+<td style="width: 49.418px;" width="64">[A]</td>
+<td style="width: 45.4922px;" width="64">[B]</td>
+<td style="width: 194.473px;" width="64">rate (M/s)</td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.8594px;" height="20">1</td>
+<td style="width: 49.418px;">1.0</td>
+<td style="width: 45.4922px;">1.0</td>
+<td style="width: 194.473px;">3.67x10<sup>-8</sup></td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.8594px;" height="20">2</td>
+<td style="width: 49.418px;">1.0</td>
+<td style="width: 45.4922px;">2.0</td>
+<td style="width: 194.473px;">2.94x10<sup>-7</sup></td>
+</tr>
+<tr style="height: 15.00pt;">
+<td style="height: 15pt; width: 65.8594px;" height="20">3</td>
+<td style="width: 49.418px;">2.0</td>
+<td style="width: 45.4922px;">1.0</td>
+<td style="width: 194.473px;">1.47x10<sup>-7</sup></td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) rate =<sup> </sup>K[A]<sup>3</sup>[B]<sup>2</sup></div><div class='option'>B) rate =<sup> </sup>K[A]<sup>2</sup>[B]<sup>3</sup><span class='asterisk'>*</span></div><div class='option'>C) rate =<sup> </sup>K[A]<sup>4</sup>[B]<sup>9</sup></div><div class='option'>D) rate =<sup> </sup>K[A][B]</div><div class='solution'>From trial 1 to 3 only the concentration of A changed.&nbsp;<br><br>
+<table style="border-collapse: collapse; width: 100.04%;" border="1">
+<tbody>
+<tr>
+<td style="width: 10.4263%;">Trial</td>
+<td style="width: 11.5926%;">[A]</td>
+<td style="width: 77.941%;">Rate</td>
+</tr>
+<tr>
+<td style="width: 10.4263%;">3</td>
+<td style="width: 11.5926%;">[2.0]</td>
+<td style="width: 77.941%;">1.47x10<sup>-7</sup></td>
+</tr>
+<tr>
+<td style="width: 10.4263%;">1</td>
+<td style="width: 11.5926%;">[1.0]</td>
+<td style="width: 77.941%;">3.67x10<sup>-8</sup></td>
+</tr>
+</tbody>
+</table>
+Dividing the rate law of trial 3 by the rate law of trial 1, then canceling out the rate constant and concentration of B leaves the following.<br><span class="math-tex">\( \frac{[2.0]^x}{[1.0]^x} \)</span> = 1.47x10<sup>-7</sup>/3.67x10<sup>-8</sup><br><span class="math-tex">\( (\frac{[2.0]}{[1.0]} )^x \)</span>= 4<br>x = 2<br><br>
+<table style="border-collapse: collapse; width: 100.04%;" border="1">
+<tbody>
+<tr>
+<td style="width: 10.4263%;">Trial</td>
+<td style="width: 11.5926%;">[B]</td>
+<td style="width: 77.941%;">Rate</td>
+</tr>
+<tr>
+<td style="width: 10.4263%;">2</td>
+<td style="width: 11.5926%;">[2.0]</td>
+<td style="width: 77.941%;">2.94x10<sup>-7</sup></td>
+</tr>
+<tr>
+<td style="width: 10.4263%;">1</td>
+<td style="width: 11.5926%;">[1.0]</td>
+<td style="width: 77.941%;">3.67x10<sup>-8</sup></td>
+</tr>
+</tbody>
+</table>
+<p><br>Dividing the rate law of trial 2 by the rate law of trial 1, then canceling out the rate constant and concentration of A leaves the following.<br><span class="math-tex">\( \frac{[2.0]^y}{[1.0]^y} \)</span> = 1.47x10<sup>-7</sup>/3.67x10<sup>-8</sup><br><span class="math-tex">\( (\frac{[2.0]}{[1.0]} )^y \)</span>= 4<br>y = 2<br><br>Thus the rate law will be:<br>Rate = K[A]<sup>2</sup>[B]<sup>2</sup> = K[A]<sup>2</sup>[B]<sup>3</sup></p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) The following reaction is a first order reaction.&nbsp; If the rate constant is 1.58x10<sup>-4</sup> s<sup>-1</sup>, and the original concentration of &nbsp;N<sub>2</sub>O<sub>5</sub>&nbsp;is 3.47x10<sup>-2 </sup>M, then what is the half-life?<br><br>
+<div style="text-align: center;">2 N<sub>2</sub>O<sub>5</sub> (g) ➞ 4 NO<sub>2</sub> (g) + O<sub>2</sub> (g)</div></div><div class='option'>A) 4390 s<span class='asterisk'>*</span></div><div class='option'>B) 110. s</div><div class='option'>C) 1.82x10<sup>5</sup> s</div><div class='option'>D) 0.00455 s</div><div class='solution'>Since this is a second order reaction, the half-life equation is <span class="math-tex">\( \frac{0.693}{K} = t_{1/2} \)</span><br>Substituting in 1.58 s<sup>-1</sup> for K, gives:<br>t<sub>1/2</sub> = 0.693/(1.58 s<sup>-1</sup>) = 1.82x10<sup>5</sup> s</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) What is the <strong>overall order</strong> of the following reaction?<br>2 NH<sub>3</sub> (g) + N<sub>2</sub> (g) ➞ 3 H<sub>2</sub> (g);&nbsp; &nbsp; &nbsp; Rate = k</div><div class='option'>A) first</div><div class='option'>B) second</div><div class='option'>C) zeroth<span class='asterisk'>*</span></div><div class='option'>D) third</div><div class='solution'>based on the rate law (Rate = k), the order of the reaction is zeroth, because if you add the exponents (orders) of each reactant, then you will get 0</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) Using the balanced chemical equation below, calculate the rate of rate reaction with a rate in change of concentration of HCl equal to 14.0 M/s.
+<div style="text-align: center;">2 NH<sub>3</sub> (g) + 3 Cl<sub>2</sub> (g) → N<sub>2</sub> (g) + 6 HCl (g)</div></div><div class='option'>A) 7.53x10<sup>6</sup> M/s</div><div class='option'>B) 84.0 M/s</div><div class='option'>C) 2.33 M/s<span class='asterisk'>*</span></div><div class='option'>D) 14.0 M/s</div><div class='solution'>Rate = <span class="math-tex">\( -\frac{1}{2}\frac{Δ[NH_3]}{Δt} \)</span> = <span class="math-tex">\( -\frac{1}{3}\frac{Δ[Cl_2]}{Δt} \)</span> = <span class="math-tex">\( +\frac{Δ[N_2]}{Δt} \)</span> = <span class="math-tex">\( +\frac{1}{6}\frac{Δ[HCl]}{Δt} \)</span><br>Substitute in 14.0 M/s for change of concentration of HCl<br>Rate = +1/6 14.0 M/s&nbsp;<br>Rate = 2.33 M/s</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) Identify the statement that is <strong>true</strong>.</div><div class='option'>A) A catalyst is an intermediate in a reaction</div><div class='option'>B) Catalysts decrease the rate constant</div><div class='option'>C) Increasing the temperature generally increases the rate constant<span class='asterisk'>*</span></div><div class='option'>D) The rate constant will always double if you double the temperature</div><div class='solution'>If you look at a generic rate law (rate = k[A][B]), anything that affects the rate, besides changes in concentration are accounted for in the rate constant.&nbsp; Since increasing temperature increases the rate of a reaction, it will do so by increasing the rate constant.&nbsp; The same is true for adding a catalyst.<br>The affect temperature has on the rate constant is shown in the Arrhenius equation.&nbsp; So is the effect of a catalyst, because it lowers the activation energy (E<sub>a</sub>).<br>K = <span class="math-tex">\( Ae^{\frac{-E_a}{RT}} \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) Which of these two pathways represents the uncatalyzed pathway?<br><img title="cat path.jpg" src="../images/58.jpeg" alt="" width="309" height="268"></div><div class='option'>A) A<span class='asterisk'>*</span></div><div class='option'>B) B</div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>The uncatalyzed pathway will have a higher activation energy (E<sub>a</sub>).</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) What generally happens with a reaction when the temperature is increased?</div><div class='option'>A) The rate constant (K) increases, causing the rate of the reaction to increase<span class='asterisk'>*</span></div><div class='option'>B) The rate constant (K) decreases, causing the rate of the reaction to increase</div><div class='option'>C) The rate constant (K) decreases, causing the rate of the reaction to decrease.</div><div class='option'>D) The rate constant (K) increases, causing the rate of the reaction to decrease</div><div class='solution'>If you think about a generic rate equation such as Rate = k[A][B], anything that affects the rate, that isn't a change in concentration of A or B must cause a change in k.&nbsp; Since an increase in temperature increases the rate of a reaction, it must be because it increases the value of k.<br><br>The effect of temperature on the equilibrium constant is shown in the Arrhenius equation.<br>k = <span class="math-tex">\( Ae^{\frac{-E_a}{RT}} \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) What is are the units for the k in the following rate law.<br>Rate = k</div><div class='option'>A) 1/s or s<sup>-1</sup></div><div class='option'>B) 1/(Ms) or M<sup>-1</sup>s<sup>-1</sup></div><div class='option'>C) M/s or Ms<sup>-1</sup><span class='asterisk'>*</span></div><div class='option'>D) 1/(M<sup>3</sup>s) or M<sup>-3</sup>s<sup>-1</sup></div><div class='solution'>Based on the rate law (Rate = k), the overall order of the reaction is zeroth, so the exponents for units of the rate constant will add to 0.&nbsp; Since seconds is always to the -1 power, molarity will have to be to the +1 power.&nbsp; Thus M/s or Ms<sup>-1</sup> is the answer.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) Which of the following expressions accurately depicts the rate of this reaction?<br><br>
+<div style="text-align: center;">2 NO(g) + O<sub>2</sub> (g) ➞ 2 NO<sub>2</sub> (g)</div></div><div class='option'>A) <span class="math-tex">\( -\frac{1}{2}\frac{Δ[O_2]}{Δt} \)</span></div><div class='option'>B) <span class="math-tex">\( +\frac{Δ[NO_2]}{Δt} \)</span></div><div class='option'>C) <span class="math-tex">\( -\frac{Δ[NO]}{Δt} \)</span></div><div class='option'>D) <span class="math-tex">\( +\frac{1}{2}\frac{Δ[NO_2]}{Δt} \)</span><span class='asterisk'>*</span></div><div class='solution'>You should be looking for an answer that shows a negative sign for reactants or positive for products.&nbsp; Also, the coefficient from the balanced chemical equation should be in the denominator.<br>Rate =<span class="math-tex">\( -\frac{1}{2}\frac{Δ[NO]}{Δt} \)</span> = <span class="math-tex">\( -\frac{Δ[O_2]}{Δt} \)</span> = <span class="math-tex">\( +\frac{1}{2}\frac{Δ[NO_2]}{Δt} \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) What is the order of the reaction represented by the graph below?<br><img title="ordery.jpg" src="../images/46.jpeg" alt="" width="288" height="240"></div><div class='option'>A) second<span class='asterisk'>*</span></div><div class='option'>B) zeroth</div><div class='option'>C) third</div><div class='option'>D) first</div><div class='solution'><table style="border-collapse: collapse; width: 51.4448%;" border="1">
+<tbody>
+<tr>
+<td style="width: 17.7096%;">Zero order</td>
+<td style="width: 17.6563%;">First order</td>
+<td style="width: 64.5974%;">Second order</td>
+</tr>
+<tr>
+<td style="width: 17.7096%;"><img title="orderz.jpg" src="../images/44.jpeg" alt="" width="275" height="240"></td>
+<td style="width: 17.6563%;"><img title="orderx.jpg" src="../images/45.jpeg" alt="" width="284" height="240"></td>
+<td style="width: 64.5974%;"><img title="ordery.jpg" src="../images/46.jpeg" alt="" width="288" height="240"></td>
+</tr>
+</tbody>
+</table></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) Which step is always the rate-determining step in a multi-step reaction?</div><div class='option'>A) The fastest step</div><div class='option'>B) The last step</div><div class='option'>C) The first step</div><div class='option'>D) The slowest step<span class='asterisk'>*</span></div><div class='solution'>The slowest step is always the rate determining step.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) The reaction A + B ➞ C + D, has a rate constant of 6.45 × 10<sup>-5</sup> Ms<sup>-1</sup> at 0°C, what is the overall order of the reaction?</div><div class='option'>A) 1</div><div class='option'>B) 2</div><div class='option'>C) 0<span class='asterisk'>*</span></div><div class='option'>D) 3</div><div class='solution'>If you add the exponents of the rate constant units (Ms<sup>-1</sup>), you get 0, so the order of the overall reaction is 0.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) (SLO 2.2) Given the following balanced equation, determine the rate of reaction with respect to [H<sub>2</sub>].<br>N<sub>2</sub> (g) + 3 H<sub>2</sub> (g) ➞ 2 NH<sub>3</sub> (g)</div><div class='option'>A) Rate = <span class="math-tex">\( +\frac{3}{1} \frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>B) Rate = <span class="math-tex">\( -\frac{2}{3} \frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>C) Rate = <span class="math-tex">\( -\frac{3}{2} \frac{Δ[H_2]}{Δt} \)</span></div><div class='option'>D) Rate = <span class="math-tex">\( -\frac{1}{3} \frac{Δ[H_2]}{Δt} \)</span><span class='asterisk'>*</span></div><div class='solution'>Rate = <span class="math-tex">\( - \frac{Δ[N_2]}{Δt} \)</span> = <span class="math-tex">\( -\frac{1}{3}\frac{Δ[H_2]}{Δt} \)</span> = <span class="math-tex">\( +\frac{1}{2}\frac{Δ[NH_3]}{Δt} \)</span> =</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) (SLO 2.1) If the rate of appearance </strong>of H<sub>2</sub> in the gas phase reaction is 0.0903 M/s, then the rate of disappearance </strong>of HBr&nbsp;is _______&nbsp; M/s
+<div style="text-align: left;">2 HBr (g) ➞ H<sub>2</sub> (g) + Br<sub>2</sub> (g)</div></div><div class='option'>A) 11.1 M/s</div><div class='option'>B) 0.0452 M/s</div><div class='option'>C) 0.0903 M/s</div><div class='option'>D) 0.181 M/s<span class='asterisk'>*</span></div><div class='solution'>Rate = <span class="math-tex">\( -\frac{1}{2}\frac{Δ[HBr]}{Δt} \)</span> = <span class="math-tex">\( \frac{Δ[H_2]}{Δt} \)</span> = <span class="math-tex">\( \frac{Δ[Br_2]}{Δt} \)</span><br>If we substitute in 0.0903 M/s for the change in concentration of H<sub>2</sub>, and solve for the rate of disappearance </strong>of HBr, then we'll get 0.181 M/s.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) (SLO 2.7) Which of the following reactions would you predict to have the largest orientation factor?</div><div class='option'>A) NH<sub>3</sub> (g) + BCl<sub>3</sub> (g) ➞ H<sub>3</sub>N-BCl<sub>3</sub> (g)</div><div class='option'>B) NOCl (g) + NOCl (g) ➞ 2 NO (g) + Cl<sub>2</sub> (g)</div><div class='option'>C) Br<sub>2</sub> (g) + H<sub>2</sub>C-CH<sub>2</sub> (g) ➞ H<sub>2</sub>BrC-CBrH<sub>2</sub> (g)</div><div class='option'>D) H (g) + F (g) ➞ HF (g)<span class='asterisk'>*</span></div><div class='solution'>The reaction with the largest orientation factor will be the reaction with atomic (not molecular) reactants.&nbsp; Because atoms are essentially spheres, and there is not really a "bad orientation" for spheres.&nbsp; So the orientation factor would be close to 1 (meaning ~100% collide with a proper orientation).</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">20</span>) (SLO 2.3) What is the overall order of the following reaction, given the rate law?<br> X + 4 Y ➞ 4 Z&nbsp; &nbsp; &nbsp;Rate = k[X]<sup></sup>[Y]<sup></sup></div><div class='option'>A) 4</div><div class='option'>B) 1</div><div class='option'>C) 5</div><div class='option'>D) 2<span class='asterisk'>*</span></div><div class='solution'>Ignore the chemical equation, and just add the exponents (orders) of the reactants.<br>&nbsp;Rate = k[X]<sup></sup>[Y]<sup></sup><br>1 + 1 = 2</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">21</span>) (SLO 2.6) At 370. K a reaction is found to have a rate constant of &nbsp;31600 M<sup>-1</sup>s<sup>-1</sup>, at 273 K the reaction is found to have a rate constant of 1.18 M<sup>-1</sup>s<sup>-1</sup>. What is the activation energy for this reaction.</div><div class='option'>A) -88.3 kJ/mol</div><div class='option'>B) 38.3 kJ/mol</div><div class='option'>C) -38.3 kJ/mol</div><div class='option'>D) 88.3 kJ/mol<span class='asterisk'>*</span></div><div class='solution'><p>Starting with the Arrhenius equation:</p>
+<p><span class="math-tex">\( ln \frac{k_2}{k_1} = -\frac{E_a}{R}(\frac{1}{T_2} - \frac{1}{T_1}) \)</span>, multiplying each side by -R<br><span class="math-tex">\( -R x ln \frac{k_2}{k_1} = E_a x (\frac{1}{T_2} - \frac{1}{T_1}) \)</span>, dividing each side by <span class="math-tex">\( (\frac{1}{T_2} - \frac{1}{T_1}) \)</span><br><span class="math-tex">\( \frac{-R x ln \frac{k_2}{k_1}}{(\frac{1}{T_2} - \frac{1}{T_1}) } = E_a \)</span>, then plugging in 31600 M<sup>-1</sup>s<sup>-1</sup> in for K<sub>1</sub>, 1.18 M<sup>-1</sup>s<sup>-1</sup> in for K<sub>2</sub>,&nbsp; 0.0083145 kJ/mol-K for R,&nbsp; 370. K for T<sub>1</sub>, and 273 K for T<sub>2</sub> gives:<br>Ea = (-0.0083145 kJ/mol-K x ln( 1.18 M<sup>-1</sup>s<sup>-1</sup> / 31600 M<sup>-1</sup>s<sup>-1</sup>)) / (1/273 K - 1/370. K)<br>E<sub>a</sub> = 88.3 kJ/mol</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">22</span>) (SLO 2.4) What rate is termolecular?</div><div class='option'>A) Rate = K</div><div class='option'>B) Rate = K[A]<sup>3</sup><span class='asterisk'>*</span></div><div class='option'>C) Rate = K[B]<sup>2</sup></div><div class='option'>D) Rate = K[A]</div><div class='solution'>Adding the exponents (orders) of the concentrations for K[A]<sup>3</sup> gives 3 so the reaction would be termolecular</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">23</span>) (SLO 2.5) For a reaction that follows the general rate law, Rate = K[A]<sup>2</sup>[B]<sup>2</sup>, what will happen to the rate of reaction if the concentration of A is increased by a factor of 3?</div><div class='option'>A) The rate will decrease by a factor of 1/9.0</div><div class='option'>B) The rate will increase by a factor of 9.0<span class='asterisk'>*</span></div><div class='option'>C) The rate will decrease by a factor of 1/12</div><div class='option'>D) The rate will increase by a factor of 12</div><div class='solution'>To solve this question, take the exponent (order) for A, and raise the factor (3) by that exponent.<br>3<sup>2</sup> =&nbsp; 9.0</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">24</span>) What is Δn for the following equation in relating K<sub>c</sub> to K<sub>p</sub>?<br>2 SO<sub>2 </sub>(g) + O<sub>2 </sub>(g) ⇌ 2 SO<sub>3 </sub>(g)</div><div class='option'>A) -1<span class='asterisk'>*</span></div><div class='option'>B) 1</div><div class='option'>C) 2</div><div class='option'>D) -3</div><div class='solution'>A change is always final minus initial, so take the moles <strong>of gas</strong> in the product 2 SO<sub>3 </sub>(g), and subtract the moles of gas on the reactant side 2 SO<sub>2 </sub>(g) + O<sub>2 </sub>(g).<br>2 - 3 = -1</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">25</span>) Is the following reaction reactant or product favored?<br>AgCl (s) ⇌ Ag<sup>+</sup> (aq) + Cl<sup>-</sup> (aq)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 1.8x10<sup>-10</sup></div><div class='option'>A) Reactant favored<span class='asterisk'>*</span></div><div class='option'>B) Product favored</div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>When K<sub>c</sub> is greater than 1, it is product favored, when K<sub>c</sub> is less than 1 it is reactant favored.&nbsp; This is because K<sub>c</sub> is essentially products over reactants.&nbsp; So a number greater than 1 indicates more products than reactants, whereas a number lower than 1 indicates more reactants than products.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">26</span>) Is the following reaction reactant or product favored?<br>HBr (s) + H<sub>2</sub>O (l) ⇌ H<sub>3</sub>O<sup>+</sup> (aq) + Br<sup>-</sup> (aq)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 1.0x10<sup>9</sup></div><div class='option'>A) Product favored<span class='asterisk'>*</span></div><div class='option'>B) Reactant favored</div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>When K<sub>c</sub> is greater than 1, it is product favored, when K<sub>c</sub> is less than 1 it is reactant favored.&nbsp; This is because K<sub>c</sub> is essentially products over reactants.&nbsp; So a number greater than 1 indicates more products than reactants, whereas a number lower than 1 indicates more reactants than products.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">27</span>) In the reaction below, at equilibrium, the concentration of H<sub>2</sub> is 0.374 M, and the concentration of O<sub>2</sub> is 0.311 M. Determine the equilibrium concentration of H<sub>2</sub>O (g).<br>2 H<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 H<sub>2</sub>O (g)&nbsp; &nbsp; &nbsp; K<sub>c</sub> = 3.94x10<sup>3</sup></div><div class='option'>A) 21.4 M</div><div class='option'>B) 458 M</div><div class='option'>C) 171 M</div><div class='option'>D) 13.1 M<span class='asterisk'>*</span></div><div class='solution'>K<sub>c</sub> = <span class="math-tex">\( \frac{[H_2O]^2}{[H_2]^2[O_2]} \)</span> = ([H<sub>2</sub>O]<sup>2</sup>)/(0.374<sup>2</sup> x 0.311) =&nbsp; 3.94x10<sup>3</sup><br>[H<sub>2</sub>O]<sup>2</sup> = (0.374<sup>2</sup> x 0.311) x 3.94x10<sup>3</sup><br>[H<sub>2</sub>O]<sup>2</sup> = 171 M<sup>2</sup><br>[H<sub>2</sub>O] 13.1 M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">28</span>) Once this reaction has reached equilibrium, which of the following changes would shift the equilibrium to the right?<br>2 SO<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 SO<sub>3</sub> (g),&nbsp; &nbsp; &nbsp; ΔH = -197.7 kJ</div><div class='option'>A) Removing SO<sub>3</sub><span class='asterisk'>*</span></div><div class='option'>B) A decrease in pressure</div><div class='option'>C) Adding SO<sub>3</sub></div><div class='option'>D) An increase in temperature</div><div class='solution'>Adding reactants or removing products will shift a reaction to the right.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">29</span>) If Q (the reactant quotient) is greater than the equilibrium constant, then which way will the reaction proceed more quickly?</div><div class='option'>A) In the forward direction</div><div class='option'>B) In the reverse direction<span class='asterisk'>*</span></div><div class='option'>C)  All of the above.</div><div class='option'>D)  None of the above.</div><div class='solution'>If Q (the reactant quotient) is greater than the equilibrium constant, then it means we have too much product (numerator) and too little reactant (denominator) to be at equilibrium.&nbsp; Since reversible reactions will always proceed to equilibrium, the reaction will have to proceed in the reverse direction to produce more reactant, and use up some of the product.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">30</span>) Once this reaction has reached equilibrium, which of the following changes would shift the equilibrium to the left?<br>2 SO<sub>2</sub> (g) + O<sub>2</sub> (g) ⇌ 2 SO<sub>3</sub> (g),&nbsp; &nbsp; &nbsp; ΔH = -197.7 kJ</div><div class='option'>A) An increase in temperature<span class='asterisk'>*</span></div><div class='option'>B) A decrease in volume</div><div class='option'>C) Removing product</div><div class='option'>D) An increase in pressure</div><div class='solution'>Since there are more moles of gas on the left side of the equation, an increase in volume (decrease in pressure) will shift the equilibrium to the left.&nbsp; <br>Since the reaction is exothermic, an increase in temperature will shift the reaction to the left.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">31</span>) The reaction below has a K<sub>p</sub> value of 9.88x10<sup>-2</sup>. What is the value of K<sub>c</sub> for this reaction at 660 K?<br>3 A (g) + 2 B (g) ⇌ A<sub>3</sub>B<sub>2</sub> (g)</div><div class='option'>A) 4.48x10<sup>-6</sup></div><div class='option'>B) 1.15x10<sup>-8</sup></div><div class='option'>C) 1.15x10<sup>-8</sup></div><div class='option'>D) 8.50x10<sup>5</sup><span class='asterisk'>*</span></div><div class='solution'>K<sub>p</sub> = K<sub>c</sub>(RT)<sup>Δn</sup>, solving for K<sub>c</sub>:<br>&nbsp;K<sub>c</sub> = K<sub>p</sub>/(RT)<sup>Δn</sup><sub> =&nbsp; </sub>9.88x10<sup>-2</sup>/(0.08206 L-atm/mol-K x 660 K)<sup>-4<br></sup>K<sub>c</sub> = [9.88*10^-2/((0.08206*660)^(1-3-2))]</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">32</span>) For the following reaction, if a reaction container holds 2.72 M I<sub>2</sub> and 2.52 M Br<sub>2</sub>. After a reaction takes place, what would be the equilibrium concentration of IBr?<br>I<sub>2</sub> (g) + Br<sub>2</sub> (g) ⇌ 2 IBr (g)&nbsp; &nbsp; &nbsp;K<sub>c</sub> = 6.38</div><div class='option'>A) 2.00 M</div><div class='option'>B) 2.63 M</div><div class='option'>C) 2.92 M<span class='asterisk'>*</span></div><div class='option'>D) 1.46 M</div><div class='solution'><table style="border-collapse: collapse; width: 39.8223%;" border="1">
+<tbody>
+<tr>
+<td style="width: 4.70415%;">R</td>
+<td style="width: 25.4808%;">I<sub>2</sub>&nbsp;(g)</td>
+<td style="width: 30.5536%;">+ Br<sub>2</sub>&nbsp;(g)</td>
+<td style="width: 39.2246%;">&nbsp;&nbsp;⇌ 2 IBr (g)&nbsp;</td>
+</tr>
+<tr>
+<td style="width: 4.70415%;">I</td>
+<td style="width: 25.4808%;">2.72 M</td>
+<td style="width: 30.5536%;">2.52 M</td>
+<td style="width: 39.2246%;">0</td>
+</tr>
+<tr>
+<td style="width: 4.70415%;">C</td>
+<td style="width: 25.4808%;">-x M</td>
+<td style="width: 30.5536%;">-x M</td>
+<td style="width: 39.2246%;">+2x M</td>
+</tr>
+<tr>
+<td style="width: 4.70415%;">E</td>
+<td style="width: 25.4808%;">2.72 -x M</td>
+<td style="width: 30.5536%;">2.52 -x M</td>
+<td style="width: 39.2246%;">2x M</td>
+</tr>
+</tbody>
+</table>
+<br>&nbsp;K<sub>c</sub> = 6.38 = <span class="math-tex">\( \frac{[IBr]^2}{[I_2][Br_2]} \)</span> =&nbsp;
+<table style="border-collapse: collapse; width: 19.8117%; height: 39.2px;" border="1">
+<tbody>
+<tr style="height: 19.6px;">
+<td style="width: 100%; height: 19.6px; text-align: center;">(2x)<sup>2</sup></td>
+</tr>
+<tr style="height: 19.6px;">
+<td style="width: 100%; height: 19.6px; text-align: center;">-----------------------</td>
+</tr>
+<tr>
+<td style="width: 100%; text-align: center;">(2.72 -x )(2.52 -x)</td>
+</tr>
+</tbody>
+</table>
+6.38(2.72 -x )(2.52 -x) = (2x)<sup>2</sup><br>6.38(6.85 - 5.24x + x<sup>2</sup>) = 4x<sup>2</sup><br>43.7 - 33.4x + 6.38x<sup>2</sup> = 4x<sup>2</sup><br>2.38x<sup>2</sup> - 33.4 + 43.7 = 0<br>x =&nbsp;<br>
+<table style="border-collapse: collapse; width: 39.8768%;" border="1">
+<tbody>
+<tr>
+<td style="width: 100%; text-align: center;">33.4 ± √[(- 33.4)<sup>2</sup> - 4([6.38-4])( 43.7)]</td>
+</tr>
+<tr>
+<td style="width: 100%; text-align: center;">--------------------------------------------------------------------</td>
+</tr>
+<tr>
+<td style="width: 100%; text-align: center;">2 x 2.38</td>
+</tr>
+</tbody>
+</table>
+<br>x = 1.46 M, or 12.6 M<br>12.6 M can be rejected because it will give a negative equilibrium concentration for I<sub>2</sub> and Br<sub>2</sub>.<br>Thus [IBr] = 2 x 1.46 M&nbsp;<br>[IBr] =&nbsp; 2.92 M</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">33</span>) At equilibrium, which of the following are true?</div><div class='option'>A) The concentration of the reactants and products are stable<span class='asterisk'>*</span></div><div class='option'>B) The concentration of the reactants and products are equal</div><div class='option'>C) The rate constant of the forward reaction is equal to the equilibrium constant</div><div class='option'>D) The reaction stops</div><div class='solution'>The rate of the forward reaction is equal to the rate of the reverse reaction, which means that the concentration of the reactants and products will remain stable.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">34</span>) (SLO 4.6) What is the [CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H] ratio necessary to make a buffer solution with a pH of 6.09?&nbsp;<br>K<sub>a</sub> = 1.8x10<sup>-5</sup> for CH<sub>3</sub>CO<sub>2</sub>H.</div><div class='option'>A) 22 : 1<span class='asterisk'>*</span></div><div class='option'>B) 18 : 1</div><div class='option'>C) 0.045 : 1</div><div class='option'>D) 12 : 1</div><div class='solution'>pH = -log(K<sub>a</sub>) + log(base/acid)<br>6.09 = -log(1.8x10<sup>-5</sup>) + log([CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H])<br>6.09 = -5.26 + log([CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H])<br>6.09 - -5.26 = log([CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H])<br>11.3 = log([CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H])<br>10<sup>11.3</sup>&nbsp; = [CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H]<br>[CH<sub>3</sub>CO<sub>2</sub><sup>-</sup>]/[CH<sub>3</sub>CO<sub>2</sub>H] = 22 : 1<br></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">35</span>) (SLO 4.5) Calculate the percent ionization of a monoprotic weak acid (HA) in a solution that is 0.148 M, if the acid dissociation constant (K<sub>a</sub>) is 2.09x10<sup>-6</sup>.&nbsp;<br>HA ➞ H<sup>+</sup> + A<sup>-</sup></div><div class='option'>A) 0.000209 %</div><div class='option'>B) 0.340 %</div><div class='option'>C) 0.00380 %</div><div class='option'>D) 0.376 %<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">36</span>) (SLO 4.4) Calculate the pOH of a solution that contains 3.12x10<sup>-3</sup>&nbsp;M H<sub>3</sub>O<sup>+</sup> at 25°C</div><div class='option'>A) 2.51</div><div class='option'>B) 3.00</div><div class='option'>C) 3.21x10<sup>-12</sup></div><div class='option'>D) 11.5<span class='asterisk'>*</span></div><div class='solution'>pH = -log[H<sup>+</sup>]<br>pH = -log(3.12x10<sup>-3</sup><br>pH = 2.51<br>pOH = 14 - 2.51<br>pOH = 11.5</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">37</span>) (SLO 4.7) How many milliliters of 0.0610 M NaOH are required to titrate 20 mL of 0.109 M HBr to the equivalence point.</div><div class='option'>A) 35.7 mL<span class='asterisk'>*</span></div><div class='option'>B) 3.57 mL</div><div class='option'>C) 50.0 mL</div><div class='option'>D) 11.2 mL</div><div class='solution'>20 mL x (1L/1000mL) x (0.109 mol/L) x (1 mol NaOH/1 mol HBr) x (1 L/0.0610 mol) x (1000 mL/1L) = 35.7 mL</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">38</span>) (SLO 4.1) Which of the following is a Arrhenius acid?</div><div class='option'>A) H<sub>2</sub>SO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>B) CH<sub>3</sub>CH<sub>3</sub></div><div class='option'>C) NH<sub>2</sub>CH<sub>3</sub></div><div class='option'>D) NaOH</div><div class='option'>E)  All of the above.</div><div class='solution'>You can tell H<sub>2</sub>SO<sub>4</sub> is a Arrhenius acid, by the H in the front of the formula.<br>NH<sub>2</sub>CH<sub>3</sub> is a base.<br>CH<sub>3</sub>CH<sub>3</sub> does not have an acidic hydrogen (the C-H bonds won't break).<br>NaOH is a base.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">39</span>) (SLO 4.3) Identify the strongest acid.</div><div class='option'>A) HIO<sub>2</sub></div><div class='option'>B) HIO<sub>3</sub></div><div class='option'>C) HIO</div><div class='option'>D) HIO<sub>4</sub><span class='asterisk'>*</span></div><div class='solution'>The oxyacid with the most oxygens will be the strongest acid, because it's conjugate base will be the most stable due to resonance.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">40</span>) (SLO 4.2) Which of the following is a Arrhenius base?</div><div class='option'>A) Be(OH)<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>B) H<sub>2</sub></div><div class='option'>C) CH<sub>2</sub>CH<sub>2</sub></div><div class='option'>D) HCl</div><div class='option'>E)  None of the above.</div><div class='solution'>HCl is an acid.<br>H<sub>2</sub> will not dissociate in water, and is not an acid or a base.<br>CH<sub>2</sub>CH<sub>2</sub> does not have an acidic hydrogen (the C-H bonds won't break), and is not an acid or a base.<br>Be(OH)<sub>2</sub> is the only base.</div><p></p></div><div id="scantrondiv" class="scantrondiv">Exam 2 (Ch 14 & 15) Study Guide<br><canvas id="scantron" class="scantron"></div></body></html>

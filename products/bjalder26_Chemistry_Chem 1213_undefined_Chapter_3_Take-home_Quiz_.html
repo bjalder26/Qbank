@@ -1,0 +1,406 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	
+					var questionsObjectText = {"1":[0],"2":[1],"3":[0],"4":[3],"5":[3],"6":[3],"7":[3],"8":[2],"9":[2],"10":[1],"11":[0],"12":[0],"13":[3],"14":[2],"15":[3],"16":[1],"17":[3]}; 
+				 
+	questionsObjectText = JSON.stringify(questionsObjectText);
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	 questionsObject = JSON.parse(questionsObjectText);
+	
+
+
+
+
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let questionsObject = {};
+	  let markCoordinates = [];
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Chapter 3 Take-home Quiz</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) Calculate the energy of a photon (in joules) with a wavelength of 684.7 nm.</div><div class='option'>A) 2.90x10<sup>-19</sup> J<span class='asterisk'>*</span></div><div class='option'>B) 4.38x10<sup>14</sup> J</div><div class='option'>C) 2.90x10<sup>-37</sup> J</div><div class='option'>D) 3.44x10<sup>18</sup> J</div><div class='solution'><p>To calculate the energy of a photon using its wavelength, you can use the following equation:</p>
+<p>E = (h * c) / λ</p>
+<p>Where: E is the energy of the photon h is Planck's constant (6.626 x 10<sup>-34</sup> J·s) c is the speed of light in a vacuum (3.00 x 10<sup>8</sup> m/s) λ is the wavelength of the photon in meters</p>
+<p>First, we need to convert the given wavelength of 684.7 nm to meters:</p>
+<p>λ = 684.7 nm * <span class="math-tex">\( \frac{1 m}{10^9 nm} \)</span> = 6.85x10<sup>-7</sup> m</p>
+<p>Now we can calculate the energy:<br>E = &nbsp;(6.626 x 10^{-34} J·s * 3.00 x 10^8 m/s) / (6.85x10<sup>-7</sup>)<br>E ≈ 2.90x10<sup>-19</sup> J</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) Calculate the wavelength (in nm) of light that has a frequency of 6.25 x 10<sup>14</sup> Hz.</div><div class='option'>A) 4.80x10<sup>-7</sup> nm</div><div class='option'>B) 480. nm<span class='asterisk'>*</span></div><div class='option'>C) 0.00208 nm</div><div class='option'>D) 2.08x10<sup>13</sup> nm</div><div class='solution'><p>To calculate the wavelength (λ) of light, you can use the equation:</p>
+<p>λ = c / ν</p>
+<p>where λ is the wavelength, c is the speed of light in a vacuum (approximately 3.00 x 10<sup>8</sup> m/s), and ν is the frequency of the light.</p>
+<p>First, let's convert the frequency given in Hz to 1/s since Hz and 1/s&nbsp;mean the same thing</p>
+<p>Frequency (ν) = 6.25 x 10<sup>14</sup> Hz = 6.25 x 10<sup>14</sup> 1/s</p>
+<p>Now, we can calculate the wavelength using the equation:</p>
+<p>λ = c / ν = (3.00 x 108 m/s) / (6.25 x 10<sup>14</sup> 1/s)</p>
+<p>λ = 4.80x10<sup>-7</sup> m</p>
+<p>To convert this to nanometers (nm), we multiply by 10^9:</p>
+<p>λ = 4.80x10<sup>-7</sup> m x = <span class="math-tex">\( \frac{10^9 nm}{1 m} \)</span> 480. nm</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) Calculate the wavelength (in meters) of an electron (m = 9.11 × 10<sup>-31</sup> Kg) moving at 5.07 × 10<sup>5</sup> m/s.</div><div class='option'>A) 1.43x10<sup>-9</sup> m<span class='asterisk'>*</span></div><div class='option'>B) 3.06x10<sup>-58</sup> m</div><div class='option'>C) 4.62x10<sup>-25</sup> m</div><div class='option'>D) 1.80x10<sup>-36</sup> m</div><div class='solution'><p>To calculate the wavelength of an electron, we can use the de Broglie wavelength equation:</p>
+<p>λ = h / (m * v)</p>
+<p>Where: λ is the wavelength h is Planck's constant (6.626 x 10<sup>-34</sup> J·s) m is the mass of the electron v is the velocity of the electron</p>
+<p>Let's substitute the given values into the equation:</p>
+<p>λ = (6.626 x 10<sup>-34</sup> J·s) / (9.11 × 10<sup>-31</sup> Kg * 5.07 × 10<sup>5</sup> m/s)<br><br>λ ≈ 1.43x10<sup>-9</sup> m</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) Describe the shape of a p orbital.</div><div class='option'>A) spherical</div><div class='option'>B) three lobes</div><div class='option'>C) four lobes</div><div class='option'>D) dumbbell shaped<span class='asterisk'>*</span></div><div class='solution'><p>The shapes of the s, p, d, and f orbitals are as follows:</p>
+<ol>
+<li>
+<p>s Orbital: The s orbital is <strong>spherical </strong>in shape and symmetrical around the nucleus. It has a <strong>single lobe</strong> without any nodal planes.</p>
+</li>
+<li>
+<p>p Orbitals: The p orbitals have a <strong>dumbbell shape</strong>. There are three p orbitals, designated as px, py, and pz. Each p orbital has <strong>two lobes</strong> on opposite sides of the nucleus and is oriented along the x, y, and z axes, respectively.</p>
+</li>
+<li>
+<p>d Orbitals: The d orbitals have <strong>complex shapes</strong>. There are five d orbitals, designated as dxy, dxz, dyz, dx^2-y^2, and dz^2. They have a combination of different lobes and nodal planes, resulting in various shapes.&nbsp;&nbsp;</p>
+</li>
+<li>
+<p>f Orbitals: The f orbitals also have <strong>complex shapes</strong>. There are seven f orbitals, designated as fy3x^2-y^2, fxz^2, fz(x^2-y^2), fyz^2, fz(x^2-3y^2), fxyz, and fx(x^2-3y^2). These orbitals have even more intricate lobes, nodal surfaces, and orientations compared to the other orbitals.</p>
+</li>
+</ol>
+<p>It's important to note that these orbital shapes represent the probability distribution of finding an electron within a specific orbital, rather than the exact path of the electron.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) According to the Heisenberg Uncertainty Principle, which of the following is true?</div><div class='option'>A) Two electrons cannot have the same spin.</div><div class='option'>B) It is impossible to determine the charge of a single electron.</div><div class='option'>C) There are no electron shells above 4.</div><div class='option'>D) It is not possible to accurately determine both the position and momentum of an electron at the same time.<span class='asterisk'>*</span></div><div class='solution'><p>It is not possible to accurately determine both the position and momentum of an electron at the same time.</p>
+<p>According to the Heisenberg Uncertainty Principle, there is a fundamental limit to the precision with which certain pairs of physical properties of a particle, such as position and momentum, can be known simultaneously. The principle states that the more precisely the position of a particle is known, the less precisely its momentum can be known, and vice versa. This principle applies to all particles, including electrons. Therefore, it is not possible to accurately determine both the position and momentum of an electron simultaneously.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) What is it called when two waves of equal amplitude that are in phase interact?</div><div class='option'>A) destructive interference</div><div class='option'>B) diffraction</div><div class='option'>C) refraction</div><div class='option'>D) constructive interference<span class='asterisk'>*</span></div><div class='solution'>When two waves of equal amplitude that are in phase interact, it is called constructive interference. In constructive interference, the waves combine to produce a resulting wave with an increased amplitude. This occurs when the peaks of one wave align with the peaks of the other wave, or the troughs align with the troughs, leading to reinforcement and an overall amplification of the wave.<br><br>When two waves of equal amplitude that are out of phase interact, it is called destructive interference. In destructive interference, the waves combine in a way that their crests align with the troughs, resulting in a canceling out or reduction of the overall amplitude. This occurs when the peaks of one wave align with the troughs of the other wave, leading to a net decrease in amplitude or even complete cancellation of the wave.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Which of the following happens when the frequency of a photon increases?</div><div class='option'>A) The energy stays the same</div><div class='option'>B) The speed increases</div><div class='option'>C) The wavelength increases</div><div class='option'>D) The energy increases<span class='asterisk'>*</span></div><div class='solution'><p>When the frequency of a photon increases, the energy of the photon also increases. This relationship is described by the equation:</p>
+<p>E = hν</p>
+<p>where E represents the energy of the photon, h is Planck's constant (a fundamental constant of nature), and ν is the frequency of the photon.</p>
+<p>According to this equation, the energy of a photon is directly proportional to its frequency. As the frequency increases, the energy of the photon increases proportionally. This relationship is a fundamental concept in quantum mechanics and is known as the energy-frequency relationship.</p>
+<p>It's important to note that the energy of a photon is quantized, meaning it can only exist in discrete amounts or "quanta." Each quantum of energy is associated with a specific frequency of the photon. Therefore, as the frequency increases, the energy of the photon increases in discrete steps.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) Which of the following sets of quantum numbers is possible?</div><div class='option'>A) (4, 4, +4, -<span class="math-tex">\( \frac{1}{2} \)</span>)</div><div class='option'>B) (4, 2, -4, +<span class="math-tex">\( \frac{1}{2} \)</span>)</div><div class='option'>C) (3, 2, +2, +<span class="math-tex">\( \frac{1}{2} \)</span>)<span class='asterisk'>*</span></div><div class='option'>D) (3, 1, +1, +1)</div><div class='solution'><p>For a set of quantum numbers to be valid, the following relationships must be satisfied:</p>
+<ol>
+<li>The principal quantum number (n) must be a positive integer (1, 2, 3, ...).</li>
+<li>The azimuthal quantum number (ℓ) must be an integer ranging from 0 to (n-1).</li>
+<li>The magnetic quantum number (m<sub>ℓ</sub>) must be an integer ranging from -ℓ to +ℓ.</li>
+<li>The spin quantum number (m<sub>s</sub>) must be either +1/2 or -1/2.</li>
+</ol>
+<p>Let's evaluate the given sets of quantum numbers:</p>
+<p>(3, 2, +2, +<span class="math-tex">\( \frac{1}{2} \)</span>)</p>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 3 (valid as it is a positive integer).</li>
+<li>ℓ = 2 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = +2 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = +<span class="math-tex">\( \frac{1}{2} \)</span> (valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>valid</strong>.</li>
+</ul>
+</li>
+</ul>
+(4, 4, +4, -<span class="math-tex">\( \frac{1}{2} \)</span>)&nbsp;<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 4 (valid as it is a positive integer).</li>
+<li>ℓ = 4 (invalid as it is not within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = +4 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = -<span class="math-tex">\( \frac{1}{2} \)</span> (valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the value for ℓ.</li>
+</ul>
+</li>
+</ul>
+(4, 2, -4, +<span class="math-tex">\( \frac{1}{2} \)</span>)&nbsp;<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 4 (valid as it is a positive integer).</li>
+<li>ℓ = 2 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = -4 (invalid as it must be within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = +<span class="math-tex">\( \frac{1}{2} \)</span>(valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the value of m<sub>ℓ</sub> being outside the allowed range.</li>
+</ul>
+</li>
+</ul>
+(3, 1, +1, + 1)<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 3 (valid as it is a positive integer).</li>
+<li>ℓ = 1 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = +1 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = +1 (invalid as it must be either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the incorrect value for m<sub>s</sub>.</li>
+</ul>
+</li>
+</ul>
+<p>Based on the numerical relationships between the quantum numbers, only the set (3, 2, +2, +<span class="math-tex">\( \frac{1}{2} \)</span>) satisfies the required conditions and is therefore valid.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) Which of the following colors has the lowest wavelength</div><div class='option'>A) red</div><div class='option'>B) orange</div><div class='option'>C) violet<span class='asterisk'>*</span></div><div class='option'>D) blue</div><div class='solution'>ROY G. BIV is a mnemonic for remembering the order of visible light from lowest energy, lowest frequency to highest energy and highest frequency or from longest wavelength to shortest wavelength.<br><br>Lowest energy, lowest frequency, highest wavelength<br>Red<br>Orange<br>Yellow<br>Green<br>Blue<br>Indigo<br>Violet<br>Highest energy, highest frequency, shortest wavelength<br><br>It can also help to remember that infrared (which is right by red) has low energy, low frequency, and a high wavelength, and that ultraviolet (which is right by violet) has high energy, high frequency, and a short wavelength.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) Which class of the electromagnetic spectrum is used to transmit messages over long distances?</div><div class='option'>A) ultraviolet radiation</div><div class='option'>B) infrared radiation<span class='asterisk'>*</span></div><div class='option'>C) radio waves</div><div class='option'>D) x-rays</div><div class='solution'>X-rays are used to visualize bones and internal organs<br>UV or ultraviolet waves cause sunburns<br>Microwaves are used to cook food in a common kitchen appliance (a microwave) by vibrating water molecules to produce heat<br>Radio waves are used to transmit messages over long distances</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) Determine the energy change associated with the transition from n=6 to n=2 in the hydrogen atom.</div><div class='option'>A) -4.84x10<sup>-19</sup> J<span class='asterisk'>*</span></div><div class='option'>B) -7.27x10<sup>-19</sup> J</div><div class='option'>C) 7.27x10<sup>-19</sup> J</div><div class='option'>D) 4.84x10<sup>-19</sup> J</div><div class='solution'><p>The energy change associated with the transition between energy levels in a hydrogen atom can be calculated using the formula:</p>
+<p>ΔE = - R<sub>H</sub> * <span class="math-tex">\( (\frac{1}{n_{final}^2} - \frac{1}{n_{initial}^2}) \)</span></p>
+<p>where R<sub>H</sub> is the Rydberg constant for hydrogen (2.18 × 10<sup>-18</sup> J), n<sub>final</sub> is the final energy level, and n<sub>initial</sub> is the initial energy level.</p>
+<p>For this specific transition from n=2 to n=6, we can substitute the values into the formula:</p>
+<p>ΔE = - R<sub>H</sub> * <span class="math-tex">\( (\frac{1}{2^2} - \frac{1}{6^2}) \)</span> = -(2.18 × 10<sup>-18</sup> J) * <span class="math-tex">\( (\frac{1}{2^2} - \frac{1}{6^2}) \)</span> ≈ -4.84x10<sup>-19</sup> J</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) What total energy (in kJ) is contained in 9.00 mol of photons, all with a frequency of 3.13 × 10<sup>13</sup> Hz?</div><div class='option'>A) 112 KJ<span class='asterisk'>*</span></div><div class='option'>B) 1.12x10<sup>-24</sup> KJ</div><div class='option'>C) 3.37x10<sup>-16</sup> KJ</div><div class='option'>D) 8.90x10<sup>-9</sup> KJ</div><div class='solution'><p>To calculate the total energy contained in a single photon, you can use the equation:</p>
+<p>E = h * ν</p>
+<p>Where: E is the total energy in joules h is Planck's constant (6.626 x 10^-34 J·s) ν is the frequency of each photon in Hz</p>
+<p>First, let's convert the frequency from Hz to 1/s because a Hz is the same as 1/s:</p>
+<p>ν = 3.13 × 10<sup>13</sup> 1/s</p>
+<p>Now we can calculate energy of 1 photon:<br>E<sub>photon</sub> = (6.626 x 10^-34 J·s) * (3.13 × 10<sup>13</sup> 1/s) <br>E<sub>photon</sub> ≈ 2.07x10<sup>-20</sup> J<br><br>Now calculate the energy of 1 mol of photons:<br>E<sub>one mol photons</sub> = E<sub>photon</sub> x 6.022 x 10<sup>23</sup><br><br>Now calculate the energy in 9.00 mol of photons.<br>E<sub>total</sub> = E<sub>one mol photons</sub> x Moles of photons = 2.07x10<sup>-20</sup> J/mol x 9.00 mol = 1.12x10<sup>5</sup> J<br><br>To convert the energy from joules to kilojoules, divide by 1000:<br>E ≈ 1.12x10<sup>5</sup> J x <span class="math-tex">\( \frac{1 kJ}{1000 J} \)</span> 112 KJ</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) For n = 3, what are the possible subshells?</div><div class='option'>A) s‚ p‚ d and f</div><div class='option'>B) s</div><div class='option'>C) s and p</div><div class='option'>D) s‚ p and d<span class='asterisk'>*</span></div><div class='solution'><p>For the principal quantum number (n) values of 1, 2, 3, and 4, the possible subshells are as follows:</p>
+<p>n = 1: Only one subshell is possible, which is the s subshell.</p>
+<p>n = 2: Two subshells are possible, which are the s and p subshells.</p>
+<p>n = 3: Three subshells are possible, which are the s, p, and d subshells.</p>
+<p>n = 4: Four subshells are possible, which are the s, p, d, and f subshells.</p>
+<p>The subshells are named after the azimuthal quantum numbers (s, p, d, f) that represent the shape of the electron orbitals within each subshell.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) What is the number of waves that pass through a stationary point per second called?</div><div class='option'>A) amplitude</div><div class='option'>B) wavelength</div><div class='option'>C) frequency<span class='asterisk'>*</span></div><div class='option'>D) wavediameter</div><div class='solution'><p>Frequency: Frequency refers to the number of complete cycles or oscillations of a wave that occur in one second. It is typically measured in hertz (Hz) and represents how many times a wave repeats per second.</p>
+<p>Wavelength: Wavelength is the distance between two consecutive corresponding points on a wave, such as from peak to peak or trough to trough. It is usually represented by the Greek letter lambda (λ) and is measured in units such as meters (m), nanometers (nm), or angstroms (Å), depending on the scale of the wave.</p>
+<p>Amplitude: Amplitude represents the maximum displacement or distance from the equilibrium position of a wave. In other words, it measures the intensity or strength of a wave. For example, in a transverse wave, it refers to the distance from the baseline to the peak or trough of the wave. It can indicate the brightness or loudness of a wave, depending on the type of wave. Amplitude is typically measured in units such as meters (m) or volts (V).<br><br>Wavediameter is a made-up term.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) How many orbitals are present in subshell p (l = 1)?</div><div class='option'>A) 1</div><div class='option'>B) 1</div><div class='option'>C) 6</div><div class='option'>D) 3<span class='asterisk'>*</span></div><div class='solution'>The number of orbitals in each subshell can be determined using the following pattern:<br>
+<ul>
+<li>Subshell s (l = 0): 1 orbital</li>
+<li>Subshell p (l = 1): 3 orbitals</li>
+<li>Subshell d (l = 2): 5 orbitals</li>
+<li>Subshell f (l = 3): 7 orbitals</li>
+</ul></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) Calculate the frequency of a photon (in Hz) with a wavelength of 289.9 nm.</div><div class='option'>A) 9.66x10<sup>-16</sup> Hz</div><div class='option'>B) 1.03x10<sup>15</sup> Hz<span class='asterisk'>*</span></div><div class='option'>C) 6.86x10<sup>-19</sup> Hz</div><div class='option'>D) 0.00103 Hz</div><div class='solution'><p>To calculate the frequency of a photon using its wavelength, you can use the following equation:</p>
+<p>c = λ * ν</p>
+<p>Where: c is the speed of light in a vacuum (3.00 x 10<sup>8</sup> m/s) λ is the wavelength of the photon in meters ν is the frequency of the photon in Hz</p>
+<p>First, we need to convert the given wavelength of 289.9 nm to meters:</p>
+<p>λ = 289.9 nm * <span class="math-tex">\( \frac{1 m}{10^9 nm} \)</span> = 2.90x10<sup>-7</sup> m</p>
+<p>Now we can rearrange the equation to solve for the frequency:</p>
+<p>ν = c / λ = (3.00 x 10<sup>8</sup> m/s) / (2.90x10<sup>-7</sup> m) <br><br>ν ≈ 1.03x10<sup>15</sup> Hz</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) Calculate the energy (in joules) of a photon that has a frequency of 6.00 x 10<sup>14</sup> Hz.</div><div class='option'>A) 9.06x10<sup>-21</sup> J</div><div class='option'>B) 1.10x10<sup>-20</sup> J</div><div class='option'>C) 1.10x10<sup>-48</sup> J</div><div class='option'>D) 3.98x10<sup>-19</sup> J<span class='asterisk'>*</span></div><div class='solution'><p>The energy (E) of a photon can be calculated using the equation:</p>
+<p>E = h * ν</p>
+<p>where E is the energy, h is Planck's constant (approximately 6.626 x 10<sup>-34</sup> J·s), and ν is the frequency of the photon.</p>
+<p>Given the frequency:</p>
+<p>ν = 6.00 x 10<sup>14</sup> Hz</p>
+<p>We can calculate the energy using the equation:</p>
+<p>E = (6.626 x 10<sup>-34</sup> J·s) * ( 6.00 x 10<sup>14</sup> Hz)</p>
+<p>E = 3.98x10<sup>-19</sup> J</p></div><p></p></div><div id="scantrondiv" class="scantrondiv">Chapter 3 Take-home Quiz<br><canvas id="scantron" class="scantron"></div></body></html>
