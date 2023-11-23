@@ -21,6 +21,12 @@ const moment = require('moment'); // for dates for backup
 const cron = require('node-cron'); // required for backup to be at a set time each day
 const backupFolder = path.join(__dirname, 'qbanks', 'backup');
 
+// for lti compatibility
+var cfenv = require('cfenv');
+var uuid = require("uuid4");
+var lti = require("ims-lti");
+var sessions = {};
+
 // Define custom functions
 const ln = x => Math.log(x);
 const log10 = x => Math.log10(x);
@@ -42,6 +48,7 @@ if (!fs.existsSync(__dirname + '/qbanks')){fs.mkdirSync(__dirname + '/qbanks');}
 app.use('/js', express.static(__dirname + '/js/'));
 app.use('/html', express.static(__dirname + '/html/'));
 app.use('/products', express.static(__dirname + '/products/'));
+app.use('/quizzes', express.static(__dirname + '/quizzes/'));
 app.use('/css', express.static(__dirname + '/css/'));
 app.use('/images', express.static(__dirname + '/images/'));
 app.use('/node_modules', express.static(__dirname + '/node_modules/'));
@@ -50,6 +57,7 @@ app.use('/qbanks', express.static(__dirname + '/qbanks/'));
 
 // reads files
 var indexFile = fs.readFileSync(__dirname + "/html/index.html", "utf8");
+var pbFile = fs.readFileSync(__dirname + "/html/pb.html", "utf8");
 var files = fs.readdirSync(__dirname + "/images/");
 var headFile = fs.readFileSync(__dirname + "/html/head.txt", "utf8");
 var users = JSON.parse(fs.readFileSync(__dirname + "/users/users.txt", "utf8"));
@@ -59,7 +67,9 @@ var lastActivity = JSON.parse(fs.readFileSync(__dirname + "/users/lastactivity.t
 var imageNumberArray = [];
 files.forEach(function(file) {
   let numbArray = file.split('.');
+  if (!isNaN(numbArray[0])) { 
   imageNumberArray.push(numbArray[0]);
+  }
 });
 imageNumberArray.sort((a, b) => a - b);
 imageNumberArray.reverse();
@@ -77,37 +87,57 @@ const listener = server.listen(3000, () => {
 });
 
 // Schedule the backup to run once a day at 4AM
-cron.schedule('0 4 * * *', () => {
+cron.schedule('15 2 * * *', () => {
+  console.log('Time for backup');
   createBackup();
 });
 
 // functions
 
 // Function to create a backup daily
+
 function createBackup() {
+	console.log('createBackup running');
   const currentDate = moment().format('YYYY-MM-DD');
   const dayOfWeek = moment().format('dddd');
   const month = moment().format('MMMM');
+  console.log(currentDate);
+  console.log(dayOfWeek);
+  console.log(month);
   
   const sourceFolder = path.join(__dirname, 'qbanks');
   const backupFilename = getBackupFilename(dayOfWeek, month);
-
+  
   // Create backup directory if it doesn't exist
   if (!fs.existsSync(backupFolder)) {
     fs.mkdirSync(backupFolder);
   }
 
-  // Copy the files to the backup directory
-  copyFiles(sourceFolder, backupFolder);
+  // Copy the files to the intermediate folder
+  const intermediateFolder = path.join(backupFolder, 'intermediate');
+  if (!fs.existsSync(intermediateFolder)) {
+    fs.mkdirSync(intermediateFolder);
+  }
+  copyFiles(sourceFolder, intermediateFolder);
+
+  // Move files from intermediate folder to the final destination
+  const intermediateFiles = fs.readdirSync(intermediateFolder);
+  intermediateFiles.forEach((file) => {
+    const intermediatePath = path.join(intermediateFolder, file);
+    const destinationPath = path.join(backupFolder, file);
+    fs.renameSync(intermediatePath, destinationPath);
+  });
+  fs.rmdirSync(intermediateFolder);
 
   // Rename the backup file with the appropriate name
-  fs.renameSync(
-    path.join(backupFolder, 'backup'),
-    path.join(backupFolder, backupFilename)
-  );
+  const backupFilePath = path.join(backupFolder, 'backup');
+  const backupDestinationPath = path.join(backupFolder, backupFilename);
+  if (fs.existsSync(backupFilePath)) {
+    fs.renameSync(backupFilePath, backupDestinationPath);
+  }
   
   console.log('Backup created:', backupFilename);
-}
+  }
 
 // Function to get the backup filename based on the current day and month
 function getBackupFilename(dayOfWeek, month) {
@@ -129,7 +159,11 @@ function copyFiles(sourceFolder, destinationFolder) {
   files.forEach((file) => {
     const sourcePath = path.join(sourceFolder, file);
     const destinationPath = path.join(destinationFolder, file);
-    fs.copyFileSync(sourcePath, destinationPath);
+
+    // Exclude the intermediate folder and existing backups from being copied
+    if (file !== 'backup' && !fs.existsSync(destinationPath)) {
+      fs.copyFileSync(sourcePath, destinationPath);
+    }
   });
 }
 
@@ -200,12 +234,12 @@ function isValidQuestionObject(text) {
 
       return true;
     } else {
-	  console.log(text);
+	  //console.log(text);
       return false;
     }
   } catch (error) {
     // Catch any parsing errors and return false
-	console.log(error);
+	console.log("valid Question Object Error: " + error);
     return false;
   }
 }
@@ -215,14 +249,14 @@ function minMaxType(variable) {
     let regex = '(?<=\\$\{)(.+?)(?=\\s)'; // matches between ${ and first space
     const letter = variable.match(regex)[0];
     const min = variable.match(/(?<=\s)(.+?)(?=\s|})/)[0]; // matches between first space and either second space or }
-console.log('min: '+min)
+//console.log('min: '+min)
     const minSigFigs = getSigFigs(min);
     const max = variable.match(/(?<=\d\s)(.+?)(?=\s|})/) ? variable.match(/(?<=\d\s)(.+?)(?=\s|})/)[0] : min * 10; // matches between first space after a digit and either space or } defaults to 10 times min number
-console.log('max: '+max)
+//console.log('max: '+max)
     const maxSigFigs = getSigFigs(max);
 	regex = new RegExp('(?<=' + min + '\\s' + max + '\\s)(.*)(?=})', 'i'); // matches between min and max number and }
     const sigFigs = variable.match(regex) ? variable.match(regex)[0] : Math.min(parseInt(minSigFigs), parseInt(maxSigFigs)); //consider changing
-console.log('sigFigs minMaxType: '+sigFigs)
+//console.log('sigFigs minMaxType: '+sigFigs)
     let newNumber = Math.random() * (parseFloat(max) - parseFloat(min)) + parseFloat(min);
     newNumber = newNumber.setSigFigs(sigFigs);
     return [letter, newNumber.toString()];
@@ -233,8 +267,8 @@ console.log('sigFigs minMaxType: '+sigFigs)
 
 // Function for parsing equations for html
 function parseEquations(question, html) {
-  console.log('question: '+question);
-  console.log('question stem1: '+question.stem);
+  //console.log('question: '+question);
+  //console.log('question stem1: '+question.stem);
   let regex = new RegExp(/(?<==\[)(.*?)(?=\])/, 'g');
   const equationsSFs = html.match(regex);
 
@@ -248,7 +282,7 @@ function parseEquations(question, html) {
       try {
         solution = evaluateWithCustomFunctions(equation.replaceAll(/ \(\d+ sf\)/g, ''));
       } catch (error) {
-        console.log(error + '\nEquation:' + equation + '\nQuestion Stem:' + question.stem);
+        //console.log(error + '\nEquation:' + equation + '\nQuestion Stem:' + question.stem);
 		 html = html.replaceAll('=[' + equationSF + ']', equationError(equation));
 		 return html;
       }
@@ -323,7 +357,7 @@ function recordActivity(username) {
     fs.writeFileSync(__dirname + "/users/lastactivity.txt", JSON.stringify(lastActivity), {
       flag: 'w+'
     });
-    console.log("File written successfully");
+    console.log("File written successfully (recordActivity)");
   } catch (err) {
     console.error(err);
   }
@@ -418,23 +452,23 @@ function reverseString(string) {
 }
 
 Number.prototype.setSigFigs = function(sf) {
- console.log('this setSigFigs: '+this);
- console.log('------------------------------------------');
+ //console.log('this setSigFigs: '+this);
+ //console.log('------------------------------------------');
   sf = sf*1;
   let n = Number(this.toPrecision(sf)).toString(); // rounded here, but not sig figs
-  console.log('n1: '+n)
+  //console.log('n1: '+n)
   let exp = 0;
   if (n.includes('e')) { // splits exponents from coefficient
     const numpartsarray = n.split('e');
     n = numpartsarray[0];
-    console.log('n2: '+n);
+    //console.log('n2: '+n);
 	if (!n.includes('.')) {
 		if(n.length < sf) {
 			n = n+'.';
 		}		
 	}
 	n = n.padEnd(sf+1, 0)
-    console.log('n3: '+n);
+    //console.log('n3: '+n);
     exp = numpartsarray[1];
   }
   let neg = false;
@@ -458,19 +492,19 @@ Number.prototype.setSigFigs = function(sf) {
       n = n + ` (${sf} sf)`;
     }
   } else if (n != 0) { // if < 1
-  console.log('n4: '+n)
-  console.log('sf1: '+sf)
+  //console.log('n4: '+n)
+  //console.log('sf1: '+sf)
   let zeros = n.match(/(?<=\.)(0*)/g);
-  console.log('zeros: '+zeros);
+  //console.log('zeros: '+zeros);
   let zerosLength = zeros ? zeros[0].length : 0;
-  console.log('zl/sf: ' + zerosLength + ' ' + sf);
+  //console.log('zl/sf: ' + zerosLength + ' ' + sf);
   n = n.padEnd(zerosLength+sf+2, 0);
   } else {
 	  n = n + '.'; 
 	  zerosLength = 0;
   n = n.padEnd(zerosLength+sf+1, 0);
   //n = n.padEnd(sf+2, 0);
-  console.log('n5: '+n)
+  //console.log('n5: '+n)
   }
   if (neg) {
     n = '-' + n;
@@ -478,7 +512,7 @@ Number.prototype.setSigFigs = function(sf) {
   if (exp != 0) {
     n = (parseFloat(n) * 10 ** parseInt(exp)).toPrecision(sf).toString();
   }
-  console.log('n6: '+n)
+  //console.log('n6: '+n)
   if (n == '0.') {
 	  n = '0';
   }
@@ -535,11 +569,13 @@ Number.prototype.setSigFigs = function(sf) {
   return n;
 }; */
 
-function shuffleArray(arr) { //  Fisher-Yates shuffle
+function shuffleArray(array) { //  Fisher-Yates shuffle
+  let arr = array.slice();
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
+  return arr;
 }
 
 // splices in new questions, or deletes questions
@@ -621,7 +657,7 @@ function removeRandomQuestions(qbank) {
 }
 
 function generateQuestionHTML(questionNumber, question) { //Generates the HTML markup for a single question using the provided question data.
-  let html = `<div class='question'><div class='stem'>${questionNumber}) ${question.stem}</div>`;
+  let html = `<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">${questionNumber}</span>) ${question.stem}</div>`;
   //todo: evaluate equations here
   
   // Generate the HTML for the question's choices and other elements
@@ -632,16 +668,27 @@ function generateQuestionHTML(questionNumber, question) { //Generates the HTML m
   return html;
 }
 
-function pushChoicesToAnswerArray(choice, correct, choiceNumber, answerArray) {
-	if (choice.replaceAll(' ','') != '') {
-	  let asterisk = '';
-        if (correct.includes(choiceNumber.toString())) {
-          asterisk = `<span class='asterisk'>*</span>`;
-        } 
-        answerArray.push(`${choice}${asterisk}</div>`);
-      }
-	  return answerArray;
+// stop here ***
+
+function pushChoicesToAnswerArray(choicesArray) {
+	//console.log('choicesArrayPCTAA: '+choicesArray);
+	//console.log('isArray :'+Array.isArray(choicesArray));
+  let answerArray = [];
+  for (let choice of choicesArray) {
+	//console.log('choice: '+choice);
+    let choiceText = choice[0];
+	//console.log('choiceText: '+choiceText);
+    let isCorrect = choice[1];
+	//console.log('isCorrect: ');
+	//console.log(isCorrect);
+    if (choiceText.trim() !== '') { // Skip empty choices
+      let asterisk = isCorrect ? `<span class='asterisk'>*</span>` : '';
+	  answerArray.push(`${choiceText}${asterisk}</div>`);
+    }
+  }
+  return answerArray;
 }
+
 
 function fixMathJaxAdjustments(html) {
   const updatedHtml = html
@@ -660,6 +707,7 @@ function qbankToHtml(subject, course, qbankAndNumArray, userName, title, instruc
   let html = generateHeadHTML(title, instructor, date); // generates head portion of HTML by replacing title, instructor, date
 
   let qbanks = readQbanksFile(userName); // reads qbanks file and puts in qbanks variable
+ let questionsObject = {};
  
   for(let qbankAndNum of qbankAndNumArray) {
   let qNum = 1;
@@ -667,37 +715,55 @@ function qbankToHtml(subject, course, qbankAndNumArray, userName, title, instruc
   
   removeRandomQuestions(qbank); // randomly removes all but 1 question from each group
  
-  shuffleArray(qbank);
-  for (let question of qbank) { 
+  let shuffledQbank = shuffleArray(qbank);
+  
+  let answerArray = [];
+  for (let question of shuffledQbank) { 
     if(qNum <= qbankAndNum.number) { // limits the number of questions from each qbank to number choosen by user
 	qNum++;
-		
+			
 	html += generateQuestionHTML(questionNumber, question);  // currently only generates the beginning
 	questionNumber++;
 	
     let choices = question.choices;
+
+	let correctChoices = question.correct
+
+	let choicesArray = choices.map((choice, index) => [choice, correctChoices.includes(index.toString())]);
+
+  let shuffledChoicesArray = {};
+  if(!question.rqo) {
+	  shuffledChoicesArray = shuffleArray(choicesArray);
+  } else {
+	  shuffledChoicesArray = choicesArray;
+  }
+  
+let filteredChoicesArray = shuffledChoicesArray.filter(([choiceText]) => choiceText.trim() !== '');
+
+let trueIndexes = filteredChoicesArray.reduce((indexes, choice, index) => {
+	    //console.log('choice:', choice);
+  //console.log('isCorrect:', choice[1]);
+  if (choice[1]) {
+    indexes.push(index);
+  }
+  return indexes;
+}, []);
+
+  questionsObject[questionNumber-1] = trueIndexes;
+
+let choicesHTML = pushChoicesToAnswerArray(shuffledChoicesArray);
 	
-    //let asterisk = '';
-    let answerArray = [];
-
-    let choiceNumber = 0;
-    for (let choice of choices) { // pushes choices into array
-		answerArray = pushChoicesToAnswerArray(choice, question.correct, choiceNumber, answerArray);
-		choiceNumber++;
-    }
-    if (!question.rqo) { // shuffels answer array if retain question order not selected
-      shuffleArray(answerArray);
-    }
-
+	let shuffledAnswerArray = choicesHTML;
+    
     let answerNumber = 0;
     let optionLetter = '';
-    for (let answer of answerArray) {
+    for (let answer of shuffledAnswerArray) {
       optionLetter = String.fromCharCode(answerNumber + 65);
-      answerArray[answerNumber] = `<div class='option'>${optionLetter}) ` + answer;
+      shuffledAnswerArray[answerNumber] = `<div class='option'>${optionLetter}) ` + answer;
       answerNumber = answerNumber + 1;
     }
 
-    for (let each of answerArray) { // adds answer choices to html
+    for (let each of shuffledAnswerArray) { // adds answer choices to html
       html = html + each; // todo: evaluate formulas here and check for duplicate answers
     }
 
@@ -730,7 +796,6 @@ function qbankToHtml(subject, course, qbankAndNumArray, userName, title, instruc
     
     // fix adjustments made for MathJax
 	fixMathJaxAdjustments(html);
-    //html = html.replaceAll('\\%', '%').replaceAll('\\{', '{').replaceAll('\\}', '}').replaceAll('\\ ',' ');
 	  	  
     // replace variables with numbers
     try {
@@ -743,120 +808,29 @@ function qbankToHtml(subject, course, qbankAndNumArray, userName, title, instruc
   } else {break;}
   }
   
-  } // end here
-  html = html + '</body></html>';
-
+  } // end here 
+  
+  // add scantron
+  html = html + `<div id="scantrondiv" class="scantrondiv">${title}<br><canvas id="scantron" class="scantron">`
+  
+  
+  html = html + '</div></body></html>';
+  //console.log(html);
+   const questionsObjectText = JSON.stringify(questionsObject);
+  html = html.replace("//PARAMS**GO**HERE",
+      `
+					questionsObject = ${questionsObjectText}; 
+				`);
+  //console.log(html); 
+  
+  /* I don't think this is needed - I think it is a throwback from testing.
   const reg = new RegExp('(?<!\.\.\/)(images)', 'g');
+  console.log('regex match:');
+  console.log(html.match(reg));
   try {
     html = html.replaceAll(reg, '..\/images');
   } catch (err) {
     console.error('error: ' + err + '\nquestion: ' + question.stem);
-  }
-
-  // parse equations
-  /*
-  let regex = new RegExp(/(?<==\[)(.*?)(?=\])/, 'g');
-  const equationsSFs = html.match(regex);
-
-  if (equationsSFs != null) {
-
-    for (let equationSF of Object.values(equationsSFs)) {
-      const equationSFArray = equationSF.split('; ');
-      const equation = equationSFArray[0];
-      //  need to find a solution to scientific notation with e/E later: let equation2 = equation.replaceAll(/(\d)e(\d)/g,'$1*10^$2').replaceAll(/(\d)E(\d)/g,'$1*10^$2');
-      const SF = equationSFArray[1] ? equationSFArray[1] : 3; // defaults oto 3 significant figures in equations
-	  console.log('equation: '+equation);
-	  console.log('equation 2: '+equation.replaceAll(/ \(\d+ sf\)/g, ''));
-
-      let solution;
-	  try {
-		solution = evaluateWithCustomFunctions(equation.replaceAll(/ \(\d+ sf\)/g, ''));
-	  } catch(error) {
-		  console.log(error +'\nEquation:' + equation);
-		  return (error +'<p>Equation:' + equation+'<p>Question Stem:'+question.stem);
-		  }
-		  //regex = new RegExp(/'.*'+equation/);
-		  //console.error(html.match(regex));
-		  //console.error('error: ' + err + ' equation: ' + equation);
-	  
-	  
-	  console.log('solution a: '+solution);
-	  let addOnSF = '';
-      try {
-console.log('SF pf: ' + SF);
-		console.log('solution pF: '+parseFloat(solution).setSigFigs(SF));
-					
-		console.log('match: '+parseFloat(solution).setSigFigs(SF).match(/ \(\d+ sf\)/g));
-		console.log('replace: '+parseFloat(solution).setSigFigs(SF).replace(/ \(\d+ sf\)/g, ''))
-		
-		addOnSF = parseFloat(solution).setSigFigs(SF).match(/ \(\d+ sf\)/g) ? parseFloat(solution).setSigFigs(SF).match(/ \(\d+ sf\)/g) : '';
-		console.log("addOnSF: "+addOnSF)
-        if (addOnSF != null) {
-			solution = parseFloat(solution).setSigFigs(SF).replace(/ \(\d+ sf\)/g, '');
-		}
-		console.log('solution: '+solution);
-      } catch (err) {
-        console.error('error: ' + err + ' equation: ' + equation + 'solution: ' + solution);
-      } //maybe change this to popup
-
-      // convert >10k and <0.0001 to scientific notation
-      let solutionNum = solution.replace(/\s\(.*\)/, '') * 1;
-      let exp = 0;
-	  console.log('solutionNum1: '+solutionNum);
-	  
-      if (Math.abs(solutionNum) >= 10000) {
-		console.log('solutionNum2: '+solutionNum);
-		console.log(typeof(solutionNum));
-		console.log(Math.log(solutionNum));
-		console.log(Math.floor(Math.log(solutionNum)));
-		console.log(Math.floor(Math.log(solutionNum) / Math.log(10)));
-        exp = Math.floor(Math.log10(Math.abs(solutionNum)));
-		console.log('exp: '+exp);
-		if (Math.abs(solutionNum / (10 ** exp) - 10) < 0.00001) { // fix for when edge issue of num exactly 10
-			exp = exp + 1
-		}
-		console.log('solutionNum3: '+solutionNum);
-		console.log('exp: '+exp);
-        solutionNum = solutionNum / (10 ** exp);
-		console.log('solutionNum4: '+solutionNum);
-console.log('SF: '+SF);
-		solutionNum = solutionNum.setSigFigs(SF); //solutionNum = parseFloat(solutionNum).setSigFigs(SF);
-		console.log('solutionNum5: '+solutionNum);
-
-        solution = solutionNum + 'x10' + '<sup>' + exp + '</sup>';
-		console.log('solution6: '+solution);
-      } else if (Math.abs(solutionNum) < 0.00001 && Math.abs(solutionNum) !== 0) {
-  // Handling small numbers
-  const absSolutionNum = Math.abs(solutionNum);
-  exp = Math.floor(Math.log10(absSolutionNum));
-  solutionNum = solutionNum / (10 ** exp);
-
-  if (Math.abs(solutionNum / (10 ** exp) - 10) < 0.00001) {
-    exp = exp + 1;
-  }
-
-  solutionNum = solutionNum.setSigFigs(SF);
-  solution = solutionNum + 'x10<sup>' + exp + '</sup>';
-}
-
- else {
-		  console.log('solution')
-		  console.log(solution)
-		  console.log('solution*1')
-		  console.log(solution*1)
-		  console.log('solution*1.setSigFigs(SF)')
-		  console.log((solution*1).setSigFigs(SF))
-		  solution = (solution*1).setSigFigs(SF);
-		  console.log(solution)
-		  if (addOnSF != null) {
-			//solution = solution + addOnSF; // not sure if I need this at all
-		  }
-		  //solution = parseFloat(solutionNum).setSigFigs(SF) + addOnSF;
-	  }
-      html = html.replaceAll('=[' + equationSF + ']', solution.toString());
-    }
-  } else {
-    console.log('null equations');
   }
   */
   
@@ -882,7 +856,7 @@ function varToArray(varable) {
 }
 
 // posts
-app.post("/import", (req, res) => {
+app.post("/", (req, res) => {
   const data = req.body.objFromFileLoaded;
   const subjectName = req.body.subjectName;
   const courseName = req.body.courseName;
@@ -910,7 +884,7 @@ app.post("/import", (req, res) => {
     fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
       flag: 'w+'
     });
-    console.log("File written successfully");
+    console.log("File written successfully (import)");
   } catch (err) {
     console.error('qbank write: ' + err);
   }
@@ -928,7 +902,7 @@ app.post("/merge", (req, res) => {
   const qbankName = req.body.qbankName;
   const userName = req.body.userName;
   const buttonPressed = req.body.buttonPressed;
-  console.log(data, subjectName, courseName, userName, buttonPressed);
+  //console.log(data, subjectName, courseName, userName, buttonPressed);
   var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", "utf8");
   var qbanks = JSON.parse(qbanksFile);
 
@@ -944,7 +918,7 @@ app.post("/merge", (req, res) => {
  } else if (buttonPressed == 'mergeCourse') {
    if (typeof courseName != 'undefined') {
      if (typeof qbanks[subjectName][courseName] == 'undefined') {
-		 console.log('3');
+		 //console.log('3');
        qbanks[subjectName][courseName] = data;
      } else {
        const obj = Object.assign(qbanks[subjectName][courseName], data); // should probably adjust so it deals with duplicate subj
@@ -967,7 +941,7 @@ app.post("/merge", (req, res) => {
     fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
       flag: 'w+'
     });
-    console.log("File written successfully");
+    console.log("File written successfully (merge)");
   } catch (err) {
     console.error('qbank write: ' + err);
   }
@@ -1032,7 +1006,7 @@ app.post('/newpassword', async (req, res) => {
       fs.writeFileSync(__dirname + "/users/users.txt", JSON.stringify(users), {
         flag: 'w+'
       });
-      console.log("File written successfully");
+      console.log("File written successfully (newpassword)");
     } catch (err) {
       console.error(err);
     }
@@ -1054,10 +1028,10 @@ app.post('/password', async (req, res) => {
     if (foundUser) {
 	  const targetIndex = users.indexOf(foundUser);		
       let storedPass = foundUser.password; // gets password 
-      console.log(storedPass);
+      //console.log(storedPass);
       
       const apiKey = fs.readFileSync(__dirname + "/users/api.txt", "utf8");
-      console.log(apiKey);
+      //console.log(apiKey);
       sgMail.setApiKey(apiKey);
 	  
 	  // generate temporary password
@@ -1117,7 +1091,7 @@ app.post('/register', async (req, res) => {
       fs.writeFileSync(__dirname + "/users/users.txt", JSON.stringify(users), {
         flag: 'w+'
       });
-      console.log("File written successfully");
+      console.log("File written successfully (register user)");
     } catch (err) {
       console.error(err);
     }
@@ -1126,7 +1100,7 @@ app.post('/register', async (req, res) => {
       fs.writeFileSync(__dirname + "/qbanks/" + req.body.username + "_qbanks.txt", '{}', {
         flag: 'w+'
       });
-      console.log("File written successfully");
+      console.log("File written successfully (register qbanks)");
     } catch (err) {
       console.error(err);
     }
@@ -1143,7 +1117,7 @@ app.post("/reorder", (req, res) => {
   const qbankName = req.body.qbankName;
   const qbankData = req.body.qbankData;
   const userName = req.body.userName;
-  console.log('userName: '+userName);
+  //console.log('userName: '+userName);
   
   var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", "utf8");
   var qbanks = JSON.parse(qbanksFile);
@@ -1156,7 +1130,7 @@ app.post("/reorder", (req, res) => {
     fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
       flag: 'w+'
     });
-    console.log("File written successfully");
+    console.log("File written successfully (reorder)");
   } catch (err) {
     console.error('qbank write: ' + err);
   }
@@ -1178,7 +1152,6 @@ app.post("/submit", (req, res) => {
   if (typeof obj.deleteQuestion === 'undefined') {
     if (typeof obj.addBlank === 'undefined') {
       if (obj.pasteFromLocalStorage) {
-		  console.log()
 		  const localStorageText = obj.localStorageText
         if (localStorageText && isValidQuestionObject(localStorageText)) {
           const parsedQuestion = JSON.parse(localStorageText);
@@ -1255,7 +1228,7 @@ app.post("/submit", (req, res) => {
     fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
       flag: 'w+'
     });
-    console.log("File written successfully");
+    console.log("File written successfully (submit)");
   } catch (err) {
     console.error('qbank write: ' + err);
   }
@@ -1288,7 +1261,7 @@ app.get("/deleteCourse/:passed", (req, res) => {
         fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
           flag: 'w+'
         });
-        console.log("File written successfully");
+        console.log("File written successfully (deleteCourse)");
       } catch (err) {
         console.error(err);
       }
@@ -1320,7 +1293,7 @@ app.get("/deleteQbank/:passed", (req, res) => {
         fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
           flag: 'w+'
         });
-        console.log("File written successfully");
+        console.log("File written successfully (deleteQbank)");
       } catch (err) {
         console.error(err);
       }
@@ -1350,7 +1323,7 @@ app.get("/deleteSubject/:passed", (req, res) => {
         fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
           flag: 'w+'
         });
-        console.log("File written successfully");
+        console.log("File written successfully (deleteSubject)");
       } catch (err) {
         console.error(err);
       }
@@ -1386,6 +1359,32 @@ app.get("/edit/:passed", (req, res) => {
   }
 });
 
+app.get("/pb/:passed", (req, res) => {
+  let passed = decodeURI(req.params.passed);
+  passed = JSON.parse(passed);
+  const userName = passed.userName;
+  var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", "utf8");
+  var qbanks = JSON.parse(qbanksFile);
+	
+  if (typeof passed.userName === 'undefined' || passed.userName == '' || elapsedTime(passed.userName) > threeHours) { // must give condition
+    res.redirect('/login');
+  } else {
+
+    qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", "utf8");
+    qbanks = JSON.parse(qbanksFile);
+
+    var sendMe = pbFile.toString().replace("//PARAMS**GO**HERE",
+      `
+					var qbanks = ${qbanksFile};
+					var user = '${passed.userName}';
+					var subject = '${passed.subject}';
+					var course = '${passed.course}';
+				`);
+
+    res.send(sendMe);
+  }
+});
+
 app.get("/login", (req, res) => {
   var loginFile = fs.readFileSync(__dirname + "/html/login.html", "utf8");
   res.send(loginFile.toString());
@@ -1400,7 +1399,7 @@ app.get("/logout/:passed", (req, res) => {
     fs.writeFileSync(__dirname + "/users/lastactivity.txt", JSON.stringify(lastActivity), {
       flag: 'w+'
     });
-    console.log("File written successfully");
+    console.log("File written successfully (login)");
   } catch (err) {
     console.error(err);
   }
@@ -1426,7 +1425,7 @@ app.get("/newCourse/:passed", (req, res) => {
         fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
           flag: 'w+'
         });
-        console.log("File written successfully");
+        console.log("File written successfully (newCourse)");
       } catch (err) {
         console.error(err);
       }
@@ -1464,7 +1463,7 @@ app.get("/newQbank/:passed", (req, res) => {
         fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
           flag: 'w+'
         });
-        console.log("File written successfully");
+        console.log("File written successfully (newQbank)");
       } catch (err) {
         console.error(err);
       }
@@ -1497,7 +1496,7 @@ app.get("/newSubject/:passed", (req, res) => {
         fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
           flag: 'w+'
         });
-        console.log("File written successfully");
+        console.log("File written successfully (newSubject)");
       } catch (err) {
         console.error(err);
       }
@@ -1516,6 +1515,118 @@ app.get('/password', (req, res) => {
   res.send(loginFile.toString());
 });
 
+function roundToX(num, decimals) {
+  return +(Math.round(num + "e" + decimals) + "e-" + decimals);
+}
+
+function compareObjects(correctAnswersObj, submittedAnswersObj) {
+  let correct = 0;
+  let total = 0;
+  const correctObj = {};
+  const incorrectObj = {};
+  const missedObj = {};
+
+  for (const questionNumber in correctAnswersObj) {
+
+      const correctArray = correctAnswersObj[questionNumber];
+      const submittedArray = submittedAnswersObj[questionNumber];
+      
+      correctObj[questionNumber] = correctArray.filter(item => submittedArray.includes(item));
+
+      
+      missedObj[questionNumber] = correctArray.filter(item => !submittedArray.includes(item));
+      incorrectObj[questionNumber] = submittedArray.filter(item => !correctArray.includes(item));
+      
+      let incrementValue = correctObj[questionNumber].length / Math.max(correctArray.length, submittedArray.length);
+
+      correct += incrementValue;
+
+    total++;
+  }
+ const percent = roundToX(correct/total*100, 1);
+  return {
+    percent,
+    correctObj,
+    incorrectObj,
+    missedObj,
+  };
+}
+
+app.get('/submitQuiz/:passed', (req, res) => {
+//app.get('/grade/:sessionID/:passed', (req, res) => { 
+	console.log(req.params.passed);
+  let passed = JSON.parse(decodeURIComponent(req.params.passed));
+  const fileName = passed.fileName; // need fileName
+  console.log(fileName);
+  const submittedAnswersObj = passed.selected; // need selected
+  var html = fs.readFileSync(__dirname + '/quizzes/' + fileName + '.html', 'utf8');
+  var correctAnswersObj = JSON.parse(fs.readFileSync(__dirname + '/quizzes/' + fileName + '.txt', 'utf8'));
+  const result = compareObjects(correctAnswersObj, submittedAnswersObj);
+  let grade = result.percent;
+  console.log("Percent:", result.percent);
+console.log("Correct Object:", result.correctObj);
+console.log("Incorrect Object:", (result.incorrectObj));
+console.log("Missed Object:", result.missedObj);
+
+	const functionText = `
+function tagQuestions(correctObj, incorrectObj, missedObj) {
+	//const correctObj = JSON.parse(correctObjString);
+	//const incorrectObj = JSON.parse(incorrectObjString);
+	//const missedObj = JSON.parse(missedObjString);
+  // Select all questions
+  var questions = document.querySelectorAll('.question');
+
+  // Iterate through each question
+  questions.forEach(function(question, questionNumber) {
+	  console.log('questionNumber' + questionNumber);
+  
+    // Find all the options in the current question
+    var options = question.querySelectorAll('.option');
+    // Iterate through the options and give them a class name (if needed)
+    options.forEach(function(option, optionIndex) {
+		console.log('optionIndex' + optionIndex);
+      if (correctObj[(questionNumber+1).toString()].includes(optionIndex)) {
+        option.classList.add('correct');
+      } else if (incorrectObj[(questionNumber+1).toString()].includes(optionIndex)) {
+        option.classList.add('incorrect');
+      } else if (missedObj[(questionNumber+1).toString()].includes(optionIndex)) {
+        option.classList.add('missed');
+      }
+    });
+  });
+}
+`
+
+  html = html.replace(/(?<!let )(questionsObject = .*?;)/, 'let correctObj = ' + JSON.stringify(result.correctObj) + '; ' + 'let incorrectObj = ' + JSON.stringify(result.incorrectObj) + '; ' + 'let missedObj = ' + JSON.stringify(result.missedObj) + '; ' + functionText)
+  .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '')
+  //.replaceAll(/<span class=['"]asterisk['"]>\*<\/span>/g, '')
+  //.replaceAll(/<div class=(['"])?solution\1>[\s\S]*?<\/div>/g, '')
+  .replaceAll(/<button class=['"]x['"].*?<\/button>/g, '')
+  .replace(/\/\/###replace me###/, 'tagQuestions(correctObj, incorrectObj, missedObj)')
+  .replace(/<span class=['"]tooltiptext noPrint['"]>.*?<\/span>/, `<span>Grade: ${grade}%`)
+  .replace(/<h4>.*?<\/h4>/, '')
+  .replace(/<div class=['"]rightjustify['"]>.*?<\/div>/, '')
+  //.replaceAll('<body onload="loading()">', '<body onload="loading(); tagQuestions(correctObj, incorrectObj, missedObj);">')
+  //console.log(sessions);
+  //console.log(passed);
+  //console.log(passed.sessionId); //un
+  const session = sessions[passed.sessionId];
+  console.log(session); //un
+  try {
+  session.outcome_service.send_replace_result(grade/100, (err, isValid) => {
+		if (isValid)
+		{
+			res.send(html.toString());
+		} 
+	});
+  }  catch (error) {
+  console.error(error);
+  res.send(html.toString());
+}
+  
+  
+});
+
 app.get("/product/:passed", (req, res) => {
   if (req.params.passed) {
     let passed = decodeURI(req.params.passed);
@@ -1524,28 +1635,206 @@ app.get("/product/:passed", (req, res) => {
     const subject = passed.subject;
 	const course = passed.course;
 	const qbankAndNumArray = passed.qbankAndNumArray;
+	const date = passed.date;
+	const title = passed.title;
 
     var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", "utf8");
     var qbanks = JSON.parse(qbanksFile);
 
-    //const html = qbankToHtml(qbanks[subject][passed.course][passed.qbank], passed.title.replaceAll('_', ' '));
-	const html = qbankToHtml(subject, course, qbankAndNumArray, userName, passed.title.replaceAll('_', ' '), passed.instructorName.replaceAll('_', ' '), passed.date);
+	const html = qbankToHtml(subject, course, qbankAndNumArray, userName, title.replaceAll('_', ' '), passed.instructorName.replaceAll('_', ' '), date);
     try {
-      //fs.writeFileSync(__dirname + '/products/' + passed.userName + '_' + passed.subject + '_' + passed.course + '_' + passed.qbank + '_' + passed.title + '_' + '.html', html, {
-	  fs.writeFileSync(__dirname + '/products/' + passed.userName + '_' + passed.subject + '_' + passed.course + '_' + passed.qbankandNumArray + '_' + passed.title + '_' + '.html', html, { 
+	  fs.writeFileSync(__dirname + '/products/' + userName + '_' + subject + '_' + course + '_' + encodeURIComponent(date) + '_' + title + '_' + '.html', html, { 
         flag: 'w+'
       });
-      console.log("File written successfully");
+      console.log("File written successfully (product)");
     } catch (err) {
       console.error(err);
     }
-
-    //let productFile = fs.readFileSync(__dirname + '/products/' + passed.userName + '_' + passed.subject + '_' + passed.course + '_' + passed.qbank + '_' + passed.title + '_' + '.html', "utf8");
-	let productFile = fs.readFileSync(__dirname + '/products/' + passed.userName + '_' + passed.subject + '_' + passed.course + '_' + passed.qbank + '_' + passed.title + '_' + '.html', "utf8");
+	let productFile = fs.readFileSync(__dirname + '/products/' + userName + '_' + subject + '_' + course + '_' + encodeURIComponent(date) + '_' + title + '_' + '.html', "utf8");
     var sendMe = productFile.toString();
     res.send(sendMe);
   }
 });
+
+app.get('/quiz/:data', (req, res) => {
+  const data = req.params.data;
+  console.log('data'+data);
+
+  // Prepare the data to be sent in the POST request
+  const postData = JSON.stringify({
+    custom_passed: data,
+  });
+  console.log(postData);
+
+  // Define the options for the POST request
+  const postOptions = {
+    hostname: '69.246.42.170', // Replace with the actual hostname
+    port: 3000, // Replace with the actual port (e.g., 443 for HTTPS)
+    path: '/quiz', // Replace with the actual path
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(postData),
+    },
+  };
+  console.log('postoptions' + postOptions);
+
+  // Create the POST request
+  const postRequest = http.request(postOptions, (postResponse) => {
+    let responseData = '';
+
+    postResponse.on('data', (chunk) => {
+      responseData += chunk;
+    });
+
+    postResponse.on('end', () => {
+      // Handle the response data, which should contain the desired information
+      console.log(responseData);
+
+      // Respond to the original GET request if needed
+      //res.status(200).send('POST request completed successfully.');
+    });
+  });
+
+  postRequest.on('error', (error) => {
+    console.error('Error:', error);
+    res.status(500).send('POST request failed.');
+  });
+
+  postRequest.write(postData);
+  postRequest.end();
+});
+ 
+
+
+
+//app.get("/quiz/:passed", (req, res) => {
+app.post('/quiz', (req, res) => { // post because get won't work with Canvas
+	let studentId = '';
+	let passed = {};
+	var lmsData = new lti.Provider("top", "secret");
+	var sessionId = '';
+	
+	lmsData.valid_request(req, (err, isValid) => {
+	if (isValid) {
+	sessionId = uuid();
+	sessions[sessionId] = lmsData;
+	console.log(lmsData.body);
+	studentId = lmsData.body.custom_canvas_user_id;
+	passed = lmsData.body.custom_passed;
+	}
+	else {
+		console.log('invalid request')
+		passed = req.body.custom_passed;
+	}
+	}
+	);
+	
+  //if (req.params.passed) {
+	if (passed) {
+	console.log(passed);
+	console.log(JSON.stringify(passed));
+    passed = decodeURI(passed);
+    passed = JSON.parse(passed);
+    const instructorName = passed.userName;
+    const subject = passed.subject;
+	const course = passed.course;
+	const qbankAndNumArray = passed.qbankAndNumArray;
+	const date = passed.date;
+	const title = passed.title;
+	//const studentId = 'testId'; // need to get from LMS
+	const fileName = studentId + '_' + subject + '_' + course + '_' + encodeURIComponent(date) + '_' + title;
+	let html = '';
+    
+    var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + instructorName + "_qbanks.txt", "utf8");
+    var qbanks = JSON.parse(qbanksFile);
+	//console.log('here');
+    //console.log(fs.existsSync(__dirname + '/quizzes/' + studentId + '_' + subject + '_' + course + '_' + encodeURIComponent(date) + '_' + title + '_' + '.html'));
+	
+	if(fs.existsSync(__dirname + '/quizzes/' + fileName + '.html')) {	
+	// tries to read file first, and it you can't read it, then qbankToHtml and write it
+	html = fs.readFileSync(__dirname + '/quizzes/' + fileName + '.html', "utf8");
+	} else {
+	
+
+	 html = qbankToHtml(subject, course, qbankAndNumArray, instructorName, title.replaceAll('_', ' '), instructorName.replaceAll('_', ' '), date);
+		try {// save in quizzes folder, not products
+		  fs.writeFileSync(__dirname + '/quizzes/' + fileName + '.html', html, { 
+			flag: 'w+'
+		  });
+		  console.log("File written successfully (quiz 1)");
+		} catch (err) {
+		  console.log('write error');
+		  console.error(err);
+		}
+	}
+	
+	let productFile = fs.readFileSync(__dirname + '/quizzes/' + fileName + '.html', "utf8");
+	//console.log('productFile' + productFile);
+	// extract correct answers here
+  const questionsObjectText = productFile.match(/(?<!let )questionsObject = (.*?});/)[1];
+	console.log('questionsObjectText: ' + questionsObjectText);
+	//console.log('match:' + productFile.match(/questionsObject = (.*?);/));
+	//let matchObj = JSON.parse(match[1]); 
+	try {// save in answers object in quizzes folder, with txt end - to compare to submission
+		  fs.writeFileSync(__dirname + '/quizzes/' + fileName + '.txt', questionsObjectText, { 
+			flag: 'w+'
+		  });
+		  console.log("File written successfully (quiz 2)");
+		} catch (err) {
+		  console.error(err);
+		}
+	
+	const eventListenerText = `
+	// Get all elements with the class "option"
+const optionElements = document.querySelectorAll('.option');
+
+// Add a click event listener to each "option" element
+optionElements.forEach((element) => {
+  element.addEventListener('click', () => {
+    element.classList.toggle('selected');
+  });
+});
+`
+//console.log('match: ', productFile.match(/<div class=(['"])?solution\1>[\s\S]*?<\/div>/g));
+
+	// removes answers from quiz
+  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, `let fileName = "${fileName}"; const sessionId = "${sessionId}";`)
+  //'let fileName = '+fileName+'; '+'const sessionId = ' + sessionId+';')
+  .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz();">Submit Quiz</button>') // got rid of grade, might replace with data removed: var path="/grade/"+sessionId+"/"; document.location = path;
+  //.replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz(); var path="/grade/"+sessionId+"/"+"grade.value"; document.location = path;>Submit Quiz</button>')
+  .replaceAll(/<span class=['"]asterisk['"]>\*<\/span>/g, '')
+  .replaceAll(/<div class=(['"])?solution\1>[\s\S]*?<\/div>/g, '')
+  .replaceAll(/<button class=['"]x['"].*?<\/button>/g, '')
+  .replace(/\/\/###replace me###/, eventListenerText)
+  .replace(/<span class=['"]tooltiptext noPrint['"]>.*?<\/span>/, '')
+  .replace(/<h4>.*?<\/h4>/, '')
+  .replace(/<div class=['"]rightjustify['"]>.*?<\/div>/, '')
+  ;
+    
+
+    var sendMe = productFile.toString();
+    res.send(sendMe);
+  }
+});
+// when changes are made, update the answers file, but don't resend
+// when quiz submitted, save all the answers, and resend with full answers
+
+/*
+app.get("/grade/:sessionID/:grade", (req, res) => {
+	const session = sessions[req.sessionId];
+	var grade = req.grade;
+	var resp = `Your grade of ${grade}% has been recorded.`;
+	
+	session.outcome_service.send_replace_result(grade/100, (err, isValid) => {
+		if (!isValid)
+			resp += `<br/>Update failed ${err}`;
+
+		res.send(resp);
+	});
+
+});
+*/
 
 app.get("/register", (req, res) => {
   var registerFile = fs.readFileSync(__dirname + "/html/register.html", "utf8");
@@ -1573,7 +1862,7 @@ app.get("/renameCourse/:passed", (req, res) => {
         fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
           flag: 'w+'
         });
-        console.log("File written successfully");
+        console.log("File written successfully (renameCourse)");
       } catch (err) {
         console.error(err);
       }
@@ -1608,7 +1897,7 @@ app.get("/renameQbank/:passed", (req, res) => {
         fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
           flag: 'w+'
         });
-        console.log("File written successfully");
+        console.log("File written successfully (renameQbank)");
       } catch (err) {
         console.error(err);
       }
@@ -1643,7 +1932,7 @@ app.get("/renameSubject/:passed", (req, res) => {
         fs.writeFileSync(__dirname + "/qbanks/" + userName + "_qbanks.txt", JSON.stringify(qbanks), {
           flag: 'w+'
         });
-        console.log("File written successfully");
+        console.log("File written successfully (renameSubject)");
       } catch (err) {
         console.error(err);
       }
