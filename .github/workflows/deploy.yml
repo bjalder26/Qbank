@@ -18,10 +18,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install lftp -y
 
-      - name: Deploy via FTP (with certificate verification disabled)
+      - name: Deploy via FTP (without SITE SYMLINK)
         run: |
           FTP_SERVER="qbank.c1.is"
           FTP_USERNAME="GitHubQbank@qbank.c1.is"
           FTP_PASSWORD="Bja26@gmail"
 
-          lftp -e "set ftp:ssl-allow no; set ftp:passive-mode true; open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_SERVER && mirror -R -e -x .gitignore -x .github -x .git -x .gitattributes / /home/qbankcis/domains/qbank.c1.is"
+          lftp -e "set ftp:ssl-allow no; set ftp:passive-mode true; set ftp:sync-mode off; open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_SERVER && mirror -R -e -x .gitignore -x .github -x .git -x .gitattributes / /home/qbankcis/domains/qbank.c1.is"
