@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+    <title>Chem Qbank</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />	
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/overlay.css">
+	<script src="../js/index.js"></script>
+  </head>
+
+  <body onload="document.getElementById('subject').value = window.subject; document.getElementById('course').value = window.course; openProductOverlay(true); resized()" onresize="resized()">
+  <div id="subject" style="display: none"></div>
+  <div id="course" style="display: none"></div>
+
+    <script src="../node_modules/tinymce/tinymce.min.js"></script>
+    
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+
+    <script type="text/javascript">
+      //PARAMS**GO**HERE 
+
+    </script>
+    
+    <div id="productoverlay" class="overlay">
+      <div class="widget-wrap">
+        <a href="javascript:void(0)" class="closebtn" onclick="openProductOverlay(true)">&times;</a>
+        <h1>Advanced Quiz, Test, or Worksheet Creator</h1>
+
+        <div class="scrollbar" id="advancedproductmaker">
+          <div id="productlist">
+          </div>
+        </div>
+
+        <div id="productbuttons">
+          <div id="productdropdowndiv">
+            <label for="questionbank">Question bank:&nbsp;</label>
+            <select name="productdropdown" id="product dropdown" onchange="setProductNum(qbanks[$('subject').value][$('course').value][this.value])"></select>
+            <label for="numberofquestions">&nbsp;Number of questions:&nbsp;</label>
+            <input type="number" id="product number" name="product_number" min="0" max="0">&nbsp;
+            <button type="button" title="Add Questions" id="add from dropdown" class="overlayButton material-icons" onclick="addfromdropdown()">add_box</button>
+          </div>
+          <p>
+            <label for="producttitle">Title: </label><input type="text" title="producttitle" id="product title">
+          </p>
+          <p>
+            <label for="instructorname">Instructor name: </label><input type="text" title="instructorname" id="instructor name">
+          </p>
+          <p>
+            <input type="date" title="productdate" id="product date">
+          </p>
+          <button type="button" id="submit product" onclick="createAdvancedProduct()">Submit</button>
+          <button type="button" id="cancel product" onclick="closeProductOverlay()">Cancel</button>
+		  <button type="button" id="reset product" onclick="openProductOverlay(true)">Reset</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
