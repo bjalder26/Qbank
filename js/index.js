@@ -80,7 +80,7 @@ function createDownloadLink(data, fileName, fileType){
   a.download = `${fileName}.${fileType}`;
   a.click();
 }
-
+// createProduct function here
 function createProduct() {
   let passed = {};
   let title = prompt("Title: ", "Worksheet");
@@ -105,6 +105,7 @@ function createProduct() {
     window.open(path, '_blank');
   }
 }
+
 
 function deleteCourse() {
   let toDelete = prompt(`Type "delete ${$('course').value}" to delete this course.`);
@@ -822,15 +823,41 @@ function populateReord() {
   for (let problem of qbank) {
     const listItem = document.createElement('li');
     listItem.setAttribute("draggable", "true");
-	const noBreaksStem = problem.stem.replaceAll('<br>', ' ').replaceAll('<p>', ' ');
-    const div = document.createElement('div')
-    listItem.innerHTML = `<div>Group: ${problem.group}<br>Stem: ${noBreaksStem}</div>`;
+
+    // Create a container div for the content
+    const contentContainer = document.createElement('div');
+
+    const noBreaksStem = problem.stem.replaceAll('<br>', ' ').replaceAll('<p>', ' ');
+    contentContainer.innerHTML = `<div>#${index+1} Group: ${problem.group}<br>Stem: ${noBreaksStem}</div>`;
     listItem.setAttribute("title", problem.stem);
     listItem.setAttribute("order", index);
+
+    // Apply CSS styles to the content container
+    contentContainer.style.position = 'relative';
+    contentContainer.style.paddingRight = '32px'; // Adjust as needed
+
+    // Create the button element
+    const button = document.createElement('button');
+    button.textContent = 'Open Question';
+    button.setAttribute("type", "button");
+    button.setAttribute("onclick", `loadQuestion(qbanks[$('subject').value][$('course').value][$('question bank').value], ${index}); closeNav()`);
+
+    // Apply CSS styles to the button
+    button.style.position = 'absolute';
+    button.style.top = '4px'; // Adjust as needed
+    button.style.right = '4px'; // Adjust as needed
+
+    // Append the button to the content container
+    contentContainer.appendChild(button);
+
+    // Append the content container to the list item
+    listItem.appendChild(contentContainer);
+
     $('sortlist').appendChild(listItem);
     index = index + 1;
   }
 }
+
 
 function reorder() {
   const subjectName = $('subject').value;
@@ -880,7 +907,7 @@ function reorder() {
 function countNumQuestionTypes(qbank){
 	let numOfQuestionTypes = 0;
 	let groupArray = [];
-	for (question of qbank) {
+	for (var question of qbank) {
 	const groupName = question['group'];
 		if (typeof groupName == 'undefined' || groupName.trim() == '') {
 			numOfQuestionTypes++
