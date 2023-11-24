@@ -26,4 +26,3 @@ jobs:
           REMOTE_PATH="/home/qbankcis/domains/qbank.c1.is"
 
           lftp -e "open -u $FTP_USERNAME,$FTP_PASSWORD -p 21 $FTP_SERVER; mirror -R -e -x .git -x .github -x .gitignore -x .gitattributes . $REMOTE_PATH; exit"
-Replace "Your_FTP_Username", "Your_FTP_Password", and "Server_IP_or_Hostname" with your 
