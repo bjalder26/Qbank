@@ -1,3 +1,27 @@
+name: SSH Deployment
+
+on:
+  push:
+    branches:
+      - main # Change this to your branch name
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Install any necessary tools for deployment (if needed)
+      - name: Install rsync (if not available)
+        run: sudo apt-get install rsync -y
+
+      - name: Deploy via SSH
+        run: |
+          sshpass -p Bja26@gmail scp -r / GithubQbank@qbank.c1.is:/home/qbankcis/domains/qbank.c1.is
+
+
 name: FTP Deployment
 
 on:
