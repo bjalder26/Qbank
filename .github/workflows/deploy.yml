@@ -18,11 +18,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install lftp -y
 
-      - name: Deploy via FTP (without SSL)
+      - name: Deploy via FTP (without SSL verification)
         run: |
           FTP_USERNAME="GithubQbank@qbank.c1.is"
           FTP_PASSWORD="Bja26@gmail"
           FTP_SERVER="ftp.qbank.c1.is"
           REMOTE_PATH="/home/qbankcis/domains/qbank.c1.is"
 
-          lftp -e "open -u $FTP_USERNAME,$FTP_PASSWORD -p 21 $FTP_SERVER; mirror -R -e -x .git -x .github -x .gitignore -x .gitattributes . $REMOTE_PATH; exit"
+          lftp -e "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD -p 21 $FTP_SERVER; mirror -R -e -x .git -x .github -x .gitignore -x .gitattributes . $REMOTE_PATH; exit"
