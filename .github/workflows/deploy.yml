@@ -22,7 +22,7 @@ jobs:
         run: |
           FTP_USERNAME="qbankcis"
           FTP_PASSWORD="j@6p!3GJ6CaW8d"
-          FTP_SERVER="69.246.42.170"
+          FTP_SERVER="ftp.qbank.c1.is"
           REMOTE_PATH="/home/qbankcis/"
 
           lftp -e "set ssl:verify-certificate no; open -u $FTP_USERNAME,$FTP_PASSWORD -p 21 $FTP_SERVER; mirror -R -e -x .git -x .github -x .gitignore -x .gitattributes . $REMOTE_PATH; exit"
