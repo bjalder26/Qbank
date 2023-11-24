@@ -1,4 +1,4 @@
-name: SSH Deployment
+name: FTP Deployment
 
 on:
   push:
@@ -13,11 +13,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Install any necessary tools for deployment (if needed)
-      - name: Install rsync (if not available)
-        run: sudo apt-get install rsync -y
-
-      - name: Deploy via SSH
+      - name: Install lftp
         run: |
-          sshpass -p Bja26@gmail scp -r / GithubQbank@qbank.c1.is:/home/qbankcis/domains/qbank.c1.is
+          sudo apt-get update
+          sudo apt-get install lftp -y
 
+      - name: Deploy via FTP (with hardcoded credentials)
+        run: |
+          FTP_USERNAME="ithubQbank@qbank.c1.is"
+          FTP_PASSWORD="Bja26@gmail"
+          FTP_SERVER="qbank.c1.is"
+          REMOTE_PATH="/home/qbankcis/domains/qbank.c1.is"
+
+          lftp -e "open -u $FTP_USERNAME,$FTP_PASSWORD $FTP_SERVER; mirror -R -e -x .git -x .github -x .gitignore -x .gitattributes . $REMOTE_PATH; exit"
