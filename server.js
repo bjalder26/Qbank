@@ -1712,7 +1712,7 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
 	let studentId = '';
 	let passed = {};
 	var lmsData = new lti.Provider("top", "secret");
-	//var sessionId = '';
+	let sessionId = '';
 	
 	lmsData.valid_request(req, (err, isValid) => {
 	if (isValid) {
