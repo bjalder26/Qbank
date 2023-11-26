@@ -22,7 +22,8 @@
     "node-cron": "^3.0.2",
     "nodemailer": "^6.9.2",
     "tinymce": "^5.10.4",
-	"cfenv": "^1.0.0"
+	"cfenv": "^1.0.0",
+	"uuid4": "^0.0.1"
   },
   "engines": {
     "node": "18.x"
