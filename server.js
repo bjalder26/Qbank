@@ -1593,7 +1593,7 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
 }
 `
 
-  html = html.replace(/(?<!let )(questionsObject = .*?;)/, 'let correctObj = ' + JSON.stringify(result.correctObj) + '; ' + 'let incorrectObj = ' + JSON.stringify(result.incorrectObj) + '; ' + 'let missedObj = ' + JSON.stringify(result.missedObj) + '; ' + 'let sessions =' + JSON.stringify(sessions) + ';' + 'let sessionId =' + JSON.stringify(sessionId) + ';'+ functionText)
+  html = html.replace(/(?<!let )(questionsObject = .*?;)/, 'let correctObj = ' + JSON.stringify(result.correctObj) + '; ' + 'let incorrectObj = ' + JSON.stringify(result.incorrectObj) + '; ' + 'let missedObj = ' + JSON.stringify(result.missedObj) + '; ' + functionText)
   .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '')
   .replaceAll(/<button class=['"]x['"].*?<\/button>/g, '')
   .replace(/\/\/###replace me###/, 'tagQuestions(correctObj, incorrectObj, missedObj)')
@@ -1712,7 +1712,7 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
 	let studentId = '';
 	let passed = {};
 	var lmsData = new lti.Provider("top", "secret");
-	var sessionId = '';
+	//var sessionId = '';
 	
 	lmsData.valid_request(req, (err, isValid) => {
 	if (isValid) {
@@ -1797,7 +1797,9 @@ optionElements.forEach((element) => {
 //console.log('match: ', productFile.match(/<div class=(['"])?solution\1>[\s\S]*?<\/div>/g));
 
 	// removes answers from quiz
-  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, `let fileName = "${fileName}"; const sessionId = "${sessionId}";`)
+  //productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, `let fileName = "${fileName}"; const sessionId = "${sessionId}";`) 
+  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'let fileName = ' + fileName + ';' + 'const sessionId =' + JSON.stringify(sessionId) + ';' + 'const sessions =' + JSON.stringify(sessions) + ';')  
+  //+ 'let sessions =' + JSON.stringify(sessions) + ';' + 'let sessionId =' + JSON.stringify(sessionId) + ';'
   //'let fileName = '+fileName+'; '+'const sessionId = ' + sessionId+';')
   .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz();">Submit Quiz</button>') // got rid of grade, might replace with data removed: var path="/grade/"+sessionId+"/"; document.location = path;
   //.replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz(); var path="/grade/"+sessionId+"/"+"grade.value"; document.location = path;>Submit Quiz</button>')
