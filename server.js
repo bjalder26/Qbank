@@ -82,7 +82,9 @@ const listener = app.listen(3000, () => {
   console.log("Your app is listening on port " + listener.address().port);
 });
 */
-const listener = server.listen(3000, () => {
+const port = process.env.PORT || 3000; // Use port 3000 if environment variable is not set
+
+const listener = server.listen(port, () => {
   console.log("Your server is listening on port " + listener.address().port);
 });
 
