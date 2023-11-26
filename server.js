@@ -1621,7 +1621,7 @@ try {
     });
 } catch (error) {
     console.error(error); // Log synchronous errors
-    res.send(html.toString() + '<br/>error: ' + error + '<br/>session: ' + session + JSON.stringify(session));
+    res.send(html.toString() + '<br/>error: ' + error + '<br/>passed: ' + passed + '<br/>sessions: ' + sessions + '<br/>sessionId: ' + passed.sessionId + '<br/>session: ' + session);
 }  
   
 });
