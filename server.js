@@ -1593,7 +1593,7 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
 }
 `
 
-  html = html.replace(/(?<!let )(questionsObject = .*?;)/, 'let correctObj = ' + JSON.stringify(result.correctObj) + '; ' + 'let incorrectObj = ' + JSON.stringify(result.incorrectObj) + '; ' + 'let missedObj = ' + JSON.stringify(result.missedObj) + '; ' + functionText)
+  html = html.replace(/(?<!let )(questionsObject = .*?;)/, 'let correctObj = ' + JSON.stringify(result.correctObj) + '; ' + 'let incorrectObj = ' + JSON.stringify(result.incorrectObj) + '; ' + 'let missedObj = ' + JSON.stringify(result.missedObj) + '; ' + 'let sessions =' JSON.stringify(sessions) + ';' + 'let sessionId =' JSON.stringify(sessionId) + ';'+ functionText)
   .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '')
   .replaceAll(/<button class=['"]x['"].*?<\/button>/g, '')
   .replace(/\/\/###replace me###/, 'tagQuestions(correctObj, incorrectObj, missedObj)')
