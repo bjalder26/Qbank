@@ -76,12 +76,6 @@ imageNumberArray.reverse();
 var nextImageNumber = imageNumberArray[0] ? parseInt(imageNumberArray[0]) + 1: 1; //increments
 console.log('nextImageNumber: ' + nextImageNumber);
 
-// const listener = app.listen(process.env.PORT, () => { //random port
-/*
-const listener = app.listen(3000, () => {
-  console.log("Your app is listening on port " + listener.address().port);
-});
-*/
 const port = process.env.PORT || 3000; // Use port 3000 if environment variable is not set
 
 const listener = server.listen(port, () => {
@@ -1745,10 +1739,9 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
     
     var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + instructorName + "_qbanks.txt", "utf8");
     var qbanks = JSON.parse(qbanksFile);
-	//console.log('here');
     //console.log(fs.existsSync(__dirname + '/quizzes/' + studentId + '_' + subject + '_' + course + '_' + encodeURIComponent(date) + '_' + title + '_' + '.html'));
 	
-	if(fs.existsSync(__dirname + '/quizzes/' + fileName + '.html')) {	
+	if(fs.existsSync(__dirname + '/quizzes/' + fileName + '.html') && false) { // setting this to always fail so it always deletes
 	// tries to read file first, and it you can't read it, then qbankToHtml and write it
 	html = fs.readFileSync(__dirname + '/quizzes/' + fileName + '.html', "utf8");
 	} else {
