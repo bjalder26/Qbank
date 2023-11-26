@@ -23,7 +23,8 @@
     "nodemailer": "^6.9.2",
     "tinymce": "^5.10.4",
 	"cfenv": "^1.0.0",
-	"uuid4": "^1.0.0"
+	"uuid4": "^1.0.0",
+	"ims-lti": "^2.0.0"
   },
   "engines": {
     "node": "18.x"
