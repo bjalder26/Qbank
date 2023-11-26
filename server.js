@@ -1723,7 +1723,7 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
 	passed = lmsData.body.custom_passed;
 	}
 	else {
-		sessions = 'request not valid: ' + err;
+		sessions = 'request not valid: ' + err + ' req: ' + JSON.stringify(req) + ' lmsData: ' + JSON.stringify(lmsData);
 		console.log('invalid request')
 		passed = req.body.custom_passed;
 	}
