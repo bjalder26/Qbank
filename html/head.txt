@@ -190,7 +190,7 @@ function submitQuiz() {
   passed.sessionId = sessionId ? sessionId : "nope";
   passed = encodeURIComponent(JSON.stringify(passed))
     var path = '/submitQuiz/' + passed;
-    window.open(path, '_blank');  // this is probably what opens it in a new window
+    window.open(path, '_self');  // switched from blank to self
 } 
 	  
 	  function makeCoordinateArray(clearCoordinates) {

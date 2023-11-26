@@ -1601,14 +1601,11 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
 
   html = html.replace(/(?<!let )(questionsObject = .*?;)/, 'let correctObj = ' + JSON.stringify(result.correctObj) + '; ' + 'let incorrectObj = ' + JSON.stringify(result.incorrectObj) + '; ' + 'let missedObj = ' + JSON.stringify(result.missedObj) + '; ' + functionText)
   .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '')
-  //.replaceAll(/<span class=['"]asterisk['"]>\*<\/span>/g, '')
-  //.replaceAll(/<div class=(['"])?solution\1>[\s\S]*?<\/div>/g, '')
   .replaceAll(/<button class=['"]x['"].*?<\/button>/g, '')
   .replace(/\/\/###replace me###/, 'tagQuestions(correctObj, incorrectObj, missedObj)')
   .replace(/<span class=['"]tooltiptext noPrint['"]>.*?<\/span>/, `<span>Grade: ${grade}%`)
   .replace(/<h4>.*?<\/h4>/, '')
   .replace(/<div class=['"]rightjustify['"]>.*?<\/div>/, '')
-  //.replaceAll('<body onload="loading()">', '<body onload="loading(); tagQuestions(correctObj, incorrectObj, missedObj);">')
   //console.log(sessions);
   //console.log(passed);
   //console.log(passed.sessionId); //un
@@ -1625,8 +1622,6 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
   console.error(error);
   res.send(html.toString());
 }
-  
-  
 });
 
 app.get("/product/:passed", (req, res) => {
