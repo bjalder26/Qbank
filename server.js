@@ -1621,7 +1621,7 @@ try {
     });
 } catch (error) {
     console.error(error); // Log synchronous errors
-    res.send(html.toString() + '<br/>error: ' + error);
+    res.send(html.toString() + '<br/>error: ' + error + '<br/>session: ' + session + JSON.stringify(session));
 }  
   
 });
