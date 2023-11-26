@@ -1614,7 +1614,7 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
 	});
   }  catch (error) {
   console.error(error);
-  res.send(html.toString());
+  res.send(error);
 }
 });
 
