@@ -1605,17 +1605,25 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
   //console.log(passed.sessionId); //un
   const session = sessions[passed.sessionId];
   console.log(session); //un
-  try {
-  session.outcome_service.send_replace_result(grade/100, (err, isValid) => {
-		if (isValid)
-		{
-			res.send(html.toString());
-		} 
-	});
-  }  catch (error) {
-  console.error(error);
-  res.send(error);
-}
+  
+try {
+    session.outcome_service.send_replace_result(grade/100, (err, isValid) => {
+        if (err) {
+            res.send(err); // Log the error for debugging purposes
+        }
+        if (isValid) {
+            res.send(html.toString());
+        } else {
+            // Handle the case where isValid is false
+            // You might want to provide additional details or logging here
+            res.send(html.toString() + '<br/>isValid: ' + isValid);
+        }
+    });
+} catch (error) {
+    console.error(error); // Log synchronous errors
+    res.send(html.toString() + '<br/>error: ' + error);
+}  
+  
 });
 
 app.get("/product/:passed", (req, res) => {
