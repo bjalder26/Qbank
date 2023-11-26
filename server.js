@@ -1621,7 +1621,7 @@ try {
     });
 } catch (error) {
     console.error(error); // Log synchronous errors
-    res.send(html.toString() + '<br/>error: ' + error + '<br/>passed: ' + passed + '<br/>sessions: ' + sessions + '<br/>sessionId: ' + passed.sessionId + '<br/>session: ' + session);
+    res.send(html.toString() + '<br/>error: ' + error + '<br/>passed: ' + JSON.stringify(passed) + '<br/>sessions: ' + JSON.stringify(sessions) + '<br/>sessionId: ' + passed.sessionId + '<br/>session: ' + session);
 }  
   
 });
