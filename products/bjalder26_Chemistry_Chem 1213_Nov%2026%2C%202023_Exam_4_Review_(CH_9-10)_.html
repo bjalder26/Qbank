@@ -1,0 +1,422 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+	  .selected {
+  border: 2px solid blue;
+  font-weight: bold;
+}
+
+.correct {
+  border: 2px solid green;
+  font-weight: bold;
+}
+
+.incorrect {
+  border: 2px solid red;
+}
+
+.missed {
+  border: 2px solid yellow;
+  font-weight: bold;
+}
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	let questionsObject = {};
+	
+	
+					questionsObject = {"1":[3],"2":[0],"3":[1],"4":[2],"5":[0],"6":[3],"7":[0],"8":[],"9":[1],"10":[1],"11":[1],"12":[3],"13":[1],"14":[0],"15":[2],"16":[2],"17":[0],"18":[2],"19":[2],"20":[0],"21":[2],"22":[3],"23":[0],"24":[3],"25":[3],"26":[1]}; 
+				 
+	
+	
+	
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	  //###replace me###
+	  
+	 
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let markCoordinates = [];
+	  
+function getSelected() {
+// Initialize an object to store the question number and selected options
+var selectedOptions = {};
+
+// Select all questions
+var questions = document.querySelectorAll('.question');
+
+// Iterate through each question
+questions.forEach(function(question, index) {
+  // Find all the options in the current question
+  var options = question.querySelectorAll('.option');
+
+  // Initialize an array to store the selected option indices
+  var selectedIndices = [];
+
+  // Iterate through the options and check if they have the "selected" class
+  options.forEach(function(option, optionIndex) {
+    if (option.classList.contains('selected')) {
+      selectedIndices.push(optionIndex);
+    }
+  });
+
+  // Store the selected indices in the object with the question number as the key
+  selectedOptions[(index + 1).toString()] = selectedIndices;
+});
+
+// The selectedOptions object now contains the desired data
+console.log(selectedOptions);
+return selectedOptions;
+}
+	  
+function submitQuiz() {
+  let passed = {};
+  passed.selected = getSelected();
+  passed.fileName = fileName;
+  passed.sessionId = sessionId ? sessionId : "nope";
+  passed = encodeURIComponent(JSON.stringify(passed))
+    var path = '/submitQuiz/' + passed;
+    window.open(path, '_blank');  // this is probably what opens it in a new window
+} 
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  if(canvas) {
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+  }
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Exam 4 Review (CH 9-10)</h1>
+	<h4>Mr. Alder</h4>
+	<h6>Nov 26, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) What is the oxidation state of P in PO<sub>4</sub><sup>2-</sup>?</div><div class='option'>A) +2</div><div class='option'>B) +8</div><div class='option'>C) +4</div><div class='option'>D) +6<span class='asterisk'>*</span></div><div class='solution'><p>To determine the oxidation state of phosphorus in PO<sub>4</sub><sup>2-</sup>, we consider the overall charge of the ion and the known oxidation states of other elements involved.</p>
+<p>In the phosphate ion (PO<sub>4</sub><sup>2-</sup>), the oxygen atoms have a known oxidation state of -2. The overall charge of the ion is -2 as well. Since the sum of the oxidation states in an ion must equal the overall charge, we can calculate the oxidation state of phosphorous.</p>
+<p>Let's assume the oxidation state of phosphorous as x. We have four oxygen atoms, each with an oxidation state of -2. Therefore:</p>
+<p>(x) + 4(-2) = -2</p>
+<p>Simplifying the equation:</p>
+<p>x - 8 = -2</p>
+<p>x = +6</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) All of the following compounds are soluble except which one?</div><div class='option'>A) BaSO<sub>4</sub><span class='asterisk'>*</span></div><div class='option'>B) BaI<sub>2</sub></div><div class='option'>C) FeSO<sub>4</sub></div><div class='option'>D) <span style="font-size: 14px;">Li</span><sub>2</sub>CO<sub>3</sub></div><div class='solution'>To answer this question, reference your solubility rules.<br>Sulfides are generally soluble, however Sr<sup>2+</sup>, Ba<sup>2+</sup>, &nbsp;Hg<sub>2</sub><sup>2+</sup>, and Pb<sup>2+</sup> &nbsp;sulfides are insoluble.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) How many grams of sucrose (C<sub>12</sub>H<sub>22</sub>O<sub>11</sub>, molar mass = 342.30 g/mol) are contained 300 mL of a 0.224 M glucose solution?</div><div class='option'>A) 0.000196 g</div><div class='option'>B) 23.0 g<span class='asterisk'>*</span></div><div class='option'>C) 4.05x10<sup>22</sup> g</div><div class='option'>D) 2.56 g</div><div class='solution'><p>To calculate the mass of sucrose in a given solution, we need to know the volume of the solution and the molarity of the glucose solution.</p>
+<p>Given: <br>Volume of solution = 300 mL <br>Molarity of glucose solution = 0.224 M</p>
+<p>First, we need to convert the volume from milliliters to liters: Volume of solution = &nbsp;300 mL x (1L / 1000 mL) = 0.0224 L</p>
+<p>Next, we can calculate the number of moles of glucose using the formula: Moles of glucose = Liters of solution × Molarity</p>
+<p>Moles of glucose = 0.0224 L × 0.224 M = 0.0672 moles</p>
+<p>Now, we can use the molar mass of sucrose (342.30 g/mol) to calculate the mass of sucrose: Mass of sucrose = Moles of glucose × Molar mass of sucrose</p>
+<p>Mass of sucrose = 0.0672 moles × 342.30 g/mol = 23.0 grams</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) What type of reaction is the following reaction?<br>2 HCl (aq) + Ca(OH)<sub>2</sub> (aq) → 2 H<sub>2</sub>O (l) + CaCl<sub>2</sub> (aq)</div><div class='option'>A) A precipitation reaction</div><div class='option'>B) A combustion reaction</div><div class='option'>C) An acid-base reaction<span class='asterisk'>*</span></div><div class='option'>D) A redox reaction</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) How many molecules of glucose (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>, molar mass = 180.16 g/mol) are contained 900 mL of a 0.493 M glucose solution?</div><div class='option'>A) 2.67x10<sup>23</sup> molecules<span class='asterisk'>*</span></div><div class='option'>B) 2.67 molecules</div><div class='option'>C) 1.10x10<sup>24</sup> molecules</div><div class='option'>D) 79.9 molecules</div><div class='solution'><p>To calculate the number of molecules of glucose in a given solution, we need to know the volume of the solution and the molarity of the glucose solution.</p>
+<p>Given: Volume of solution = 900 mL<br>Molarity of glucose solution = $[b] M</p>
+<p>First, we need to convert the volume from milliliters to liters: <br>Volume of solution = 900 mL x (1L / 1000 m)L =&nbsp;&nbsp;</p>
+<p>Next, we can calculate the number of moles of glucose using the formula: Moles of glucose = Liters of solution × Molarity&nbsp;&nbsp;</p>
+<p>Moles of glucose = 0.900 L × $[b] M = 0.444 moles</p>
+<p>Now, we can use Avogadro's number (6.022 × 10<sup>23</sup>) to convert moles to molecules: Number of molecules of glucose = Moles of glucose × Avogadro's number</p>
+<p>Number of molecules of glucose = 0.444 moles × (6.022 × 10<sup>23</sup> molecules/mol) = 2.67x10<sup>23</sup> molecules</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) According to the following reaction, how many grams of KCl solution is required to react exactly with 40.6 mL of 0.188 M Zn(ClO<sub>3</sub>)<sub>2</sub> solution?
+<div style="text-align: center;">2 KCl(aq) + Zn(ClO<sub>3</sub>)<sub>2</sub>(aq) → ZnCl<sub>2</sub>(s) + 2 KClO<sub>3</sub>(aq)</div></div><div class='option'>A) 0.0153 g</div><div class='option'>B) 0.569 g</div><div class='option'>C) 0.205 g</div><div class='option'>D) 1.14 g<span class='asterisk'>*</span></div><div class='solution'><p>To determine the amount of KCl solution required to react with a given volume of Zn(ClO<sub>3</sub>)<sub>2</sub> solution, we need to use the stoichiometry of the balanced chemical equation.<br>Given: <br>Volume of Zn(ClO<sub>3</sub>)<sub>2</sub> solution = 40.6 mL <br>Molarity of Zn(ClO<sub>3</sub>)<sub>2</sub> solution = <span class="placeholder">0.188</span> M <br>Molar mass of KCl = 74.55 g/mol</p>
+<p>From the balanced chemical equation: 2 KCl(aq) + Zn(ClO<sub>3</sub>)<sub>2</sub>(aq) → ZnCl<sub>2</sub>(s) + 2 KClO<sub>3</sub>(aq)</p>
+<p>First, calculate the number of moles of Zn(ClO<sub>3</sub>)<sub>2</sub> in the given solution: <br>Moles of Zn(ClO<sub>3</sub>)<sub>2</sub> = Volume (in liters) × Molarity<br>Volume of Zn(ClO<sub>3</sub>)<sub>2</sub> solution = 40.6 mL × (1 L / 1000 mL) = 0.0406 L of Zn(ClO<sub>3</sub>)<sub>2</sub> <br>Moles of Zn(ClO<sub>3</sub>)<sub>2</sub> = 0.0406 L × 0.188 M = 0.00763 moles</p>
+<p>Since the stoichiometric ratio is 1:2 between Zn(ClO<sub>3</sub>)<sub>2</sub> and KCl, we need twice the number of moles of KCl to react completely. <br>Moles of KCl = 0.00763 Moles Zn(ClO<sub>3</sub>)<sub>2</sub> × (2 mol KCl / 1 mol Zn(ClO<sub>3</sub>)<sub>2</sub>) = 0.0153 moles</p>
+<p>Finally, we can calculate the mass of KCl: <br>Mass of KCl = Moles of KCl × Molar mass of KCl <br>Mass of KCl = 0.0153 moles × 74.55 g/mol = 1.14 grams</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) What <strong>element </strong>is undergoing oxidation (if any) in the following reaction?
+<div style="text-align: center;">2 Al(s) + 3 Cu(NO<sub>3</sub>)<sub>2</sub>(aq) → 2 Al(NO<sub>3</sub>)<sub>3</sub>(aq) + 3 Cu(s)</div></div><div class='option'>A) Al<span class='asterisk'>*</span></div><div class='option'>B) Cu</div><div class='option'>C) Al(NO<sub>3</sub>)<sub>3</sub></div><div class='option'>D) Cu(NO<sub>3</sub>)<sub>2</sub></div><div class='solution'><p>In the given reaction:</p>
+<p>Cd(s) + 2 AgNO<sub>3</sub>(aq) → Cd(NO<sub>3</sub>)<sub>2</sub>(aq) + 2 Ag(s)</p>
+<p>The element undergoing <span class="placeholder">oxidation </span>is cadmium (Cd). <span class="placeholder">Oxidation</span> is defined as the loss of electrons, and in this reaction, solid elemental cadmium is being oxidized to cadmium ions (Cd<sup>2+</sup>), which will then be aqueous.</p>
+<ul>
+<li>Silver (Ag) is being reduced from Ag<sup>+</sup> to Ag.</li>
+<li>Cadmium (Cd) is being oxidized from Cd to Cd<sup>2+</sup>.</li>
+</ul></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) Write the <strong>net</strong> ionic equation for following the reaction that occurs when aqueous solutions of Na<sub>2</sub>S and Cu(NO<sub>3</sub>)<sub>2</sub> are mixed.&nbsp; If no reaction occurs write "NR" or "no reaction".<br><span style="color: #ecf0f1;">.</span><br><span style="color: #ecf0f1;">.</span><br><span style="color: #ecf0f1;">.</span><br></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) According to the following reaction, what volume (in&nbsp; mL) of 0.516 M NaCl solution is required to react exactly with 35.6 mL of 0.308 M Cu(NO<sub>3</sub>)<sub>2</sub> solution?
+<div style="text-align: center;">2 NaCl(aq) + Cu(NO<sub>3</sub>)<sub>2</sub>(aq) → CuCl<sub>2</sub>(s) + 2 NaNO<sub>3</sub>(aq)</div></div><div class='option'>A) 119 mL</div><div class='option'>B) 42.5 mL<span class='asterisk'>*</span></div><div class='option'>C) 0.0425 mL</div><div class='option'>D) 10.6 mL</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) What would be the molarity of a solution formed by dissolving 21.3 g of NaCl in enough water to yield 60.0 mL of solution?</div><div class='option'>A) 1.65 M</div><div class='option'>B) 6.07 M<span class='asterisk'>*</span></div><div class='option'>C) 0.00607 M</div><div class='option'>D) 1650 M</div><div class='solution'><p>To calculate the molarity of a solution, we need to determine the number of moles of solute (KBr) and then divide it by the volume of the solution in liters.</p>
+<p>First, let's calculate the number of moles of KBr: <br>Molar mass of KBr = 39.10 g/mol (atomic mass of K) + 79.90 g/mol (atomic mass of Br) = 119.00 g/mol <br>Moles of KBr = Mass of KBr / Molar mass of KBr = 21.3 g / 119.00 g/mol = 0.179 moles</p>
+<p>Next, we convert the volume of the solution from milliliters to liters: Volume of solution = 60.0 mL x (1 L / 1000 mL) = 0.0600 L</p>
+<p>Finally, we calculate the molarity using the formula: Molarity (M) = Moles of solute / Volume of solution (in liters) Molarity = 0.179 moles / 0.0600 L = 2.98 M</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) What is the final temperature of a gold sample (mass = 388 g) that has a starting temperature of 430 K but loses 4.86 kJ of heat. The specific heat capacity of gold is 0.129 J/g°C.</div><div class='option'>A) 420. K</div><div class='option'>B) 333 K<span class='asterisk'>*</span></div><div class='option'>C) 527 K</div><div class='option'>D) 440. K</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) A sample of aluminum absorbs 58.5 kJ of heat, resulting in a temperature rise of 70°C, determine the mass (in Kg) of the aluminum sample if the specific heat capacity of aluminum is 0.900 J/g°C.</div><div class='option'>A) 836</div><div class='option'>B) 177</div><div class='option'>C) 929</div><div class='option'>D) 0.929<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) A 5.92 g sample of aniline (C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub>, molar mass = 93.13 g/mol) was combusted in a coffee cup (constant pressure) calorimeter with a heat capacity of 3.54 kJ/°C. If the temperature rose from 37.2°C to 70.2°C, determine the value of ΔH°<sub>combustion</sub> for aniline (for this problem the water is considered part of the calorimeter, so consider all the heat produced as being absorbed by the calorimeter).</div><div class='option'>A) -3910 kJ/mol</div><div class='option'>B) -1840 kJ/mol<span class='asterisk'>*</span></div><div class='option'>C) 3910 kJ/mol</div><div class='option'>D) 1840 kJ/mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) A piece of gold (mass is 26.4 g) at 410 K is placed in a Styrofoam coffee cup containing 30.0 mL of water at 298 K. Assuming that <strong>no heat is lost to the cup or the surroundings</strong>, what will the final temperature of the water be? The specific heat capacity of gold is 0.129 J/g°C and water is 4.184 J/g°C.&nbsp; The density of water is 1.00 g/mL.</div><div class='option'>A) 301 K<span class='asterisk'>*</span></div><div class='option'>B) 350. K</div><div class='option'>C) 295 K</div><div class='option'>D) -523 K</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) Use the standard reaction enthalpies given below to determine ΔH°<sub>rxn</sub>&nbsp;for the following reaction
+<p>4 SO<sub>3</sub>(g) → 4 S(s) + 6 O<sub>2</sub>(g), ΔH°rxn = ?</p>
+<p>Given:</p>
+<p>SO<sub>2</sub>(g) → S(s) + O<sub>2</sub>(g), ΔH°rxn = +296.8 kJ</p>
+<p>2 SO<sub>2</sub>(g) + O<sub>2</sub>(g) → 2 SO<sub>3</sub>(g), ΔH°rxn = -197.8 kJ</p></div><div class='option'>A) -692.4 kJ</div><div class='option'>B) -791.4 kJ</div><div class='option'>C) +1583 kJ<span class='asterisk'>*</span></div><div class='option'>D) -494.6 kJ</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) Use the bond energies provided to estimate ΔH°<sub>rxn</sub> for the reaction below.
+<p>XeF<sub>2</sub> + 2 F<sub>2</sub>&nbsp;→ &nbsp;XeF<sub>6</sub>, ΔH°<sub>rxn</sub> = ?</p>
+<table style="border-collapse: collapse; border-color: #7e8c8d; border-style: dashed; width: 14.5392%; height: 145.597px;" border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="height: 86.7898px;">
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d; height: 86.7898px;" width="66">Bond</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d; height: 86.7898px;" width="66">
+<p>Bond Energy (kJ/mol)</p>
+</td>
+</tr>
+<tr style="height: 19.6023px;">
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d; height: 19.6023px;" width="66">Xe-F</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d; height: 19.6023px;" width="66">147</td>
+</tr>
+<tr style="height: 19.6023px;">
+<td style="width: 49.6251%; border-style: dashed; border-color: #7e8c8d; height: 19.6023px;" width="66">F-F</td>
+<td style="width: 50.377%; border-style: dashed; border-color: #7e8c8d; height: 19.6023px;" width="66">159</td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) -660 kJ</div><div class='option'>B) -429 kJ</div><div class='option'>C) -270 kJ<span class='asterisk'>*</span></div><div class='option'>D) +159 kJ</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) How much energy is <strong>required</strong> to decompose 619 g of PCl<sub>3</sub>, according to the reaction below? The molar mass of PCl<sub>3</sub> is 137.32 g/mol and may be useful.
+<p style="text-align: center;">4 PCl<sub>3</sub>(g) → P<sub>4</sub>(s) + 6 Cl<sub>2</sub>(g), ΔH°<sub>rxn</sub> = +1207 kJ</p></div><div class='option'>A) 1360 kJ<span class='asterisk'>*</span></div><div class='option'>B) 5440 kJ</div><div class='option'>C) 1.87x10<sup>5</sup> kJ</div><div class='option'>D) 4.14x10<sup>4</sup> kJ</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) A 5.69 g sample of aniline (C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub>, molar mass = 93.13 g/mol) was combusted in a bomb calorimeter. If the temperature rose by 28.4°C, use the information below to determine the heat capacity of the calorimeter (for this problem the water is considered part of the calorimeter, so consider all the heat produced as being absorbed by the calorimeter).
+<p style="text-align: center;">4 C<sub>6</sub>H<sub>5</sub>NH<sub>2</sub>(l) + 35 O<sub>2</sub>(g) → 24 CO<sub>2</sub>(g) + 14 H<sub>2</sub>O(g) + 4 NO<sub>2</sub>(g), ΔH°rxn = -1.28 × 10<sup>4</sup>&nbsp;kJ</p></div><div class='option'>A) 196 kJ/°C</div><div class='option'>B) 27.5 kJ/°C</div><div class='option'>C) 6.88 kJ/°C<span class='asterisk'>*</span></div><div class='option'>D) 0.256 kJ/°C</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) Which of the following is true regarding reactions carried out in a bomb calorimeter?</div><div class='option'>A) Reactions have zero enthalpy change</div><div class='option'>B) Reactions occur under constant pressure</div><div class='option'>C) Reactions occur under constant volume<span class='asterisk'>*</span></div><div class='option'>D) Reactions occur at a fixed temperature</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">20</span>) Choose the thermochemical equation that illustrates ΔH°f for Li<sub>2</sub>SO<sub>4</sub>.</div><div class='option'>A) 2 Li(s) + 1/8 S<sub>8</sub>(s, rhombic) + 2 O<sub>2</sub>(g) → Li<sub>2</sub>SO<sub>4</sub>(s)<span class='asterisk'>*</span></div><div class='option'>B) Li<sub>2</sub>SO<sub>4</sub>(aq) → 2 Li<sup>+</sup>(aq) + SO<sub>4</sub><sup>2-</sup>(aq)</div><div class='option'>C) 8 Li<sub>2</sub>SO<sub>4</sub>(s) → 16 Li(s) + S<sub>8</sub>(s, rhombic) + 16 O<sub>2</sub>(g)</div><div class='option'>D) 2 Li<sup>+</sup>(aq) + SO<sub>4</sub><sup>2-</sup>(aq) → Li<sub>2</sub>SO<sub>4</sub>(aq)</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">21</span>) Use the information provided to determine ΔH°<sub>rxn</sub> for the following reaction
+<p>CH<sub>4</sub>(g) + 3 Cl<sub>2</sub>(g) → CHCl<sub>3</sub>(l) + 3 HCl(g), ΔH°<sub>rxn</sub> = ?</p>
+<table style="border-collapse: collapse; border-color: #7e8c8d; border-style: dashed; width: 18.4287%; height: 125.994px;" border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr style="height: 47.5852px;">
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center; height: 47.5852px;" width="66">&nbsp;</td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center; height: 47.5852px;" width="66">
+<p><u>ΔH</u>°f (kJ/mol)</p>
+</td>
+</tr>
+<tr style="height: 19.6023px;">
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center; height: 19.6023px;" width="66"><span style="text-align: start;">CH<sub>4</sub>(g)</span></td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center; height: 19.6023px;" width="66"><span style="text-align: start;">-75</span></td>
+</tr>
+<tr style="height: 19.6023px;">
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center; height: 19.6023px;" width="66">
+<p>CHCl<sub>3</sub>(l)</p>
+</td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center; height: 19.6023px;" width="66"><span style="text-align: start;">-134</span></td>
+</tr>
+<tr style="height: 19.6023px;">
+<td style="width: 46.8363%; border-color: #7e8c8d; border-style: dotted; text-align: center; height: 19.6023px;" width="66"><span style="text-align: start;">HCl(g)</span></td>
+<td style="width: 53.1655%; border-color: #7e8c8d; border-style: dotted; text-align: center; height: 19.6023px;" width="66"><span style="text-align: start;">-92</span></td>
+</tr>
+</tbody>
+</table></div><div class='option'>A) +662 kJ</div><div class='option'>B) +117 kJ</div><div class='option'>C) -335 kJ<span class='asterisk'>*</span></div><div class='option'>D) -151 kJ</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">22</span>) Which of the following statements is TRUE?</div><div class='option'>A) ΔH<sub>rxn</sub> can be determined using constant volume calorimetry.</div><div class='option'>B) State functions depend on the path taken to arrive at a particular state.</div><div class='option'>C) Energy is created or destroyed in all chemical reactions.</div><div class='option'>D) E<sub>rxn</sub> can be determined using constant volume calorimetry.<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">23</span>) Which of the following is an endothermic process?</div><div class='option'>A) Water boiling<span class='asterisk'>*</span></div><div class='option'>B) Water vapor condensing</div><div class='option'>C) Rain freezing and becoming snow</div><div class='option'>D) You mix an acid and a base and the solution becomes hot</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">24</span>) How much heat energy is required to raise the temperature of 6.95 g of water from 44.34°C to 83.53°C? The specific heat capacity of water = 4.184 J/g°C.</div><div class='option'>A) 2430 J</div><div class='option'>B) 164 J</div><div class='option'>C) 272 J</div><div class='option'>D) 1140 J<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">25</span>) Determine the specific heat capacity of an alloy that requires 31.8 kJ to raise the temperature of 143 g of the alloy from 298 K to 439 K.</div><div class='option'>A) 0.226 J/g-K</div><div class='option'>B) 0.746 J/g-K</div><div class='option'>C) 0.507 J/g-K</div><div class='option'>D) 1.58 J/g-K<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">26</span>) What are the signs on q (heat) and w (work) for a system that is doing work on the surroundings, as well as gaining heat from the surroundings?</div><div class='option'>A) w is positive, q is negative</div><div class='option'>B) w is negative, q is positive<span class='asterisk'>*</span></div><div class='option'>C) w is positive, q is positive</div><div class='option'>D) w is negative, q is negative</div><p></p></div><div id="scantrondiv" class="scantrondiv">Exam 4 Review (CH 9-10)<br><canvas id="scantron" class="scantron"></div></body></html>

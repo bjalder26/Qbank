@@ -1,0 +1,338 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+	  .selected {
+  border: 2px solid blue;
+  font-weight: bold;
+}
+
+.correct {
+  border: 2px solid green;
+  font-weight: bold;
+}
+
+.incorrect {
+  border: 2px solid red;
+}
+
+.missed {
+  border: 2px solid yellow;
+  font-weight: bold;
+}
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	let questionsObject = {};
+	
+	
+					questionsObject = {"1":[0],"2":[2],"3":[1],"4":[1],"5":[1],"6":[0],"7":[3],"8":[3],"9":[3],"10":[3]}; 
+				 
+	
+	
+	
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	  //###replace me###
+	  
+	 
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let markCoordinates = [];
+	  
+function getSelected() {
+// Initialize an object to store the question number and selected options
+var selectedOptions = {};
+
+// Select all questions
+var questions = document.querySelectorAll('.question');
+
+// Iterate through each question
+questions.forEach(function(question, index) {
+  // Find all the options in the current question
+  var options = question.querySelectorAll('.option');
+
+  // Initialize an array to store the selected option indices
+  var selectedIndices = [];
+
+  // Iterate through the options and check if they have the "selected" class
+  options.forEach(function(option, optionIndex) {
+    if (option.classList.contains('selected')) {
+      selectedIndices.push(optionIndex);
+    }
+  });
+
+  // Store the selected indices in the object with the question number as the key
+  selectedOptions[(index + 1).toString()] = selectedIndices;
+});
+
+// The selectedOptions object now contains the desired data
+console.log(selectedOptions);
+return selectedOptions;
+}
+	  
+function submitQuiz() {
+  let passed = {};
+  passed.selected = getSelected();
+  passed.fileName = fileName;
+  passed.sessionId = sessionId ? sessionId : "nope";
+  passed = encodeURIComponent(JSON.stringify(passed))
+    var path = '/submitQuiz/' + passed;
+    window.open(path, '_blank');  // this is probably what opens it in a new window
+} 
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  if(canvas) {
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+  }
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1></h1>
+	<h4></h4>
+	<h6>Nov 27, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) A reaction will be spontaneous (in the forward direction) in which of the following sets of conditions?</div><div class='option'>A) E<sub>cell</sub> is positive, K is greater than 1, ΔG is negative<span class='asterisk'>*</span></div><div class='option'>B) E<sub>cell</sub> is negative, K is less than 1, ΔG is positive</div><div class='option'>C) E<sub>cell</sub> is greater than 1, K is positive, ΔG is negative</div><div class='option'>D) E<sub>cell</sub> is positive, K is positive, ΔG is positive</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) Identify the location of oxidation in an electrochemical cell.</div><div class='option'>A) the cathode</div><div class='option'>B) the salt bridge</div><div class='option'>C) the anode<span class='asterisk'>*</span></div><div class='option'>D) the wire between electrodes</div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) Which element is <strong>oxidized</strong> in the following (unbalanced) redox reaction?<br>MnO<sub>4</sub><sup>⁻</sup>(aq) + H<sub>2</sub>C<sub>2</sub>O<sub>4</sub>(aq) → Mn<sup>2+</sup>(aq) + CO<sub>2</sub>(g)</div><div class='option'>A) H</div><div class='option'>B) C<span class='asterisk'>*</span></div><div class='option'>C) Mn</div><div class='option'>D) O</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) (SLO 6.6) Consider the galvanic cell, Zn (s) | Zn<sup>2+</sup> (aq) || Pb<sup>2+</sup> (aq) | Pb (s). Which one of the following changes to the cell would cause the cell potential to increase (i.e. become more positive)?</div><div class='option'>A) decrease the [Pb<sup>2+</sup>]</div><div class='option'>B) decrease the [Zn<sup>2+</sup>]<span class='asterisk'>*</span></div><div class='option'>C) decrease the mass of Pb(s)</div><div class='option'>D) increase the mass of Pb(s)</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) (SLO 6.1) Determine the cell notation for the redox reaction given below.<br>Fe (s) + Sn<sup>2+</sup> (aq) ➞ Fe<sup>2+</sup> (aq) + Sn (s)</div><div class='option'>A) Fe(s) ∣ Sn(s) || Fe<sup>2+</sup>(aq) ∣ Sn<sup>2+</sup>(aq)</div><div class='option'>B) Fe(s) ∣ Fe<sup>2+</sup>(aq) || Sn<sup>2+</sup>(aq) ∣ Sn(s)<span class='asterisk'>*</span></div><div class='option'>C) Fe<sup>2+</sup>(aq) ∣ Fe(s) || Sn(s) ∣ Sn<sup>2+</sup>(aq)</div><div class='option'>D) Sn<sup>2+</sup>(aq) ∣ Sn(s) || Fe(s) ∣ Fe<sup>2+</sup>(aq)</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) (SLO 6.4) Use the tabulated half-cell potentials to calculate the equilibrium constant (K) for the following balanced redox reaction at 25 ºC.<br>2 Al (s) + 3 Mg<sup>2+</sup> (aq) ➞ 2 Al<sup>3+</sup> (aq) + 3 Mg (s)</div><div class='option'>A) 1.1 x 10<sup>-72</sup><span class='asterisk'>*</span></div><div class='option'>B) 8.9 x 10<sup>-73</sup></div><div class='option'>C) 1.0 x 10<sup>24</sup></div><div class='option'>D) 1.1 x 10<sup>72</sup></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) (SLO 6.2) A galvanic cell consists of one half-cell that contains Ag (s) and Ag<sup>+</sup> (aq), and one half-cell that contains Cu (s) and Cu<sup>2+</sup> (aq). What species are produced at the electrodes under standard conditions?<br>Ag<sup>+</sup>(aq) + e<sup>-</sup> → Ag(s), E° = +0.80 V<br>Cu<sup>2+</sup>(aq) + 2 e<sup>-</sup> → Cu(s), E° = +0.34 V</div><div class='option'>A) Ag<sup>+</sup> (aq) is formed at the cathode, and Cu (s) is formed at the anode.</div><div class='option'>B) Cu<sup>2+</sup> (aq) is formed at the cathode, and Ag (s) is formed at the anode.</div><div class='option'>C) Cu (s) is formed at the cathode, and Ag<sup>+</sup> (aq) is formed at the anode</div><div class='option'>D) Ag (s) is formed at the cathode, and Cu<sup>2+</sup> (aq) is formed at the anode.<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) (SLO 6.7) Determine which of the following pairs of reactants will result in a spontaneous reaction at 25 ºC.</div><div class='option'>A) Ag<sup>+</sup> (aq) + Br<sup>-</sup> (aq)</div><div class='option'>B) Li<sup>+</sup> (aq) + Cr (s)</div><div class='option'>C) Pb<sup>2+</sup> (aq) + Au (s)</div><div class='option'>D) Fe<sup>3+</sup> (aq) + Ni (s)<span class='asterisk'>*</span></div><div class='option'>E)  None of the above.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) (SLO 6.5) Which of the following batteries is used most frequently in cars?</div><div class='option'>A) lithium ion battery</div><div class='option'>B) NiCad battery</div><div class='option'>C) fuel cell</div><div class='option'>D) lead-acid storage battery<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) (SLO 6.3) Balance the following <strong>redox reaction</strong> if it occurs in acid. What are the coefficients in front of SO<sub>3</sub><sup>2-</sup> and Cr<sup>3+</sup>&nbsp;in the balanced<br>reaction?<br>Cr<sub>2</sub>O<sub>7</sub><sup>2-</sup> (aq) + SO<sub>3</sub><sup>2-</sup> (s) ➞ Cr<sup>3+</sup> (aq) + SO<sub>4</sub><sup>2-</sup> (aq)</div><div class='option'>A) SO<sub>3</sub><sup>2-</sup> = 2, Cr<sup>3+</sup> = 3</div><div class='option'>B) SO<sub>3</sub><sup>2-</sup> = 2, Cr<sup>3+</sup> = 2</div><div class='option'>C) SO<sub>3</sub><sup>2-</sup> = 2, Cr<sup>3+</sup> = 1</div><div class='option'>D) SO<sub>3</sub><sup>2-</sup> = 3, Cr<sup>3+</sup> = 2<span class='asterisk'>*</span></div><p></p></div><div id="scantrondiv" class="scantrondiv"><br><canvas id="scantron" class="scantron"></div></body></html>
