@@ -1800,7 +1800,7 @@ optionElements.forEach((element) => {
 
 	// removes answers from quiz
   //productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, `let fileName = "${fileName}"; const sessionId = "${sessionId}";`) 
-  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'let fileName = ' + fileName + ';' + 'const sessionId =' + JSON.stringify(sessionId) + ';' + 'const sessions =' + JSON.stringify(sessions) + ';')  
+  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'let fileName = ' + fileName + ';' + 'const sessionId =' + JSON.stringify(sessionId) + ';' + 'const sessions =' + typeof sessions + ';')  
   //+ 'let sessions =' + JSON.stringify(sessions) + ';' + 'let sessionId =' + JSON.stringify(sessionId) + ';'
   //'let fileName = '+fileName+'; '+'const sessionId = ' + sessionId+';')
   .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz();">Submit Quiz</button>') // got rid of grade, might replace with data removed: var path="/grade/"+sessionId+"/"; document.location = path;
