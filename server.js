@@ -1625,8 +1625,48 @@ try {
     console.error(error); // Log synchronous errors
     res.send(html.toString() + '<br/>error: ' + error + '<br/>passed: ' + JSON.stringify(passed) + '<br/>sessions: ' + JSON.stringify(sessions) + '<br/>sessionId: ' + passed.sessionId + '<br/>session: ' + session);
 }  
+saveFileWithNumberedName(fileName, 'html', __dirname + '/quizzes/')
+  .then((file_url) => {
+    // Handle the saved file name or any other operation
+	session.ext_content.send_file(res, file_url, '', 'html');
+  })
+  .catch((error) => {
+    console.error('Error occurred:', error);
+  });
   
 });
+
+async function saveFileWithNumberedName(baseName, extension, path) {
+  const files = await fs.promises.readdir(path); // Change __dirname to your directory path
+
+  // Filter files with the same beginning as baseName and ending with numbers
+  const matchingFiles = files.filter((file) => {
+    const regex = new RegExp(`^${baseName}_[0-9]+\\.${extension}$`, 'i');
+    return regex.test(file);
+  });
+
+  let highestNumber = 0;
+
+  // Find the highest number from existing files
+  matchingFiles.forEach((file) => {
+    const parts = file.split('_');
+    const number = parseInt(parts[parts.length - 1].split('.')[0]);
+    if (number > highestNumber) {
+      highestNumber = number;
+    }
+  });
+
+  const nextNumber = highestNumber + 1;
+  const numberedFileName = `${baseName}_${nextNumber}.${extension}`;
+
+  // Save the file with the numbered name
+  // You'll need to provide the content to be saved here
+  // For example: fs.writeFileSync(numberedFileName, content);
+  // Replace 'content' with the actual content you want to save
+
+  console.log(`File saved as: ${numberedFileName}`);
+  return numberedFileName;
+}
 
 app.get("/product/:passed", (req, res) => {
   if (req.params.passed) {
