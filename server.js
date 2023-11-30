@@ -1720,7 +1720,6 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
 	if (isValid) {
 	sessionId = uuid();
 	sessions[sessionId] = lmsData;
-	console.log(lmsData.body);
 	studentId = lmsData.body.custom_canvas_user_id;
 	passed = lmsData.body.custom_passed;
 	} else {
@@ -1800,7 +1799,7 @@ optionElements.forEach((element) => {
 
 	// removes answers from quiz
   //productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, `let fileName = "${fileName}"; const sessionId = "${sessionId}";`) 
-  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'let fileName = ' + fileName + ';' + 'const sessionId =' + JSON.stringify(sessionId) + ';' + 'const sessions =' + typeof sessions + ';')  
+  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'let fileName = ' + fileName + '; ' + 'const sessionId =' + JSON.stringify(sessionId) + ';')  
   //+ 'let sessions =' + JSON.stringify(sessions) + ';' + 'let sessionId =' + JSON.stringify(sessionId) + ';'
   //'let fileName = '+fileName+'; '+'const sessionId = ' + sessionId+';')
   .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz();">Submit Quiz</button>') // got rid of grade, might replace with data removed: var path="/grade/"+sessionId+"/"; document.location = path;
