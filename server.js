@@ -39,6 +39,7 @@ app.use(express.urlencoded({ // increases the limit on what is sent via url not 
 }));
 app.use(express.json({limit: '50mb'})); // increases the limit on what is sent
 app.post("*", require("body-parser").urlencoded({extended: true})); // attempt to make signatures work
+app.enable('trust proxy');
 
 // create product, images, and user directories if they don't exist
 if (!fs.existsSync(__dirname + '/products')){fs.mkdirSync(__dirname + '/products');}
