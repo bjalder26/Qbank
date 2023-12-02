@@ -187,8 +187,10 @@ function submitQuiz() {
   let passed = {};
   passed.selected = getSelected();
   passed.fileName = fileName;
-  passed.sessionId = sessionId ? sessionId : "nope";
-  //passed.sessions = sessions ? sessions : "nope";
+  passed.sessionId = sessionId ? sessionId : "no sessionId";
+  passed.courseId = courseId ? courseId : "no courseId";
+  passed.assignmentId = assignmentId ? assignmentId : "no assignmentId";
+  passed.studentId = studentId ? studentId : "no studentId";
   passed = encodeURIComponent(JSON.stringify(passed))
     var path = '/submitQuiz/' + passed;
     window.open(path, '_self');  // switched from blank to self

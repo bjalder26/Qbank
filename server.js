@@ -41,10 +41,11 @@ app.use(express.json({limit: '50mb'})); // increases the limit on what is sent
 app.post("*", require("body-parser").urlencoded({extended: true})); // attempt to make signatures work
 app.enable('trust proxy');
 
-// create product, images, and user directories if they don't exist
+// create product, images, user, and grades directories if they don't exist
 if (!fs.existsSync(__dirname + '/products')){fs.mkdirSync(__dirname + '/products');}
 if (!fs.existsSync(__dirname + '/images')){fs.mkdirSync(__dirname + '/images');}
 if (!fs.existsSync(__dirname + '/qbanks')){fs.mkdirSync(__dirname + '/qbanks');}
+if (!fs.existsSync(__dirname + '/grades')){fs.mkdirSync(__dirname + '/grades');}
 
 // access to files and folders
 app.use('/js', express.static(__dirname + '/js/'));
@@ -56,6 +57,7 @@ app.use('/images', express.static(__dirname + '/images/'));
 app.use('/node_modules', express.static(__dirname + '/node_modules/'));
 app.use('/users', express.static(__dirname + '/users/'));
 app.use('/qbanks', express.static(__dirname + '/qbanks/'));
+app.use('/grades', express.static(__dirname + '/grades/'));
 
 // reads files
 var indexFile = fs.readFileSync(__dirname + "/html/index.html", "utf8");
@@ -1557,14 +1559,64 @@ app.get('/submitQuiz/:passed', (req, res) => {
   const fileName = passed.fileName; // need fileName
   console.log(fileName);
   const submittedAnswersObj = passed.selected; // need selected
+  const courseId = passed.courseId;
+  const assignmentId = passed.assignmentId;
+  const studentId = passed.studentId;
+  
   var html = fs.readFileSync(__dirname + '/quizzes/' + fileName + '.html', 'utf8');
+  
   var correctAnswersObj = JSON.parse(fs.readFileSync(__dirname + '/quizzes/' + fileName + '.txt', 'utf8'));
   const result = compareObjects(correctAnswersObj, submittedAnswersObj);
   let grade = result.percent;
+  
+  
   console.log("Percent:", result.percent);
 console.log("Correct Object:", result.correctObj);
 console.log("Incorrect Object:", (result.incorrectObj));
 console.log("Missed Object:", result.missedObj);
+
+// ========================================  
+// Read the file
+const filePath = `/grades/${courseId}_${assignmentId}.txt`;
+fs.readFile(filePath, 'utf8', (err, data) => {
+  if (err) {
+    console.error('Error reading file:', err);
+    return;
+  }
+
+  let jsonObject;
+  try {
+    // Parse the text into an object
+    jsonObject = JSON.parse(data);
+  } catch (parseErr) {
+    console.error('Error parsing JSON:', parseErr);
+    return;
+  }
+
+  const keyToAdd = studentId;
+  const newValue = grade; // Replace with your new value
+
+  // Check if the key exists in the object and if the new value is higher
+  if (jsonObject.hasOwnProperty(keyToAdd) && jsonObject[keyToAdd] >= newValue) {
+    console.log('The existing value is already higher or equal.');
+    return;
+  }
+
+  // Add or update the key with the new value
+  jsonObject[keyToAdd] = newValue;
+
+  const updatedData = JSON.stringify(jsonObject, null, 2);
+
+  // Write the updated object back to the file
+  fs.writeFile(filePath, updatedData, 'utf8', (writeErr) => {
+    if (writeErr) {
+      console.error('Error writing file:', writeErr);
+      return;
+    }
+    console.log('File updated successfully!');
+  });
+});
+// ========================================
 
 	const functionText = `
 function tagQuestions(correctObj, incorrectObj, missedObj) {
@@ -1755,12 +1807,18 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
 	let passed = {};
 	var lmsData = new lti.Provider("top", "secret");
 	let sessionId = '';
+	let courseId = '';
+	let assignmentId = '';
 	
 	lmsData.valid_request(req, (err, isValid) => {
 	if (isValid) {
 	sessionId = uuid();
 	sessions[sessionId] = lmsData;
+	
 	studentId = lmsData.body.custom_canvas_user_id;
+	courseId = lmsData.body.custom_canvas_course_id;
+	assignmentId = lmsData.body.custom_canvas_assignment_id;
+	
 	passed = lmsData.body.custom_passed;
 	} else {
 		sessions = 'request not valid: ' + err + ' headers: ' + JSON.stringify(req.headers) + ' params: ' + JSON.stringify(req.params) + ' query: ' + JSON.stringify(req.query) + ' body: ' + JSON.stringify(req.body) + ' lmsData: ' + JSON.stringify(lmsData.body);
@@ -1839,7 +1897,7 @@ optionElements.forEach((element) => {
 
 	// removes answers from quiz
   //productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, `let fileName = "${fileName}"; const sessionId = "${sessionId}";`) 
-  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'let fileName = "' + fileName + '"; ' + 'const sessionId =' + JSON.stringify(sessionId) + ';')  
+  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'const fileName = "' + fileName + '"; ' + 'const sessionId =' + JSON.stringify(sessionId) + '; ' + 'const courseId = ' + courseId + ';' + 'const assignmentId = ' assignmentId + ';' + 'const studentId = ' + studentId + ';')  
   //+ 'let sessions =' + JSON.stringify(sessions) + ';' + 'let sessionId =' + JSON.stringify(sessionId) + ';'
   //'let fileName = '+fileName+'; '+'const sessionId = ' + sessionId+';')
   .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz();">Submit Quiz</button>') // got rid of grade, might replace with data removed: var path="/grade/"+sessionId+"/"; document.location = path;
