@@ -1583,7 +1583,7 @@ app.get('/submitQuiz/:passed', (req, res) => {
 
 // ========================================  
 // Read the file
-const filePath = __dirname + '/grades/'+ courseId + '-' + assignmentId + '.txt';
+const filePath = __dirname + '/grades/'+ courseId + '-' + assignmentId + '_' + studentId + '.txt';
 
 writeErrorToFile(__dirname + '/grades/error.txt', filePath, 'w');
 
