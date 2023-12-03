@@ -1559,9 +1559,9 @@ app.get('/submitQuiz/:passed', (req, res) => {
   const fileName = passed.fileName; // need fileName
   console.log(fileName);
   const submittedAnswersObj = passed.selected; // need selected
-  const courseId = passed.courseId ? passed.courseId.toString() : 'no courseId';
-  const assignmentId = passed.assignmentId ? passed.assignmentId.toString() : 'no assignmentId';
-  const studentId = passed.studentId.toString();
+  const courseId = passed.courseId ? passed.courseId : 'no courseId';
+  const assignmentId = passed.assignmentId ? passed.assignmentId : 'no assignmentId';
+  const studentId = passed.studentId;
   
   var html = fs.readFileSync(__dirname + '/quizzes/' + fileName + '.html', 'utf8');
   
@@ -1899,7 +1899,7 @@ optionElements.forEach((element) => {
 
 	// removes answers from quiz
   //productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, `let fileName = "${fileName}"; const sessionId = "${sessionId}";`) 
-  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'const fileName = "' + fileName + '"; ' + 'const sessionId =' + JSON.stringify(sessionId) + '; ' + 'const courseId = ' + courseId + '; ' + 'const assignmentId = ' + assignmentId + ';' + 'const studentId = ' + studentId + ';')  
+  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'const fileName = "' + fileName + '"; ' + 'const sessionId =' + JSON.stringify(sessionId) + '; ' + 'const courseId = "' + courseId + '"; ' + 'const assignmentId = "' + assignmentId + '";' + 'const studentId = "' + studentId + '";')  
   //+ 'let sessions =' + JSON.stringify(sessions) + ';' + 'let sessionId =' + JSON.stringify(sessionId) + ';'
   //'let fileName = '+fileName+'; '+'const sessionId = ' + sessionId+';')
   .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz();">Submit Quiz</button>') // got rid of grade, might replace with data removed: var path="/grade/"+sessionId+"/"; document.location = path;
