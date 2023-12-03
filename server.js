@@ -1586,16 +1586,16 @@ console.log("Missed Object:", result.missedObj);
 // Read the file
 const filePath = `${__dirname}/grades/${courseId}_${assignmentId}.txt`;
 
-writeErrorToFile(__dirname + "/quizzes/", filePath);
+writeErrorToFile(__dirname + "/grades/error.txt", filePath);
 
 let higherGrade = grade; // Replace with your new value
 
-writeErrorToFile(__dirname + "/quizzes/", higherGrade);
+writeErrorToFile(__dirname + "/grades/error.txt", higherGrade);
   
 fs.readFile(filePath, 'utf8', (err, data) => {
   if (err) {
     console.error('Error reading file:', err);
-	writeErrorToFile(__dirname + "/quizzes/", '1' + err);
+	writeErrorToFile(__dirname + "/grades/error.txt", '1' + err);
   }
 
   let jsonObject = {};
@@ -1604,7 +1604,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
     jsonObject = JSON.parse(data);
   } catch (parseErr) {
     console.error('Error parsing JSON:', parseErr);
-	writeErrorToFile(__dirname + "/quizzes/", '2' + parseErr);
+	writeErrorToFile(__dirname + "/grades/error.txt", '2' + parseErr);
     return;
   }
 
@@ -1614,7 +1614,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
   if (jsonObject.hasOwnProperty(keyToAdd) && jsonObject[keyToAdd] >= higherGrade) {
     console.log('The existing value is already higher or equal.');
 	higherGrade = jsonObject[keyToAdd];
-	writeErrorToFile(__dirname + "/quizzes/", 'higherGrade2' + higherGrade);
+	writeErrorToFile(__dirname + "/grades/error.txt", 'higherGrade2' + higherGrade);
   }
 
   // Add or update the key with the new value
@@ -1626,7 +1626,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
   fs.writeFile(filePath, updatedData, 'utf8', (writeErr) => {
     if (writeErr) {
       console.error('Error writing file:', writeErr);
-	  writeErrorToFile(__dirname + "/quizzes/", '3' + writeErr);
+	  writeErrorToFile(__dirname + "/grades/error.txt", '3' + writeErr);
       return;
     }
     console.log('File updated successfully!');
