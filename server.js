@@ -1591,10 +1591,10 @@ let higherGrade = grade; // Replace with your new value
 
 writeErrorToFile(__dirname + "/grades/error.txt", higherGrade.toString(), 'a');
 
-let data = {};
+let data = '{}';
 
 try {
-data = fs.readFileSync(filePath, "utf8") ? fs.readFileSync(filePath, "utf8") : {};
+data = fs.readFileSync(filePath, "utf8") ? fs.readFileSync(filePath, "utf8") : '{}';
 } catch (err) {
 	writeErrorToFile(__dirname + "/grades/error.txt", '     1' + err, 'a');
 }
