@@ -1594,16 +1594,16 @@ fs.readFile(filePath, 'utf8', (err, data) => {
   }
 
   const keyToAdd = studentId;
-  const newValue = grade; // Replace with your new value
+  let higherGrade = grade; // Replace with your new value
 
   // Check if the key exists in the object and if the new value is higher
-  if (jsonObject.hasOwnProperty(keyToAdd) && jsonObject[keyToAdd] >= newValue) {
+  if (jsonObject.hasOwnProperty(keyToAdd) && jsonObject[keyToAdd] >= higherGrade) {
     console.log('The existing value is already higher or equal.');
-    return;
+	higherGrade = jsonObject[keyToAdd];
   }
 
   // Add or update the key with the new value
-  jsonObject[keyToAdd] = newValue;
+  jsonObject[keyToAdd] = higherGrade;
 
   const updatedData = JSON.stringify(jsonObject, null, 2);
 
@@ -1661,7 +1661,7 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
   console.log(session); //un
   
 try {
-    session.outcome_service.send_replace_result(grade/100, (err, isValid) => {
+    session.outcome_service.send_replace_result(higherGrade/100, (err, isValid) => {
         if (err) {
             res.send(err); // Log the error for debugging purposes
         }
