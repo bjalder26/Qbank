@@ -1591,11 +1591,12 @@ writeErrorToFile(__dirname + "/grades/error.txt", filePath);
 let higherGrade = grade; // Replace with your new value
 
 writeErrorToFile(__dirname + "/grades/error.txt", higherGrade.toString());
-  
+let data = {};
 fs.readFile(filePath, 'utf8', (err, data) => {
   if (err) {
     console.error('Error reading file:', err);
 	writeErrorToFile(__dirname + "/grades/error.txt", '     1' + err + filePath + '    ' + __dirname + "/grades/error.txt");
+	data = {};
   }
 
   let jsonObject = {};
