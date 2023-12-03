@@ -1590,7 +1590,7 @@ writeErrorToFile(__dirname + "/grades/error.txt", filePath);
 
 let higherGrade = grade; // Replace with your new value
 
-writeErrorToFile(__dirname + "/grades/error.txt", higherGrade);
+writeErrorToFile(__dirname + "/grades/error.txt", higherGrade.toString());
   
 fs.readFile(filePath, 'utf8', (err, data) => {
   if (err) {
