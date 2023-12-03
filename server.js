@@ -1510,8 +1510,8 @@ app.get("/newSubject/:passed", (req, res) => {
   }
 });
 
-function writeErrorToFile(filePath, dataToAppend) {
-	fs.writeFile(filePath, dataToAppend, { flag: 'a' }, (err) => {
+function writeErrorToFile(filePath, dataToAppend, flag) {
+	fs.writeFile(filePath, dataToAppend, { flag: flag }, (err) => {
   // Error handling and logging removed intentionally
 });
 }
@@ -1586,16 +1586,16 @@ console.log("Missed Object:", result.missedObj);
 // Read the file
 const filePath = __dirname + '/grades/'+ courseId + '_' + assignmentId + '.txt';
 
-writeErrorToFile(__dirname + "/grades/error.txt", filePath);
+writeErrorToFile(__dirname + "/grades/error.txt", filePath, 'w');
 
 let higherGrade = grade; // Replace with your new value
 
-writeErrorToFile(__dirname + "/grades/error.txt", higherGrade.toString());
+writeErrorToFile(__dirname + "/grades/error.txt", higherGrade.toString(), 'a');
 let data = {};
 fs.readFile(filePath, 'utf8', (err, data) => {
   if (err) {
     console.error('Error reading file:', err);
-	writeErrorToFile(__dirname + "/grades/error.txt", '     1' + err + filePath + '    ' + __dirname + "/grades/error.txt");
+	writeErrorToFile(__dirname + "/grades/error.txt", '     1' + err + filePath + '    ' + __dirname + "/grades/error.txt", 'a');
 	data = {};
   }
 
@@ -1605,7 +1605,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
     jsonObject = JSON.parse(data);
   } catch (parseErr) {
     console.error('Error parsing JSON:', parseErr);
-	writeErrorToFile(__dirname + "/grades/error.txt", '2' + parseErr);
+	writeErrorToFile(__dirname + "/grades/error.txt", '2' + parseErr, 'a');
     return;
   }
 
@@ -1615,7 +1615,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
   if (jsonObject.hasOwnProperty(keyToAdd) && jsonObject[keyToAdd] >= higherGrade) {
     console.log('The existing value is already higher or equal.');
 	higherGrade = jsonObject[keyToAdd];
-	writeErrorToFile(__dirname + "/grades/error.txt", 'higherGrade2' + higherGrade);
+	writeErrorToFile(__dirname + "/grades/error.txt", 'higherGrade2' + higherGrade, 'a');
   }
 
   // Add or update the key with the new value
@@ -1627,7 +1627,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
   fs.writeFile(filePath.toString(), updatedData, 'utf8', (writeErr) => {
     if (writeErr) {
       console.error('Error writing file:', writeErr);
-	  writeErrorToFile(__dirname + "/grades/error.txt", '3' + writeErr);
+	  writeErrorToFile(__dirname + "/grades/error.txt", '3' + writeErr, 'a');
       return;
     }
     console.log('File updated successfully!');
