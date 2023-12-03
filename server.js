@@ -1578,6 +1578,9 @@ console.log("Missed Object:", result.missedObj);
 // ========================================  
 // Read the file
 const filePath = `/grades/${courseId}_${assignmentId}.txt`;
+
+let higherGrade = grade; // Replace with your new value
+  
 fs.readFile(filePath, 'utf8', (err, data) => {
   if (err) {
     console.error('Error reading file:', err);
@@ -1594,8 +1597,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
   }
 
   const keyToAdd = studentId;
-  let higherGrade = grade; // Replace with your new value
-
+  
   // Check if the key exists in the object and if the new value is higher
   if (jsonObject.hasOwnProperty(keyToAdd) && jsonObject[keyToAdd] >= higherGrade) {
     console.log('The existing value is already higher or equal.');
