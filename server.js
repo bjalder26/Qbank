@@ -1586,7 +1586,7 @@ console.log("Missed Object:", result.missedObj);
 // Read the file
 const filePath = `${__dirname}/grades/${courseId}_${assignmentId}.txt`;
 
-writeErrorToFile(__dirname + "/grades/error.txt", filePath);
+writeErrorToFile(__dirname + "/grades/error.txt", filePath.toString());
 
 let higherGrade = grade; // Replace with your new value
 
@@ -1623,7 +1623,7 @@ fs.readFile(filePath.toString(), 'utf8', (err, data) => {
   const updatedData = JSON.stringify(jsonObject, null, 2) ? JSON.stringify(jsonObject, null, 2): '{}';
 
   // Write the updated object back to the file
-  fs.writeFile(filePath, updatedData, 'utf8', (writeErr) => {
+  fs.writeFile(filePath.toString(), updatedData, 'utf8', (writeErr) => {
     if (writeErr) {
       console.error('Error writing file:', writeErr);
 	  writeErrorToFile(__dirname + "/grades/error.txt", '3' + writeErr);
