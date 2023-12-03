@@ -1587,7 +1587,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
     return;
   }
 
-  let jsonObject;
+  let jsonObject = {};
   try {
     // Parse the text into an object
     jsonObject = JSON.parse(data);
