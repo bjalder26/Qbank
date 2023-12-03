@@ -1590,21 +1590,22 @@ writeErrorToFile(__dirname + '/grades/error.txt', filePath, 'w');
 let higherGrade = grade; // Replace with your new value
 
 writeErrorToFile(__dirname + "/grades/error.txt", higherGrade.toString(), 'a');
+
 let data = {};
-fs.readFile(filePath, 'utf8', (err, data) => {
-  if (err) {
-    console.error('Error reading file:', err);
+
+try {
+data = fs.readFileSync(filePath, "utf8") ? fs.readFileSync(filePath, "utf8") : {};
+} catch (err) {
 	writeErrorToFile(__dirname + "/grades/error.txt", '     1' + err, 'a');
-	data = {};
-  }
+}
 
   let jsonObject = {};
   try {
     // Parse the text into an object
     jsonObject = JSON.parse(data);
-  } catch (parseErr) {
-    console.error('Error parsing JSON:', parseErr);
-	writeErrorToFile(__dirname + "/grades/error.txt", '2' + parseErr + jsonObject, 'a');
+  } catch (err) {
+    console.error('Error parsing JSON:', err);
+	writeErrorToFile(__dirname + "/grades/error.txt", '     2' + err + jsonObject, 'a');
     return;
   }
 
@@ -1631,7 +1632,6 @@ fs.readFile(filePath, 'utf8', (err, data) => {
     }
     console.log('File updated successfully!');
   });
-});
 // ========================================
 
 	const functionText = `
