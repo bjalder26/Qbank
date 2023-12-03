@@ -1584,7 +1584,7 @@ console.log("Missed Object:", result.missedObj);
 
 // ========================================  
 // Read the file
-const filePath = `${__dirname}/grades/${courseId}_${assignmentId}.txt`;
+const filePath = __dirname + '/grades/'+ courseId + '_' + assignmentId + '.txt';
 
 writeErrorToFile(__dirname + "/grades/error.txt", filePath.toString());
 
