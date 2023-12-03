@@ -1560,12 +1560,11 @@ function compareObjects(correctAnswersObj, submittedAnswersObj) {
 }
 
 app.get('/submitQuiz/:passed', (req, res) => {
-//app.get('/grade/:sessionID/:passed', (req, res) => { 
-	console.log(req.params.passed);
+  //console.log(req.params.passed);
   let passed = JSON.parse(decodeURIComponent(req.params.passed));
   const fileName = passed.fileName; // need fileName
   console.log(fileName);
-  const submittedAnswersObj = passed.selected; // need selected
+  const submittedAnswersObj = passed.selected; 
   const courseId = passed.courseId ? passed.courseId : 'no courseId';
   const assignmentId = passed.assignmentId ? passed.assignmentId : 'no assignmentId';
   const studentId = passed.studentId;
@@ -1577,16 +1576,16 @@ app.get('/submitQuiz/:passed', (req, res) => {
   let grade = result.percent;
   
   
-  console.log("Percent:", result.percent);
-console.log("Correct Object:", result.correctObj);
-console.log("Incorrect Object:", (result.incorrectObj));
-console.log("Missed Object:", result.missedObj);
+  //console.log("Percent:", result.percent);
+//console.log("Correct Object:", result.correctObj);
+//console.log("Incorrect Object:", (result.incorrectObj));
+//console.log("Missed Object:", result.missedObj);
 
 // ========================================  
 // Read the file
-const filePath = __dirname + '/grades/'+ courseId + '_' + assignmentId + '.txt';
+const filePath = __dirname + '/grades/'+ courseId + '-' + assignmentId + '.txt';
 
-writeErrorToFile(__dirname + "/grades/error.txt", filePath, 'w');
+writeErrorToFile(__dirname + '/grades/error.txt', filePath, 'w');
 
 let higherGrade = grade; // Replace with your new value
 
