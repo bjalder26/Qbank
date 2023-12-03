@@ -1854,9 +1854,9 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
     const subject = passed.subject;
 	const course = passed.course;
 	const qbankAndNumArray = passed.qbankAndNumArray;
-	const date = passed.date;
+	const date = encodeURIComponent(passed.date);
 	const title = passed.title;
-	const fileName = studentId + '_' + subject + '_' + course + '_' + encodeURIComponent(date) + '_' + title;
+	const fileName = studentId + '_' + subject + '_' + course + '_' + date + '_' + title;
 	let html = '';
     
     var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + instructorName + "_qbanks.txt", "utf8");
