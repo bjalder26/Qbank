@@ -1607,7 +1607,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
   // Add or update the key with the new value
   jsonObject[keyToAdd] = higherGrade;
 
-  const updatedData = JSON.stringify(jsonObject, null, 2);
+  const updatedData = JSON.stringify(jsonObject, null, 2) ? JSON.stringify(jsonObject, null, 2): '{}';
 
   // Write the updated object back to the file
   fs.writeFile(filePath, updatedData, 'utf8', (writeErr) => {
