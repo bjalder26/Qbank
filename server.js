@@ -1559,9 +1559,9 @@ app.get('/submitQuiz/:passed', (req, res) => {
   const fileName = passed.fileName; // need fileName
   console.log(fileName);
   const submittedAnswersObj = passed.selected; // need selected
-  const courseId = passed.courseId;
-  const assignmentId = passed.assignmentId;
-  const studentId = passed.studentId;
+  const courseId = passed.courseId ? passed.courseId.toString() : 'no courseId';
+  const assignmentId = passed.assignmentId ? passed.assignmentId.toString() : 'no assignmentId';
+  const studentId = passed.studentId.toString();
   
   var html = fs.readFileSync(__dirname + '/quizzes/' + fileName + '.html', 'utf8');
   
