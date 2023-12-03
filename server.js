@@ -1577,7 +1577,7 @@ console.log("Missed Object:", result.missedObj);
 
 // ========================================  
 // Read the file
-const filePath = `/grades/${courseId}_${assignmentId}.txt`;
+const filePath = `${__dirname}/grades/${courseId}_${assignmentId}.txt`;
 
 let higherGrade = grade; // Replace with your new value
   
