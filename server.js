@@ -1594,7 +1594,7 @@ let data = {};
 fs.readFile(filePath, 'utf8', (err, data) => {
   if (err) {
     console.error('Error reading file:', err);
-	writeErrorToFile(__dirname + "/grades/error.txt", '     1' + err + filePath + '    ' + __dirname + "/grades/error.txt", 'a');
+	writeErrorToFile(__dirname + "/grades/error.txt", '     1' + err, 'a');
 	data = {};
   }
 
@@ -1604,7 +1604,7 @@ fs.readFile(filePath, 'utf8', (err, data) => {
     jsonObject = JSON.parse(data);
   } catch (parseErr) {
     console.error('Error parsing JSON:', parseErr);
-	writeErrorToFile(__dirname + "/grades/error.txt", '2' + parseErr, 'a');
+	writeErrorToFile(__dirname + "/grades/error.txt", '2' + parseErr + jsonObject, 'a');
     return;
   }
 
