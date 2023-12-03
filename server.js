@@ -1586,16 +1586,16 @@ console.log("Missed Object:", result.missedObj);
 // Read the file
 const filePath = __dirname + '/grades/'+ courseId + '_' + assignmentId + '.txt';
 
-writeErrorToFile(__dirname + "/grades/error.txt", filePath.toString());
+writeErrorToFile(__dirname + "/grades/error.txt", filePath);
 
 let higherGrade = grade; // Replace with your new value
 
 writeErrorToFile(__dirname + "/grades/error.txt", higherGrade.toString());
   
-fs.readFile(filePath.toString(), 'utf8', (err, data) => {
+fs.readFile(filePath, 'utf8', (err, data) => {
   if (err) {
     console.error('Error reading file:', err);
-	writeErrorToFile(__dirname + "/grades/error.txt", '1' + err);
+	writeErrorToFile(__dirname + "/grades/error.txt", '     1' + err + filePath + '    ' + __dirname + "/grades/error.txt");
   }
 
   let jsonObject = {};
