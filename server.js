@@ -1584,7 +1584,6 @@ let higherGrade = grade; // Replace with your new value
 fs.readFile(filePath, 'utf8', (err, data) => {
   if (err) {
     console.error('Error reading file:', err);
-    return;
   }
 
   let jsonObject = {};
@@ -1842,7 +1841,6 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
 	const qbankAndNumArray = passed.qbankAndNumArray;
 	const date = passed.date;
 	const title = passed.title;
-	//const studentId = 'testId'; // need to get from LMS
 	const fileName = studentId + '_' + subject + '_' + course + '_' + encodeURIComponent(date) + '_' + title;
 	let html = '';
     
@@ -1899,7 +1897,7 @@ optionElements.forEach((element) => {
 
 	// removes answers from quiz
   //productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, `let fileName = "${fileName}"; const sessionId = "${sessionId}";`) 
-  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'const fileName = "' + fileName + '"; ' + 'const sessionId =' + JSON.stringify(sessionId) + '; ' + 'const courseId = "' + courseId + '"; ' + 'const assignmentId = "' + assignmentId + '";' + 'const studentId = "' + studentId + '";')  
+  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'const fileName = "' + fileName + '"; ' + 'const sessionId =' + JSON.stringify(sessionId) + '; ' + 'const courseId = "' + courseId + '"; ' + 'const assignmentId = "' + assignmentId + '"; ' + 'const studentId = "' + studentId + '";')  
   //+ 'let sessions =' + JSON.stringify(sessions) + ';' + 'let sessionId =' + JSON.stringify(sessionId) + ';'
   //'let fileName = '+fileName+'; '+'const sessionId = ' + sessionId+';')
   .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz();">Submit Quiz</button>') // got rid of grade, might replace with data removed: var path="/grade/"+sessionId+"/"; document.location = path;
