@@ -1,0 +1,341 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+	  .selected {
+  border: 2px solid blue;
+  font-weight: bold;
+}
+
+.correct {
+  border: 2px solid green;
+  font-weight: bold;
+}
+
+.incorrect {
+  border: 2px solid red;
+}
+
+.missed {
+  border: 2px solid yellow;
+  font-weight: bold;
+}
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	let questionsObject = {};
+	
+	
+					questionsObject = {"1":[1],"2":[1],"3":[2],"4":[0],"5":[1],"6":[1],"7":[0],"8":[3],"9":[2],"10":[2]}; 
+				 
+	
+	
+	
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	  //###replace me###
+	  
+	 
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let markCoordinates = [];
+	  
+function getSelected() {
+// Initialize an object to store the question number and selected options
+var selectedOptions = {};
+
+// Select all questions
+var questions = document.querySelectorAll('.question');
+
+// Iterate through each question
+questions.forEach(function(question, index) {
+  // Find all the options in the current question
+  var options = question.querySelectorAll('.option');
+
+  // Initialize an array to store the selected option indices
+  var selectedIndices = [];
+
+  // Iterate through the options and check if they have the "selected" class
+  options.forEach(function(option, optionIndex) {
+    if (option.classList.contains('selected')) {
+      selectedIndices.push(optionIndex);
+    }
+  });
+
+  // Store the selected indices in the object with the question number as the key
+  selectedOptions[(index + 1).toString()] = selectedIndices;
+});
+
+// The selectedOptions object now contains the desired data
+console.log(selectedOptions);
+return selectedOptions;
+}
+	  
+function submitQuiz() {
+  let passed = {};
+  passed.selected = getSelected();
+  passed.fileName = fileName;
+  passed.sessionId = sessionId ? sessionId : "no sessionId";
+  passed.courseId = courseId ? courseId : "no courseId";
+  passed.assignmentId = assignmentId ? assignmentId : "no assignmentId";
+  passed.studentId = studentId ? studentId : "no studentId";
+  passed = encodeURIComponent(JSON.stringify(passed))
+    var path = '/submitQuiz/' + passed;
+    window.open(path, '_self');  // switched from blank to self
+} 
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  if(canvas) {
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+  }
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1>Worksheet</h1>
+	<h4></h4>
+	<h6></h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) Which particle has the lowest penetrating power?</div><div class='option'>A) beta particle</div><div class='option'>B) alpha particle<span class='asterisk'>*</span></div><div class='option'>C) gamma particle</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) If <span class="math-tex">\( _{95}^{241}Am \)</span> undergoes alpha decay, what is the resulting daughter nuclide?</div><div class='option'>A) <span class="math-tex">\( _{97}^{245}Bk \)</span></div><div class='option'>B) <span class="math-tex">\( _{93}^{237}Np \)</span><span class='asterisk'>*</span></div><div class='option'>C) <span class="math-tex">\( _{96}^{241}Cm \)</span></div><div class='option'>D) <span class="math-tex">\( _{94}^{241}Pu \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) If carbon-14 has a half-life of 5730 years, and you find animal bones that have 1/4th the carbon-14 content of living bones, then how long ago would you estimate the animal died?</div><div class='option'>A) 2870 years</div><div class='option'>B) 2.29x10<sup>4</sup> years</div><div class='option'>C) 1.15x10<sup>4</sup> years<span class='asterisk'>*</span></div><div class='option'>D) 3450 years</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) Iodine-131 is an unstable isotope of iodine that is used to treat hyperthyroidism.&nbsp; It has a half-life of 8.02 days.&nbsp; If 37.8 mg of iodine-131 is injected into a patient, then how long will it take for the amount of iodine in their system to drop to&nbsp; 9.45 mg (assume none is excreted)?</div><div class='option'>A) 16.0 days<span class='asterisk'>*</span></div><div class='option'>B) 2.00 days</div><div class='option'>C) 8.02 days</div><div class='option'>D) 26.0 days</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) What is the unknown particle emitted, which is represented by <span class="math-tex">\( _{?}^{?}X \)</span>?<br><span class="math-tex">\( _{55}^{137}Cs \)</span> ➞ <span class="math-tex">\( _{?}^{?}X \)</span> + <span class="math-tex">\( _{54}^{137}Xe \)</span></div><div class='option'>A) An alpha particle</div><div class='option'>B) A positron<span class='asterisk'>*</span></div><div class='option'>C) A beta particle</div><div class='option'>D) A gamma particle</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) Which of the following is a positron?</div><div class='option'>A) <span class="math-tex">\( _0^0γ \)</span></div><div class='option'>B) <span class="math-tex">\( _{+1}^{  0}e \)</span><span class='asterisk'>*</span></div><div class='option'>C) <span class="math-tex">\( _2^4He \)</span></div><div class='option'>D) <span class="math-tex">\( _{-1}^{  0}e \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Fluorine-18 has a half-life of 110 minutes.&nbsp; If a patient is injected with a 251 mg dose of Fluorine-18 for a PET scan, then how many mg would remain after 7.33 hours?</div><div class='option'>A) 15.7 mg<span class='asterisk'>*</span></div><div class='option'>B) 100. mg</div><div class='option'>C) 126 mg</div><div class='option'>D) 240. mg</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) If <span class="math-tex">\( _{37}^{81}Rb \)</span> undergoes beta decay, what is the resulting daughter nuclide?</div><div class='option'>A) <span class="math-tex">\( _{36}^{80}Kr \)</span></div><div class='option'>B) <span class="math-tex">\( _{39}^{85}Y \)</span></div><div class='option'>C) <span class="math-tex">\( _{36}^{81}Kr \)</span></div><div class='option'>D) <span class="math-tex">\( _{38}^{81}Sr \)</span><span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) If <span class="math-tex">\( _{6}^{11}C \)</span> undergoes a electron capture, what is the resulting daughter nuclide?</div><div class='option'>A) <span class="math-tex">\( _{5}^{7}B \)</span></div><div class='option'>B) <span class="math-tex">\( _{7}^{11}N \)</span></div><div class='option'>C) <span class="math-tex">\( _{5}^{11}B \)</span><span class='asterisk'>*</span></div><div class='option'>D) <span class="math-tex">\( _{7}^{12}N \)</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) If <span class="math-tex">\( _{38}^{89}Sr \)</span> undergoes positron emission, what is the resulting daughter nuclide?</div><div class='option'>A) <span class="math-tex">\( _{36}^{85}Kr \)</span></div><div class='option'>B) <span class="math-tex">\( _{38}^{90}Sr \)</span></div><div class='option'>C) <span class="math-tex">\( _{37}^{89}Rb \)</span><span class='asterisk'>*</span></div><div class='option'>D) <span class="math-tex">\( _{39}^{90}Y \)</span></div><p></p></div><div id="scantrondiv" class="scantrondiv">Worksheet<br><canvas id="scantron" class="scantron"></div></body></html>
