@@ -1676,7 +1676,7 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
   //console.log(passed);
   //console.log(passed.sessionId); //un
   const session = sessions[passed.sessionId];
-  console.log(session); //un
+  //console.log(session); //un
   
 try {
     session.outcome_service.send_replace_result(higherGrade/100, (err, isValid) => {
@@ -1827,6 +1827,7 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
 	let sessionId = '';
 	let courseId = '';
 	let assignmentId = '';
+	let errorVar = '';
 	
 	lmsData.valid_request(req, (err, isValid) => {
 	if (isValid) {
@@ -1839,7 +1840,7 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
 	
 	passed = lmsData.body.custom_passed;
 	} else {
-		sessions = 'request not valid: ' + err + ' headers: ' + JSON.stringify(req.headers) + ' params: ' + JSON.stringify(req.params) + ' query: ' + JSON.stringify(req.query) + ' body: ' + JSON.stringify(req.body) + ' lmsData: ' + JSON.stringify(lmsData.body);
+		errorVar = 'request not valid: ' + err + ' headers: ' + JSON.stringify(req.headers) + ' params: ' + JSON.stringify(req.params) + ' query: ' + JSON.stringify(req.query) + ' body: ' + JSON.stringify(req.body) + ' lmsData: ' + JSON.stringify(lmsData.body);
 		console.log('invalid request')
 		passed = req.body.custom_passed;
 	}
@@ -1914,7 +1915,7 @@ optionElements.forEach((element) => {
 
 	// removes answers from quiz
   //productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, `let fileName = "${fileName}"; const sessionId = "${sessionId}";`) 
-  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'const fileName = "' + fileName + '"; ' + 'const sessionId =' + JSON.stringify(sessionId) + '; ' + 'const courseId = "' + courseId + '"; ' + 'const assignmentId = "' + assignmentId + '"; ' + 'const studentId = "' + studentId + '";')  
+  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'const fileName = "' + fileName + '"; ' + 'const sessionId =' + JSON.stringify(sessionId) + '; ' + 'const courseId = "' + courseId + '"; ' + 'const assignmentId = "' + assignmentId + '"; ' + 'const studentId = "' + studentId + '";' + '// Error:' + errorVar )  
   //+ 'let sessions =' + JSON.stringify(sessions) + ';' + 'let sessionId =' + JSON.stringify(sessionId) + ';'
   //'let fileName = '+fileName+'; '+'const sessionId = ' + sessionId+';')
   .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz();">Submit Quiz</button>') // got rid of grade, might replace with data removed: var path="/grade/"+sessionId+"/"; document.location = path;
