@@ -267,10 +267,12 @@ function minMaxType(variable) {
 
 // Function for parsing equations for html
 function parseEquations(question, html) {
-  //console.log('question: '+question);
+  console.log('question: ' + question);
+  console.log('html: '+ html);
   //console.log('question stem1: '+question.stem);
   let regex = new RegExp(/(?<==\[)(.*?)(?=\])/, 'g');
   const equationsSFs = html.match(regex);
+  console.log(equationsSFs);
 
   if (equationsSFs != null) {
     for (let equationSF of Object.values(equationsSFs)) {
@@ -1615,7 +1617,7 @@ data = fs.readFileSync(filePath, "utf8") ? fs.readFileSync(filePath, "utf8") : '
   if (jsonObject.hasOwnProperty(keyToAdd) && jsonObject[keyToAdd] >= higherGrade) {
     console.log('The existing value is already higher or equal.');
 	higherGrade = jsonObject[keyToAdd];
-	writeErrorToFile(__dirname + "/grades/error.txt", 'higherGrade2' + higherGrade, 'a');
+	writeErrorToFile(__dirname + "/grades/error.txt", ' higherGrade2 ' + higherGrade, 'a');
   }
 
   // Add or update the key with the new value
