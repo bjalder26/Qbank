@@ -1561,7 +1561,7 @@ function compareObjects(correctAnswersObj, submittedAnswersObj) {
   };
 }
 
-async function getNewFilePath(begFilePath) {
+function getNewFilePath(begFilePath) {
 	const files = await fs.promises.readdir(__dirname + '/quizzes/');
 	
 	const matchingFiles = files.filter((file) => {
@@ -1644,7 +1644,7 @@ data = fs.readFileSync(filePath, "utf8") ? fs.readFileSync(filePath, "utf8") : '
 
   const updatedData = JSON.stringify(jsonObject, null, 2) ? JSON.stringify(jsonObject, null, 2): '{}';
   
-  let newFilePath = await getNewFilePath(filePath.split('.')[0]);
+  let newFilePath = getNewFilePath(filePath.split('.')[0]);
   
   // Write the updated object back to the file
   fs.writeFile(newFilePath.toString(), updatedData, 'utf8', (writeErr) => {
