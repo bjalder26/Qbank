@@ -1562,7 +1562,7 @@ function compareObjects(correctAnswersObj, submittedAnswersObj) {
 }
 
 function getNewFilePath(begFilePath) {
-	const files = await fs.promises.readdir(__dirname + '/quizzes/');
+	const files = fs.promises.readdir(__dirname + '/quizzes/');
 	
 	const matchingFiles = files.filter((file) => {
     const regex = new RegExp(`^${begFilePath}_[0-9]+\\.txt`, 'i');
