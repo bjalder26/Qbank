@@ -1,0 +1,517 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+	  .selected {
+  border: 2px solid blue;
+  font-weight: bold;
+}
+
+.correct {
+  border: 2px solid green;
+  font-weight: bold;
+}
+
+.incorrect {
+  border: 2px solid red;
+}
+
+.missed {
+  border: 2px solid yellow;
+  font-weight: bold;
+}
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	let questionsObject = {};
+	
+	
+					questionsObject = {"1":[2],"2":[3],"3":[1],"4":[1],"5":[3],"6":[2],"7":[1],"8":[0],"9":[2],"10":[0],"11":[0],"12":[1],"13":[1],"14":[2],"15":[1],"16":[3],"17":[2],"18":[2],"19":[2],"20":[2],"21":[1],"22":[1],"23":[0],"24":[1],"25":[2],"26":[2],"27":[3],"28":[1],"29":[1],"30":[0],"31":[2],"32":[3]}; 
+				 
+	
+	
+	
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	  //###replace me###
+	  
+	 
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let markCoordinates = [];
+	  
+function getSelected() {
+// Initialize an object to store the question number and selected options
+var selectedOptions = {};
+
+// Select all questions
+var questions = document.querySelectorAll('.question');
+
+// Iterate through each question
+questions.forEach(function(question, index) {
+  // Find all the options in the current question
+  var options = question.querySelectorAll('.option');
+
+  // Initialize an array to store the selected option indices
+  var selectedIndices = [];
+
+  // Iterate through the options and check if they have the "selected" class
+  options.forEach(function(option, optionIndex) {
+    if (option.classList.contains('selected')) {
+      selectedIndices.push(optionIndex);
+    }
+  });
+
+  // Store the selected indices in the object with the question number as the key
+  selectedOptions[(index + 1).toString()] = selectedIndices;
+});
+
+// The selectedOptions object now contains the desired data
+console.log(selectedOptions);
+return selectedOptions;
+}
+	  
+function submitQuiz() {
+  let passed = {};
+  passed.selected = getSelected();
+  passed.fileName = fileName;
+  passed.sessionId = sessionId ? sessionId : "no sessionId";
+  passed.courseId = courseId ? courseId : "no courseId";
+  passed.assignmentId = assignmentId ? assignmentId : "no assignmentId";
+  passed.studentId = studentId ? studentId : "no studentId";
+  passed = encodeURIComponent(JSON.stringify(passed))
+    var path = '/submitQuiz/' + passed;
+    window.open(path, '_self');  // switched from blank to self
+} 
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  if(canvas) {
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+  }
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1></h1>
+	<h4></h4>
+	<h6>Dec 4, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) How many moles of Mg are contained in 697 mg of Mg?</div><div class='option'>A) 28.7 mol</div><div class='option'>B) 16.9 mol</div><div class='option'>C) 0.0287 mol<span class='asterisk'>*</span></div><div class='option'>D) 0.0000349 mol</div><div class='solution'><p>To determine the number of moles, we need to divide the given mass of Mg by its molar mass.</p>
+<p>The molar mass of Mg is approximately 24.31 g/mol.</p>
+<p>First, let's convert the given mass from milligrams (mg) to grams (g): 697 mg x 1 g/1000 mg = 0.697 g</p>
+<p>Next, we can calculate the number of moles: moles = 0.697 g x <span class="math-tex">\( \frac{1 mol}{24.31 g} \)</span> = (0.697)/(24.31) mol ≈ 0.0287 mol</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) Calculate the wavelength (in nm) of light that has a frequency of 5.69 x 10<sup>14</sup> Hz.</div><div class='option'>A) 5.27x10<sup>-7</sup> nm</div><div class='option'>B) 1.90x10<sup>13</sup> nm</div><div class='option'>C) 0.00190 nm</div><div class='option'>D) 527 nm<span class='asterisk'>*</span></div><div class='solution'><p>To calculate the wavelength (λ) of light, you can use the equation:</p>
+<p>λ = c / ν</p>
+<p>where λ is the wavelength, c is the speed of light in a vacuum (approximately 3.00 x 10<sup>8</sup> m/s), and ν is the frequency of the light.</p>
+<p>First, let's convert the frequency given in Hz to 1/s since Hz and 1/s&nbsp;mean the same thing</p>
+<p>Frequency (ν) = 5.69 x 10<sup>14</sup> Hz = 5.69 x 10<sup>14</sup> 1/s</p>
+<p>Now, we can calculate the wavelength using the equation:</p>
+<p>λ = c / ν = (3.00 x 108 m/s) / (5.69 x 10<sup>14</sup> 1/s)</p>
+<p>λ = 5.27x10<sup>-7</sup> m</p>
+<p>To convert this to nanometers (nm), we multiply by 10^9:</p>
+<p>λ = 5.27x10<sup>-7</sup> m x = <span class="math-tex">\( \frac{10^9 nm}{1 m} \)</span> 527 nm</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) Which of the following sets of quantum numbers is possible?</div><div class='option'>A) (5, 5, +5, -<span class="math-tex">\( \frac{1}{2} \)</span>)</div><div class='option'>B) (2, 0, +0, +<span class="math-tex">\( \frac{1}{2} \)</span>)<span class='asterisk'>*</span></div><div class='option'>C) (3, 1, +1, +1)</div><div class='option'>D) (4, 2, -4, +<span class="math-tex">\( \frac{1}{2} \)</span>)</div><div class='solution'><p>For a set of quantum numbers to be valid, the following relationships must be satisfied:</p>
+<ol>
+<li>The principal quantum number (n) must be a positive integer (1, 2, 3, ...).</li>
+<li>The azimuthal quantum number (ℓ) must be an integer ranging from 0 to (n-1).</li>
+<li>The magnetic quantum number (m<sub>ℓ</sub>) must be an integer ranging from -ℓ to +ℓ.</li>
+<li>The spin quantum number (m<sub>s</sub>) must be either +1/2 or -1/2.</li>
+</ol>
+<p>Let's evaluate the given sets of quantum numbers:</p>
+<p>(2, 0, +0, +<span class="math-tex">\( \frac{1}{2} \)</span>)</p>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 2 (valid as it is a positive integer).</li>
+<li>ℓ = 0 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = +0 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = +<span class="math-tex">\( \frac{1}{2} \)</span> (valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>valid</strong>.</li>
+</ul>
+</li>
+</ul>
+(5, 5, +5, -<span class="math-tex">\( \frac{1}{2} \)</span>)&nbsp;<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 5 (valid as it is a positive integer).</li>
+<li>ℓ = 5 (invalid as it is not within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = +5 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = -<span class="math-tex">\( \frac{1}{2} \)</span> (valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the value for ℓ.</li>
+</ul>
+</li>
+</ul>
+(4, 2, -4, +<span class="math-tex">\( \frac{1}{2} \)</span>)&nbsp;<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 4 (valid as it is a positive integer).</li>
+<li>ℓ = 2 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = -4 (invalid as it must be within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = +<span class="math-tex">\( \frac{1}{2} \)</span>(valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the value of m<sub>ℓ</sub> being outside the allowed range.</li>
+</ul>
+</li>
+</ul>
+(3, 1, +1, + 1)<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 3 (valid as it is a positive integer).</li>
+<li>ℓ = 1 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = +1 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = +1 (invalid as it must be either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the incorrect value for m<sub>s</sub>.</li>
+</ul>
+</li>
+</ul>
+<p>Based on the numerical relationships between the quantum numbers, only the set (2, 0, +0, +<span class="math-tex">\( \frac{1}{2} \)</span>) satisfies the required conditions and is therefore valid.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) Which of the following sets of quantum numbers is possible?</div><div class='option'>A) (4, 5, -3, +<span class="math-tex">\( \frac{1}{2} \)</span>)</div><div class='option'>B) (4, 3, -3, -<span class="math-tex">\( \frac{1}{2} \)</span>)<span class='asterisk'>*</span></div><div class='option'>C) (2, 0, +2, -<span class="math-tex">\( \frac{1}{2} \)</span>)</div><div class='option'>D) (3, 2, -2, -1)</div><div class='solution'><p>For a set of quantum numbers to be valid, the following relationships must be satisfied:</p>
+<ol>
+<li>The principal quantum number (n) must be a positive integer (1, 2, 3, ...).</li>
+<li>The azimuthal quantum number (ℓ) must be an integer ranging from 0 to (n-1).</li>
+<li>The magnetic quantum number (m<sub>ℓ</sub>) must be an integer ranging from -ℓ to +ℓ.</li>
+<li>The spin quantum number (m<sub>s</sub>) must be either +1/2 or -1/2.</li>
+</ol>
+<p>Let's evaluate the given sets of quantum numbers:</p>
+<p>(4, 3, -3, -<span class="math-tex">\( \frac{1}{2} \)</span>)</p>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 4 (valid as it is a positive integer).</li>
+<li>ℓ = 3 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = -3 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = -<span class="math-tex">\( \frac{1}{2} \)</span> (valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>valid</strong>.</li>
+</ul>
+</li>
+</ul>
+(4, 5, -3, +<span class="math-tex">\( \frac{1}{2} \)</span>)&nbsp;<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 4 (valid as it is a positive integer).</li>
+<li>ℓ = 5 (invalid as it is not within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = -3 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = +<span class="math-tex">\( \frac{1}{2} \)</span> (valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the value for ℓ.</li>
+</ul>
+</li>
+</ul>
+(2, 0, +2, -<span class="math-tex">\( \frac{1}{2} \)</span>)&nbsp;<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 2 (valid as it is a positive integer).</li>
+<li>ℓ = 0 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = +2 (invalid as it must be within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = -<span class="math-tex">\( \frac{1}{2} \)</span>(valid as it is either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the value of m<sub>ℓ</sub> being outside the allowed range.</li>
+</ul>
+</li>
+</ul>
+(3, 2, -2, - 1)<br>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li>n = 3 (valid as it is a positive integer).</li>
+<li>ℓ = 2 (valid as it is within the range of 0 to (n-1)).</li>
+<li>m<sub>ℓ</sub> = -2 (valid as it is within the range of -ℓ to +ℓ).</li>
+<li>m<sub>s</sub> = -1 (invalid as it must be either +1/2 or -1/2).</li>
+<li>Therefore, this set of quantum numbers is <strong>not valid</strong> due to the incorrect value for m<sub>s</sub>.</li>
+</ul>
+</li>
+</ul>
+<p>Based on the numerical relationships between the quantum numbers, only the set (4, 3, -3, -<span class="math-tex">\( \frac{1}{2} \)</span>) satisfies the required conditions and is therefore valid.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) Calculate the frequency of a photon (in Hz) with a wavelength of 257.3 nm.</div><div class='option'>A) 0.00117 Hz</div><div class='option'>B) 8.58x10<sup>-16</sup> Hz</div><div class='option'>C) 7.73x10<sup>-19</sup> Hz</div><div class='option'>D) 1.17x10<sup>15</sup> Hz<span class='asterisk'>*</span></div><div class='solution'><p>To calculate the frequency of a photon using its wavelength, you can use the following equation:</p>
+<p>c = λ * ν</p>
+<p>Where: c is the speed of light in a vacuum (3.00 x 10<sup>8</sup> m/s) λ is the wavelength of the photon in meters ν is the frequency of the photon in Hz</p>
+<p>First, we need to convert the given wavelength of 257.3 nm to meters:</p>
+<p>λ = 257.3 nm * <span class="math-tex">\( \frac{1 m}{10^9 nm} \)</span> = 2.57x10<sup>-7</sup> m</p>
+<p>Now we can rearrange the equation to solve for the frequency:</p>
+<p>ν = c / λ = (3.00 x 10<sup>8</sup> m/s) / (2.57x10<sup>-7</sup> m) <br><br>ν ≈ 1.17x10<sup>15</sup> Hz</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) Which of the following colors has the longest wavelength</div><div class='option'>A) violet</div><div class='option'>B) orange</div><div class='option'>C) red<span class='asterisk'>*</span></div><div class='option'>D) yellow</div><div class='solution'>ROY G. BIV is a mnemonic for remembering the order of visible light from lowest energy, lowest frequency to highest energy and highest frequency or from longest wavelength to shortest wavelength.<br><br>Lowest energy, lowest frequency, highest wavelength<br>Red<br>Orange<br>Yellow<br>Green<br>Blue<br>Indigo<br>Violet<br>Highest energy, highest frequency, shortest wavelength<br><br>It can also help to remember that infrared (which is right by red) has low energy, low frequency, and a high wavelength, and that ultraviolet (which is right by violet) has high energy, high frequency, and a short wavelength.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) Which class of the electromagnetic spectrum causes sunburns?</div><div class='option'>A) microwaves</div><div class='option'>B) ultraviolet radiation<span class='asterisk'>*</span></div><div class='option'>C) infrared radiation</div><div class='option'>D) radio waves</div><div class='solution'>X-rays are used to visualize bones and internal organs<br>UV or ultraviolet waves cause sunburns<br>Microwaves are used to cook food in a common kitchen appliance (a microwave) by vibrating water molecules to produce heat<br>Radio waves are used to transmit messages over long distances</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) Calculate the molar mass for C<sub>9</sub>H<sub>18</sub>O.</div><div class='option'>A) 142.2 g/mol<span class='asterisk'>*</span></div><div class='option'>B) 125.1 g/mol</div><div class='option'>C) 29.02 g/mol</div><div class='option'>D) 126.2 g/mol</div><div class='solution'>To calculate the molar mass for C<sub>9</sub>H<sub>20</sub>O, take the number of each element from the periodic table and multiply it by the&nbsp; molar mass of the element, then sum all the molar masses from each element.<br>C: 12.01 g/mol x 9 = 108.1 g/mol<br>H: 1.008 g/mol x 20 = 18.14 g/mol<br>O: 16.00 g/mol x 1 = 16.00 g/mol<br>Total: 142.2 g/mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) Give the formula for Nickel (III) oxide</div><div class='option'>A) N<sub>2</sub>O<sub>3</sub></div><div class='option'>B) Ni<sub>3</sub>O<sub>2</sub></div><div class='option'>C) Ni<sub>2</sub>O<sub>3</sub><span class='asterisk'>*</span></div><div class='option'>D) NiO</div><div class='solution'><p>The Roman numeral (III) tells us that the charge on Nickel is +3.&nbsp; From the periodic table we can know that the charge on oxide is -2.&nbsp; The lowest common multiple of 3 and 2 is 6, so the number of Nickel ions will need to be 2, and the number of oxide ions will need to be 3.&nbsp; This will give us a formula of Ni<sub>2</sub>O<sub>3</sub>.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) Calculate the molar mass for Sn(ClO<sub>4</sub>)<sub>4</sub>.</div><div class='option'>A) 516.5 g/mol<span class='asterisk'>*</span></div><div class='option'>B) 872.6 g/mol</div><div class='option'>C) 218.2 g/mol</div><div class='option'>D) 324.5 g/mol</div><div class='solution'>To calculate the molar mass for Sn(ClO<sub>4</sub>)<sub>4</sub>, take the number of each element from the periodic table and multiply it by the &nbsp;molar mass of the element, then sum all the molar masses from each element.<br>Sn: 118.71 g/mol x 1 = 118.71 g/mol<br>Cl: 35.45 g/mol x 4 = 141.8 g/mol<br>O: 16.00 g/mol x 20 = 300 g/mol<br>Total: 516.5 g/mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) Which of the following is the correct formula for the compound sodium sulfide?</div><div class='option'>A) Na<sub>2</sub>S<span class='asterisk'>*</span></div><div class='option'>B) So<sub>2</sub>S</div><div class='option'>C) NaS<sub>2</sub></div><div class='option'>D) NaS</div><div class='solution'>Sodium is a fixed charge metal and sulfide is a nonmetal cation, so this will be an ionic compound, and the charges can be know from the periodic table. &nbsp;Sodium will carry a +1 charge because it is in the 1A group.&nbsp; Sulfide will carry a -2<br>charge because sulfur is in the 6A group.&nbsp; The lowest common multiple of 1 and 2 is 2.&nbsp; Therefore we will need 2 sodium ions and 1 sulfide ion.&nbsp; That gives us a formula of Na<sub>2</sub>S.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) Give the name for N<sub>2</sub>O<sub>3</sub>.</div><div class='option'>A) Nitrogen trioxide</div><div class='option'>B) Dinitrogen trioxide<span class='asterisk'>*</span></div><div class='option'>C) Nitrogen oxide</div><div class='option'>D) Nitrogen (II) oxide</div><div class='solution'>Both N and O are nonmetals, so we will need to put a Greek prefix before the name of each element, then give the second element an -ide ending.&nbsp; However, mono- is dropped from the beginning in cases where there is only 1 of the first element in the compound.&nbsp; Since there are 2 N and 3 O, the name is Dinitrogen trioxide.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) What is the empirical formula for N<sub>2</sub>H<sub>6</sub>?</div><div class='option'>A) N<sub>3</sub>H</div><div class='option'>B) NH<sub>3</sub><span class='asterisk'>*</span></div><div class='option'>C) N<sub>2</sub>H<sub>3</sub></div><div class='option'>D) N<sub>2</sub>H<sub>6</sub></div><div class='solution'>An empirical formula represents the simplest ratio of elements present in a compound. It shows the relative number of atoms of each element in a compound without specifying the actual number of atoms.&nbsp; To get the empirical formula you need to divide the subscripts in the equation (N<sub>2</sub>H<sub>6</sub>) by their greatest common divisor.&nbsp; In this case 1 and 2 are divisible by 2, which gives NH<sub>3</sub> as the empirical formula.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) How many bonding electrons are in BH<sub>3</sub>?</div><div class='option'>A) 4</div><div class='option'>B) 8</div><div class='option'>C) 6<span class='asterisk'>*</span></div><div class='option'>D) 3</div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to B.<br>You should get 3 electron domains.<br>3 electron domains corresponds to a trigonal planar electron domain geometry.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) What is the hybridization on the central atom for XeF<sub>2</sub>?</div><div class='option'>A) sp</div><div class='option'>B) sp<sup>3</sup>d<span class='asterisk'>*</span></div><div class='option'>C) sp<sup>3</sup>d<sup>2</sup></div><div class='option'>D) sp<sup>2</sup></div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to &nbsp;Xe.<br>You should get 5 electron domains.<br>5 electron domains corresponds to sp<sup>3</sup>d hybridization.<br>
+<table style="border-collapse: collapse; width: 13.8266%; border-color: #34495E;" border="1">
+<tbody>
+<tr>
+<td style="width: 46.9569%;"># Electron domains</td>
+<td style="width: 53.0431%;">Hybridization</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">2</td>
+<td style="width: 53.0431%;">sp</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">3</td>
+<td style="width: 53.0431%;">sp<sup>2</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">4</td>
+<td style="width: 53.0431%;">sp<sup>3</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">5</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">6</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d<sup>2</sup></td>
+</tr>
+</tbody>
+</table></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) How many grams of LiF can be formed from 2.43 moles of BF<sub>3</sub>? Assume an excess of Li<sub>2</sub>SO<sub>3</sub>.
+<div style="text-align: center;">2 BF<sub>3</sub> + 3 Li<sub>2</sub>SO<sub>3</sub> ➞ B<sub>2</sub>(SO<sub>3</sub>)<sub>3</sub> + 6 LiF</div></div><div class='option'>A) 21.0 g</div><div class='option'>B) 2.79 g</div><div class='option'>C) 0.281 g</div><div class='option'>D) 189 g<span class='asterisk'>*</span></div><div class='solution'><p>To determine the grams of LiF formed from 2.43 moles of BF<sub>3</sub>, we need to use the balanced equation and the molar masses of the compounds involved.</p>
+<p>From the balanced equation: 2 BF<sub>3</sub> + 3 Li<sub>2</sub>SO<sub>3</sub> ➞ B<sub>2</sub>(SO<sub>3</sub>)<sub>3</sub> + 6 LiF</p>
+<p>Using the stoichiometric ratio between BF<sub>3</sub> and LiF (from the balanced equation), we find: 2 moles of BF<sub>3</sub> produce 6 moles of LiF.</p>
+<p>Moles of LiF = Moles of BF<sub>3</sub> × (6 moles LiF / 2 moles BF<sub>3</sub>) = 2.43 × (6/2) = 7.29 moles</p>
+<p>Now, we can calculate the mass of LiF: Molar mass of LiF: Li: 6.941 g/mol F: 18.998 g/mol (one F atom) Total molar mass of LiF: 6.941 + 18.998 = 25.939 g/mol</p>
+<p>Mass of LiF = Moles of LiF × Molar mass of LiF = 7.29 moles × 25.939 g/mol = 189 g</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) Balance the following equation.<br><br>________ C<sub>6</sub>H<sub>14</sub>&nbsp;+ ________ O<sub>2</sub> → ________ H<sub>2</sub>O + ________ CO<sub>2<br><br></sub>What is the coefficient in front of O<sub>2</sub>?</div><div class='option'>A) 3</div><div class='option'>B) 9</div><div class='option'>C) 19<span class='asterisk'>*</span></div><div class='option'>D) 8</div><div class='solution'>Step 1) First balance the hydrogen on each sides by finding the least common multiple of<sub> </sub><strong>14</strong> and 2.<br>Step 2) Next balance the carbon on each side.<br>Step 3) Finally balance the oxygen last (because it exists in its elemental form unbound to other atoms).&nbsp; If needed, first double all the other coefficients.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) How many moles of FeBr<sub>3</sub> can be formed from 2.63 moles of KBr? Assume an excess of Fe(OH)<sub>3</sub>.
+<div style="text-align: center;">3 KBr + Fe(OH)<sub>3</sub> ➞ 3 KOH + FeBr<sub>3</sub></div></div><div class='option'>A) 7.89 moles</div><div class='option'>B) 2.63 moles</div><div class='option'>C) 0.877 moles<span class='asterisk'>*</span></div><div class='option'>D) 259 moles</div><div class='solution'><p>From the balanced chemical equation: 3 KBr + Fe(OH)<sub>3</sub> ➞ 3 KOH + FeBr<sub>3</sub></p>
+<p>We can see that the stoichiometric ratio between KBr and FeBr3 is 3:1. This means that for every 3 moles of KBr, we can expect 1 mole of FeBr<sub>3</sub> to be formed.</p>
+<p>Given that we have 2.63 moles of KBr, we can calculate the moles of FeBr<sub>3</sub> using the stoichiometric ratio:</p>
+<p>Moles of FeBr3 = (2.63 moles of KBr) / (3 moles of KBr per 1 mole of FeBr<sub>3</sub>) Moles of FeBr3 = 2.63 moles / 3 Moles of FeBr3 = 0.877 moles</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) All of the following compounds are soluble except which one?</div><div class='option'>A) MgSO<sub>4</sub></div><div class='option'>B) (NH<sub>3</sub>)<sub>2</sub>CO<sub>3</sub></div><div class='option'>C) PbCl<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>D) BeI</div><div class='solution'>To answer this question, reference your solubility rules.<br>Chlorides are generally soluble, however Pb<sup>2+</sup>, Ag<sup>+</sup>, and Hg<sub>2</sub><sup>2+</sup> chlorides are insoluble.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">20</span>) What is the oxidation state of N in NH<sub>4</sub><sup>+</sup>?</div><div class='option'>A) +1</div><div class='option'>B) -4</div><div class='option'>C) -3<span class='asterisk'>*</span></div><div class='option'>D) +5</div><div class='solution'><p>To determine the oxidation state of nitrogen in NH<sub>4</sub><sup>+</sup>, we consider the overall charge of the ion and the known oxidation states of other elements involved.</p>
+<p>In the ammonium ion (NH<sub>4</sub><sup>+</sup>), the hydrogen atoms have a known oxidation state of +1 when attached to a nonmetal such as nitrogen. The overall charge of the ion is +1 as well. Since the sum of the oxidation states in an ion must equal the overall charge, we can calculate the oxidation state of nitrogen.</p>
+<p>Let's assume the oxidation state of nitrogen as x. We have four hydrogen atoms, each with an oxidation state of +1. Therefore:</p>
+<p>(x) + 4(+1) = +1</p>
+<p>Simplifying the equation:</p>
+<p>x +4 = +1</p>
+<p>x = -3</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">21</span>) A piece of aluminum (mass is 22.1 g) at 430 K is placed in a Styrofoam coffee cup containing 20.0 mL of water at 298 K. Assuming that <strong>no heat is lost to the cup or the surroundings</strong>, what will the final temperature of the water be? The specific heat capacity of aluminum is 0.900 J/g°C and water is 4.184 J/g°C.&nbsp; The density of water is 1.00 g/mL.</div><div class='option'>A) 1690 K</div><div class='option'>B) 323 K<span class='asterisk'>*</span></div><div class='option'>C) 367 K</div><div class='option'>D) 257 K</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">22</span>) How much heat energy is required to raise the temperature of 6.73 g of water from 43.83°C to 77.28°C? The specific heat capacity of water = 4.184 J/g°C.</div><div class='option'>A) 2180 J</div><div class='option'>B) 942 J<span class='asterisk'>*</span></div><div class='option'>C) 225 J</div><div class='option'>D) 140. J</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">23</span>) Which of the following is an endothermic process?</div><div class='option'>A) Water boiling<span class='asterisk'>*</span></div><div class='option'>B) You mix an acid and a base and the solution becomes hot</div><div class='option'>C) Water vapor condensing</div><div class='option'>D) Rain freezing and becoming snow</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">24</span>) The compound NaCl what types of bonds?</div><div class='option'>A) nonpolar covalent</div><div class='option'>B) ionic<span class='asterisk'>*</span></div><div class='option'>C) polar covalent</div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">25</span>) The compound CCl<sub>4</sub> what types of bonds?</div><div class='option'>A) ionic</div><div class='option'>B) nonpolar covalent</div><div class='option'>C) polar covalent<span class='asterisk'>*</span></div><div class='option'>D)  None of the above.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">26</span>) Which of the following has the largest first ionization energy; F, Cl, Br, or I?</div><div class='option'>A) Br</div><div class='option'>B) I</div><div class='option'>C) F<span class='asterisk'>*</span></div><div class='option'>D) Cl</div><div class='solution'>F has the highest first ionization energy. &nbsp;The major trend in first ionization energy is that first ionization energy increases as you go up and to the right on the periodic table.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">27</span>) Determine the density of an item that has a mass of 247.6 g and displaces 13.6 mL of fluid when submersed in a beaker.</div><div class='option'>A) 0.0549 g/mL</div><div class='option'>B) 234 g/mL</div><div class='option'>C) 3370 g/mL</div><div class='option'>D) 18.2 g/mL<span class='asterisk'>*</span></div><div class='solution'><p>To determine the density of an &nbsp;item, we can use the formula:<br>Density = mass / volume<br><br>Given: Mass = 247.6 g Volume = &nbsp;13.6 mL<br>*note that the volume of the item is equal to the volume of the&nbsp; fluid it displaces<br><br>Now, we can substitute the values into the density formula:<br>Density = 247.6 g / &nbsp;13.6 mL<br><br>Let's perform the calculation:<br>Density ≈ 18.2 g/mL</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">28</span>) What are the signs on q (heat) and w (work) for a system that has work done on it by the surroundings, as well as giving off heat to the surroundings?</div><div class='option'>A) w is positive, q is positive</div><div class='option'>B) w is positive, q is negative<span class='asterisk'>*</span></div><div class='option'>C) w is negative, q is positive</div><div class='option'>D) w is negative, q is negative</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">29</span>) Identify the<strong> strongest</strong> bond.</div><div class='option'>A) All bonds are the same strength</div><div class='option'>B) Triple covalent bond<span class='asterisk'>*</span></div><div class='option'>C) Single covalent bond</div><div class='option'>D) Double covalent bond</div><div class='solution'>Triple bonds are stronger than double bonds, which are stronger than single bonds.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">30</span>) Predict the charge that aluminum will take as an ion.</div><div class='option'>A) +3<span class='asterisk'>*</span></div><div class='option'>B) +2</div><div class='option'>C) +1</div><div class='option'>D) -1</div><div class='solution'><p>The charges that elements can form as ions depend on their position in the periodic table and their tendency to gain or lose electrons to achieve a stable electron configuration.</p>
+<p>Sodium (Na) tends to lose one electron to achieve a stable electron configuration, forming a +1 ion (Na<sup>+</sup>). Magnesium (Mg) tends to lose two electrons, forming a +2 ion (Mg<sup>2+</sup>). Aluminum (Al) also tends to lose three electrons, forming a +3 ion (A<sup>l3+</sup>). Nitrogen (N) tends to gain three electrons to achieve a stable electron configuration, forming a -3 ion (N<sup>3-</sup>). Oxygen (O) tends to gain two electrons, forming a -2 ion (O<sup>2-</sup>). Fluorine (F) tends to gain one electron, forming a -1 ion (F<sup>-</sup>).</p>
+<p>So, the predicted charges for these elements as ions are: Sodium: +1 Magnesium: +2 Aluminum: +3 Nitrogen: -3 Oxygen: -2 Fluorine: -1</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">31</span>) What is the number of sigma and pi bonds in a triple bond?</div><div class='option'>A) 2 sigma bond and 1 pi bonds</div><div class='option'>B) 2 sigma bond and 2 pi bonds</div><div class='option'>C) 1 sigma bond and 2 pi bonds<span class='asterisk'>*</span></div><div class='option'>D) 1 sigma bond and 1 pi bonds</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">32</span>) Which of the following shows the best Lewis structure for XeF<sub>2</sub>?</div><div class='option'>A) <img title="xef2-2.jpg" src="../images/68.jpeg" alt="" width="250" height="90"></div><div class='option'>B) <img title="xef2-3.jpg" src="../images/69.jpeg" alt="" width="250" height="90"></div><div class='option'>C) <img title="xef2-4.jpg" src="../images/70.jpeg" alt="" width="250" height="90"></div><div class='option'>D) <img title="xef2-1.jpg" src="../images/67.jpeg" alt="" width="250" height="90"><span class='asterisk'>*</span></div><div class='solution'>Xe has 8 valence electrons and F has 7 valence electrons.&nbsp; Xe (being below the 2nd period) can get more than an octet, but F needs an octet.&nbsp; The formal charges need to be as close to zero as possible. &nbsp;<img title="xef2-1.jpg" src="../images/67.jpeg" alt="" width="250" height="90"> is the only structure with the correct number of electrons (8 + 7 + 7 = 22) where the formal charges on all elements is zero.</div><p></p></div><div id="scantrondiv" class="scantrondiv"><br><canvas id="scantron" class="scantron"></div></body></html>

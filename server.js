@@ -1561,6 +1561,25 @@ function compareObjects(correctAnswersObj, submittedAnswersObj) {
   };
 }
 
+async function getNewFilePath(begFilePath) {
+	const files = await fs.promises.readdir(__dirname + '/quizzes/');
+	
+	const matchingFiles = files.filter((file) => {
+    const regex = new RegExp(`^${begFilePath}_[0-9]+\\.txt`, 'i');
+    return regex.test(file);
+  });
+  let highestNumber = 0;
+   matchingFiles.forEach((file) => {
+    const parts = file.split('_');
+    const number = parseInt(parts[parts.length - 1].split('.')[0]);
+    if (number > highestNumber) {
+      highestNumber = number;
+    }
+  });
+  const nextNumber = highestNumber + 1;
+  return begFilePath + '_' + nextNumber + '.txt';
+}
+
 app.get('/submitQuiz/:passed', (req, res) => {
   //console.log(req.params.passed);
   let passed = JSON.parse(decodeURIComponent(req.params.passed));
@@ -1578,7 +1597,7 @@ app.get('/submitQuiz/:passed', (req, res) => {
   let grade = result.percent;
   
   
-  //console.log("Percent:", result.percent);
+//console.log("Percent:", result.percent);
 //console.log("Correct Object:", result.correctObj);
 //console.log("Incorrect Object:", (result.incorrectObj));
 //console.log("Missed Object:", result.missedObj);
@@ -1624,9 +1643,11 @@ data = fs.readFileSync(filePath, "utf8") ? fs.readFileSync(filePath, "utf8") : '
   jsonObject[keyToAdd] = higherGrade;
 
   const updatedData = JSON.stringify(jsonObject, null, 2) ? JSON.stringify(jsonObject, null, 2): '{}';
-
+  
+  let newFilePath = await getNewFilePath(filePath.split('.')[0]);
+  
   // Write the updated object back to the file
-  fs.writeFile(filePath.toString(), updatedData, 'utf8', (writeErr) => {
+  fs.writeFile(newFilePath.toString(), updatedData, 'utf8', (writeErr) => {
     if (writeErr) {
       console.error('Error writing file:', writeErr);
 	  writeErrorToFile(__dirname + "/grades/error.txt", '3' + writeErr, 'a');
@@ -1816,10 +1837,6 @@ app.get('/quiz/:data', (req, res) => {
   postRequest.end();
 });
  
-
-
-
-//app.get("/quiz/:passed", (req, res) => {
 app.post('/quiz', (req, res) => { // post because get won't work with Canvas
 	let studentId = '';
 	let passed = {};
@@ -1847,7 +1864,6 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
 	}
 	);
 	
-  //if (req.params.passed) {
 	if (passed) {
 	console.log(passed);
 	console.log(JSON.stringify(passed));
@@ -1864,14 +1880,11 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
     
     var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + instructorName + "_qbanks.txt", "utf8");
     var qbanks = JSON.parse(qbanksFile);
-    //console.log(fs.existsSync(__dirname + '/quizzes/' + studentId + '_' + subject + '_' + course + '_' + encodeURIComponent(date) + '_' + title + '_' + '.html'));
 	
 	if(fs.existsSync(__dirname + '/quizzes/' + fileName + '.html') && false) { // setting this to always fail so it always deletes
 	// tries to read file first, and it you can't read it, then qbankToHtml and write it
 	html = fs.readFileSync(__dirname + '/quizzes/' + fileName + '.html', "utf8");
 	} else {
-	
-
 	 html = qbankToHtml(subject, course, qbankAndNumArray, instructorName, title.replaceAll('_', ' '), instructorName.replaceAll('_', ' '), date);
 		try {// save in quizzes folder, not products
 		  fs.writeFileSync(__dirname + '/quizzes/' + fileName + '.html', html, { 
@@ -1911,15 +1924,11 @@ optionElements.forEach((element) => {
   });
 });
 `
-//console.log('match: ', productFile.match(/<div class=(['"])?solution\1>[\s\S]*?<\/div>/g));
 
 	// removes answers from quiz
-  //productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, `let fileName = "${fileName}"; const sessionId = "${sessionId}";`) 
+
   productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'const fileName = "' + fileName + '"; ' + 'const sessionId =' + JSON.stringify(sessionId) + '; ' + 'const courseId = "' + courseId + '"; ' + 'const assignmentId = "' + assignmentId + '"; ' + 'const studentId = "' + studentId + '";' + '// Error:' + errorVar )  
-  //+ 'let sessions =' + JSON.stringify(sessions) + ';' + 'let sessionId =' + JSON.stringify(sessionId) + ';'
-  //'let fileName = '+fileName+'; '+'const sessionId = ' + sessionId+';')
-  .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz();">Submit Quiz</button>') // got rid of grade, might replace with data removed: var path="/grade/"+sessionId+"/"; document.location = path;
-  //.replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz(); var path="/grade/"+sessionId+"/"+"grade.value"; document.location = path;>Submit Quiz</button>')
+  .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz();">Submit Quiz</button>') 
   .replaceAll(/<span class=['"]asterisk['"]>\*<\/span>/g, '')
   .replaceAll(/<div class=(['"])?solution\1>[\s\S]*?<\/div>/g, '')
   .replaceAll(/<button class=['"]x['"].*?<\/button>/g, '')
@@ -1937,21 +1946,6 @@ optionElements.forEach((element) => {
 // when changes are made, update the answers file, but don't resend
 // when quiz submitted, save all the answers, and resend with full answers
 
-/*
-app.get("/grade/:sessionID/:grade", (req, res) => {
-	const session = sessions[req.sessionId];
-	var grade = req.grade;
-	var resp = `Your grade of ${grade}% has been recorded.`;
-	
-	session.outcome_service.send_replace_result(grade/100, (err, isValid) => {
-		if (!isValid)
-			resp += `<br/>Update failed ${err}`;
-
-		res.send(resp);
-	});
-
-});
-*/
 
 app.get("/register", (req, res) => {
   var registerFile = fs.readFileSync(__dirname + "/html/register.html", "utf8");

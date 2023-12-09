@@ -1,0 +1,400 @@
+<html>
+  <head>
+    <style>
+      h1, h4, h6 {
+        display: flex;
+        justify-content: center;
+	    margin-block-start: 0em;
+		margin-block-end: 0em;
+      }
+      
+      .astrisk {
+        display = none;
+      }
+      .rightjustify {
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .tooltiptext {
+        visibility: hidden;
+        width: 210px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+      }
+
+      body:hover .tooltiptext {
+        visibility: visible;
+      }
+
+      img {
+        vertical-align: text-top;
+      }
+
+      div {
+        text-indent: 0px;
+      }
+
+      div.question {
+        break-inside: avoid-page;
+        display: block;
+      }
+	  
+	  div.stem {
+	    padding-left: 5px;
+		display: inline;
+      }
+
+      div.option {
+        text-indent: 22px;
+        display: block;
+      }
+	
+      svg {
+        transform: scale(1.3);
+      }
+      
+      .stem .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px 15px;
+      }
+	  
+	  .option .math-tex {
+        display: inline-block;
+		margin: 8px 0px 8px -22px;
+      }
+	  .solution {
+	    margin-left: 40px;
+	  }
+      @media print {
+        .noPrint, .x{
+          display: none;
+        }
+		.scantrondiv {
+		page-break-before: always;
+		height: 10in;
+		}
+      }
+	  #scantron {
+	  position: relative;
+      background-size: 100%;
+      background-repeat: no-repeat;
+      background-image: url('/html/zipgrade50q.jpg');
+
+      }
+	  #scantrondiv {
+	        display: none;
+	  }
+	  .selected {
+  border: 2px solid blue;
+  font-weight: bold;
+}
+
+.correct {
+  border: 2px solid green;
+  font-weight: bold;
+}
+
+.incorrect {
+  border: 2px solid red;
+}
+
+.missed {
+  border: 2px solid yellow;
+  font-weight: bold;
+}
+
+@page {
+margin-top: 0.5in;
+margin-bottom: 0.5in;
+margin-right: 0.5in;
+margin-left: 0.5in;
+}
+    </style>
+    <link rel="stylesheet" href="/css/custom.css">
+    <script>
+	let questionsObject = {};
+	
+	
+					questionsObject = {"1":[1],"2":[3],"3":[3],"4":[2],"5":[0],"6":[1],"7":[1],"8":[2],"9":[1],"10":[3],"11":[1],"12":[2],"13":[3],"14":[0],"15":[0],"16":[1],"17":[0],"18":[1],"19":[2],"20":[3],"21":[3],"22":[2],"23":[0],"24":[2],"25":[0],"26":[0],"27":[1],"28":[3],"29":[2],"30":[3],"31":[2],"32":[0],"33":[0],"34":[1],"35":[0,3],"36":[1],"37":[3],"38":[3],"39":[3],"40":[1],"41":[1],"42":[3],"43":[2],"44":[2],"45":[3],"46":[1],"47":[0],"48":[0],"49":[2]}; 
+				 
+	
+	
+	
+    function loading() {
+      const mts = document.getElementsByClassName('math-tex');
+      for(let mt of mts) {
+        const questionOrOption = mt.parentElement;
+        questionOrOption.classList.add("svg");
+      }
+	  
+	  //###replace me###
+	  
+	 
+// Call the drawMarks function to draw the dark marks on the canvas
+makeCoordinateArray();
+drawMarks();
+}
+
+    </script>
+  </head>
+
+  <body onload="loading()"><span class='tooltiptext noPrint'>Ctrl-z: toggle answers<br>Ctrl-x: toggle solutions<br>Ctrl-q: toggle answer sheet</span>
+    <script src="/node_modules/@dimakorotkov/tinymce-mathjax/config.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+      let toggle = {};
+	  toggle.asterisk = true;
+	  toggle.solution = true;
+	  toggle.scantron = false;
+	  let markCoordinates = [];
+	  
+function getSelected() {
+// Initialize an object to store the question number and selected options
+var selectedOptions = {};
+
+// Select all questions
+var questions = document.querySelectorAll('.question');
+
+// Iterate through each question
+questions.forEach(function(question, index) {
+  // Find all the options in the current question
+  var options = question.querySelectorAll('.option');
+
+  // Initialize an array to store the selected option indices
+  var selectedIndices = [];
+
+  // Iterate through the options and check if they have the "selected" class
+  options.forEach(function(option, optionIndex) {
+    if (option.classList.contains('selected')) {
+      selectedIndices.push(optionIndex);
+    }
+  });
+
+  // Store the selected indices in the object with the question number as the key
+  selectedOptions[(index + 1).toString()] = selectedIndices;
+});
+
+// The selectedOptions object now contains the desired data
+console.log(selectedOptions);
+return selectedOptions;
+}
+	  
+function submitQuiz() {
+  let passed = {};
+  passed.selected = getSelected();
+  passed.fileName = fileName;
+  passed.sessionId = sessionId ? sessionId : "no sessionId";
+  passed.courseId = courseId ? courseId : "no courseId";
+  passed.assignmentId = assignmentId ? assignmentId : "no assignmentId";
+  passed.studentId = studentId ? studentId : "no studentId";
+  passed = encodeURIComponent(JSON.stringify(passed))
+    var path = '/submitQuiz/' + passed;
+    window.open(path, '_self');  // switched from blank to self
+} 
+	  
+	  function makeCoordinateArray(clearCoordinates) {
+	  if(clearCoordinates){
+	  markCoordinates = [];
+	  }
+if (questionsObject) {
+let xstart = 0;
+let ystart = 0;
+for (const key in questionsObject) {
+if (key <= 10) {
+xstart = 85;
+ystart = 349;
+} else if (key <= 20) {
+xstart = 212;
+ystart = -140;
+} else if (key <= 30) {
+xstart = 212;
+ystart = -118;
+} else if (key <= 40) {
+xstart = 338.5;
+ystart = -606;
+} else {
+xstart = 338.5;
+ystart = -584;
+}
+  const values = questionsObject[key];
+  for (const value of values) {
+      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
+  }
+}
+} else {alert('no questionsObject')}
+}
+
+// Function to draw the dark marks on the canvas
+function drawMarks(eraseCanvas) {
+  const canvas = document.getElementById('scantron');
+  if(canvas) {
+  const ctx = canvas.getContext('2d');
+  canvas.height = 716.8;
+  canvas.width = 506.1;
+  
+  // erase canvas if needed
+  if(eraseCanvas) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  // Set the color and size of the dark marks
+
+  ctx.fillStyle = 'rgba(0, 0, 0)';
+  const markWidth = 15;
+  const markHeight = 15;
+  const borderRadius = 7.5;
+  // Loop through the mark coordinates and draw the dark marks
+  for (const coord of markCoordinates) {
+    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+  }
+  ctx.fill();
+  }
+}
+	  
+	  function deleteQuestion(question) {
+	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
+	  if(confirmDelete) {
+	  question.remove();
+	  renumberQuestions();
+	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+	  makeCoordinateArray(true);
+	  drawMarks(true);
+	  }
+	  }
+	  
+	  function removeAndRenumber(object, keyToRemove) {
+  // Convert the key to be removed to an integer
+  keyToRemove = parseInt(keyToRemove);
+  // Delete the key-value pair from the object
+  delete object[keyToRemove.toString()];
+  // Get the list of remaining keys and sort them numerically in ascending order
+  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+  // Initialize a variable to keep track of the new key value
+  let newKey = 1;
+  // Create a new object to store the renumbered key-value pairs
+  const newObject = {};
+  // Loop through the remaining keys and renumber the keys
+  for (const oldKey of remainingKeys) {
+    // If the current key is the one that was removed, skip it
+    if (oldKey === keyToRemove) continue;
+    // Update the key with the new value
+    newObject[newKey.toString()] = object[oldKey.toString()];
+    // Increment the new key value for the next iteration
+    newKey++;
+  }
+  // Return the new object with renumbered keys
+  return newObject;
+}
+	  
+	  function renumberQuestions() {
+	  var questionNumber = 1;
+	  const questionElements = document.getElementsByClassName('question');
+	  for(var questionElement of questionElements) {
+	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+	  questionNumberElement.innerHTML = questionNumber;
+	  questionNumber = questionNumber + 1;
+	  }
+	  }
+
+      function toggleFunction(thisClass) {
+        let theseClasses = document.getElementsByClassName(thisClass);
+        for (let aClass of theseClasses) {
+          if (toggle[thisClass]) {
+            aClass.style.display = 'none';
+          } else {
+            aClass.style.display = 'revert';
+          }
+        }
+        toggle[thisClass] = !toggle[thisClass];
+      }
+
+      let keysPressed = {};
+      document.addEventListener('keydown', (event) => {
+        keysPressed[event.key] = true;
+
+        if (keysPressed['Control'] && event.key == 'z') {
+          toggleFunction('asterisk');
+        }
+		if (keysPressed['Control'] && event.key == 'x') {
+          toggleFunction('solution');
+        }
+		if (keysPressed['Control'] && event.key == 'q') {
+          toggleFunction('scantrondiv');
+        }
+      });
+
+      document.addEventListener('keyup', (event) => {
+        delete keysPressed[event.key];
+      });
+    </script>
+    <h1></h1>
+	<h4></h4>
+	<h6>Sep 13, 2023</h6>
+    <div class='rightjustify'>name: ______________________________________</div>
+    <p></p>
+<div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">1</span>) What is the empirical formula for C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>?</div><div class='option'>A) C<sub>2</sub>H<sub>4</sub>O<sub>2</sub></div><div class='option'>B) CH<sub>2</sub>O<span class='asterisk'>*</span></div><div class='option'>C) C<sub>6</sub>H<sub>12</sub>O<sub>6</sub></div><div class='option'>D) C<sub>3</sub>H<sub>6</sub>O<sub>3</sub></div><div class='solution'>An empirical formula represents the simplest ratio of elements present in a compound. It shows the relative number of atoms of each element in a compound without specifying the actual number of atoms.&nbsp; To get the empirical formula you need to divide the subscripts in the equation (C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>) by their greatest common divisor.&nbsp; In this case 2 and 6 are divisible by 6, which gives CH<sub>2</sub>O as the empirical formula.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">2</span>) Which of the following would have the highest lattice energy?</div><div class='option'>A) Na<sub>2</sub>O</div><div class='option'>B) MgCl<sub>2</sub></div><div class='option'>C) Li<sub>2</sub>O</div><div class='option'>D) MgO<span class='asterisk'>*</span></div><div class='solution'>There are two parts that are involved in lattice energy.&nbsp; One is the charge on the ions (this is the bigger priority), and the other is the distance between the ions.&nbsp; This is only testing on knowing that the larger the charge on the ions, the larger the lattice energy.&nbsp; Since Mg has the highest charge, MgO will have the highest lattice energy.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">3</span>) An ionic bond is best described as</div><div class='option'>A) A bond between two metals</div><div class='option'>B) A bond formed when electrons are shared between two atoms</div><div class='option'>C) A bond between two non-metals</div><div class='option'>D) A bond formed when electrons are transferred from one atom to another<span class='asterisk'>*</span></div><div class='solution'>A covalent bond is formed when two atoms share electrons in order to achieve a stable electron configuration. In a covalent bond, the atoms involved have similar electronegativity, meaning they have similar tendencies to attract electrons. This sharing of electrons allows both atoms to fill their outermost energy levels and achieve greater stability.<br><br>An ionic bond is formed when electrons are transferred from one atom to another, resulting in the formation of ions. In an ionic bond, one atom donates electrons to another atom, resulting in the formation of a positively charged ion (cation) and a negatively charged ion (anion). The attraction between these opposite charges holds the ions together and forms an ionic bond.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">4</span>) What is the empirical formula for a sulfur oxide (compound composed of sulfur and oxygen) that is 80.0% sulfur by mass?</div><div class='option'>A) SO<sub>2</sub></div><div class='option'>B) S<sub>3</sub>O</div><div class='option'>C) S<sub>2</sub>O<span class='asterisk'>*</span></div><div class='option'>D) SO</div><div class='solution'>Since the sulfur oxide compound is is 80.0% sulfur by mass, it will be 100% - 80.0% = 20.0 % oxygen by mass.<br><br>Assuming a 100 g sample gives us:&nbsp; 80.0 g sulfur and 20.0 g oxygen.<br><br>Next convert those grams to moles.<br>80.0 g S x <span class="math-tex">\( \frac{1 mol S}{32.06 g S} \)</span> = 2.50 mol S<br>20.0 g O x <span class="math-tex">\( \frac{1 mol O}{16.00 g O} \)</span> = 1.25 mol O<br><br>Then divide by the lower of the two mol amounts, and get the lowest whole number ratio.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">5</span>) Determine the name for CoCl<sub>2</sub><span class="header-char"><strong>·</strong>6H<sub>2</sub>O</span></div><div class='option'>A) Cobolt (II) chloride hexahydrate<span class='asterisk'>*</span></div><div class='option'>B) Cobolt (II) chloride</div><div class='option'>C) Cobolt (II) chloride heptahydrate</div><div class='option'>D) Cobolt chloride hexahydrate</div><div class='solution'>CoCl<sub>2</sub><span class="header-char"><strong>·</strong>6H<sub>2</sub>O is an ionic compound and a hydrate.&nbsp; To name the ionic compound portion give the name of the cation followed by the name of the anion.&nbsp; In this case that would be cobolt (II) chloride. Since cobalt is a variable charge metal The hydrate portion of the formula is named based on the number of water molecules.&nbsp; Since this hydrate has 6 water molecules in its formula the prefix 'hexa-' is used before the word 'hydrate'.&nbsp; Thus the correct name is cobolt (II) chloride hexahydrate.</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">6</span>) What is the name of the compound Ba<sub>3</sub>(ClO<sub>3</sub>)<sub>2</sub>?</div><div class='option'>A) Tribarium dichlorate</div><div class='option'>B) Barium chlorate<span class='asterisk'>*</span></div><div class='option'>C) Barium chloroxide</div><div class='option'>D) Barium chloride</div><div class='solution'>Ba<sub>3</sub>(ClO<sub>3</sub>)<sub>2</sub> is an ionic compound because it contains a polyatomic ion (ClO<sub>3</sub><sup>-</sup>).&nbsp; Thus to name Ba<sub>3</sub>(ClO<sub>3</sub>)<sub>2</sub>, you need to say the name of the fixed charge metal followed by the name of the polyatomic anion.&nbsp; Therefore the correct name is Barium chlorate.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">7</span>) The statement "samples of a compound will always contain the same proportion of elements by mass" belongs to:</div><div class='option'>A) The Law of Conservation of Mass</div><div class='option'>B) The Law of Definite Proportions<span class='asterisk'>*</span></div><div class='option'>C) Dalton's Atomic Theory</div><div class='option'>D) The Law of Multiple Proportions</div><div class='solution'><p>Dalton's Atomic Theory: Matter is composed of small indestructible particles.</p>
+<p>The Law of Conservation of Mass: In a chemical reaction, matter is neither created nor destroyed.</p>
+<p>The Law of Multiple Proportions: If two elements form more than one compound, the ratios of the masses of the second element that combine with a fixed mass of the first element will always be ratios of small whole numbers.</p>
+<p>The Law of Definite Proportions: Samples of a compound will always contain the same proportion of elements by mass.</p></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">8</span>) What is the formula for the <span style="font-size: 10.5pt;">phosphate</span> ion?</div><div class='option'>A) <span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">PO</span><sub>2</sub><sup>3-</sup></div><div class='option'>B) <span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">PO</span><sub>3</sub><sup>3-</sup></div><div class='option'>C) <span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">PO</span><sub>4</sub><sup>3-</sup><span class='asterisk'>*</span></div><div class='option'>D) <span style="font-size: 10.5pt;"><span style="font-size: 10.5pt;">PO</span><sub>4</sub><sup>2-</sup></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">9</span>) Calculate the molar mass for Sn(ClO<sub>4</sub>)<sub>2</sub>.</div><div class='option'>A) 436.3 g/mol</div><div class='option'>B) 317.6 g/mol<span class='asterisk'>*</span></div><div class='option'>C) 221.6 g/mol</div><div class='option'>D) 218.2 g/mol</div><div class='solution'>To calculate the molar mass for Sn(ClO<sub>4</sub>)<sub>2</sub>, take the number of each element from the periodic table and multiply it by the &nbsp;molar mass of the element, then sum all the molar masses from each element.<br>Sn: 118.71 g/mol x 1 = 118.71 g/mol<br>Cl: 35.45 g/mol x 2 = 70.90 g/mol<br>O: 16.00 g/mol x 8 = 100 g/mol<br>Total: 317.6 g/mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">10</span>) What is the name of the following polyatomic ion?<br>HPO<sub>4</sub><sup>2-</sup></span></div><div class='option'>A) phosphate</div><div class='option'>B) dihydrogen phosphate</div><div class='option'>C) phosphite</div><div class='option'>D) hydrogen phosphate<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">11</span>) Calculate the molar mass for C<sub>8</sub>H<sub>16</sub>O.</div><div class='option'>A) 113.1 g/mol</div><div class='option'>B) 128.2 g/mol<span class='asterisk'>*</span></div><div class='option'>C) 29.02 g/mol</div><div class='option'>D) 112.2 g/mol</div><div class='solution'>To calculate the molar mass for C<sub>8</sub>H<sub>20</sub>O, take the number of each element from the periodic table and multiply it by the&nbsp; molar mass of the element, then sum all the molar masses from each element.<br>C: 12.01 g/mol x 8 = 96.08 g/mol<br>H: 1.008 g/mol x 20 = 16.13 g/mol<br>O: 16.00 g/mol x 1 = 16.00 g/mol<br>Total: 128.2 g/mol</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">12</span>) What is the formula for the following acetate ion?</div><div class='option'>A) <span style="font-size: 10.5pt;">C<sub>3</sub>H<sub>2</sub>O</span><sub>3</sub><sup>-</sup></div><div class='option'>B) <span style="font-size: 10.5pt;">C<sub>2</sub>H<sub>2</sub>O</span><sub>2</sub><sup>-</sup></div><div class='option'>C) <span style="font-size: 10.5pt;">C<sub>2</sub>H<sub>3</sub>O</span><sub>2</sub><sup>-</sup><span class='asterisk'>*</span></div><div class='option'>D) <span style="font-size: 10.5pt;">CHO</span><sup>-</sup></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">13</span>) What is the name of the <span style="font-size: 10.5pt;">ClO</span><sub>2</sub><sup>-</sup> ion?</div><div class='option'>A) hypochlorite</div><div class='option'>B) perchlorate</div><div class='option'>C) chlorate</div><div class='option'>D) chlorite<span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">14</span>) Give the name for SF<sub>6</sub>.</div><div class='option'>A) Sulfur hexafluoride<span class='asterisk'>*</span></div><div class='option'>B) Sulfur heptafluoride</div><div class='option'>C) Sulfur fluoride</div><div class='option'>D) Sulfur (II) fluoride</div><div class='solution'>Both S and F are nonmetals, so we will need to put a Greek prefix before the name of each element, then give the second element an -ide ending.&nbsp; However, mono- is dropped from the beginning in cases where there is only 1 of the first element in the compound.&nbsp; Since there are 1 S and 6 F, the name is Sulfur hexafluoride.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">15</span>) What is the name of the acid H<sub>3</sub>PO<sub>4</sub>?</div><div class='option'>A) Phosphoric acid<span class='asterisk'>*</span></div><div class='option'>B) Hydrophosphoric acid</div><div class='option'>C) Hydrophosphorous acid</div><div class='option'>D) Phosphorous acid</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">16</span>) Which of the following shows the best Lewis structure for CH<sub>2</sub>Cl<sub>2</sub>?</div><div class='option'>A) <img title="ch2cl2-4.jpg" src="../images/66.jpeg" alt="" width="113" height="90"></div><div class='option'>B) <img title="ch2cl2-1.jpg" src="../images/63.jpeg" alt="" width="113" height="90"><span class='asterisk'>*</span></div><div class='option'>C) <img title="ch2cl2-3.jpg" src="../images/65.jpeg" alt="" width="113" height="90"></div><div class='option'>D) <img title="ch2cl2-2.jpg" src="../images/64.jpeg" alt="" width="205" height="45"></div><div class='solution'>Carbon has 4 valence electrons, hydrogen has 1, and chlorine has 7.&nbsp; Carbon and chlorine need an octet, and hydrogen needs a duet. &nbsp;<img title="ch2cl2-1.jpg" src="../images/63.jpeg" alt="" width="113" height="90"> is the only structure where there are the correct number of electrons (4 + 1 + 1 + 7 + 7 = 20), and where carbon and chlorine get an octet, and hydrogen gets a duet</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">17</span>) Which of the following bonds is <strong>least</strong> polar?</div><div class='option'>A) H-I<span class='asterisk'>*</span></div><div class='option'>B) H-F</div><div class='option'>C) HCl</div><div class='option'>D) HBr</div><div class='solution'>The least polar bond will be the one with the&nbsp; smallest dipole moment.<br>&nbsp;<br>The smallest dipole moment will be between the two elements that have the smallest difference in electronegativity. Generally speaking the elements with the smallest difference in electronegativity will be closest on the periodic table.&nbsp; However, you should remember that hydrogen has an electronegativity that is around that of metalloids.&nbsp; In other words, it is low for a nonmetal.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">18</span>) Which of the following shows the best Lewis structure for CH<sub>3</sub>OH?</div><div class='option'>A) <img title="CH3OHc.jpg" src="../images/92.jpeg" alt="" width="146" height="110"></div><div class='option'>B) <img title="CH3OHd.jpg" src="../images/93.jpeg" alt="" width="146" height="110"><span class='asterisk'>*</span></div><div class='option'>C) <img title="CH3OHb.jpg" src="../images/91.jpeg" alt="" width="152" height="110"></div><div class='option'>D) <img title="CH3OHa.jpg" src="../images/90.jpeg" alt="" width="113" height="110"></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">19</span>) A triple covalent bond contains how many electrons?</div><div class='option'>A) 3</div><div class='option'>B) 8</div><div class='option'>C) 6<span class='asterisk'>*</span></div><div class='option'>D) 4</div><div class='solution'>A single covalent bond contains 2 shared electrons.<br>A double covalent bond contains 4 shared electrons.<br>A triple covalent bond contains 6 shared electrons.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">20</span>) Which of the following shows the best Lewis structure for BH<sub>3</sub>?</div><div class='option'>A) <img title="bh3d.jpg" src="../images/97.jpeg" alt="" width="170" height="131"></div><div class='option'>B) <img title="bh3a.jpg" src="../images/94.jpeg" alt="" width="240" height="81"></div><div class='option'>C) <img title="bh3b.jpg" src="../images/95.jpeg" alt="" width="240" height="80"></div><div class='option'>D) <img title="bh3c.jpg" src="../images/96.jpeg" alt="" width="170" height="131"><span class='asterisk'>*</span></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">21</span>) Which of the following elements is the <strong>most</strong> electronegative.</div><div class='option'>A) Bromine</div><div class='option'>B) Potassium</div><div class='option'>C) Lithium</div><div class='option'>D) Fluorine<span class='asterisk'>*</span></div><div class='solution'>The trend for electronegativity is that it increases as you go up and to the right on the periodic table.&nbsp; However, noble gasses have an electronegativity of approximately zero, so fluorine has the highest electronegativity.&nbsp; Thus in this case, fluorine is the <strong>most</strong> electronegative.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">22</span>) Which compound has the <strong>smallest</strong> dipole moment in the gas phase?</div><div class='option'>A) HCl</div><div class='option'>B) LiF</div><div class='option'>C) Cl<sub>2</sub><span class='asterisk'>*</span></div><div class='option'>D) CO</div><div class='solution'>The smallest dipole moment will be between the two elements that have the smallest difference in electronegativity. Generally speaking the elements with the smallest difference in electronegativity will be closest on the periodic table.&nbsp; However, you should remember that hydrogen has an electronegativity that is around that of metalloids.&nbsp; In other words, it is low for a nonmetal.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">23</span>) Identify the<strong> shortest</strong> bond.</div><div class='option'>A) Triple covalent bond<span class='asterisk'>*</span></div><div class='option'>B) All bonds are the same length</div><div class='option'>C) Double covalent bond</div><div class='option'>D) Single covalent bond</div><div class='solution'>Triple bonds are stronger than double bonds, which are stronger than single bonds.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">24</span>) Place the following bonds in order of <strong>increasing</strong> ionic character.<br>
+<p>Si-P&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Si-Cl&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Si-S</p></div><div class='option'>A) Si-P &lt; Si-Cl &lt; Si-S</div><div class='option'>B) Si-Cl &lt; Si-P &lt; Si-S</div><div class='option'>C) Si-P &lt; Si-S &lt; Si-Cl<span class='asterisk'>*</span></div><div class='option'>D) Si-Cl &lt; Si-S &lt; Si-P</div><div class='solution'>The bond with the lowest ionic character will be the between elements closest on the periodic table.&nbsp; Since Si and P are the closest on the periodic table, they will have the lowest ionic character.&nbsp; Since Si and S are the next closest, they will have the second to lowest ionic character.&nbsp; Si and Cl are the furthest on the periodic table, so they will have the largest ionic character.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">25</span>) Which of the following shows the best Lewis structure for N<sub>2</sub>H<sub>4</sub>?</div><div class='option'>A) <img title="n2h2a.jpg" src="../images/82.jpeg" alt="" width="151" height="90"><span class='asterisk'>*</span></div><div class='option'>B) <img title="n2h2b.jpg" src="../images/83.jpeg" alt="" width="151" height="90"></div><div class='option'>C) <img title="n2h2c.jpg" src="../images/84.jpeg" alt="" width="125" height="118"></div><div class='option'>D) <img title="n2h2d.jpg" src="../images/85.jpeg" alt="" width="155" height="90"></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">26</span>) Which of the following shows the best Lewis structure for NOF?</div><div class='option'>A) <img title="NOFb.jpg" src="../images/87.jpeg" alt="" width="190" height="86"><span class='asterisk'>*</span></div><div class='option'>B) <img title="NOFd.jpg" src="../images/89.jpeg" alt="" width="200" height="91"></div><div class='option'>C) <img title="NOFa.jpg" src="../images/86.jpeg" alt="" width="180" height="79"></div><div class='option'>D) <img title="NOFc.jpg" src="../images/88.jpeg" alt="" width="200" height="90"></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">27</span>) Which of the following shows the best Lewis structure for XeF<sub>2</sub>?</div><div class='option'>A) <img title="xef2-2.jpg" src="../images/68.jpeg" alt="" width="250" height="90"></div><div class='option'>B) <img title="xef2-1.jpg" src="../images/67.jpeg" alt="" width="250" height="90"><span class='asterisk'>*</span></div><div class='option'>C) <img title="xef2-3.jpg" src="../images/69.jpeg" alt="" width="250" height="90"></div><div class='option'>D) <img title="xef2-4.jpg" src="../images/70.jpeg" alt="" width="250" height="90"></div><div class='solution'>Xe has 8 valence electrons and F has 7 valence electrons.&nbsp; Xe (being below the 2nd period) can get more than an octet, but F needs an octet.&nbsp; The formal charges need to be as close to zero as possible. &nbsp;<img title="xef2-1.jpg" src="../images/67.jpeg" alt="" width="250" height="90"> is the only structure with the correct number of electrons (8 + 7 + 7 = 22) where the formal charges on all elements is zero.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">28</span>) What is the<strong> VSEPR shape (electron domain geometry) </strong>of SF<sub>6</sub>?</div><div class='option'>A) Trigonal planar</div><div class='option'>B) Trigonal bipyramidal</div><div class='option'>C) Tetrahedral</div><div class='option'>D) Octahedral<span class='asterisk'>*</span></div><div class='solution'>Since the Lewis structure of SF<sub>6</sub> has 6 electron domains, the<strong> VSEPR shape (electron domain geometry) </strong>of SF<sub>6</sub> is octahedral.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">29</span>) Give the molecular shape for XeF<sub>6</sub></div><div class='option'>A) Trigonal bipyramid</div><div class='option'>B) Trigonal planar</div><div class='option'>C) Octahedral<span class='asterisk'>*</span></div><div class='option'>D) Square planar</div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to Xe.<br>You should get 6 electron domains, of which &nbsp;0 are lone pairs.<br>6 electron domains and 0 are lone pairs corresponds to an octahedral molecular shape.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">30</span>) Give the electron domain geometry for CO<sub>2</sub></div><div class='option'>A) Tetrahedral</div><div class='option'>B) Bent</div><div class='option'>C) Trigonal planar</div><div class='option'>D) Linear<span class='asterisk'>*</span></div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to C.<br>You should get 2 electron domains.<br>2 electron domains corresponds to a linear electron domain geometry.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">31</span>) Identify the number of electron groups (electron domains) around a molecule with sp<sup>3</sup>d<sup>2</sup> hybridization.</div><div class='option'>A) 3</div><div class='option'>B) 2</div><div class='option'>C) 6<span class='asterisk'>*</span></div><div class='option'>D) 4</div><div class='solution'><table style="border-collapse: collapse; width: 13.8266%; border-color: #34495E;" border="1">
+<tbody>
+<tr>
+<td style="width: 46.9569%;"># Electron domains</td>
+<td style="width: 53.0431%;">Hybridization</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">2</td>
+<td style="width: 53.0431%;">sp</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">3</td>
+<td style="width: 53.0431%;">sp<sup>2</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">4</td>
+<td style="width: 53.0431%;">sp<sup>3</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">5</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">6</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d<sup>2</sup></td>
+</tr>
+</tbody>
+</table></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">32</span>) What is the<strong> molecular shape </strong>of KrF<sub>2</sub>?</div><div class='option'>A) Linear<span class='asterisk'>*</span></div><div class='option'>B) T-shape</div><div class='option'>C) See saw (saw horse)</div><div class='option'>D) Octahedral</div><div class='solution'>Since the Lewis structure of KrF<sub>2</sub> has 5 electron domains, 3 of which are lone pair,&nbsp;the<strong> molecular shape </strong>of KrF<sub>2</sub> is linear.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">33</span>) What is the<strong> molecular shape </strong>of PF<sub>5</sub>?</div><div class='option'>A) Trigonal bipyramidal<span class='asterisk'>*</span></div><div class='option'>B) Bent</div><div class='option'>C) See saw (saw horse)</div><div class='option'>D) Octahedral</div><div class='solution'>Since the Lewis structure of PF<sub>5</sub> has 5 electron domains, none of which are lone pairs,&nbsp;the<strong> molecular shape </strong>of PF<sub>5</sub> is trigonal bipyramidal.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">34</span>) Use the molecular orbital diagram shown below to determine which of the following are the <strong>MOST</strong> stable.<br><br><img title="molecular orbital diagram 1.png" src="../images/42.png" alt="" width="207" height="352"></div><div class='option'>A) BC<sup>2-</sup></div><div class='option'>B) C<sub>2</sub><sup>2-</sup><span class='asterisk'>*</span></div><div class='option'>C) NC<sup>+</sup></div><div class='option'>D) B<sub>2</sub><sup>-</sup></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>B<sub>2</sub><sup>-</sup>: 7 valence electrons<br>NC<sup>+</sup>: 8 valence electrons<br>BC<sup>2-</sup>: 9 valence electrons<br>C<sub>2</sub><sup>2-</sup>: 10 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine the bond order.&nbsp; Since after 4 valence electrons, the rest go into bonding orbitals, the highest number of electrons will have the highest bond order.<br>Bond order = (electrons in bonding orbitals - electrons in antibonding orbitals)/2<br>Bond order for B<sub>2</sub><sup>-</sup>: (5-2)/2 = 1.5<br>Bond order for NC<sup>+</sup>: (6-2)/2 = 2<br>Bond order for BC<sup>2-</sup>: (7-2)/2 = 2.5<br>Bond order for C<sub>2</sub><sup>2-</sup>: (8-2)/2 = 3<br>Since C<sub>2</sub><sup>2-</sup>&nbsp;has the highest bond order, it will be the <strong>MOST</strong> stable.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">35</span>) Use the molecular orbital diagram shown below to determine which of the following are the paramagnetic (<strong>there may be more than one answer</strong>).<br><br><img title="molecular orbital diagram 1.png" src="../images/42.png" alt="" width="207" height="352"></div><div class='option'>A) BC<sup>2-</sup><span class='asterisk'>*</span></div><div class='option'>B) C<sub>2</sub><sup>2-</sup></div><div class='option'>C) NC<sup>+</sup></div><div class='option'>D) B<sub>2</sub><sup>-</sup><span class='asterisk'>*</span></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>B<sub>2</sub><sup>-</sup>: 7 valence electrons<br>NC<sup>+</sup>: 8 valence electrons<br>BC<sup>2-</sup>: 9 valence electrons<br>C<sub>2</sub><sup>2-</sup>: 10 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine if there are any unpaired electrons in the molecular orbital diagram.<br>B<sub>2</sub><sup>-</sup>: 7 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br>NC<sup>+</sup>: 8 valence electrons, the pi 2p orbitals get filled, leaving no unpaired electrons = diamagnetic<br>BC<sup>2-</sup>: 9 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic&nbsp;&nbsp;<br>C<sub>2</sub><sup>2-</sup>: 10 valence electrons, the last 2 electrons go into sigma 2p orbital filling it, which means there are no unpaired electrons = diamagnetic</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">36</span>) What is the<strong> molecular shape </strong>of BF<sub>3</sub>?</div><div class='option'>A) Tetrahedral</div><div class='option'>B) Trigonal planar<span class='asterisk'>*</span></div><div class='option'>C) Linear</div><div class='option'>D) bent</div><div class='solution'>Since the Lewis structure<strong>&nbsp;</strong>of BF<sub>3</sub> has 3 electron domains, none of which are lone pairs, the<strong> molecular shape </strong>of BF<sub>3</sub> is trigonal planar.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">37</span>) Use the molecular orbital diagram shown below to determine which of the following are the <strong>MOST</strong> stable.<br><img title="molecular orbital diagram.png" src="../images/41.png" alt="" width="207" height="352"></div><div class='option'>A) F<sub>2</sub></div><div class='option'>B) NeF</div><div class='option'>C) F<sub>2</sub><sup>+</sup></div><div class='option'>D) FO<sup>+</sup><span class='asterisk'>*</span></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>FO<sup>+</sup>: 12 valence electrons<br>F<sub>2</sub><sup>+</sup>: 13 valence electrons<br>F<sub>2</sub>: 14 valence electrons<br>NeF: 15 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine the bond order.&nbsp; Since after 10 valence electrons, the rest go into anti-bonding orbitals, the lowest number of electrons will have the highest bond order.<br>Bond order = (electrons in bonding orbitals - electrons in antibonding orbitals)/2<br>Bond order for FO<sup>+</sup>: (8-4)/2 = 2<br>Bond order for F<sub>2</sub><sup>+</sup>: (8-5)/2 = 1.5<br>Bond order for F<sub>2</sub>: (8-6)/2 = 1<br>Bond order for NeF: (8-7)/2 = 0.5<br>Since FO<sup>+</sup> has the highest bond order, it will be the <strong>MOST</strong> stable.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">38</span>) What is the<strong> molecular shape </strong>of H<sub>2</sub>O?</div><div class='option'>A) Trigonal pyramidal</div><div class='option'>B) Tetrahedral</div><div class='option'>C) Trigonal planar</div><div class='option'>D) Bent<span class='asterisk'>*</span></div><div class='solution'>Since the Lewis structure<strong>&nbsp;</strong>of H<sub>2</sub>O has 4 electron domains, 2 of which are lone pairs, the<strong data-mce-fragment="1"> molecular shape </strong>of H<sub data-mce-fragment="1">2</sub>O is bent.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">39</span>) Which of the following compounds is nonpolar?</div><div class='option'>A) H<sub>2</sub>O</div><div class='option'>B) HF</div><div class='option'>C) HCN</div><div class='option'>D) SF<sub>6</sub><span class='asterisk'>*</span></div><div class='solution'>SF<sub>6</sub> is octahedral shaped, which is a symmetrical shape.&nbsp; That means the fluorines electronegativities will balance out and SF<sub>6</sub> will be nonpolar.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">40</span>) What is the<strong> VSEPR shape (electron domain geometry) </strong>of BH<sub>3</sub>?</div><div class='option'>A) Linear</div><div class='option'>B) Trigonal planar<span class='asterisk'>*</span></div><div class='option'>C) Bent</div><div class='option'>D) Tetrahedral</div><div class='solution'>The Lewis structure for BH<sub>3</sub> has 3 electron domains, so the<strong>&nbsp;VSEPR shape (electron domain geometry) </strong>of BH<sub>3</sub> is trigonal planar.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">41</span>) Is CO<sub>2</sub> polar or nonpolar?</div><div class='option'>A) Nonpolar</div><div class='option'>B) Polar<span class='asterisk'>*</span></div><div class='solution'>Since CO<sub>2</sub> is linear (which is a symmetrical shape), the electronegativities of the two oxygens balance out and CO<sub>2</sub> is nonpolar.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">42</span>) What is the hybridization on the central atom for OF<sub>2</sub>?</div><div class='option'>A) sp<sup>3</sup>d<sup>2</sup></div><div class='option'>B) sp<sup>3</sup>d</div><div class='option'>C) sp</div><div class='option'>D) sp<sup>3</sup><span class='asterisk'>*</span></div><div class='solution'>Step 1: Draw the Lewis Structure.<br>Step 2: Count the number of electron domains: the number of lone pairs and number of atoms bonded to &nbsp;O.<br>You should get 4 electron domains.<br>4 electron domains corresponds to sp<sup>3</sup> hybridization.<br>
+<table style="border-collapse: collapse; width: 13.8266%; border-color: #34495E;" border="1">
+<tbody>
+<tr>
+<td style="width: 46.9569%;"># Electron domains</td>
+<td style="width: 53.0431%;">Hybridization</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">2</td>
+<td style="width: 53.0431%;">sp</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">3</td>
+<td style="width: 53.0431%;">sp<sup>2</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">4</td>
+<td style="width: 53.0431%;">sp<sup>3</sup></td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">5</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d</td>
+</tr>
+<tr>
+<td style="width: 46.9569%;">6</td>
+<td style="width: 53.0431%;">sp<sup>3</sup>d<sup>2</sup></td>
+</tr>
+</tbody>
+</table></div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">43</span>) Which orbitals overlap in the carbon-hydrogen bonds in C<sub>2</sub>H<sub>2</sub>?</div><div class='option'>A) sp<sup>3</sup> and s</div><div class='option'>B) sp<sup>2</sup> and s</div><div class='option'>C) sp and s<span class='asterisk'>*</span></div><div class='option'>D) p and s</div><div class='solution'>Step 1) Draw the Lewis structure for C<sub>2</sub>H<sub>2</sub>.<br>Step 2) Count the number of electron domains on one of the carbons.&nbsp; There are 2 electron domains on each carbon.<br>Step 3) Determine the hybridization of one of the carbons.&nbsp; Since there 2 are electron domains, it is sp hybridized.<br>Step 4) Since the hydrogens only have an s orbital, the bond is between a sp hybridized orbital and an s orbital, thus (sp and s) is the answer.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">44</span>) What is the<strong> VSEPR shape (electron domain geometry) </strong>of PH<sub>3</sub>?</div><div class='option'>A) Trigonal planar</div><div class='option'>B) Linear</div><div class='option'>C) Tetrahedral<span class='asterisk'>*</span></div><div class='option'>D) Bent</div><div class='solution'>Since the Lewis structure of PH<sub>3</sub> has 4 electron domains, the&nbsp;<strong>VSEPR shape (electron domain geometry) </strong>of PH<sub>3</sub> is tetrahedral.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">45</span>) Use the molecular orbital diagram shown below to determine which of the following are the <strong>diamagnetic </strong>(<strong>there may be more than one answer</strong>).<br><img title="molecular orbital diagram.png" src="../images/41.png" alt="" width="207" height="352"></div><div class='option'>A) NeF</div><div class='option'>B) FO<sup>+</sup></div><div class='option'>C) F<sub>2</sub><sup>+</sup></div><div class='option'>D) F<sub>2</sub><span class='asterisk'>*</span></div><div class='solution'>Step 1:&nbsp; Count the number of valence electrons in the molecule.<br>FO<sup>+</sup>: 12 valence electrons<br>F<sub>2</sub><sup>+</sup>: 13 valence electrons<br>F<sub>2</sub>: 14 valence electrons<br>NeF: 15 valence electrons<br>Step 2: Fill in the molecular orbital diagram from the bottom up, but make sure to follow Hund's rule (one electron in each orbital in degenerate orbitals before a second with an opposing spin) when filling pi molecular orbitals.<br>Step 3: Determine if there are any unpaired electrons in the molecular orbital diagram.<br>FO<sup>+</sup>: 12 valence electrons, the last 2 electrons go into pi 2p orbitals, which means there are 2 unpaired electrons = paramagnetic<br>F<sub>2</sub><sup>+</sup>: 13 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic<br>F<sub>2</sub>: 14 valence electrons, the pi 2p orbitals get filled, leaving no unpaired electrons = diamagnetic<br>NeF: 15 valence electrons, and odd numbers will always have unpaired electrons = paramagnetic</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">46</span>) What is the<strong> VSEPR shape (electron domain geometry) </strong>of CH<sub>4</sub>?</div><div class='option'>A) Trigonal planar</div><div class='option'>B) Tetrahedral<span class='asterisk'>*</span></div><div class='option'>C) Linear</div><div class='option'>D) Bent</div><div class='solution'>Since the Lewis structure of CH<sub>4</sub> has 4 electron domains, the VSEPR <strong>shape (electron domain geometry) </strong>of CH<sub>4</sub> is tetrahedral.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">47</span>) Is AsF<sub>5</sub> polar or nonpolar?</div><div class='option'>A) Nonpolar<span class='asterisk'>*</span></div><div class='option'>B) Polar</div><div class='solution'>Since AsF<sub>5</sub> is trigonal bipyramidal (which is a symmetrical shape), the electronegativities of the five fluorines balance out and AsF<sub>5</sub> is nonpolar.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">48</span>) Which of the following compounds is <strong>polar</strong>?</div><div class='option'>A) IF<sub>5</sub><span class='asterisk'>*</span></div><div class='option'>B) O<sub>2</sub></div><div class='option'>C) SiS<sub>2</sub></div><div class='option'>D) PF<sub>5</sub></div><div class='solution'>IF<sub>5</sub> is square planar shaped which is not a symmetrical shape, thus IF<sub>5</sub> will be polar.</div><p></p></div><div class='question'><button class="x" onclick="deleteQuestion(this.parentElement);">x</button><div class='stem'><span class="questionNumber">49</span>) What is the<strong> molecular shape </strong>of SeF<sub>6</sub>?</div><div class='option'>A) Trigonal bipyramidal</div><div class='option'>B) Trigonal planar</div><div class='option'>C) Octahedral<span class='asterisk'>*</span></div><div class='option'>D) Tetrahedral</div><div class='solution'>Since the Lewis structure of SeF<sub>6</sub> has 6 electron domains, none of which are lone pairs, the<strong> molecular shape </strong>of SeF<sub>6</sub> is octahedral.</div><p></p></div><div id="scantrondiv" class="scantrondiv"><br><canvas id="scantron" class="scantron"></div></body></html>
