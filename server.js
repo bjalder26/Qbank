@@ -1567,9 +1567,11 @@ async function getNewFilePath(begFilePath) {
     const files = await fs.promises.readdir(__dirname + '/quizzes/');
 	//writeErrorToFile(__dirname + '/grades/error.txt', ' files: ' + files.toString(), 'w');
 	console.log('files: ' + files.toString());
+	console.log('begFilePath: ' + begFilePath);
 
     const matchingFiles = files.filter((file) => {
       const regex = new RegExp(`^${begFilePath}_[0-9]+\\.html`, 'i');
+	  console.log('regex: ' + regex);
       return regex.test(file);
     });
 	
