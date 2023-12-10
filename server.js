@@ -1566,6 +1566,7 @@ async function getNewFilePath(begFilePath) {
     let highestNumber = 0;
     const files = await fs.promises.readdir(__dirname + '/quizzes/');
 	//writeErrorToFile(__dirname + '/grades/error.txt', ' files: ' + files.toString(), 'w');
+	console.log('files: ' + files.toString());
 
     const matchingFiles = files.filter((file) => {
       const regex = new RegExp(`^${begFilePath}_[0-9]+\\.html`, 'i');
@@ -1573,10 +1574,13 @@ async function getNewFilePath(begFilePath) {
     });
 	
 	//writeErrorToFile(__dirname + '/grades/error.txt', ' matchingFiles: ' + matchingFiles.toString(), 'a');
+	console.log('matchingFiles: ' + matchingFiles.toString());
 
     matchingFiles.forEach((file) => {
       const parts = file.split('_');
+	  console.log('parts: ' + parts.toString()); 
       const number = parseInt(parts[parts.length - 1].split('.')[0]);
+	  console.log('number: ' + number.toString());
       if (number > highestNumber) {
         highestNumber = number;
       }
@@ -1585,6 +1589,7 @@ async function getNewFilePath(begFilePath) {
 	//writeErrorToFile(__dirname + '/grades/error.txt', ' highestNumber: ' + highestNumber.toString(), 'w');
 
     const nextNumber = highestNumber + 1;
+	console.log('nextNumber: ' + nextNumber);
     return begFilePath + '_' + nextNumber + '.html';
   } catch (err) {
     console.log(err);
@@ -1606,7 +1611,7 @@ app.get('/submitQuiz/:passed', (req, res) => {
   
   var correctAnswersObj = JSON.parse(fs.readFileSync(__dirname + '/quizzes/' + fileName + '.txt', 'utf8'));
   const result = compareObjects(correctAnswersObj, submittedAnswersObj);
-  let grade = result.percent;
+  let newGrade = result.percent;
   
   
 //console.log("Percent:", result.percent);
@@ -1618,11 +1623,10 @@ app.get('/submitQuiz/:passed', (req, res) => {
 // Read the grade file
 const filePath = __dirname + '/grades/'+ courseId + '-' + assignmentId + '_' + studentId + '.txt';
 
-writeErrorToFile(__dirname + '/grades/error.txt', filePath, 'w');
+//writeErrorToFile(__dirname + '/grades/error.txt', filePath, 'w');
 
-let higherGrade = grade; // Replace with your new value
-
-writeErrorToFile(__dirname + "/grades/error.txt", higherGrade.toString(), 'a');
+console.log('newGrade: '+newGrade); 
+//writeErrorToFile(__dirname + "/grades/error.txt", higherGrade.toString(), 'a');
 
 let data = '{}';
 
@@ -1643,15 +1647,16 @@ data = fs.readFileSync(filePath, "utf8") ? fs.readFileSync(filePath, "utf8") : '
   }
 
   const keyToAdd = studentId;
-  
+  let higherGrade = newGrade;
   // Check if the key exists in the object and if the new value is higher
-  if (jsonObject.hasOwnProperty(keyToAdd) && jsonObject[keyToAdd] >= higherGrade) {
-    console.log('The existing value is already higher or equal.');
-	higherGrade = jsonObject[keyToAdd];
-	writeErrorToFile(__dirname + "/grades/error.txt", ' higherGrade2 ' + higherGrade, 'a');
+  if (jsonObject.hasOwnProperty(keyToAdd) && jsonObject[keyToAdd] > newGrade) {
+    console.log('The existing value is already higher');
+	higherGrade = jsonObject[keyToAdd]; // set higher grade to old grade
+	//writeErrorToFile(__dirname + "/grades/error.txt", ' higherGrade2 ' + higherGrade, 'a');
   }
 
   // Add or update the key with the new value
+  console.log('higherGrade: ' + higherGrade);
   jsonObject[keyToAdd] = higherGrade;
 
   const updatedData = JSON.stringify(jsonObject, null, 2) ? JSON.stringify(jsonObject, null, 2): '{}';
@@ -1660,7 +1665,7 @@ data = fs.readFileSync(filePath, "utf8") ? fs.readFileSync(filePath, "utf8") : '
   fs.writeFile(filePath.toString(), updatedData, 'utf8', (writeErr) => {
     if (writeErr) {
       console.error('Error writing file:', writeErr);
-	  writeErrorToFile(__dirname + "/grades/error.txt", '3' + writeErr, 'a');
+	  //writeErrorToFile(__dirname + "/grades/error.txt", '3' + writeErr, 'a');
       return;
     }
     console.log('File updated successfully!');
@@ -1718,13 +1723,14 @@ getNewFilePath(__dirname + '/quizzes/' + fileName)
     fs.writeFileSync(newFilePath, html);
     // Handle the saved file name or any other operation
     //session.ext_content.send_file(res, newFilePath, '', 'text/html');
-    session.ext_content.send_url(res, newFilePath);
+	// ext_content is set to false.  Not sure how to fix this.
+    //session.ext_content.send_url(res, newFilePath);
   }) 
   .catch(error => {
     if (newFilePath) {
-      writeErrorToFile(__dirname + '/grades/error.txt', ' newFilePath: ' + newFilePath + ' error: ' + error, 'a');
+      console.log(' newFilePath: ' + newFilePath + ' error: ' + error);
     } else {
-      writeErrorToFile(__dirname + '/grades/error.txt', ' newFilePath not defined' + ' error: ' + error, 'a');
+      console.log(' newFilePath not defined' + ' error: ' + error);
     }
     console.error('Error occurred:', error);
   });
