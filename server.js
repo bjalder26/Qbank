@@ -1706,9 +1706,10 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
     fs.writeFileSync(newFilePath, html);
     // Handle the saved file name or any other operation
     session.ext_content.send_file(res, newFilePath, '', 'text/html')
+	
   }) 
   .catch(error => {
-    writeErrorToFile(__dirname + "/grades/error.txt", 'savefilewithnumberedname: ' + error, 'a');
+    writeErrorToFile(__dirname + '/grades/error.txt', ' newFilePath: ' + newFilePath + ' error: 'error, 'a');
     console.error('Error occurred:', error);
   });
 
