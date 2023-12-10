@@ -1562,7 +1562,7 @@ function compareObjects(correctAnswersObj, submittedAnswersObj) {
 }
 
 async function getNewFilePath(begFilePath) {
-	begFilePathArray = begFilePath.split('\');
+	let begFilePathArray = begFilePath.split('\');
 	begFilePath = begFilePathArray[begFilePathArray.length-1];
   try {
     let highestNumber = 0;
