@@ -1699,10 +1699,18 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
   .replace(/<h4>.*?<\/h4>/, '')
   .replace(/<div class=['"]rightjustify['"]>.*?<\/div>/, '')
   
-   let newFilePath = getNewFilePath(__dirname + '/quizzes/' + fileName);
-   
-   
-  
+   getNewFilePath(__dirname + '/quizzes/' + fileName)
+  .then(newFilePath => {
+    fs.writeFileSync(newFilePath, html);
+    // Handle the saved file name or any other operation
+    session.ext_content.send_file(res, newFilePath, '', 'html');
+  }) 
+  .catch(error => {
+    writeErrorToFile(__dirname + "/grades/error.txt", 'savefilewithnumberedname: ' + error, 'a');
+    console.error('Error occurred:', error);
+  });
+
+    
   //console.log(sessions);
   //console.log(passed);
   //console.log(passed.sessionId); //un
@@ -1727,14 +1735,7 @@ try {
     res.send(html.toString() + '<br/>error: ' + error + '<br/>passed: ' + JSON.stringify(passed) + '<br/>sessionId: ' + passed.sessionId + '<br/>session: ' + session);
 }  
 
-try {
-  fs.writeFileSync(newFilePath, html);
-  // Handle the saved file name or any other operation
-  session.ext_content.send_file(res, newFilePath, '', 'html');
-} catch (error) {
-  writeErrorToFile(__dirname + "/grades/error.txt", 'savefilewithnumberedname: ' + error, 'a');
-  console.error('Error occurred:', error);
-}
+
   
 });
 
