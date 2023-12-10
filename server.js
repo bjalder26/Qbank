@@ -1567,7 +1567,7 @@ async function getNewFilePath(begFilePath) {
     const files = await fs.promises.readdir(__dirname + '/quizzes/');
 
     const matchingFiles = files.filter((file) => {
-      const regex = new RegExp(`^${begFilePath}_[0-9]+\\.txt`, 'i');
+      const regex = new RegExp(`^${begFilePath}_[0-9]+\\.html`, 'i');
       return regex.test(file);
     });
 
@@ -1580,10 +1580,10 @@ async function getNewFilePath(begFilePath) {
     });
 
     const nextNumber = highestNumber + 1;
-    return begFilePath + '_' + nextNumber + '.txt';
+    return begFilePath + '_' + nextNumber + '.html';
   } catch (err) {
     console.log(err);
-    return begFilePath + '_' + 'error' + '.txt';
+    return begFilePath + '_' + 'error' + '.html';
   }
 }
 
@@ -1610,7 +1610,7 @@ app.get('/submitQuiz/:passed', (req, res) => {
 //console.log("Missed Object:", result.missedObj);
 
 // ========================================  
-// Read the file
+// Read the grade file
 const filePath = __dirname + '/grades/'+ courseId + '-' + assignmentId + '_' + studentId + '.txt';
 
 writeErrorToFile(__dirname + '/grades/error.txt', filePath, 'w');
@@ -1651,10 +1651,8 @@ data = fs.readFileSync(filePath, "utf8") ? fs.readFileSync(filePath, "utf8") : '
 
   const updatedData = JSON.stringify(jsonObject, null, 2) ? JSON.stringify(jsonObject, null, 2): '{}';
   
-  let newFilePath = getNewFilePath(filePath.split('.')[0]);
-  
   // Write the updated object back to the file
-  fs.writeFile(newFilePath.toString(), updatedData, 'utf8', (writeErr) => {
+  fs.writeFile(filePath.toString(), updatedData, 'utf8', (writeErr) => {
     if (writeErr) {
       console.error('Error writing file:', writeErr);
 	  writeErrorToFile(__dirname + "/grades/error.txt", '3' + writeErr, 'a');
@@ -1700,6 +1698,11 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
   .replace(/<span class=['"]tooltiptext noPrint['"]>.*?<\/span>/, `<span>Grade: ${grade}%`)
   .replace(/<h4>.*?<\/h4>/, '')
   .replace(/<div class=['"]rightjustify['"]>.*?<\/div>/, '')
+  
+   let newFilePath = getNewFilePath(__dirname + '/quizzes/' + fileName);
+   
+   
+  
   //console.log(sessions);
   //console.log(passed);
   //console.log(passed.sessionId); //un
@@ -1723,48 +1726,17 @@ try {
     console.error(error); // Log synchronous errors
     res.send(html.toString() + '<br/>error: ' + error + '<br/>passed: ' + JSON.stringify(passed) + '<br/>sessionId: ' + passed.sessionId + '<br/>session: ' + session);
 }  
-saveFileWithNumberedName(fileName, 'html', __dirname + '/quizzes/')
-  .then((file_url) => {
-    // Handle the saved file name or any other operation
-	session.ext_content.send_file(res, file_url, '', 'html');
-  })
-  .catch((error) => {
-    console.error('Error occurred:', error);
-  });
+
+try {
+  fs.writeFileSync(newFilePath, html);
+  // Handle the saved file name or any other operation
+  session.ext_content.send_file(res, newFilePath, '', 'html');
+} catch (error) {
+  writeErrorToFile(__dirname + "/grades/error.txt", 'savefilewithnumberedname: ' + error, 'a');
+  console.error('Error occurred:', error);
+}
   
 });
-
-async function saveFileWithNumberedName(baseName, extension, path) {
-  const files = await fs.promises.readdir(path); // Change __dirname to your directory path
-
-  // Filter files with the same beginning as baseName and ending with numbers
-  const matchingFiles = files.filter((file) => {
-    const regex = new RegExp(`^${baseName}_[0-9]+\\.${extension}$`, 'i');
-    return regex.test(file);
-  });
-
-  let highestNumber = 0;
-
-  // Find the highest number from existing files
-  matchingFiles.forEach((file) => {
-    const parts = file.split('_');
-    const number = parseInt(parts[parts.length - 1].split('.')[0]);
-    if (number > highestNumber) {
-      highestNumber = number;
-    }
-  });
-
-  const nextNumber = highestNumber + 1;
-  const numberedFileName = `${baseName}_${nextNumber}.${extension}`;
-
-  // Save the file with the numbered name
-  // You'll need to provide the content to be saved here
-  // For example: fs.writeFileSync(numberedFileName, content);
-  // Replace 'content' with the actual content you want to save
-
-  console.log(`File saved as: ${numberedFileName}`);
-  return numberedFileName;
-}
 
 app.get("/product/:passed", (req, res) => {
   if (req.params.passed) {
