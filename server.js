@@ -1562,6 +1562,8 @@ function compareObjects(correctAnswersObj, submittedAnswersObj) {
 }
 
 async function getNewFilePath(begFilePath) {
+	begFilePathArray = begFilePath.split('\');
+	begFilePath = begFilePathArray[begFilePathArray.length-1];
   try {
     let highestNumber = 0;
     const files = await fs.promises.readdir(__dirname + '/quizzes/');
