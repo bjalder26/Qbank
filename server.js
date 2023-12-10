@@ -1582,7 +1582,7 @@ async function getNewFilePath(begFilePath) {
       }
     });
 	
-	writeErrorToFile(__dirname + '/grades/error.txt', ' highestNumber: ' + highestNumber.toString(), 'w');
+	//writeErrorToFile(__dirname + '/grades/error.txt', ' highestNumber: ' + highestNumber.toString(), 'w');
 
     const nextNumber = highestNumber + 1;
     return begFilePath + '_' + nextNumber + '.html';
@@ -1618,7 +1618,7 @@ app.get('/submitQuiz/:passed', (req, res) => {
 // Read the grade file
 const filePath = __dirname + '/grades/'+ courseId + '-' + assignmentId + '_' + studentId + '.txt';
 
-writeErrorToFile(__dirname + '/grades/error.txt', filePath, 'a');
+writeErrorToFile(__dirname + '/grades/error.txt', filePath, 'w');
 
 let higherGrade = grade; // Replace with your new value
 
