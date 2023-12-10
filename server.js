@@ -1565,11 +1565,14 @@ async function getNewFilePath(begFilePath) {
   try {
     let highestNumber = 0;
     const files = await fs.promises.readdir(__dirname + '/quizzes/');
+	writeErrorToFile(__dirname + '/grades/error.txt', ' files: ' + files, 'w');
 
     const matchingFiles = files.filter((file) => {
       const regex = new RegExp(`^${begFilePath}_[0-9]+\\.html`, 'i');
       return regex.test(file);
     });
+	
+	writeErrorToFile(__dirname + '/grades/error.txt', ' matchingFiles: ' + matchingFiles, 'w');
 
     matchingFiles.forEach((file) => {
       const parts = file.split('_');
@@ -1578,6 +1581,8 @@ async function getNewFilePath(begFilePath) {
         highestNumber = number;
       }
     });
+	
+	writeErrorToFile(__dirname + '/grades/error.txt', ' highestNumber: ' + highestNumber, 'w');
 
     const nextNumber = highestNumber + 1;
     return begFilePath + '_' + nextNumber + '.html';
@@ -1706,10 +1711,11 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
     fs.writeFileSync(newFilePath, html);
     // Handle the saved file name or any other operation
     session.ext_content.send_file(res, newFilePath, '', 'text/html')
+	//session.ext_content.send_url
 	
   }) 
   .catch(error => {
-    writeErrorToFile(__dirname + '/grades/error.txt', ' newFilePath: ' + newFilePath + ' error: 'error, 'a');
+    writeErrorToFile(__dirname + '/grades/error.txt', ' newFilePath: ' + newFilePath + ' error: ' + error, 'a');
     console.error('Error occurred:', error);
   });
 
