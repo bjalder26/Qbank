@@ -1706,18 +1706,25 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
   
   const session = sessions[passed.sessionId];  
   
-  getNewFilePath(__dirname + '/quizzes/' + fileName)
-  .then(newFilePath => {
+let newFilePath; // Declare newFilePath variable
+
+getNewFilePath(__dirname + '/quizzes/' + fileName)
+  .then(filePath => {
+    newFilePath = filePath; // Assign value to newFilePath
     fs.writeFileSync(newFilePath, html);
     // Handle the saved file name or any other operation
-    session.ext_content.send_file(res, newFilePath, '', 'text/html')
-	//session.ext_content.send_url
-	
+    session.ext_content.send_file(res, newFilePath, '', 'text/html');
+    //session.ext_content.send_url
   }) 
   .catch(error => {
-    writeErrorToFile(__dirname + '/grades/error.txt', ' newFilePath: ' + newFilePath + ' error: ' + error, 'a');
+    if (newFilePath) {
+      writeErrorToFile(__dirname + '/grades/error.txt', ' newFilePath: ' + newFilePath + ' error: ' + error, 'a');
+    } else {
+      writeErrorToFile(__dirname + '/grades/error.txt', ' newFilePath not defined' + ' error: ' + error, 'a');
+    }
     console.error('Error occurred:', error);
   });
+
 
     
   //console.log(sessions);
