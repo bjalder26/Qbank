@@ -1572,7 +1572,7 @@ async function getNewFilePath(begFilePath) {
       return regex.test(file);
     });
 	
-	writeErrorToFile(__dirname + '/grades/error.txt', ' matchingFiles: ' + matchingFiles, 'w');
+	writeErrorToFile(__dirname + '/grades/error.txt', ' matchingFiles: ' + matchingFiles, 'a');
 
     matchingFiles.forEach((file) => {
       const parts = file.split('_');
@@ -1582,7 +1582,7 @@ async function getNewFilePath(begFilePath) {
       }
     });
 	
-	writeErrorToFile(__dirname + '/grades/error.txt', ' highestNumber: ' + highestNumber, 'w');
+	writeErrorToFile(__dirname + '/grades/error.txt', ' highestNumber: ' + highestNumber, 'a');
 
     const nextNumber = highestNumber + 1;
     return begFilePath + '_' + nextNumber + '.html';
@@ -1618,7 +1618,7 @@ app.get('/submitQuiz/:passed', (req, res) => {
 // Read the grade file
 const filePath = __dirname + '/grades/'+ courseId + '-' + assignmentId + '_' + studentId + '.txt';
 
-writeErrorToFile(__dirname + '/grades/error.txt', filePath, 'w');
+writeErrorToFile(__dirname + '/grades/error.txt', filePath, 'a');
 
 let higherGrade = grade; // Replace with your new value
 
