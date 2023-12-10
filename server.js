@@ -1713,8 +1713,8 @@ getNewFilePath(__dirname + '/quizzes/' + fileName)
     newFilePath = filePath; // Assign value to newFilePath
     fs.writeFileSync(newFilePath, html);
     // Handle the saved file name or any other operation
-    session.ext_content.send_file(res, newFilePath, '', 'text/html');
-    //session.ext_content.send_url
+    //session.ext_content.send_file(res, newFilePath, '', 'text/html');
+    session.ext_content.send_url(res, newFilePath);
   }) 
   .catch(error => {
     if (newFilePath) {
