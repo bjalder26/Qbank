@@ -1583,7 +1583,7 @@ async function getNewFilePath(begFilePath) {
     return begFilePath + '_' + nextNumber + '.txt';
   } catch (err) {
     console.log(err);
-    return null; // or handle the error as needed
+    return begFilePath + '_' + 'error' + '.txt';
   }
 }
 
