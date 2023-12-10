@@ -1699,7 +1699,9 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
   .replace(/<h4>.*?<\/h4>/, '')
   .replace(/<div class=['"]rightjustify['"]>.*?<\/div>/, '')
   
-   getNewFilePath(__dirname + '/quizzes/' + fileName)
+  const session = sessions[passed.sessionId];  
+  
+  getNewFilePath(__dirname + '/quizzes/' + fileName)
   .then(newFilePath => {
     fs.writeFileSync(newFilePath, html);
     // Handle the saved file name or any other operation
@@ -1714,7 +1716,7 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
   //console.log(sessions);
   //console.log(passed);
   //console.log(passed.sessionId); //un
-  const session = sessions[passed.sessionId];
+
   //console.log(session); //un
   
 try {
