@@ -1561,23 +1561,30 @@ function compareObjects(correctAnswersObj, submittedAnswersObj) {
   };
 }
 
-function getNewFilePath(begFilePath) {
-	const files = fs.promises.readdir(__dirname + '/quizzes/');
-	
-	const matchingFiles = files.filter((file) => {
-    const regex = new RegExp(`^${begFilePath}_[0-9]+\\.txt`, 'i');
-    return regex.test(file);
-  });
-  let highestNumber = 0;
-   matchingFiles.forEach((file) => {
-    const parts = file.split('_');
-    const number = parseInt(parts[parts.length - 1].split('.')[0]);
-    if (number > highestNumber) {
-      highestNumber = number;
-    }
-  });
-  const nextNumber = highestNumber + 1;
-  return begFilePath + '_' + nextNumber + '.txt';
+async function getNewFilePath(begFilePath) {
+  try {
+    let highestNumber = 0;
+    const files = await fs.promises.readdir(__dirname + '/quizzes/');
+
+    const matchingFiles = files.filter((file) => {
+      const regex = new RegExp(`^${begFilePath}_[0-9]+\\.txt`, 'i');
+      return regex.test(file);
+    });
+
+    matchingFiles.forEach((file) => {
+      const parts = file.split('_');
+      const number = parseInt(parts[parts.length - 1].split('.')[0]);
+      if (number > highestNumber) {
+        highestNumber = number;
+      }
+    });
+
+    const nextNumber = highestNumber + 1;
+    return begFilePath + '_' + nextNumber + '.txt';
+  } catch (err) {
+    console.log(err);
+    return null; // or handle the error as needed
+  }
 }
 
 app.get('/submitQuiz/:passed', (req, res) => {
