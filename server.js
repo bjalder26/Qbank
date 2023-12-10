@@ -1565,14 +1565,14 @@ async function getNewFilePath(begFilePath) {
   try {
     let highestNumber = 0;
     const files = await fs.promises.readdir(__dirname + '/quizzes/');
-	writeErrorToFile(__dirname + '/grades/error.txt', ' files: ' + files.toString(), 'w');
+	//writeErrorToFile(__dirname + '/grades/error.txt', ' files: ' + files.toString(), 'w');
 
     const matchingFiles = files.filter((file) => {
       const regex = new RegExp(`^${begFilePath}_[0-9]+\\.html`, 'i');
       return regex.test(file);
     });
 	
-	writeErrorToFile(__dirname + '/grades/error.txt', ' matchingFiles: ' + matchingFiles.toString(), 'a');
+	//writeErrorToFile(__dirname + '/grades/error.txt', ' matchingFiles: ' + matchingFiles.toString(), 'a');
 
     matchingFiles.forEach((file) => {
       const parts = file.split('_');
@@ -1582,7 +1582,7 @@ async function getNewFilePath(begFilePath) {
       }
     });
 	
-	writeErrorToFile(__dirname + '/grades/error.txt', ' highestNumber: ' + highestNumber.toString(), 'a');
+	writeErrorToFile(__dirname + '/grades/error.txt', ' highestNumber: ' + highestNumber.toString(), 'w');
 
     const nextNumber = highestNumber + 1;
     return begFilePath + '_' + nextNumber + '.html';
