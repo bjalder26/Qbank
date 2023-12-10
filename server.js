@@ -1633,7 +1633,8 @@ let data = '{}';
 try {
 data = fs.readFileSync(filePath, "utf8") ? fs.readFileSync(filePath, "utf8") : '{}';
 } catch (err) {
-	writeErrorToFile(__dirname + "/grades/error.txt", '     1' + err, 'a');
+	//writeErrorToFile(__dirname + "/grades/error.txt", '     1' + err, 'a');
+	console.log('error: ' + err);
 }
 
   let jsonObject = {};
@@ -1642,7 +1643,7 @@ data = fs.readFileSync(filePath, "utf8") ? fs.readFileSync(filePath, "utf8") : '
     jsonObject = JSON.parse(data);
   } catch (err) {
     console.error('Error parsing JSON:', err);
-	writeErrorToFile(__dirname + "/grades/error.txt", '     2' + err + jsonObject, 'a');
+	//writeErrorToFile(__dirname + "/grades/error.txt", '     2' + err + jsonObject, 'a');
     return;
   }
 
@@ -1705,7 +1706,7 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
   .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '')
   .replaceAll(/<button class=['"]x['"].*?<\/button>/g, '')
   .replace(/\/\/###replace me###/, 'tagQuestions(correctObj, incorrectObj, missedObj)')
-  .replace(/<span class=['"]tooltiptext noPrint['"]>.*?<\/span>/, `<span>Grade: ${grade}%`)
+  .replace(/<span class=['"]tooltiptext noPrint['"]>.*?<\/span>/, `<span>Grade: ${newGrade}%`)
   .replace(/<h4>.*?<\/h4>/, '')
   .replace(/<div class=['"]rightjustify['"]>.*?<\/div>/, '')
   
