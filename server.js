@@ -1728,7 +1728,8 @@ getNewFilePath(__dirname + '/quizzes/' + fileName)
     fs.writeFileSync(newFilePath, html);
     // Handle the saved file name or any other operation
     //session.ext_content.send_file(res, newFilePath, '', 'text/html');
-	// ext_content is set to false.  Not sure how to fix this.
+	// ext_content is set to false.  https://canvas.instructure.com/doc/api/file.homework_submission_placement.html
+	// can't upload files and submit grades at the same time
     //session.ext_content.send_url(res, newFilePath);
   }) 
   .catch(error => {
@@ -1892,7 +1893,7 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
     var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + instructorName + "_qbanks.txt", "utf8");
     var qbanks = JSON.parse(qbanksFile);
 	
-	if(fs.existsSync(__dirname + '/quizzes/' + fileName + '.html') && false) { // setting this to always fail so it always deletes
+	if(fs.existsSync(__dirname + '/quizzes/' + fileName + '.html')) { // should be true until submit.
 	// tries to read file first, and it you can't read it, then qbankToHtml and write it
 	html = fs.readFileSync(__dirname + '/quizzes/' + fileName + '.html', "utf8");
 	} else {
