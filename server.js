@@ -1717,8 +1717,8 @@ function tagQuestions(correctObj, incorrectObj, missedObj) {
   const session = sessions[passed.sessionId];  
 console.log('session');
 console.log(session);
-console.log('session.ext_content');
-console.log(session.ext_content);
+//console.log('session.ext_content');
+//console.log(session.ext_content);
   
 let newFilePath; // Declare newFilePath variable
 
