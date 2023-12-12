@@ -1757,7 +1757,14 @@ getNewFilePath(__dirname + '/quizzes/' + fileName)
     console.error('Error occurred:', error);
   });
 
-
+// Delete the file
+fs.unlink(__dirname + '/quizzes/' + fileName + '.html', (err) => {
+  if (err) {
+    console.error('Error deleting file:', err);
+    return;
+  }
+  console.log('File deleted successfully');
+});
     
   //console.log(sessions);
   //console.log(passed);
