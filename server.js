@@ -1599,8 +1599,8 @@ async function getNewFilePath(begFilePath) {
 
 app.post('/updateSelections', (req, res) => {
   console.log('passed to updateSelections');
-  console.log(JSON.stringify(decodeURIComponent(req)));
-  console.log(JSON.stringify(decodeURIComponent(req.body)));
+  console.log(decodeURIComponent(JSON.stringify(req)));
+  console.log(decodeURIComponent(JSON.stringify(req.body)));
   let passed = JSON.parse(req.passed);
   const fileName = passed.fileName; // need fileName
   console.log(fileName);
