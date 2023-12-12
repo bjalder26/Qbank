@@ -119,6 +119,7 @@ margin-left: 0.5in;
     <link rel="stylesheet" href="/css/custom.css">
     <script>
 	let questionsObject = {};
+	let selectedObjText = {};
 	
 	//PARAMS**GO**HERE 
 	

@@ -1972,7 +1972,7 @@ if(selected) {
 }
 	// removes answers from quiz
 
-  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'const fileName = "' + fileName + '"; ' + 'const sessionId =' + JSON.stringify(sessionId) + '; ' + 'const courseId = "' + courseId + '"; ' + 'const assignmentId = "' + assignmentId + '"; ' + 'const studentId = "' + studentId + '";' + ' let selectedObjText = ' + JSON.stringify(selectedObj) + '; ' + '// Error:' + errorVar )  
+  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'const fileName = "' + fileName + '"; ' + 'const sessionId =' + JSON.stringify(sessionId) + '; ' + 'const courseId = "' + courseId + '"; ' + 'const assignmentId = "' + assignmentId + '"; ' + 'const studentId = "' + studentId + '";' + ' selectedObjText = ' + JSON.stringify(selectedObj) + '; ' + '// Error:' + errorVar )  
   .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz();">Submit Quiz</button>') 
   .replaceAll(/<span class=['"]asterisk['"]>\*<\/span>/g, '')
   .replaceAll(/<div class=(['"])?solution\1>[\s\S]*?<\/div>/g, '')
