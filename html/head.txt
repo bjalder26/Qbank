@@ -137,6 +137,7 @@ margin-left: 0.5in;
 // Call the drawMarks function to draw the dark marks on the canvas
 makeCoordinateArray();
 drawMarks();
+markSelectedOptions();
 }
 
     </script>
@@ -194,7 +195,61 @@ function submitQuiz() {
   passed = encodeURIComponent(JSON.stringify(passed))
     var path = '/submitQuiz/' + passed;
     window.open(path, '_self');  // switched from blank to self
-} 
+}
+
+function updateSelections() {
+  let passed = {};
+  passed.selected = getSelected();
+  passed.fileName = fileName;
+  passed.sessionId = sessionId ? sessionId : "no sessionId";
+  passed.courseId = courseId ? courseId : "no courseId";
+  passed.assignmentId = assignmentId ? assignmentId : "no assignmentId";
+  passed.studentId = studentId ? studentId : "no studentId";
+  passed = encodeURIComponent(JSON.stringify(passed));
+
+  fetch('/updateSelections', {
+    method: 'POST', // Use the appropriate HTTP method (POST, PUT, etc.)
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ data: passed }), // Send the data to the server
+  })
+    .then(response => {
+      if (response.ok) {
+        // File on the server has been updated successfully
+        console.log('Selections updated successfully.');
+      } else {
+        // Handle the case when the update fails
+        console.error('Failed to update selections.');
+      }
+    })
+    .catch(error => {
+      // Handle any errors that occur during the fetch
+      console.error('Error updating selections:', error);
+    });
+}
+
+function markSelectedOptions() {
+ if(selectedObj) {
+  const questions = document.querySelectorAll('.question');
+  
+  questions.forEach((question, questionIndex) => {
+    const questionNumber = questionIndex + 1;
+    const options = question.querySelectorAll('.option');
+    const keys = Object.keys(selectedObj);
+    
+    if (keys.includes(questionNumber.toString())) {
+      const indexes = selectedObj[questionNumber.toString()];
+      
+      indexes.forEach((index) => {
+        if (index >= 0 && index < options.length) {
+          options[index].classList.add('selected');
+        }
+      });
+    }
+  });
+  }
+}
 	  
 	  function makeCoordinateArray(clearCoordinates) {
 	  if(clearCoordinates){

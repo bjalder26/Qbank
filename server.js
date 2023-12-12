@@ -1536,13 +1536,9 @@ function compareObjects(correctAnswersObj, submittedAnswersObj) {
   const missedObj = {};
 
   for (const questionNumber in correctAnswersObj) {
-
       const correctArray = correctAnswersObj[questionNumber];
       const submittedArray = submittedAnswersObj[questionNumber];
-      
       correctObj[questionNumber] = correctArray.filter(item => submittedArray.includes(item));
-
-      
       missedObj[questionNumber] = correctArray.filter(item => !submittedArray.includes(item));
       incorrectObj[questionNumber] = submittedArray.filter(item => !correctArray.includes(item));
       
@@ -1600,6 +1596,26 @@ async function getNewFilePath(begFilePath) {
     return begFilePath + '_' + 'error' + '.html';
   }
 }
+
+app.post('/updateSelections', (req, res) => {
+  //console.log(req.params.passed);
+  let passed = JSON.parse(decodeURIComponent(req.params.passed));
+  const fileName = passed.fileName; // need fileName
+  console.log(fileName);
+  const submittedAnswersObj = passed.selected; 
+  const courseId = passed.courseId ? passed.courseId : 'no courseId';
+  const assignmentId = passed.assignmentId ? passed.assignmentId : 'no assignmentId';
+  const studentId = passed.studentId;
+  
+    // Write the updated object back to the file
+  fs.writeFile(__dirname + '/quizzes/' + fileName + '_selections.txt', 'utf8', JSON.stringify(submittedAnswersObj), 'utf8', (writeErr) => {
+    if (writeErr) {
+      console.error('Error writing file:', writeErr);
+      return;
+    }
+    console.log('File updated successfully!');
+  });
+})
 
 app.get('/submitQuiz/:passed', (req, res) => {
   //console.log(req.params.passed);
@@ -1937,9 +1953,14 @@ optionElements.forEach((element) => {
 });
 `
 
+const selected = fs.readFileSync(__dirname + '/quizzes/' + fileName + '_selections.txt', 'utf8',); //not sure if fileName correct
+let selectedObj = {};
+if(selected) {
+	selectedObj = JSON.stringify(selected);
+}
 	// removes answers from quiz
 
-  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'const fileName = "' + fileName + '"; ' + 'const sessionId =' + JSON.stringify(sessionId) + '; ' + 'const courseId = "' + courseId + '"; ' + 'const assignmentId = "' + assignmentId + '"; ' + 'const studentId = "' + studentId + '";' + '// Error:' + errorVar )  
+  productFile = productFile.replace(/(?<!let )(questionsObject = .*?;)/, 'const fileName = "' + fileName + '"; ' + 'const sessionId =' + JSON.stringify(sessionId) + '; ' + 'const courseId = "' + courseId + '"; ' + 'const assignmentId = "' + assignmentId + '"; ' + 'const studentId = "' + studentId + '";' + ' let selectedObj = ' + selectedObj + '; ' + '// Error:' + errorVar )  
   .replace(/<div id=['"]scantrondiv['"].*?<\/div>/, '<button type="button" onclick="submitQuiz();">Submit Quiz</button>') 
   .replaceAll(/<span class=['"]asterisk['"]>\*<\/span>/g, '')
   .replaceAll(/<div class=(['"])?solution\1>[\s\S]*?<\/div>/g, '')
