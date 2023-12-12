@@ -1952,8 +1952,12 @@ optionElements.forEach((element) => {
   });
 });
 `
-
-const selected = fs.readFileSync(__dirname + '/quizzes/' + fileName + '_selections.txt', 'utf8',); //not sure if fileName correct
+let selected = null;
+try {
+  selected = fs.readFileSync(__dirname + '/quizzes/' + fileName + '_selections.txt', 'utf8',); //not sure if fileName correct
+} catch(err) {
+	console.log(err);
+}
 let selectedObj = {};
 if(selected) {
 	selectedObj = JSON.stringify(selected);
