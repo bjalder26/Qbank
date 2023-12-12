@@ -1949,6 +1949,7 @@ const optionElements = document.querySelectorAll('.option');
 optionElements.forEach((element) => {
   element.addEventListener('click', () => {
     element.classList.toggle('selected');
+	updateSelections();
   });
 });
 `
