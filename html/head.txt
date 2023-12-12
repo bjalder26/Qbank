@@ -213,7 +213,7 @@ function updateSelections() {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ data: passed }), // Send the data to the server
+    body: JSON.stringify({ passed: passed }), // Send the data to the server
   })
     .then(response => {
       if (response.ok) {
