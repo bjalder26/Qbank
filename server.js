@@ -1603,7 +1603,7 @@ app.post('/updateSelections', (req, res) => {
   console.log(decodeURIComponent(req.passed));
   console.log(decodeURIComponent(req.body.passed));
   console.log(decodeURIComponent(req.params.passed));
-  let passed = JSON.parse(req.passed));
+  let passed = JSON.parse(req.passed);
   const fileName = passed.fileName; // need fileName
   console.log(fileName);
   const submittedAnswersObj = passed.selected; 
