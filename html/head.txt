@@ -232,7 +232,7 @@ function updateSelections() {
 
 function markSelectedOptions() {
  if(selectedObjText) {
- selectedObj = JSON.parse(selectedObjText);
+ let selectedObj = selectedObjText;
   const questions = document.querySelectorAll('.question');
   
   questions.forEach((question, questionIndex) => {
