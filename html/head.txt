@@ -1,16 +1,20 @@
 <html>
+
   <head>
     <style>
-      h1, h4, h6 {
+      h1,
+      h4,
+      h6 {
         display: flex;
         justify-content: center;
-	    margin-block-start: 0em;
-		margin-block-end: 0em;
+        margin-block-start: 0em;
+        margin-block-end: 0em;
       }
-      
+
       .astrisk {
-        display = none;
+        display=none;
       }
+
       .rightjustify {
         display: flex;
         justify-content: flex-end;
@@ -44,102 +48,111 @@
         break-inside: avoid-page;
         display: block;
       }
-	  
-	  div.stem {
-	    padding-left: 5px;
-		display: inline;
+
+      div.stem {
+        padding-left: 5px;
+        display: inline;
       }
 
       div.option {
         text-indent: 22px;
         display: block;
       }
-	
+
       svg {
         transform: scale(1.3);
       }
-      
+
       .stem .math-tex {
         display: inline-block;
-		margin: 8px 0px 8px 15px;
+        margin: 8px 0px 8px 15px;
       }
-	  
-	  .option .math-tex {
+
+      .option .math-tex {
         display: inline-block;
-		margin: 8px 0px 8px -22px;
+        margin: 8px 0px 8px -22px;
       }
-	  .solution {
-	    margin-left: 40px;
-	  }
+
+      .solution {
+        margin-left: 40px;
+      }
+
       @media print {
-        .noPrint, .x{
+
+        .noPrint,
+        .x {
           display: none;
         }
-		.scantrondiv {
-		page-break-before: always;
-		height: 10in;
-		}
+
+        .scantrondiv {
+          page-break-before: always;
+          height: 10in;
+        }
       }
-	  #scantron {
-	  position: relative;
-      background-size: 100%;
-      background-repeat: no-repeat;
-      background-image: url('/html/zipgrade50q.jpg');
+
+      #scantron {
+        position: relative;
+        background-size: 100%;
+        background-repeat: no-repeat;
+        background-image: url('/html/zipgrade50q.jpg');
 
       }
-	  #scantrondiv {
-	        display: none;
-	  }
-	  .selected {
-  border: 2px solid blue;
-  font-weight: bold;
-}
 
-.correct {
-  border: 2px solid green;
-  font-weight: bold;
-}
+      #scantrondiv {
+        display: none;
+      }
 
-.incorrect {
-  border: 2px solid red;
-}
+      .selected {
+        border: 2px solid blue;
+        font-weight: bold;
+      }
 
-.missed {
-  border: 2px solid yellow;
-  font-weight: bold;
-}
+      .correct {
+        border: 2px solid green;
+        font-weight: bold;
+      }
 
-@page {
-margin-top: 0.5in;
-margin-bottom: 0.5in;
-margin-right: 0.5in;
-margin-left: 0.5in;
-}
+      .incorrect {
+        border: 2px solid red;
+      }
+
+      .missed {
+        border: 2px solid yellow;
+        font-weight: bold;
+      }
+
+      @page {
+        margin-top: 0.5in;
+        margin-bottom: 0.5in;
+        margin-right: 0.5in;
+        margin-left: 0.5in;
+      }
+
     </style>
     <link rel="stylesheet" href="/css/custom.css">
     <script>
-	let questionsObject = {};
-	let selectedObjText = {};
-	
-	//PARAMS**GO**HERE 
-	
-	
-	
-    function loading() {
-      const mts = document.getElementsByClassName('math-tex');
-      for(let mt of mts) {
-        const questionOrOption = mt.parentElement;
-        questionOrOption.classList.add("svg");
+      let questionsObject = {};
+      let selectedObjText = {};
+
+      //PARAMS**GO**HERE 
+
+
+
+      function loading() {
+        const mts = document.getElementsByClassName('math-tex');
+        for (let mt of mts) {
+          const questionOrOption = mt.parentElement;
+          questionOrOption.classList.add("svg");
+        }
+
+        //###replace me###
+
+
+        // Call the drawMarks function to draw the dark marks on the canvas
+        makeCoordinateArray();
+        drawMarks();
+        markSelectedOptions();
       }
-	  
-	  //###replace me###
-	  
-	 
-// Call the drawMarks function to draw the dark marks on the canvas
-makeCoordinateArray();
-drawMarks();
-markSelectedOptions();
-}
 
     </script>
   </head>
@@ -149,213 +162,220 @@ markSelectedOptions();
     <script src="/node_modules/mathjax/es5/tex-mml-chtml.js" type="text/javascript" charset="utf-8"></script>
     <script>
       let toggle = {};
-	  toggle.asterisk = true;
-	  toggle.solution = true;
-	  toggle.scantron = false;
-	  let markCoordinates = [];
-	  
-function getSelected() {
-// Initialize an object to store the question number and selected options
-var selectedOptions = {};
+      toggle.asterisk = true;
+      toggle.solution = true;
+      toggle.scantron = false;
+      let markCoordinates = [];
 
-// Select all questions
-var questions = document.querySelectorAll('.question');
+      function getSelected() {
+        // Initialize an object to store the question number and selected options
+        var selectedOptions = {};
 
-// Iterate through each question
-questions.forEach(function(question, index) {
-  // Find all the options in the current question
-  var options = question.querySelectorAll('.option');
+        // Select all questions
+        var questions = document.querySelectorAll('.question');
 
-  // Initialize an array to store the selected option indices
-  var selectedIndices = [];
+        // Iterate through each question
+        questions.forEach(function(question, index) {
+          // Find all the options in the current question
+          var options = question.querySelectorAll('.option');
 
-  // Iterate through the options and check if they have the "selected" class
-  options.forEach(function(option, optionIndex) {
-    if (option.classList.contains('selected')) {
-      selectedIndices.push(optionIndex);
-    }
-  });
+          // Initialize an array to store the selected option indices
+          var selectedIndices = [];
 
-  // Store the selected indices in the object with the question number as the key
-  selectedOptions[(index + 1).toString()] = selectedIndices;
-});
+          // Iterate through the options and check if they have the "selected" class
+          options.forEach(function(option, optionIndex) {
+            if (option.classList.contains('selected')) {
+              selectedIndices.push(optionIndex);
+            }
+          });
 
-// The selectedOptions object now contains the desired data
-console.log(selectedOptions);
-return selectedOptions;
-}
-	  
-function submitQuiz() {
-  let passed = {};
-  passed.selected = getSelected();
-  passed.fileName = fileName;
-  passed.sessionId = sessionId ? sessionId : "no sessionId";
-  passed.courseId = courseId ? courseId : "no courseId";
-  passed.assignmentId = assignmentId ? assignmentId : "no assignmentId";
-  passed.studentId = studentId ? studentId : "no studentId";
-  passed = encodeURIComponent(JSON.stringify(passed))
-    var path = '/submitQuiz/' + passed;
-    window.open(path, '_self');  // switched from blank to self
-}
+          // Store the selected indices in the object with the question number as the key
+          selectedOptions[(index + 1).toString()] = selectedIndices;
+        });
 
-function updateSelections() {
-  let passed = {};
-  passed.selected = getSelected();
-  passed.fileName = fileName;
-  passed.sessionId = sessionId ? sessionId : "no sessionId";
-  passed.courseId = courseId ? courseId : "no courseId";
-  passed.assignmentId = assignmentId ? assignmentId : "no assignmentId";
-  passed.studentId = studentId ? studentId : "no studentId";
-  passed = encodeURIComponent(JSON.stringify(passed));
-
-  fetch('/updateSelections', {
-    method: 'POST', // Use the appropriate HTTP method (POST, PUT, etc.)
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ data: passed }), // Send the data to the server
-  })
-    .then(response => {
-      if (response.ok) {
-        // File on the server has been updated successfully
-        console.log('Selections updated successfully.');
-      } else {
-        // Handle the case when the update fails
-        console.error('Failed to update selections.');
+        // The selectedOptions object now contains the desired data
+        console.log(selectedOptions);
+        return selectedOptions;
       }
-    })
-    .catch(error => {
-      // Handle any errors that occur during the fetch
-      console.error('Error updating selections:', error);
-    });
-}
 
-function markSelectedOptions() {
- if(selectedObjText) {
- let selectedObj = selectedObjText;
-  const questions = document.querySelectorAll('.question');
-  
-  questions.forEach((question, questionIndex) => {
-    const questionNumber = questionIndex + 1;
-    const options = question.querySelectorAll('.option');
-    const keys = Object.keys(selectedObj);
-    
-    if (keys.includes(questionNumber.toString())) {
-      const indexes = selectedObj[questionNumber.toString()];
-      
-      indexes.forEach((index) => {
-        if (index >= 0 && index < options.length) {
-          options[index].classList.add('selected');
+      function submitQuiz() {
+        let passed = {};
+        passed.selected = getSelected();
+        passed.fileName = fileName;
+        passed.sessionId = sessionId ? sessionId : "no sessionId";
+        passed.courseId = courseId ? courseId : "no courseId";
+        passed.assignmentId = assignmentId ? assignmentId : "no assignmentId";
+        passed.studentId = studentId ? studentId : "no studentId";
+        passed = encodeURIComponent(JSON.stringify(passed))
+        var path = '/submitQuiz/' + passed;
+        window.open(path, '_self'); // switched from blank to self
+      }
+
+      function updateSelections() {
+        let passed = {};
+        passed.selected = getSelected();
+        passed.fileName = fileName;
+        passed.sessionId = sessionId ? sessionId : "no sessionId";
+        passed.courseId = courseId ? courseId : "no courseId";
+        passed.assignmentId = assignmentId ? assignmentId : "no assignmentId";
+        passed.studentId = studentId ? studentId : "no studentId";
+        passed = encodeURIComponent(JSON.stringify(passed));
+
+        fetch('/updateSelections', {
+            method: 'POST', // Use the appropriate HTTP method (POST, PUT, etc.)
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              data: passed
+            }), // Send the data to the server
+          })
+          .then(response => {
+            if (response.ok) {
+              // File on the server has been updated successfully
+              console.log('Selections updated successfully.');
+            } else {
+              // Handle the case when the update fails
+              console.error('Failed to update selections.');
+            }
+          })
+          .catch(error => {
+            // Handle any errors that occur during the fetch
+            console.error('Error updating selections:', error);
+          });
+      }
+
+      function markSelectedOptions() {
+        if (selectedObjText) {
+          let selectedObj = selectedObjText;
+          const questions = document.querySelectorAll('.question');
+
+          questions.forEach((question, questionIndex) => {
+            const questionNumber = questionIndex + 1;
+            const options = question.querySelectorAll('.option');
+            const keys = Object.keys(selectedObj);
+
+            if (keys.includes(questionNumber.toString())) {
+              const indexes = selectedObj[questionNumber.toString()];
+
+              indexes.forEach((index) => {
+                if (index >= 0 && index < options.length) {
+                  options[index].classList.add('selected');
+                }
+              });
+            }
+          });
         }
-      });
-    }
-  });
-  }
-}
-	  
-	  function makeCoordinateArray(clearCoordinates) {
-	  if(clearCoordinates){
-	  markCoordinates = [];
-	  }
-if (questionsObject) {
-let xstart = 0;
-let ystart = 0;
-for (const key in questionsObject) {
-if (key <= 10) {
-xstart = 85;
-ystart = 349;
-} else if (key <= 20) {
-xstart = 212;
-ystart = -140;
-} else if (key <= 30) {
-xstart = 212;
-ystart = -118;
-} else if (key <= 40) {
-xstart = 338.5;
-ystart = -606;
-} else {
-xstart = 338.5;
-ystart = -584;
-}
-  const values = questionsObject[key];
-  for (const value of values) {
-      markCoordinates.push({x: xstart+19.95*value, y: ystart+23.3*key});
-  }
-}
-} else {alert('no questionsObject')}
-}
+      }
 
-// Function to draw the dark marks on the canvas
-function drawMarks(eraseCanvas) {
-  const canvas = document.getElementById('scantron');
-  if(canvas) {
-  const ctx = canvas.getContext('2d');
-  canvas.height = 716.8;
-  canvas.width = 506.1;
-  
-  // erase canvas if needed
-  if(eraseCanvas) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-  }
+      function makeCoordinateArray(clearCoordinates) {
+        if (clearCoordinates) {
+          markCoordinates = [];
+        }
+        if (questionsObject) {
+          let xstart = 0;
+          let ystart = 0;
+          for (const key in questionsObject) {
+            if (key <= 10) {
+              xstart = 85;
+              ystart = 349;
+            } else if (key <= 20) {
+              xstart = 212;
+              ystart = -140;
+            } else if (key <= 30) {
+              xstart = 212;
+              ystart = -118;
+            } else if (key <= 40) {
+              xstart = 338.5;
+              ystart = -606;
+            } else {
+              xstart = 338.5;
+              ystart = -584;
+            }
+            const values = questionsObject[key];
+            for (const value of values) {
+              markCoordinates.push({
+                x: xstart + 19.95 * value,
+                y: ystart + 23.3 * key
+              });
+            }
+          }
+        } else {
+          alert('no questionsObject')
+        }
+      }
 
-  // Set the color and size of the dark marks
+      // Function to draw the dark marks on the canvas
+      function drawMarks(eraseCanvas) {
+        const canvas = document.getElementById('scantron');
+        if (canvas) {
+          const ctx = canvas.getContext('2d');
+          canvas.height = 716.8;
+          canvas.width = 506.1;
 
-  ctx.fillStyle = 'rgba(0, 0, 0)';
-  const markWidth = 15;
-  const markHeight = 15;
-  const borderRadius = 7.5;
-  // Loop through the mark coordinates and draw the dark marks
-  for (const coord of markCoordinates) {
-    ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
-  }
-  ctx.fill();
-  }
-}
-	  
-	  function deleteQuestion(question) {
-	  let confirmDelete = confirm('Do you want to delete question number '+question.querySelector('[class=questionNumber]').innerHTML+'?');
-	  if(confirmDelete) {
-	  question.remove();
-	  renumberQuestions();
-	  questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
-	  makeCoordinateArray(true);
-	  drawMarks(true);
-	  }
-	  }
-	  
-	  function removeAndRenumber(object, keyToRemove) {
-  // Convert the key to be removed to an integer
-  keyToRemove = parseInt(keyToRemove);
-  // Delete the key-value pair from the object
-  delete object[keyToRemove.toString()];
-  // Get the list of remaining keys and sort them numerically in ascending order
-  const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
-  // Initialize a variable to keep track of the new key value
-  let newKey = 1;
-  // Create a new object to store the renumbered key-value pairs
-  const newObject = {};
-  // Loop through the remaining keys and renumber the keys
-  for (const oldKey of remainingKeys) {
-    // If the current key is the one that was removed, skip it
-    if (oldKey === keyToRemove) continue;
-    // Update the key with the new value
-    newObject[newKey.toString()] = object[oldKey.toString()];
-    // Increment the new key value for the next iteration
-    newKey++;
-  }
-  // Return the new object with renumbered keys
-  return newObject;
-}
-	  
-	  function renumberQuestions() {
-	  var questionNumber = 1;
-	  const questionElements = document.getElementsByClassName('question');
-	  for(var questionElement of questionElements) {
-	  const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
-	  questionNumberElement.innerHTML = questionNumber;
-	  questionNumber = questionNumber + 1;
-	  }
-	  }
+          // erase canvas if needed
+          if (eraseCanvas) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+          }
+
+          // Set the color and size of the dark marks
+
+          ctx.fillStyle = 'rgba(0, 0, 0)';
+          const markWidth = 15;
+          const markHeight = 15;
+          const borderRadius = 7.5;
+          // Loop through the mark coordinates and draw the dark marks
+          for (const coord of markCoordinates) {
+            ctx.roundRect(coord.x, coord.y, markWidth, markHeight, borderRadius);
+          }
+          ctx.fill();
+        }
+      }
+
+      function deleteQuestion(question) {
+        let confirmDelete = confirm('Do you want to delete question number ' + question.querySelector('[class=questionNumber]').innerHTML + '?');
+        if (confirmDelete) {
+          question.remove();
+          renumberQuestions();
+          questionsObject = removeAndRenumber(questionsObject, question.querySelector('[class=questionNumber]').innerHTML);
+          makeCoordinateArray(true);
+          drawMarks(true);
+        }
+      }
+
+      function removeAndRenumber(object, keyToRemove) {
+        // Convert the key to be removed to an integer
+        keyToRemove = parseInt(keyToRemove);
+        // Delete the key-value pair from the object
+        delete object[keyToRemove.toString()];
+        // Get the list of remaining keys and sort them numerically in ascending order
+        const remainingKeys = Object.keys(object).map(Number).sort((a, b) => a - b);
+        // Initialize a variable to keep track of the new key value
+        let newKey = 1;
+        // Create a new object to store the renumbered key-value pairs
+        const newObject = {};
+        // Loop through the remaining keys and renumber the keys
+        for (const oldKey of remainingKeys) {
+          // If the current key is the one that was removed, skip it
+          if (oldKey === keyToRemove) continue;
+          // Update the key with the new value
+          newObject[newKey.toString()] = object[oldKey.toString()];
+          // Increment the new key value for the next iteration
+          newKey++;
+        }
+        // Return the new object with renumbered keys
+        return newObject;
+      }
+
+      function renumberQuestions() {
+        var questionNumber = 1;
+        const questionElements = document.getElementsByClassName('question');
+        for (var questionElement of questionElements) {
+          const questionNumberElement = questionElement.querySelector('[class=questionNumber]');
+          questionNumberElement.innerHTML = questionNumber;
+          questionNumber = questionNumber + 1;
+        }
+      }
 
       function toggleFunction(thisClass) {
         let theseClasses = document.getElementsByClassName(thisClass);
@@ -376,10 +396,10 @@ function drawMarks(eraseCanvas) {
         if (keysPressed['Control'] && event.key == 'z') {
           toggleFunction('asterisk');
         }
-		if (keysPressed['Control'] && event.key == 'x') {
+        if (keysPressed['Control'] && event.key == 'x') {
           toggleFunction('solution');
         }
-		if (keysPressed['Control'] && event.key == 'q') {
+        if (keysPressed['Control'] && event.key == 'q') {
           toggleFunction('scantrondiv');
         }
       });
@@ -387,9 +407,10 @@ function drawMarks(eraseCanvas) {
       document.addEventListener('keyup', (event) => {
         delete keysPressed[event.key];
       });
+
     </script>
     ${title}
-	${instructor}
-	${date}
+    ${instructor}
+    ${date}
     <div class='rightjustify'>name: ______________________________________</div>
     <p></p>
