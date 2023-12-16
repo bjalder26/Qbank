@@ -71,8 +71,8 @@ var lastActivity = JSON.parse(fs.readFileSync(__dirname + "/users/lastactivity.t
 var imageNumberArray = [];
 files.forEach(function(file) {
   let numbArray = file.split('.');
-  if (!isNaN(numbArray[0])) { 
-  imageNumberArray.push(numbArray[0]);
+  if (!isNaN(numbArray[0])) {
+    imageNumberArray.push(numbArray[0]);
   }
 });
 imageNumberArray.sort((a, b) => a - b);
