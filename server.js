@@ -1969,7 +1969,7 @@ try {
 }
 let selectedObj = {};
 if(selected) {
-	selectedObj = JSON.stringify(selected);
+	selectedObj = selected;
 }
 	// removes answers from quiz
 
