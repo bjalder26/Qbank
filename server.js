@@ -1928,6 +1928,9 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
     var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + instructorName + "_qbanks.txt", "utf8");
     var qbanks = JSON.parse(qbanksFile);
 	
+	// create courseId directory if it doesn't exist
+	if (!fs.existsSync(__dirname + '/quizzes/' + courseId)){fs.mkdirSync(__dirname + '/quizzes/' + courseId);}
+	
 	if(fs.existsSync(__dirname + '/quizzes/' + courseId + '/' + fileName + '.html')) { // should be true until submit.
 	// tries to read file first, and it you can't read it, then qbankToHtml and write it
 	html = fs.readFileSync(__dirname + '/quizzes/' + courseId + '/' + fileName + '.html', "utf8");
