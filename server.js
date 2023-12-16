@@ -1766,7 +1766,15 @@ fs.unlink(__dirname + '/quizzes/' + fileName + '.html', (err) => {
   }
   console.log('File deleted successfully');
 });
-    
+
+// Delete the selected answers
+fs.unlink(__dirname + '/quizzes/' + fileName + '_selections' + '.txt', (err) => {
+  if (err) {
+    console.error('Error deleting file:', err);
+    return;
+  }
+  console.log('File deleted successfully');
+});    
   //console.log(sessions);
   //console.log(passed);
   //console.log(passed.sessionId); //un
