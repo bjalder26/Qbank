@@ -1599,26 +1599,24 @@ async function getNewFilePath(begFilePath) {
 
 app.post('/updateSelections', (req, res) => {
   console.log('passed to updateSelections');
-  //console.log(decodeURIComponent(JSON.stringify(req)));
-  //console.log(decodeURIComponent(JSON.stringify(req.body)));
-  //console.log(decodeURIComponent(JSON.stringify(req.body.data)));
-  let passed = JSON.parse(req.body.data);
-  const fileName = passed.fileName; // need fileName
+  let passed = JSON.parse(decodeURIComponent(req.body.data)); // Decode the URI component before parsing
+  const fileName = passed.fileName;
   console.log(fileName);
-  const submittedAnswersObj = passed.selected; 
+  const submittedAnswersObj = passed.selected;
   const courseId = passed.courseId ? passed.courseId : 'no courseId';
   const assignmentId = passed.assignmentId ? passed.assignmentId : 'no assignmentId';
   const studentId = passed.studentId;
-  
-    // Write the updated object back to the file
-  fs.writeFile(__dirname + '/quizzes/' + fileName + '_selections.txt', 'utf8', JSON.stringify(submittedAnswersObj), 'utf8', (writeErr) => {
+
+  // Write the updated object back to the file
+  fs.writeFile(__dirname + '/quizzes/' + fileName + '_selections.txt', JSON.stringify(submittedAnswersObj), 'utf8', (writeErr) => {
     if (writeErr) {
       console.error('Error writing file:', writeErr);
-      return;
+      return res.status(500).send('Error writing file');
     }
     console.log('File updated successfully!');
+    res.status(200).send('File updated successfully');
   });
-})
+});
 
 app.get('/submitQuiz/:passed', (req, res) => {
   //console.log(req.params.passed);
