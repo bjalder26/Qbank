@@ -1557,12 +1557,12 @@ function compareObjects(correctAnswersObj, submittedAnswersObj) {
   };
 }
 
-async function getNewFilePath(begFilePath) {
+async function getNewFilePath(begFilePath, courseId) {
   let begFilePathArray = begFilePath.split('/'); // Escape the backslash
   begFilePath = begFilePathArray[begFilePathArray.length - 1];
   try {
     let highestNumber = 0;
-    const files = await fs.promises.readdir(__dirname + '/quizzes/');
+    const files = await fs.promises.readdir(__dirname + '/quizzes/' + courseId + '/' ); //could probably simplify with begFilePath
 	//writeErrorToFile(__dirname + '/grades/error.txt', ' files: ' + files.toString(), 'w');
 	console.log('files: ' + files.toString());
 	console.log('begFilePath: ' + begFilePath);
@@ -1608,7 +1608,7 @@ app.post('/updateSelections', (req, res) => {
   const studentId = passed.studentId;
 
   // Write the updated object back to the file
-  fs.writeFile(__dirname + '/quizzes/' + fileName + '_selections.txt', JSON.stringify(submittedAnswersObj), 'utf8', (writeErr) => {
+  fs.writeFile(__dirname + '/quizzes/' + courseId + '/' + fileName + '_selections.txt', JSON.stringify(submittedAnswersObj), 'utf8', (writeErr) => {
     if (writeErr) {
       console.error('Error writing file:', writeErr);
       return res.status(500).send('Error writing file');
@@ -1628,9 +1628,9 @@ app.get('/submitQuiz/:passed', (req, res) => {
   const assignmentId = passed.assignmentId ? passed.assignmentId : 'no assignmentId';
   const studentId = passed.studentId;
   
-  var html = fs.readFileSync(__dirname + '/quizzes/' + fileName + '.html', 'utf8');
+  var html = fs.readFileSync(__dirname + '/quizzes/' + courseId + '/' + fileName + '.html', 'utf8');
   
-  var correctAnswersObj = JSON.parse(fs.readFileSync(__dirname + '/quizzes/' + fileName + '.txt', 'utf8'));
+  var correctAnswersObj = JSON.parse(fs.readFileSync(__dirname + '/quizzes/' + courseId + '/' + fileName + '.txt', 'utf8'));
   const result = compareObjects(correctAnswersObj, submittedAnswersObj);
   let newGrade = result.percent;
   
@@ -1739,7 +1739,10 @@ console.log(session);
   
 let newFilePath; // Declare newFilePath variable
 
-getNewFilePath(__dirname + '/quizzes/' + fileName)
+// create courseId directory if it doesn't exist
+if (!fs.existsSync(__dirname + '/quizzes/' + courseId)){fs.mkdirSync(__dirname + '/quizzes/' + courseId);}
+
+getNewFilePath(__dirname + '/quizzes/' + courseId + '/' + fileName, courseId)
   .then(filePath => {
     newFilePath = filePath; // Assign value to newFilePath
     fs.writeFileSync(newFilePath, html);
@@ -1759,7 +1762,7 @@ getNewFilePath(__dirname + '/quizzes/' + fileName)
   });
 
 // Delete the file
-fs.unlink(__dirname + '/quizzes/' + fileName + '.html', (err) => {
+fs.unlink(__dirname + '/quizzes/' + courseId + '/' + fileName + '.html', (err) => {
   if (err) {
     console.error('Error deleting file:', err);
     return;
@@ -1768,7 +1771,7 @@ fs.unlink(__dirname + '/quizzes/' + fileName + '.html', (err) => {
 });
 
 // Delete the selected answers
-fs.unlink(__dirname + '/quizzes/' + fileName + '_selections' + '.txt', (err) => {
+fs.unlink(__dirname + '/quizzes/' + courseId + '/' + fileName + '_selections' + '.txt', (err) => {
   if (err) {
     console.error('Error deleting file:', err);
     return;
@@ -1925,13 +1928,13 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
     var qbanksFile = fs.readFileSync(__dirname + "/qbanks/" + instructorName + "_qbanks.txt", "utf8");
     var qbanks = JSON.parse(qbanksFile);
 	
-	if(fs.existsSync(__dirname + '/quizzes/' + fileName + '.html')) { // should be true until submit.
+	if(fs.existsSync(__dirname + '/quizzes/' + courseId + '/' + fileName + '.html')) { // should be true until submit.
 	// tries to read file first, and it you can't read it, then qbankToHtml and write it
-	html = fs.readFileSync(__dirname + '/quizzes/' + fileName + '.html', "utf8");
+	html = fs.readFileSync(__dirname + '/quizzes/' + courseId + '/' + fileName + '.html', "utf8");
 	} else {
 	 html = qbankToHtml(subject, course, qbankAndNumArray, instructorName, title.replaceAll('_', ' '), instructorName.replaceAll('_', ' '), date);
 		try {// save in quizzes folder, not products
-		  fs.writeFileSync(__dirname + '/quizzes/' + fileName + '.html', html, { 
+		  fs.writeFileSync(__dirname + '/quizzes/' + courseId + '/' + fileName + '.html', html, { 
 			flag: 'w+'
 		  });
 		  console.log("File written successfully (quiz 1)");
@@ -1941,7 +1944,7 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
 		}
 	}
 	
-	let productFile = fs.readFileSync(__dirname + '/quizzes/' + fileName + '.html', "utf8");
+	let productFile = fs.readFileSync(__dirname + '/quizzes/' + courseId + '/' + fileName + '.html', "utf8");
 	//console.log('productFile' + productFile);
 	// extract correct answers here
   const questionsObjectText = productFile.match(/(?<!let )questionsObject = (.*?});/)[1];
@@ -1949,7 +1952,7 @@ app.post('/quiz', (req, res) => { // post because get won't work with Canvas
 	//console.log('match:' + productFile.match(/questionsObject = (.*?);/));
 	//let matchObj = JSON.parse(match[1]); 
 	try {// save in answers object in quizzes folder, with txt end - to compare to submission
-		  fs.writeFileSync(__dirname + '/quizzes/' + fileName + '.txt', questionsObjectText, { 
+		  fs.writeFileSync(__dirname + '/quizzes/' + courseId + '/' + fileName + '.txt', questionsObjectText, { 
 			flag: 'w+'
 		  });
 		  console.log("File written successfully (quiz 2)");
@@ -1971,7 +1974,7 @@ optionElements.forEach((element) => {
 `
 let selected = null;
 try {
-  selected = fs.readFileSync(__dirname + '/quizzes/' + fileName + '_selections.txt', 'utf8',); //not sure if fileName correct
+  selected = fs.readFileSync(__dirname + '/quizzes/' + courseId + '/' + fileName + '_selections.txt', 'utf8',); //not sure if fileName correct
 } catch(err) {
 	console.log(err);
 }
