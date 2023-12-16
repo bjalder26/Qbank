@@ -257,12 +257,13 @@
 
             if (keys.includes(questionNumber.toString())) {
               const indexes = selectedObj[questionNumber.toString()];
-
-              indexes.forEach((index) => {
-                if (index >= 0 && index < options.length) {
-                  options[index].classList.add('selected');
-                }
-              });
+			  if(indexes) {
+                indexes.forEach((index) => {
+                  if (index >= 0 && index < options.length) {
+                    options[index].classList.add('selected');
+                  }
+                });
+			  }
             }
           });
         }
