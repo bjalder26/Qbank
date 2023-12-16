@@ -1975,7 +1975,7 @@ try {
 } catch(err) {
 	console.log(err);
 }
-let selectedObj = {};
+let selectedObj = '{}';
 if(selected) {
 	selectedObj = selected;
 }
