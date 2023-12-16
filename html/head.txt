@@ -257,7 +257,7 @@
 
             if (keys.includes(questionNumber.toString())) {
               const indexes = selectedObj[questionNumber.toString()];
-			  if(indexes.isArray()) {
+			  if(array.isArray(indexes) {
                 indexes.forEach((index) => {
                   if (index >= 0 && index < options.length) {
                     options[index].classList.add('selected');
