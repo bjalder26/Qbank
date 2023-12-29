@@ -1,4 +1,4 @@
-// express (MIT), fs (MIT), mathjs (open source), (Free, MIT), tinyMCE (LGPL), mathJAX (apache), tinymce-mathjax (MIT) 
+// express (MIT), fs (MIT), mathjs (open source), (Free, MIT), tinyMCE (LGPL), mathJAX (apache), tinymce-mathjax (MIT)
 
 const express = require('express'); // express server
 const http = require('http');
