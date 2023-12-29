@@ -1,13 +1,7 @@
 name: sync glitch with github
-# on:
-  # pull_request:
-    # types: [closed]
 on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
-
+  pull_request:
+    types: [closed]
 jobs:
   repo-sync:
     if: github.event.pull_request.merged == true
