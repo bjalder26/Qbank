@@ -1,10 +1,13 @@
 name: sync glitch with github
 on:
-  pull_request:
-    types: [closed]
+  push:
+    branches:
+      - main  # Adjust this according to your branch
+  # pull_request:
+    # types: [closed]
 jobs:
   repo-sync:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: repo-sync
