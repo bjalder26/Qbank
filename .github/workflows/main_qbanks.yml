@@ -1,7 +1,12 @@
 name: sync glitch with github
+# on:
+  # pull_request:
+    # types: [closed]
 on:
-  pull_request:
-    types: [closed] 
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   repo-sync:
